@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Promotion Requests | Ghoti Market</title>
+    <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root { --primary: #1a2a3a; --accent: #f39c12; --danger: #e74c3c; --success: #2ecc71; --bg: #f0f2f5; }
+        body { font-family: 'Hind Siliguri', sans-serif; background: var(--bg); margin: 0; padding: 20px; }
+        .container { max-width: 600px; margin: 0 auto; }
+        
+        .admin-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; background: white; padding: 15px 20px; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+        .admin-header h2 { margin: 0; color: var(--primary); font-size: 20px; }
+        .refresh-btn { background: var(--primary); color: white; border: none; padding: 8px 15px; border-radius: 8px; cursor: pointer; }
+
+        .request-card { background: white; border-radius: 18px; padding: 15px; margin-bottom: 20px; box-shadow: 0 8px 20px rgba(0,0,0,0.06); display: flex; flex-direction: column; gap: 15px; border-left: 5px solid var(--accent); }
+        
+        .seller-info { display: flex; align-items: center; gap: 10px; border-bottom: 1px solid #eee; padding-bottom: 10px; }
+        .seller-info i { color: var(--accent); }
+        .seller-info b { color: var(--primary); font-size: 16px; }
+
+        .product-detail { display: flex; gap: 15px; }
+        .product-detail img { width: 90px; height: 90px; border-radius: 12px; object-fit: cover; background: #eee; }
+        .p-text h4 { margin: 0; color: #333; font-size: 16px; }
+        .p-text p { margin: 5px 0; color: var(--danger); font-weight: bold; }
+        .p-text span { font-size: 12px; color: #888; }
+
+        .action-btns { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        
+        .btn { padding: 12px; border: none; border-radius: 10px; cursor: pointer; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 8px; font-family: 'Hind Siliguri'; }
+        .btn-wa { background: #25d366; color: white; text-decoration: none; }
+        .btn-del { background: #ffebee; color: var(--danger); }
+        
+        .status-badge { align-self: flex-start; background: #fff3cd; color: #856404; padding: 4px 12px; border-radius: 50px; font-size: 12px; font-weight: 600; }
+        #emptyMsg { text-align: center; padding: 50px; color: #999; display: none; }
+    </style>
+</head>
+<body>
+
+    <div class="container" id="mainContent" style="display:none;">
+        <div class="admin-header">
+            <h2><i class="fas fa-tasks"></i> প্রমোশন রিকোয়েস্ট</h2>
+            <button class="refresh-btn" onclick="location.reload()"><i class="fas fa-sync-alt"></i> রিফ্রেশ</button>
+        </div>
+
+        <div id="requestList"></div>
+
+        <div id="emptyMsg">
+            <i class="fas fa-inbox" style="font-size: 50px; margin-bottom: 10px;"></i>
+            <p>এখনো কোনো প্রমোশন রিকোয়েস্ট আসেনি!</p>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getFirestore, collection, onSnapshot, query, orderBy, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+        const firebaseConfig = { 
+            apiKey: "AIzaSyBUhNhYvuo_FTvZ5RZR6Gn-4hsUY21S0XE", 
+            authDomain: "ghotimarket.firebaseapp.com",
+            projectId: "ghotimarket" 
+        };
+        
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const auth = getAuth(app);
+
+        const listDiv = document.getElementById('requestList');
+        const emptyMsg = document.getElementById('emptyMsg');
+
+        // অথেন্টিকেশন চেক
+        onAuthStateChanged(auth, (user) => {
+            if (user && user.email === "support@ghotimarket.com") {
+                document.getElementById('mainContent').style.display = 'block';
+                loadRequests();
+            } else {
+                window.location.href = "index.html"; 
+            }
+        });
+
+        function loadRequests() {
+            const q = query(collection(db, "promotion_requests"), orderBy("requestedAt", "desc"));
+            onSnapshot(q, (snapshot) => {
+                if (snapshot.empty) {
+                    listDiv.innerHTML = "";
+                    emptyMsg.style.display = "block";
+                    return;
+                }
+                
+                emptyMsg.style.display = "none";
+                let html = "";
+                snapshot.forEach(d => {
+                    const req = d.data();
+                    const time = req.requestedAt ? new Date(req.requestedAt.seconds * 1000).toLocaleString('bn-BD') : "এখনই";
+                    html += `
+                        <div class="request-card" id="card-${d.id}">
+                            <div class="status-badge">অপেক্ষমান (Pending)</div>
+                            <div class="seller-info">
+                                <i class="fas fa-store"></i>
+                                <b>${req.shopName}</b> 
+                                <span style="font-size:12px; color:#666;">(${req.sellerName})</span>
+                            </div>
+                            <div class="product-detail">
+                                <img src="${req.productImage}" alt="Product">
+                                <div class="p-text">
+                                    <h4>${req.productName}</h4>
+                                    <p>৳ ${req.productPrice}</p>
+                                    <span>সময়: ${time}</span><br>
+                                    <small>UID: ${req.sellerId}</small>
+                                </div>
+                            </div>
+                            <div class="action-btns">
+                                <a href="https://wa.me/880${req.whatsapp}?text=সালাম, আমি ঘটি মার্কেট থেকে বলছি। আপনার '${req.productName}' পণ্যটির প্রমোশন নিয়ে কথা বলতে চাই।" target="_blank" class="btn btn-wa">
+                                    <i class="fab fa-whatsapp"></i> যোগাযোগ করুন
+                                </a>
+                                <button class="btn btn-del" onclick="deleteRequest('${d.id}')">
+                                    <i class="fas fa-trash-alt"></i> ডিলিট করুন
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                });
+                listDiv.innerHTML = html;
+            });
+        }
+
+        window.deleteRequest = async (id) => {
+            if(confirm("আপনি কি নিশ্চিত?")) {
+                await deleteDoc(doc(db, "promotion_requests", id));
+            }
+        }
+    </script>
+</body>
+</html>
