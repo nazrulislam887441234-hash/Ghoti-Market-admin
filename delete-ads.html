@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ghoti Admin - Full Control</title>
+    <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root { --primary: #2c3e50; --accent: #3498db; --danger: #e74c3c; --success: #2ecc71; --bg: #f0f3f5; }
+        body { font-family: 'Hind Siliguri', sans-serif; background-color: var(--bg); margin: 0; }
+        .container { max-width: 600px; margin: 0 auto; }
+        header { background: var(--primary); color: white; padding: 20px; text-align: center; font-size: 22px; font-weight: bold; }
+        .menu-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; padding: 15px; }
+        .card { background: white; padding: 20px; border-radius: 12px; text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.05); cursor: pointer; }
+        .card i { font-size: 30px; color: var(--accent); margin-bottom: 8px; }
+        .section { display: none; padding: 15px; min-height: 100vh; }
+        .back-btn { background: #7f8c8d; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; }
+        .item-list { background: white; padding: 15px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; border-left: 4px solid var(--accent); border-radius: 8px; }
+        .add-more-btn { background: var(--success); color: white; padding: 15px; border-radius: 8px; width: 100%; border: none; font-weight: bold; margin-top: 10px; cursor: pointer; }
+        #ad-modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 2000; justify-content: center; align-items: center; padding: 20px; }
+        .modal-content { background: white; width: 100%; max-width: 500px; padding: 20px; border-radius: 15px; }
+        textarea { height: 100px; width: 100%; padding: 10px; margin-bottom: 10px; }
+        .delete-icon { color: var(--danger); font-size: 20px; cursor: pointer; }
+    </style>
+</head>
+<body>
+
+    <div id="ad-modal">
+        <div class="modal-content">
+            <h3>নতুন অ্যাড যোগ করুন</h3>
+            <textarea id="ad-script-input" placeholder="HTML কোড এখানে পেস্ট করুন..."></textarea>
+            <button class="add-more-btn" onclick="saveAd()">সেভ করুন</button>
+            <button class="add-more-btn" style="background:#e74c3c" onclick="document.getElementById('ad-modal').style.display='none'">বাতিল</button>
+        </div>
+    </div>
+
+    <div class="container" id="mainContent" style="display:none;">
+        <header>Ghoti Admin Panel</header>
+
+        <div id="main-menu" class="menu-grid">
+            <div class="card" onclick="openSection('home-ad-sec')"><i class="fas fa-ad"></i><h3>হোমপেইজ অ্যাড</h3></div>
+            <div class="card" onclick="openSection('prod-ad-sec')"><i class="fas fa-cart-arrow-down"></i><h3>পণ্যের নিচে অ্যাড</h3></div>
+        </div>
+
+        <div id="home-ad-sec" class="section">
+            <button class="back-btn" onclick="goBack()">ফিরে যান</button>
+            <h2>হোমপেইজ অ্যাড</h2>
+            <div id="home-ad-list"></div>
+            <button class="add-more-btn" onclick="showAdModal('home_ads')">অ্যাড যোগ করুন</button>
+        </div>
+
+        <div id="prod-ad-sec" class="section">
+            <button class="back-btn" onclick="goBack()">ফিরে যান</button>
+            <h2>পণ্যের নিচে অ্যাড</h2>
+            <div id="prod-ad-list"></div>
+            <button class="add-more-btn" onclick="showAdModal('product_ads')">অ্যাড যোগ করুন</button>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getFirestore, collection, addDoc, deleteDoc, doc, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+        const firebaseConfig = { apiKey: "AIzaSyBUhNhYvuo_FTvZ5RZR6Gn-4hsUY21S0XE", projectId: "ghotimarket" };
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const auth = getAuth(app);
+
+        let currentAdType = "";
+
+        // অথেন্টিকেশন চেক
+        onAuthStateChanged(auth, (user) => {
+            if (user && user.email === "support@ghotimarket.com") {
+                document.getElementById('mainContent').style.display = 'block';
+            } else {
+                window.location.href = "index.html"; 
+            }
+        });
+
+        window.openSection = (id) => {
+            document.getElementById('main-menu').style.display = 'none';
+            document.querySelectorAll('.section').forEach(s => s.style.display = 'none');
+            document.getElementById(id).style.display = 'block';
+            if(id === 'home-ad-sec') loadAds('home_ads', 'home-ad-list');
+            if(id === 'prod-ad-sec') loadAds('product_ads', 'prod-ad-list');
+        }
+
+        window.goBack = () => {
+            document.querySelectorAll('.section').forEach(s => s.style.display = 'none');
+            document.getElementById('main-menu').style.display = 'grid';
+        }
+
+        window.showAdModal = (type) => { currentAdType = type; document.getElementById('ad-modal').style.display = 'flex'; }
+
+        window.saveAd = async () => {
+            const script = document.getElementById('ad-script-input').value;
+            if(!script) return alert("কোড খালি রাখা যাবে না!");
+            await addDoc(collection(db, "ghoti_ads"), { code: script, type: currentAdType, createdAt: Date.now() });
+            alert("সেভ হয়েছে!");
+            document.getElementById('ad-modal').style.display = 'none';
+            document.getElementById('ad-script-input').value = '';
+        }
+
+        function loadAds(type, listId) {
+            const listElement = document.getElementById(listId);
+            onSnapshot(query(collection(db, "ghoti_ads"), orderBy("createdAt", "desc")), (snap) => {
+                let html = "";
+                let found = false;
+                snap.forEach(d => {
+                    if(d.data().type === type) {
+                        found = true;
+                        html += `<div class="item-list">
+                            <code>অ্যাড আইডি: ${d.id.substring(0,8)}...</code>
+                            <i class="fas fa-trash-alt delete-icon" onclick="deleteItem('${d.id}')"></i>
+                        </div>`;
+                    }
+                });
+                listElement.innerHTML = found ? html : "কোন অ্যাড পাওয়া যায়নি।";
+            });
+        }
+
+        window.deleteItem = async (id) => {
+            if(confirm("আপনি কি নিশ্চিত এই অ্যাডটি ডিলিট করতে চান?")) {
+                await deleteDoc(doc(db, "ghoti_ads", id));
+            }
+        }
+    </script>
+</body>
+</html>
