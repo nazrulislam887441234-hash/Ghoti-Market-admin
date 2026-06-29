@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Product Manager - Fixed</title>
+    <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root { --primary: #1a2a3a; --success: #2ecc71; --bg: #f5f6fa; }
+        body { font-family: 'Hind Siliguri', sans-serif; background: var(--bg); padding: 20px; }
+        .box { max-width: 800px; margin: 0 auto; background: white; padding: 25px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
+        .search-box { display: flex; gap: 10px; margin-bottom: 20px; }
+        input, textarea { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; margin-top: 5px; box-sizing: border-box; }
+        .result-item { padding: 15px; border-bottom: 1px solid #eee; cursor: pointer; display: flex; align-items: center; gap: 15px; }
+        .result-item:hover { background: #f9f9f9; }
+        .btn { padding: 12px 20px; border: none; border-radius: 8px; cursor: pointer; color: white; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+<div class="box" id="mainContent" style="display:none;">
+    <h2 id="status">লোড হচ্ছে...</h2>
+    <div class="search-box">
+        <input type="text" id="adminSearchInput" placeholder="পণ্যের নাম লিখে সার্চ করুন..." onkeyup="search()">
+        <button class="btn" style="background:var(--primary)" onclick="search()">সার্চ</button>
+    </div>
+
+    <div id="resultsList"></div>
+
+    <div id="editForm" style="display:none; margin-top:30px; border-top:2px solid #eee; padding-top:20px;">
+        <h3>তথ্য এডিট করুন</h3>
+        <input type="hidden" id="pId">
+        <label>পণ্যের নাম</label><input type="text" id="pName">
+        <label>দাম</label><input type="number" id="pPrice">
+        <label>কিউওয়ার্ড (কমা দিয়ে লিখুন)</label><input type="text" id="pKeywords">
+        <label>বিবরণ</label><textarea id="pDesc"></textarea>
+        <label>ছবির লিংক (একাধিক হলে এন্টার দিন বা কমা দিন)</label>
+        <textarea id="pImages" style="height: 80px;"></textarea>
+        
+        <button class="btn" style="background:var(--success); width:100%; margin-top:20px;" onclick="save()">আপডেট করুন</button>
+    </div>
+</div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getFirestore, collection, getDocs, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+    const firebaseConfig = { apiKey: "AIzaSyBUhNhYvuo_FTvZ5RZR6Gn-4hsUY21S0XE", projectId: "ghotimarket" };
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const auth = getAuth(app);
+    
+    let products = [];
+
+    onAuthStateChanged(auth, (user) => {
+        if (user && user.email === "support@ghotimarket.com") {
+            document.getElementById('mainContent').style.display = 'block';
+            init();
+        } else {
+            window.location.href = "index.html"; 
+        }
+    });
+
+    async function init() {
+        try {
+            const snap = await getDocs(collection(db, "products"));
+            products = snap.docs.map(d => ({id: d.id, ...d.data()}));
+            document.getElementById('status').innerHTML = '<i class="fas fa-check-circle"></i> মোট ' + products.length + 'টি পণ্য লোড হয়েছে';
+            displayList(products); // লোড হওয়ার সাথে সাথে সব দেখাবে
+        } catch (e) {
+            document.getElementById('status').innerText = "লোড করতে সমস্যা হয়েছে!";
+        }
+    }
+
+    function displayList(list) {
+        const listDiv = document.getElementById('resultsList');
+        listDiv.innerHTML = list.map(p => `
+            <div class="result-item" onclick="edit('${p.id}')">
+                <img src="${p.images?.[0] || ''}" width="50" height="50" style="object-fit:cover; border-radius:5px;">
+                <div><b>${p.name}</b><br><small>৳${p.price}</small></div>
+            </div>
+        `).join('');
+    }
+
+    window.search = () => {
+        const val = document.getElementById('adminSearchInput').value.toLowerCase();
+        const filtered = products.filter(p => 
+            (p.name?.toLowerCase().includes(val)) || 
+            (p.keywords?.toString().toLowerCase().includes(val))
+        );
+        displayList(filtered);
+    };
+
+    window.edit = (id) => {
+        const p = products.find(x => x.id === id);
+        if(!p) return;
+        document.getElementById('editForm').style.display = 'block';
+        document.getElementById('pId').value = id;
+        document.getElementById('pName').value = p.name;
+        document.getElementById('pPrice').value = p.price;
+        document.getElementById('pDesc').value = p.description || '';
+        document.getElementById('pKeywords').value = Array.isArray(p.keywords) ? p.keywords.join(', ') : (p.keywords || '');
+        document.getElementById('pImages').value = Array.isArray(p.images) ? p.images.join('\n') : (p.images || '');
+        window.scrollTo(0, document.body.scrollHeight);
+    };
+
+    window.save = async () => {
+        const id = document.getElementById('pId').value;
+        const imgVal = document.getElementById('pImages').value;
+        const images = imgVal.split(/\r?\n|,/).map(s => s.trim()).filter(s => s !== "");
+        const keywords = document.getElementById('pKeywords').value.split(',').map(s => s.trim()).filter(s => s !== "");
+        
+        try {
+            await updateDoc(doc(db, "products", id), {
+                name: document.getElementById('pName').value,
+                price: Number(document.getElementById('pPrice').value),
+                description: document.getElementById('pDesc').value,
+                keywords: keywords,
+                images: images
+            });
+            alert("সফলভাবে আপডেট হয়েছে!");
+            location.reload();
+        } catch(e) {
+            alert("আপডেট করতে ব্যর্থ: " + e.message);
+        }
+    };
+</script>
+</body>
+</html>
