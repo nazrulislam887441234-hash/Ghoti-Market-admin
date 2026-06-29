@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ghoti Market | Admin Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root { --bg: #f4f7f6; --card: #ffffff; --primary: #0a1f44; --accent: #00a8ff; }
+        body { font-family: 'Hind Siliguri', sans-serif; background: var(--bg); margin: 0; padding: 20px; color: #333; }
+        .container { max-width: 500px; margin: 0 auto; }
+        .header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 25px; }
+        .profile-img { width: 45px; height: 45px; background: var(--primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; }
+        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 25px; }
+        .stat-card { background: var(--card); padding: 20px; border-radius: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); text-align: center; }
+        .stat-card h3 { font-size: 13px; color: #888; margin: 0; }
+        .stat-card p { font-size: 26px; font-weight: 700; color: var(--primary); margin: 5px 0 0; }
+        .section-title { font-size: 18px; margin-bottom: 15px; font-weight: 600; }
+        .actions-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .action-card { background: white; padding: 20px; border-radius: 18px; text-decoration: none; color: #333; display: flex; flex-direction: column; align-items: center; gap: 10px; border: 1px solid #eee; transition: all 0.3s ease; }
+        .action-card:hover { transform: translateY(-5px); border-color: var(--accent); box-shadow: 0 5px 15px rgba(0,168,255,0.1); }
+        .action-card i { color: var(--accent); font-size: 26px; }
+        .action-card span { font-size: 12px; font-weight: 600; text-transform: uppercase; }
+        .activity-box { background: white; margin-top: 25px; padding: 20px; border-radius: 20px; border: 1px solid #eee; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <img src="https://i.ibb.co.com/YTBgP0P3/20260607-083121.png" style="width:60px;">
+        <div class="profile-img"><i class="fas fa-user"></i></div>
+    </div>
+    
+    <h2 style="margin-top:0;">Hello, Admin! 👋</h2>
+
+    <div class="stats-grid">
+        <div class="stat-card"><h3>Total Products</h3><p id="totalProducts">0</p></div>
+        <div class="stat-card"><h3>Active Users</h3><p id="totalUsers">0</p></div>
+    </div>
+
+       <div class="section-title">Quick Actions</div>
+    <div class="actions-grid">
+        <a href="upload.html" class="action-card"><i class="fas fa-cloud-upload-alt"></i> <span>Upload</span></a>
+        <a href="all-product.html" class="action-card"><i class="fas fa-trash"></i> <span>All Product</span></a>
+        <a href="delete-ads.html" class="action-card"><i class="fas fa-ad"></i> <span>Delete Ads</span></a>
+        <a href="subscription.html" class="action-card"><i class="fas fa-crown"></i> <span>Subscription</span></a>
+        <a href="product-edit.html" class="action-card"><i class="fas fa-edit"></i> <span>Editor</span></a>
+        <a href="nid-verify.html" class="action-card"><i class="fas fa-id-card"></i> <span>NID Verify</span></a>
+        <a href="test/promotion.html" class="action-card"><i class="fas fa-bullhorn"></i> <span>Promo</span></a>
+        <a href="banner.html" class="action-card"><i class="fas fa-images"></i> <span>Banner</span></a>
+        <a href="basic-tools.html" class="action-card"><i class="fas fa-tools"></i> <span>Basic Tools</span></a>
+        <!-- নতুন যোগ করা Signup বাটন -->
+        <a href="signup.html" class="action-card"><i class="fas fa-user-plus"></i> <span>Signup</span></a>
+    </div>
+
+
+    <div class="activity-box">
+        <div class="section-title" style="font-size:14px;">System Status</div>
+        <div style="font-size: 12px; color: #666;"><i class="fas fa-circle" style="color:green; font-size:8px;"></i> Database Connected</div>
+    </div>
+</div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getFirestore, collection, getCountFromServer } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+    
+    const firebaseConfig = { apiKey: "AIzaSyBUhNhYvuo_FTvZ5RZR6Gn-4hsUY21S0XE", projectId: "ghotimarket" };
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const auth = getAuth(app);
+    
+    // ১. লগইন চেক এবং অ্যাডমিন ভেরিফিকেশন
+    onAuthStateChanged(auth, (user) => {
+        if (user && user.email === "support@ghotimarket.com") {
+            console.log("Welcome Admin:", user.email);
+            loadStats(); // শুধু অ্যাডমিন হলেই ডেটা লোড হবে
+        } else {
+            // যদি কেউ অন্য ইমেইল দিয়ে ঢোকে বা লগইন না থাকে
+            window.location.href = "index.html"; 
+        }
+    });
+
+    async function loadStats() {
+        try {
+            const pSnap = await getCountFromServer(collection(db, "products"));
+            const uSnap = await getCountFromServer(collection(db, "users"));
+            document.getElementById('totalProducts').innerText = pSnap.data().count;
+            document.getElementById('totalUsers').innerText = uSnap.data().count;
+        } catch(e) { console.log("Stats error:", e); }
+    }
+</script>
+</body>
+</html>
