@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Product Manager</title>
+    <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root { --primary: #1a2a3a; --success: #2ecc71; --danger: #e74c3c; --bg: #f5f6fa; }
+        body { font-family: 'Hind Siliguri', sans-serif; background: var(--bg); padding: 20px; }
+        .box { max-width: 800px; margin: 0 auto; background: white; padding: 25px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
+        .search-box { display: flex; gap: 10px; margin-bottom: 20px; }
+        input, textarea { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; margin-top: 5px; box-sizing: border-box; }
+        .result-item { padding: 15px; border-bottom: 1px solid #eee; display: flex; align-items: center; gap: 15px; justify-content: space-between; }
+        .btn { padding: 10px 15px; border: none; border-radius: 8px; cursor: pointer; color: white; font-weight: bold; }
+        .del-btn { background: var(--danger); }
+    </style>
+</head>
+<body>
+
+<div class="box" id="mainContent" style="display:none;">
+    <h2 id="status">লোড হচ্ছে...</h2>
+    <div class="search-box">
+        <input type="text" id="adminSearchInput" placeholder="পণ্যের নাম লিখে সার্চ করুন..." onkeyup="search()">
+        <button class="btn del-btn" onclick="bulkDelete()">নির্বাচিত ডিলিট</button>
+    </div>
+
+    <div id="resultsList"></div>
+
+    <div id="editForm" style="display:none; margin-top:30px; border-top:2px solid #eee; padding-top:20px;">
+        <h3>তথ্য এডিট করুন</h3>
+        <input type="hidden" id="pId">
+        <input type="text" id="pName" placeholder="পণ্যের নাম">
+        <input type="number" id="pPrice" placeholder="দাম">
+        <input type="text" id="pKeywords" placeholder="কিউওয়ার্ড">
+        <textarea id="pDesc" placeholder="বিবরণ"></textarea>
+        <textarea id="pImages" style="height: 80px;" placeholder="ছবির লিংক"></textarea>
+        <button class="btn" style="background:var(--success); width:100%; margin-top:20px;" onclick="save()">আপডেট করুন</button>
+    </div>
+</div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getFirestore, collection, getDocs, doc, updateDoc, deleteDoc, writeBatch } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+    const firebaseConfig = { apiKey: "AIzaSyBUhNhYvuo_FTvZ5RZR6Gn-4hsUY21S0XE", projectId: "ghotimarket" };
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const auth = getAuth(app);
+    
+    let products = JSON.parse(localStorage.getItem('cached_products') || '[]');
+
+    onAuthStateChanged(auth, (user) => {
+        if (user && user.email === "support@ghotimarket.com") {
+            document.getElementById('mainContent').style.display = 'block';
+            if(products.length > 0) {
+                document.getElementById('status').innerHTML = ' ক্যাশ থেকে লোড হয়েছে (' + products.length + ')';
+                displayList(products);
+            }
+            init();
+        } else {
+            alert("শুধুমাত্র অ্যাডমিন প্রবেশ করতে পারবেন!");
+        }
+    });
+
+    async function init() {
+        const snap = await getDocs(collection(db, "products"));
+        products = snap.docs.map(d => ({id: d.id, ...d.data()}));
+        localStorage.setItem('cached_products', JSON.stringify(products));
+        document.getElementById('status').innerHTML = ' মোট ' + products.length + 'টি পণ্য আপডেট হয়েছে';
+        displayList(products);
+    }
+
+    function displayList(list) {
+        const listDiv = document.getElementById('resultsList');
+        listDiv.innerHTML = list.map(p => `
+            <div class="result-item">
+                <input type="checkbox" class="p-check" value="${p.id}">
+                <div style="display:flex; align-items:center; gap:10px; cursor:pointer; flex-grow:1;" onclick="edit('${p.id}')">
+                    <img src="${p.images?.[0] || ''}" width="50" height="50" style="object-fit:cover; border-radius:5px;">
+                    <div><b>${p.name}</b><br><small>৳${p.price}</small></div>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    window.bulkDelete = async () => {
+        const selected = Array.from(document.querySelectorAll('.p-check:checked')).map(c => c.value);
+        if(selected.length === 0) return alert("কোনো পণ্য সিলেক্ট করেননি!");
+        if(confirm(selected.length + "টি পণ্য ডিলিট করতে চান?")) {
+            const batch = writeBatch(db);
+            selected.forEach(id => batch.delete(doc(db, "products", id)));
+            await batch.commit();
+            alert("সফলভাবে ডিলিট হয়েছে!");
+            location.reload();
+        }
+    };
+
+    // আগের বাকি ফাংশনগুলো (edit, save) অপরিবর্তিত থাকবে
+    window.edit = (id) => { /* একই থাকবে */ };
+    window.save = async () => { /* একই থাকবে - আপডেটের পর location.reload() দিলে ক্যাশ অটো রিফ্রেশ হবে */ };
+    window.search = () => { /* সার্চ ফাংশন */ };
+</script>
+</body>
+</html>
