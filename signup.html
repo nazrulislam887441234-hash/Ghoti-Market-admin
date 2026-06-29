@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Signup | Ghoti Market</title>
+    <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root { --primary: #1a2a3a; --success: #2ecc71; --accent: #3498db; --bg: #f1f2f6; }
+        body { font-family: 'Hind Siliguri', sans-serif; background: linear-gradient(135deg, #1a2a3a, #2c3e50); margin: 0; display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; box-sizing: border-box; }
+        .signup-card { background: white; padding: 30px; border-radius: 25px; width: 100%; max-width: 450px; box-shadow: 0 20px 40px rgba(0,0,0,0.3); }
+        h2 { margin: 0 0 10px; font-size: 24px; text-align: center; color: var(--primary); }
+        .input-group { position: relative; margin-bottom: 15px; }
+        .input-group i { position: absolute; left: 15px; top: 15px; color: #aaa; }
+        input { width: 100%; padding: 14px 15px 14px 45px; border: 1px solid #ddd; border-radius: 12px; box-sizing: border-box; outline: none; font-size: 15px; background: #fdfdfd; }
+        .nid-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 15px 0; }
+        .nid-box { border: 2px dashed #ddd; border-radius: 12px; height: 100px; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; overflow: hidden; cursor: pointer; background: #fafafa; }
+        .nid-box i { font-size: 20px; color: #aaa; }
+        .nid-box span { font-size: 10px; color: #888; margin-top: 5px; }
+        .nid-box input { position: absolute; opacity: 0; inset: 0; cursor: pointer; }
+        .nid-box img { width: 100%; height: 100%; object-fit: cover; display: none; }
+        .policy-box { background: #fff5f5; border: 1px solid #fed7d7; padding: 12px; border-radius: 10px; margin: 15px 0; }
+        .policy-box p { font-size: 12px; color: #c53030; margin: 0; line-height: 1.5; }
+        .checkbox-group { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 15px; cursor: pointer; }
+        .checkbox-group label { font-size: 13px; color: #4a5568; cursor: pointer; }
+        .btn-continue { background: var(--success); color: white; border: none; width: 100%; padding: 15px; border-radius: 12px; font-size: 16px; font-weight: 600; cursor: pointer; transition: 0.3s; }
+        .btn-continue:disabled { background: #ccc; cursor: not-allowed; }
+        .verify-overlay { display: none; margin-top: 15px; text-align: center; background: #ebf8ff; padding: 15px; border-radius: 12px; border: 1px solid #bee3f8; }
+    </style>
+</head>
+<body>
+
+<div class="signup-card">
+    <h2>রেজিস্ট্রেশন করুন</h2>
+    
+    <div id="form-fields">
+        <div class="input-group"><i class="fas fa-user"></i><input type="text" id="name" placeholder="আপনার পুরো নাম"></div>
+        <div class="input-group"><i class="fas fa-store"></i><input type="text" id="shopName" placeholder="আপনার শপের নাম"></div>
+        <div class="input-group"><i class="fas fa-phone-alt"></i><input type="number" id="whatsapp" placeholder="অর্ডার পাওয়ার হোয়াটসঅ্যাপ নাম্বার"></div>
+        <div class="input-group"><i class="fas fa-envelope"></i><input type="email" id="email" placeholder="আপনার ইমেইল"></div>
+        <div class="input-group"><i class="fas fa-lock"></i><input type="password" id="pass" placeholder="পাসওয়ার্ড (কমপক্ষে ৬ ডিজিট)"></div>
+
+        <p style="font-size: 13px; margin: 10px 0 5px; font-weight: bold;">NID কার্ড আপলোড করুন</p>
+        <div class="nid-grid">
+            <div class="nid-box" id="boxFront"><i class="fas fa-id-card"></i><span>সামনের অংশ</span><img id="viewFront"><input type="file" id="nidFront" accept="image/*" onchange="previewNID(this, 'viewFront', 'boxFront')"></div>
+            <div class="nid-box" id="boxBack"><i class="fas fa-id-card"></i><span>পেছনের অংশ</span><img id="viewBack"><input type="file" id="nidBack" accept="image/*" onchange="previewNID(this, 'viewBack', 'boxBack')"></div>
+        </div>
+
+        <div class="policy-box"><p><strong>৫. পেমেন্ট নীতি:</strong> ঘটি মার্কেট শুধুমাত্র COD সাপোর্ট করে। অগ্রিম লেনদেনে প্রতারিত হলে কর্তৃপক্ষ দায়ী থাকবে না।</p></div>
+
+        <div class="checkbox-group">
+            <input type="checkbox" id="policyCheck" onchange="document.getElementById('regBtn').disabled = !this.checked">
+            <label for="policyCheck">আমি পেমেন্ট নীতি মেনে নিচ্ছি।</label>
+        </div>
+        <button onclick="register()" id="regBtn" class="btn-continue" disabled>অ্যাকাউন্ট তৈরি করুন</button>
+    </div>
+
+    <div id="verify-section" class="verify-overlay">
+        <p style="color: #2b6cb0; font-size: 14px; margin-bottom: 10px;"><strong>আপনার ইমেইলে একটি ভেরিফিকেশন লিংক পাঠানো হয়েছে।</strong> স্প্যাম ফোল্ডার বা ইনবক্স চেক করে লিংকে ক্লিক করুন।</p>
+        <button onclick="checkEmailVerified()" class="btn-continue" style="background: var(--accent);">ভেরিফিকেশন করেছি (ক্লিক করুন)</button>
+    </div>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getAuth, createUserWithEmailAndPassword, sendEmailVerification } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+const firebaseConfig = { apiKey: "AIzaSyBUhNhYvuo_FTvZ5RZR6Gn-4hsUY21S0XE", projectId: "ghotimarket", authDomain: "ghotimarket.firebaseapp.com" };
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+const imgbbKey = "e1da51b6d309ac3a5a235b5088ebc334";
+
+window.previewNID = (input, viewId, boxId) => {
+    const file = input.files[0];
+    if (file && file.size <= 2 * 1024 * 1024) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            document.getElementById(viewId).src = e.target.result;
+            document.getElementById(viewId).style.display = 'block';
+            document.getElementById(boxId).style.border = 'none';
+        };
+        reader.readAsDataURL(file);
+    } else { alert("ছবির সাইজ ২ এমবি-র বেশি!"); input.value = ""; }
+};
+
+window.register = async () => {
+    const n = document.getElementById('name').value.trim();
+    const s = document.getElementById('shopName').value.trim();
+    const w = document.getElementById('whatsapp').value.trim();
+    const e = document.getElementById('email').value.trim();
+    const p = document.getElementById('pass').value.trim();
+    const f1 = document.getElementById('nidFront').files[0];
+    const f2 = document.getElementById('nidBack').files[0];
+
+    if(!n || !s || !w || !e || !p || !f1 || !f2) return alert("সবগুলো তথ্য দিন!");
+    
+    if(!confirm("আপনি কি নিশ্চিত যে আপনার ইমেইলটি সঠিক? এখন আপনার ইমেইলে একটি ভেরিফিকেশন লিংক পাঠানো হবে।")) return;
+
+    const btn = document.getElementById('regBtn');
+    btn.disabled = true; btn.innerText = "ইমেইল পাঠানো হচ্ছে...";
+
+    try {
+        const userCredential = await createUserWithEmailAndPassword(auth, e, p);
+        const user = userCredential.user;
+
+        // ভেরিফিকেশন মেইল পাঠানো
+        await sendEmailVerification(user);
+        
+        // নজরুল ভাই, এখানে অ্যালার্ট যোগ করা হয়েছে
+        alert("আপনার ইমেইলে একটি ভেরিফিকেশন মেইল পাঠানো হয়েছে। ইনবক্স চেক করুন, না পেলে অবশ্যই 'স্প্যাম (Spam)' ফোল্ডার চেক করুন।");
+
+        const upload = async (file) => {
+            const fd = new FormData(); fd.append("image", file);
+            const res = await fetch(`https://api.imgbb.com/1/upload?key=${imgbbKey}`, { method: "POST", body: fd });
+            const json = await res.json(); 
+            return json.data.url;
+        };
+
+        const frontUrl = await upload(f1);
+        const backUrl = await upload(f2);
+
+        await setDoc(doc(db, "users", user.uid), {
+            fullName: n, shopName: s, whatsapp: w, email: e, 
+            nidFront: frontUrl, nidBack: backUrl,
+            verified: false, active: false, createdAt: Date.now()
+        });
+
+        document.getElementById('form-fields').style.display = 'none';
+        document.getElementById('verify-section').style.display = 'block';
+
+    } catch (err) { 
+        alert("সমস্যা: " + err.message); 
+        btn.disabled = false; btn.innerText = "আবার চেষ্টা করুন"; 
+    }
+};
+
+window.checkEmailVerified = async () => {
+    const user = auth.currentUser;
+    if (user) {
+        // ফায়ারবেস থেকে ফ্রেশ ডাটা লোড করা
+        await user.reload(); 
+        
+        if (user.emailVerified) {
+            alert("আপনার ইমেইল সফলভাবে ভেরিফাই হয়েছে!");
+            // লোকেশন ডিরেকশন নিশ্চিত করা
+            window.location.assign("verification-notice.html");
+        } else {
+            alert("আপনি এখনো ইমেইল ভেরিফাই করেননি! আপনার ইমেইল বা স্প্যাম ফোল্ডার চেক করে লিংকে ক্লিক করুন।");
+        }
+    }
+};
+</script>
+</body>
+</html>
