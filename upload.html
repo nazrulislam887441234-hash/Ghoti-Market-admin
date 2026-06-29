@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ghoti Market - Product Uploader</title>
+    <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root { --primary: #1a2a3a; --accent: #00a8ff; --success: #2ecc71; --bg: #f4f7f6; }
+        body { font-family: 'Hind Siliguri', sans-serif; background: var(--bg); padding: 20px; color: #333; }
+        .container { max-width: 600px; margin: 0 auto; background: white; padding: 30px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+        h2 { text-align: center; color: var(--primary); margin-bottom: 25px; }
+        .form-group { margin-bottom: 20px; }
+        label { font-weight: 600; display: block; margin-bottom: 8px; }
+        input, textarea, select { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 10px; box-sizing: border-box; }
+        .search-shop { margin-bottom: 15px; border: 2px solid var(--accent); }
+        .shop-list { max-height: 150px; overflow-y: auto; border: 1px solid #eee; margin-bottom: 15px; border-radius: 10px; display: none; }
+        .shop-item { padding: 10px; cursor: pointer; border-bottom: 1px solid #f9f9f9; }
+        .shop-item:hover { background: #f0f7ff; }
+        .btn-upload { width: 100%; padding: 15px; background: var(--success); color: white; border: none; border-radius: 10px; font-size: 18px; font-weight: bold; cursor: pointer; }
+    </style>
+</head>
+<body>
+
+<div class="container" id="mainContent" style="display:none;">
+    <h2><i class="fas fa-cloud-upload-alt"></i> পণ্য আপলোড প্যানেল</h2>
+    
+    <div class="form-group">
+        <label>শপের নাম খুঁজুন ও সিলেক্ট করুন:</label>
+        <input type="text" id="shopSearch" class="search-shop" placeholder="শপের নাম লিখুন..." onkeyup="filterShops()">
+        <div id="shopList" class="shop-list"></div>
+        <input type="text" id="selectedShopName" readonly placeholder="সিলেক্ট করা শপ" style="background:#f9f9f9;">
+        <input type="hidden" id="selectedShopId">
+    </div>
+
+    <div class="form-group"><label>পণ্যের নাম</label><input type="text" id="pName"></div>
+    <div class="form-group"><label>দাম (৳)</label><input type="number" id="pPrice"></div>
+    <div class="form-group"><label>ছবি লিংক ১ (আবশ্যক)</label><input type="text" id="img1"></div>
+    <div class="form-group"><label>ছবি লিংক ২ (ঐচ্ছিক)</label><input type="text" id="img2"></div>
+    <div class="form-group"><label>কিউওয়ার্ড (কমা দিয়ে লিখুন)</label><input type="text" id="pKeywords"></div>
+    <div class="form-group"><label>ডেসক্রিপশন</label><textarea id="pDesc"></textarea></div>
+
+    <button class="btn-upload" onclick="uploadProduct()">পণ্য আপলোড করুন</button>
+</div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getFirestore, collection, getDocs, addDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+    const firebaseConfig = { apiKey: "AIzaSyBUhNhYvuo_FTvZ5RZR6Gn-4hsUY21S0XE", projectId: "ghotimarket" };
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const auth = getAuth(app);
+    
+    let shops = [];
+
+    // অথেন্টিকেশন চেক
+    onAuthStateChanged(auth, (user) => {
+        if (user && user.email === "support@ghotimarket.com") {
+            document.getElementById('mainContent').style.display = 'block';
+            loadShops();
+        } else {
+            window.location.href = "index.html"; 
+        }
+    });
+
+    async function loadShops() {
+        const snap = await getDocs(collection(db, "users"));
+        shops = snap.docs.map(d => ({ id: d.id, ...d.data() })).filter(u => u.shopName);
+    }
+
+    window.filterShops = () => {
+        const val = document.getElementById('shopSearch').value.toLowerCase();
+        const list = document.getElementById('shopList');
+        const filtered = shops.filter(s => s.shopName.toLowerCase().includes(val));
+        
+        list.innerHTML = filtered.map(s => `<div class="shop-item" onclick="selectShop('${s.id}', '${s.shopName}')">${s.shopName}</div>`).join('');
+        list.style.display = val ? 'block' : 'none';
+    };
+
+    window.selectShop = (id, name) => {
+        document.getElementById('selectedShopId').value = id;
+        document.getElementById('selectedShopName').value = name;
+        document.getElementById('shopList').style.display = 'none';
+    };
+
+    window.uploadProduct = async () => {
+        const data = {
+            sellerId: document.getElementById('selectedShopId').value,
+            shopName: document.getElementById('selectedShopName').value,
+            name: document.getElementById('pName').value,
+            price: Number(document.getElementById('pPrice').value),
+            description: document.getElementById('pDesc').value,
+            keywords: document.getElementById('pKeywords').value.split(',').map(s => s.trim()),
+            images: [document.getElementById('img1').value, document.getElementById('img2').value].filter(i => i),
+            createdAt: Date.now(),
+            active: true
+        };
+
+        if (!data.sellerId || !data.name) return alert("শপ এবং পণ্যের নাম দিন!");
+
+        try {
+            await addDoc(collection(db, "products"), data);
+            alert("পণ্য সফলভাবে আপলোড হয়েছে!");
+            location.reload();
+        } catch (e) {
+            alert("আপলোড ব্যর্থ হয়েছে: " + e.message);
+        }
+    };
+</script>
+
+</body>
+</html>
