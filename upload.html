@@ -28,7 +28,7 @@
     
     <div class="form-group">
         <label>শপের নাম খুঁজুন ও সিলেক্ট করুন:</label>
-        <input type="text" id="shopSearch" class="search-shop" placeholder="শপের নাম লিখুন...">
+        <input type="text" id="shopSearch" class="search-shop" placeholder="শপের নাম লিখুন..." onkeyup="filterShops()">
         <div id="shopList" class="shop-list"></div>
         <input type="text" id="selectedShopName" readonly placeholder="সিলেক্ট করা শপ" style="background:#f9f9f9;">
         <input type="hidden" id="selectedShopId">
@@ -41,7 +41,7 @@
     <div class="form-group"><label>কিউওয়ার্ড (কমা দিয়ে লিখুন)</label><input type="text" id="pKeywords"></div>
     <div class="form-group"><label>ডেসক্রিপশন</label><textarea id="pDesc"></textarea></div>
 
-    <button class="btn-upload" id="uploadBtn">পণ্য আপলোড করুন</button>
+    <button class="btn-upload" onclick="uploadProduct()">পণ্য আপলোড করুন</button>
 </div>
 
 <script type="module">
@@ -49,13 +49,14 @@
     import { getFirestore, collection, getDocs, addDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
     import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
-    const firebaseConfig = { apiKey: "AIzaSyBUhNhYvuo_FTvZ5RZR6Gn-4hsUY21S0XE", projectId: "ghotimarket", authDomain: "ghotimarket.firebaseapp.com" };
+    const firebaseConfig = { apiKey: "AIzaSyBUhNhYvuo_FTvZ5RZR6Gn-4hsUY21S0XE", projectId: "ghotimarket" };
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
     const auth = getAuth(app);
     
     let shops = [];
 
+    // অথেন্টিকেশন চেক
     onAuthStateChanged(auth, (user) => {
         if (user && user.email === "support@ghotimarket.com") {
             document.getElementById('mainContent').style.display = 'block';
@@ -70,14 +71,14 @@
         shops = snap.docs.map(d => ({ id: d.id, ...d.data() })).filter(u => u.shopName);
     }
 
-    document.getElementById('shopSearch').addEventListener('keyup', (e) => {
-        const val = e.target.value.toLowerCase();
+    window.filterShops = () => {
+        const val = document.getElementById('shopSearch').value.toLowerCase();
         const list = document.getElementById('shopList');
         const filtered = shops.filter(s => s.shopName.toLowerCase().includes(val));
         
-        list.innerHTML = filtered.map(s => `<div class="shop-item" onclick="window.selectShop('${s.id}', '${s.shopName}')">${s.shopName}</div>`).join('');
+        list.innerHTML = filtered.map(s => `<div class="shop-item" onclick="selectShop('${s.id}', '${s.shopName}')">${s.shopName}</div>`).join('');
         list.style.display = val ? 'block' : 'none';
-    });
+    };
 
     window.selectShop = (id, name) => {
         document.getElementById('selectedShopId').value = id;
@@ -85,7 +86,7 @@
         document.getElementById('shopList').style.display = 'none';
     };
 
-    document.getElementById('uploadBtn').addEventListener('click', async () => {
+    window.uploadProduct = async () => {
         const data = {
             sellerId: document.getElementById('selectedShopId').value,
             shopName: document.getElementById('selectedShopName').value,
@@ -107,7 +108,7 @@
         } catch (e) {
             alert("আপলোড ব্যর্থ হয়েছে: " + e.message);
         }
-    });
+    };
 </script>
 
 </body>
