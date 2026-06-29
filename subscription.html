@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Package Management</title>
+    <style>
+        body { font-family: sans-serif; padding: 20px; background: #f4f4f4; }
+        .container { max-width: 600px; margin: 0 auto; }
+        .input-group { background: white; padding: 20px; border-radius: 10px; margin-bottom: 20px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        input, textarea { width: 100%; padding: 10px; margin: 5px 0; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; }
+        .pack-card { background: white; padding: 15px; margin-bottom: 10px; border-radius: 10px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        button { padding: 10px 20px; cursor: pointer; border: none; border-radius: 5px; }
+    </style>
+</head>
+<body>
+    <div class="container" id="mainContent" style="display:none;">
+        <div class="input-group">
+            <h3>নতুন প্যাক যোগ করুন</h3>
+            <input type="text" id="name" placeholder="প্যাকের নাম (যেমন: গোল্ড প্যাক)">
+            <input type="number" id="price" placeholder="দাম (টাকায়)">
+            <input type="number" id="days" placeholder="মেয়াদ (দিন)">
+            <textarea id="desc" placeholder="সুবিধাসমূহ (প্রতিটি লাইনে একটি)"></textarea>
+            <button onclick="addPack()" style="background: green; color: white;">প্যাক সেভ করুন</button>
+        </div>
+
+        <h3>বর্তমান প্যাকসমূহ</h3>
+        <div id="packList"></div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getFirestore, collection, addDoc, onSnapshot, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        
+        const firebaseConfig = { apiKey: "AIzaSyBUhNhYvuo_FTvZ5RZR6Gn-4hsUY21S0XE", projectId: "ghotimarket" };
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const auth = getAuth(app);
+
+        // অথেন্টিকেশন ও অ্যাডমিন চেক
+        onAuthStateChanged(auth, (user) => {
+            if (user && user.email === "support@ghotimarket.com") {
+                document.getElementById('mainContent').style.display = 'block';
+            } else {
+                window.location.href = "index.html"; 
+            }
+        });
+
+        window.addPack = async () => {
+            const name = document.getElementById('name').value;
+            const price = document.getElementById('price').value;
+            const days = document.getElementById('days').value;
+            const desc = document.getElementById('desc').value;
+
+            if(!name || !price || !days) return alert("সব ঘর পূরণ করুন!");
+
+            await addDoc(collection(db, "packages"), { name, price, days, desc });
+            alert("প্যাক যোগ হয়েছে!");
+            // ইনপুট খালি করা
+            document.getElementById('name').value = '';
+            document.getElementById('price').value = '';
+            document.getElementById('days').value = '';
+            document.getElementById('desc').value = '';
+        };
+
+        window.deletePack = async (id) => {
+            if(confirm("এই প্যাকটি ডিলিট করবেন?")) await deleteDoc(doc(db, "packages", id));
+        };
+
+        onSnapshot(collection(db, "packages"), snap => {
+            let html = "";
+            snap.forEach(d => {
+                let p = d.data();
+                html += `<div class='pack-card'>
+                    <div><strong>${p.name}</strong><br>৳${p.price} - ${p.days} দিন</div>
+                    <button onclick="deletePack('${d.id}')" style="background:red; color:white;">ডিলিট</button>
+                </div>`;
+            });
+            document.getElementById('packList').innerHTML = html;
+        });
+    </script>
+</body>
+</html>
