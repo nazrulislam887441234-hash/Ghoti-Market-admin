@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ghoti Admin - Full Control</title>
+    <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root { --primary: #2c3e50; --accent: #3498db; --danger: #e74c3c; --success: #2ecc71; --bg: #f0f3f5; }
+        body { font-family: 'Hind Siliguri', sans-serif; background-color: var(--bg); margin: 0; overflow-x: hidden; }
+        
+        #login-guard { position: fixed; inset: 0; background: var(--primary); display: flex; justify-content: center; align-items: center; z-index: 10000; }
+        .login-box { background: white; padding: 30px; border-radius: 15px; text-align: center; width: 85%; max-width: 320px; }
+        input[type="email"], input[type="password"] { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; }
+
+        header { background: var(--primary); color: white; padding: 20px; text-align: center; font-size: 22px; font-weight: bold; }
+        .menu-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; padding: 15px; }
+        
+        .card { background: white; padding: 20px 10px; border-radius: 12px; text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.05); cursor: pointer; transition: 0.2s; }
+        .card:active { transform: scale(0.95); }
+        .card i { font-size: 30px; color: var(--accent); margin-bottom: 8px; }
+        .card h3 { margin: 0; font-size: 14px; color: #333; }
+
+        .section { display: none; padding: 15px; min-height: 100vh; animation: fadeIn 0.3s; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        
+        .back-btn { background: #7f8c8d; color: white; border: none; padding: 12px 20px; border-radius: 8px; margin-bottom: 15px; cursor: pointer; display: flex; align-items: center; gap: 8px; font-weight: bold; }
+        .item-list { background: white; border-radius: 10px; padding: 15px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; border-left: 4px solid var(--accent); box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        
+        .add-more-btn { background: var(--success); color: white; padding: 15px; border-radius: 8px; width: 100%; border: none; font-weight: bold; margin-top: 10px; cursor: pointer; font-size: 16px; }
+        
+        #ad-modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 2000; justify-content: center; align-items: center; padding: 20px; }
+        .modal-content { background: white; width: 100%; max-width: 500px; padding: 20px; border-radius: 15px; }
+        textarea { height: 150px; width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; resize: none; }
+        input[type="number"] { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; }
+
+        .img-preview { width: 100%; border-radius: 8px; margin-top: 8px; max-height: 180px; object-fit: cover; }
+        .delete-icon { color: var(--danger); font-size: 20px; cursor: pointer; padding: 5px; }
+        .action-btn { padding: 5px 10px; border-radius: 5px; border: none; color: white; cursor: pointer; font-size: 12px; margin-left: 5px; }
+    </style>
+</head>
+<body>
+    <div id="login-guard">
+        <div class="login-box">
+            <h3>অ্যাডমিন লগইন</h3>
+            <input type="email" id="adminEmail" placeholder="ইমেইল">
+            <input type="password" id="adminPass" placeholder="পাসওয়ার্ড">
+            <button class="add-more-btn" onclick="loginAdmin()">লগইন করুন</button>
+        </div>
+    </div>
+
+    <div id="ad-modal">
+        <div class="modal-content">
+            <h3 id="modal-title">নতুন অ্যাড যোগ করুন</h3>
+            <textarea id="ad-script-input" placeholder="এখানে অ্যাড HTML স্ক্রিপ্ট পেস্ট করুন..."></textarea>
+            <input type="number" id="ad-days-input" placeholder="কতদিন চলবে? (সংখ্যা দিন)">
+            <button class="add-more-btn" onclick="saveAd()">অ্যাড সেভ করুন (Enter)</button>
+            <button class="back-btn" style="width:100%; margin-top:10px; justify-content: center;" onclick="closeModal()">বাতিল</button>
+        </div>
+    </div>
+
+    <header>Ghoti Admin Panel</header>
+
+    <div id="main-menu" class="menu-grid">
+        <div class="card" onclick="openSection('verify-sec')"><i class="fas fa-user-check"></i><h3>ভেরিফিকেশন চেক</h3></div>
+        <div class="card" onclick="openSection('unlock-sec')"><i class="fas fa-unlock"></i><h3>প্রোফাইল আনলক</h3></div>
+        <div class="card" onclick="openSection('user-sec')"><i class="fas fa-user-slash"></i><h3>ইউজার ব্যান</h3></div>
+        <div class="card" onclick="openSection('prod-sec')"><i class="fas fa-box"></i><h3>পণ্যসমূহ</h3></div>
+        <div class="card" onclick="openSection('req-sec')"><i class="fas fa-paper-plane"></i><h3>অ্যাড রিকোয়েস্ট</h3></div>
+        <div class="card" onclick="openSection('banner-sec')"><i class="fas fa-images"></i><h3>হোমপেইজ ব্যানার</h3></div>
+        <div class="card" onclick="openSection('home-ad-sec')"><i class="fas fa-ad"></i><h3>হোমপেইজ অ্যাড</h3></div>
+        <div class="card" onclick="openSection('prod-ad-sec')"><i class="fas fa-cart-arrow-down"></i><h3>পণ্যের নিচে অ্যাড</h3></div>
+        <div class="card" onclick="openSection('uid-sec')"><i class="fas fa-id-card"></i><h3>ইউআইডি তালিকা</h3></div>
+    </div>
+
+    <div id="verify-sec" class="section">
+        <button class="back-btn" onclick="goBack()"><i class="fas fa-arrow-left"></i> ফিরে যান</button>
+        <h2>Seller Verification</h2>
+        <div id="verify-list"></div>
+    </div>
+
+    <div id="unlock-sec" class="section">
+        <button class="back-btn" onclick="goBack()"><i class="fas fa-arrow-left"></i> ফিরে যান</button>
+        <h2>Profile Unlock Manager</h2>
+        <div id="unlock-list"></div>
+    </div>
+
+    <div id="user-sec" class="section">
+        <button class="back-btn" onclick="goBack()"><i class="fas fa-arrow-left"></i> ফিরে যান</button>
+        <h2>ইউজার তালিকা</h2>
+        <div id="user-list"></div>
+    </div>
+
+    <div id="prod-sec" class="section">
+        <button class="back-btn" onclick="goBack()"><i class="fas fa-arrow-left"></i> ফিরে যান</button>
+        <h2>পণ্যসমূহ</h2>
+        <div id="prod-list"></div>
+    </div>
+
+    <div id="req-sec" class="section">
+        <button class="back-btn" onclick="goBack()"><i class="fas fa-arrow-left"></i> ফিরে যান</button>
+        <h2>অ্যাড রিকোয়েস্ট</h2>
+        <div id="req-list"></div>
+    </div>
+
+    <div id="banner-sec" class="section">
+        <button class="back-btn" onclick="goBack()"><i class="fas fa-arrow-left"></i> ফিরে যান</button>
+        <h2>ব্যানার লিস্ট</h2>
+        <div id="banner-list"></div>
+        <button class="add-more-btn" onclick="uploadImg('banners')">আরো ব্যানার যোগ করুন</button>
+    </div>
+
+    <div id="home-ad-sec" class="section">
+        <button class="back-btn" onclick="goBack()"><i class="fas fa-arrow-left"></i> ফিরে যান</button>
+        <h2>হোমপেইজ অ্যাড লিস্ট</h2>
+        <div id="home-ad-list"></div>
+        <button class="add-more-btn" onclick="showAdModal('home_ads')">আরো অ্যাড যোগ করুন</button>
+    </div>
+
+    <div id="prod-ad-sec" class="section">
+        <button class="back-btn" onclick="goBack()"><i class="fas fa-arrow-left"></i> ফিরে যান</button>
+        <h2>পণ্যের নিচে অ্যাড লিস্ট</h2>
+        <div id="prod-ad-list"></div>
+        <button class="add-more-btn" onclick="showAdModal('product_ads')">আরো অ্যাড যোগ করুন</button>
+    </div>
+
+    <div id="uid-sec" class="section">
+        <button class="back-btn" onclick="goBack()"><i class="fas fa-arrow-left"></i> ফিরে যান</button>
+        <h2>ইউআইডি তালিকা</h2>
+        <div id="uid-list"></div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, updateDoc, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getAuth, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBUhNhYvuo_FTvZ5RZR6Gn-4hsUY21S0XE",
+            projectId: "ghotimarket"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const auth = getAuth(app);
+        const imgbbKey = "e1da51b6d309ac3a5a235b5088ebc334";
+
+        // এডমিন লগইন চেক
+        onAuthStateChanged(auth, (user) => {
+            if (user && user.email === "support@ghotimarket.com") {
+                document.getElementById('login-guard').style.display = 'none';
+            }
+        });
+
+        window.loginAdmin = async () => {
+            const email = document.getElementById('adminEmail').value;
+            const pass = document.getElementById('adminPass').value;
+            try {
+                await signInWithEmailAndPassword(auth, email, pass);
+            } catch(e) { alert("লগইন ব্যর্থ! ইমেইল বা পাসওয়ার্ড চেক করুন।"); }
+        }
+
+        let currentAdType = "";
+
+        window.openSection = (id) => {
+            document.getElementById('main-menu').style.display = 'none';
+            document.querySelectorAll('.section').forEach(s => s.style.display = 'none');
+            document.getElementById(id).style.display = 'block';
+            if(id === 'banner-sec') loadBanners();
+            if(id === 'home-ad-sec') loadAds('home_ads', 'home-ad-list');
+            if(id === 'prod-ad-sec') loadAds('product_ads', 'prod-ad-list');
+            if(id === 'user-sec' || id === 'uid-sec') loadUsers(id);
+            if(id === 'verify-sec') loadSellerRequests();
+            if(id === 'unlock-sec') loadUnlockProfiles();
+        }
+
+        window.goBack = () => {
+            document.querySelectorAll('.section').forEach(s => s.style.display = 'none');
+            document.getElementById('main-menu').style.display = 'grid';
+        }
+
+        async function loadSellerRequests() {
+            onSnapshot(collection(db, "users"), (snap) => {
+                let html = "";
+                snap.forEach(d => {
+                    const u = d.data();
+                    const statusText = u.verified ? "Verified" : "Pending";
+                    html += `<div class="item-list">
+                        <div><strong>${u.shopName || 'Shop'}</strong><br><small>${u.email}</small><br><small>${statusText}</small></div>
+                        <div>
+                            <button class="action-btn" style="background:var(--accent)" onclick="viewDetails('${d.id}')">View</button>
+                            <button class="action-btn" style="background:var(--success)" onclick="verifyUser('${d.id}', true)">Verify</button>
+                            <button class="action-btn" style="background:var(--danger)" onclick="deleteItem('users','${d.id}')">Delete</button>
+                        </div>
+                    </div>`;
+                });
+                document.getElementById('verify-list').innerHTML = html;
+            });
+        }
+
+        async function loadUnlockProfiles() {
+            onSnapshot(collection(db, "users"), (snap) => {
+                let html = "";
+                snap.forEach(d => {
+                    const u = d.data();
+                    const isUnlocked = u.profileUnlockedUntil > Date.now();
+                    html += `<div class="item-list">
+                        <div><strong>${u.email}</strong><br><small>${isUnlocked ? 'Unlocked' : 'Locked'}</small></div>
+                        <div>
+                            <button class="action-btn" style="background:var(--success)" onclick="unlockPopup('${d.id}')">Unlock</button>
+                            <button class="action-btn" style="background:var(--danger)" onclick="lockUser('${d.id}')">Lock</button>
+                        </div>
+                    </div>`;
+                });
+                document.getElementById('unlock-list').innerHTML = html;
+            });
+        }
+
+        window.verifyUser = async (id, status) => { await updateDoc(doc(db, "users", id), { verified: status }); alert("Status Updated!"); }
+        window.unlockPopup = async (id) => {
+            const days = prompt("কতদিন আনলক রাখতে চান? (দিন লিখুন)");
+            if(days) {
+                const expiry = Date.now() + (parseInt(days) * 24 * 60 * 60 * 1000);
+                await updateDoc(doc(db, "users", id), { profileUnlockedUntil: expiry, active: true });
+                alert("Profile Unlocked!");
+            }
+        }
+        window.lockUser = async (id) => { await updateDoc(doc(db, "users", id), { profileUnlockedUntil: 0, active: false }); alert("Profile Locked!"); }
+        window.viewDetails = async (id) => {
+            const snap = await getDocs(collection(db, "users"));
+            snap.forEach(d => { if(d.id === id) alert(JSON.stringify(d.data(), null, 2)); });
+        }
+        async function loadUsers(id) {
+            const snap = await getDocs(collection(db, "users"));
+            let html = "";
+            snap.forEach(d => {
+                const u = d.data();
+                html += `<div class="item-list"><div><strong>${u.shopName || 'No Name'}</strong><br><small>${u.email || d.id}</small></div><i class="fas fa-trash-alt delete-icon" onclick="deleteItem('users','${d.id}')"></i></div>`;
+            });
+            document.getElementById(id === 'user-sec' ? 'user-list' : 'uid-list').innerHTML = html;
+        }
+
+        window.showAdModal = (type) => { currentAdType = type; document.getElementById('ad-modal').style.display = 'flex'; }
+        window.closeModal = () => { document.getElementById('ad-modal').style.display = 'none'; }
+        window.saveAd = async () => {
+            const script = document.getElementById('ad-script-input').value;
+            const days = document.getElementById('ad-days-input').value;
+            const expiryTime = days ? Date.now() + (parseInt(days) * 24 * 60 * 60 * 1000) : null;
+            await addDoc(collection(db, "ghoti_ads"), { code: script, type: currentAdType, expiry: expiryTime, createdAt: Date.now() });
+            alert("অ্যাড সেভ হয়েছে!"); closeModal();
+        }
+        function loadAds(type, listId) {
+            onSnapshot(query(collection(db, "ghoti_ads"), orderBy("createdAt", "desc")), (snap) => {
+                let html = "";
+                snap.forEach(d => {
+                    const ad = d.data();
+                    if(ad.type === type) {
+                        html += `<div class="item-list"><div><code>${ad.code.substring(0,30)}...</code></div><i class="fas fa-trash-alt delete-icon" onclick="deleteItem('ghoti_ads','${d.id}')"></i></div>`;
+                    }
+                });
+                document.getElementById(listId).innerHTML = html;
+            });
+        }
+        window.uploadImg = (col) => {
+            const fileInput = document.createElement('input'); fileInput.type = 'file';
+            fileInput.onchange = async () => {
+                const file = fileInput.files[0];
+                const formData = new FormData(); formData.append("image", file);
+                const res = await fetch(`https://api.imgbb.com/1/upload?key=${imgbbKey}`, { method: "POST", body: formData });
+                const json = await res.json();
+                await addDoc(collection(db, col), { url: json.data.url, createdAt: Date.now() });
+                alert("সফল হয়েছে!");
+            }; fileInput.click();
+        }
+        function loadBanners() {
+            onSnapshot(query(collection(db, "banners"), orderBy("createdAt", "desc")), (snap) => {
+                let html = "";
+                snap.forEach(d => { html += `<div class="item-list" style="flex-direction:column"><img src="${d.data().url}" class="img-preview"><i class="fas fa-trash-alt delete-icon" onclick="deleteItem('banners','${d.id}')"></i></div>`; });
+                document.getElementById('banner-list').innerHTML = html;
+            });
+        }
+        window.deleteItem = async (col, id) => { if(confirm("ডিলিট করতে চান?")) await deleteDoc(doc(db, col, id)); }
+    </script>
+</body>
+</html>
