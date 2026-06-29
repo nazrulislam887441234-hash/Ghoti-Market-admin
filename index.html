@@ -1,258 +1,141 @@
 <!DOCTYPE html>
-<html lang="bn">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>
-      Nazrul Islam</title>
-    <!-- SEO Meta Tags -->
-    <meta name="description" content="Nazrul Islam - Professional App Developer, Web Developer, and Graphics Designer from Chhatak, Sunamganj." />
-    <meta name="keywords" content="NAZRUL ISLAM, NAZRUL ISLAM CHHATAK, DEVELOPER, NAZRUL DEVELOPER, GRAPHICS DESIGNER, YOUTUBER NAZRUL, AMR SHOP OWNER, Web Developer in Bangladesh, App Developer Bangladesh, Nazrul Islam Chorerbond, Expert Graphics Designer" />
-    <meta name="author" content="Nazrul Islam" />
-    <!-- Google Search Console Verification Tag -->
-    <meta name="google-site-verification" content="e1rpMgy74_ulkusxQn4m4xUiqiqd2O2o06iLOM5ldZY" />
-    <!-- Google Fonts & Font Awesome -->
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&amp;display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
-    <style>
-      :root {  
-            --primary-color: #00d2ff;  
-            --secondary-color: #3a7bd5;  
-            --bg-dark: #0f172a;  
-            --card-bg: #1e293b;  
-            --text-white: #f8fafc;  
-            --gold-color: #FFD700;
-        }  
-  
-        * {  
-            margin: 0;  
-            padding: 0;  
-            box-sizing: border-box;  
-            font-family: 'Poppins', sans-serif;  
-        }  
-  
-        body {  
-            background-color: var(--bg-dark);  
-            color: var(--text-white);  
-            line-height: 1.6;  
-            overflow-x: hidden;  
-        }  
-  
-        .container {  
-            max-width: 1000px;  
-            margin: 0 auto;  
-            padding: 20px;  
-        }  
-  
-        /* Hero Section */  
-        header {  
-            text-align: center;  
-            padding: 60px 20px;  
-            background: linear-gradient(135deg, #00d2ff 0%, #3a7bd5 100%);  
-            border-bottom-left-radius: 50px;  
-            border-bottom-right-radius: 50px;  
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);  
-        }  
-  
-        .profile-img {  
-            width: 180px;  
-            height: 180px;  
-            object-fit: cover;  
-            border-radius: 20px;  
-            border: 5px solid white;  
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3);  
-            margin-bottom: 20px;  
-            transition: transform 0.3s;  
-        }  
-  
-        .profile-img:hover {  
-            transform: scale(1.05);  
-        }  
-  
-        h1 { font-size: 2.5rem; margin-bottom: 10px; }  
-        .tagline { font-weight: 300; font-size: 1.1rem; opacity: 0.9; }  
-  
-        /* Main Content */  
-        .section {  
-            background: var(--card-bg);  
-            padding: 30px;  
-            border-radius: 20px;  
-            margin-top: -40px;  
-            box-shadow: 0 4px 20px rgba(0,0,0,0.2);  
-            z-index: 10;  
-            position: relative;  
-        }  
-  
-        .info-grid {  
-            display: grid;  
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));  
-            gap: 20px;  
-            margin-top: 30px;  
-        }  
-  
-        .info-card {  
-            background: rgba(255,255,255,0.05);  
-            padding: 20px;  
-            border-radius: 15px;  
-            border-left: 4px solid var(--primary-color);  
-        }  
-  
-        /* Buttons & Links */  
-        .links-container {  
-            display: grid;  
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));  
-            gap: 15px;  
-            margin-top: 30px;  
-        }  
-  
-        .btn {  
-            display: flex;  
-            align-items: center;  
-            justify-content: center;  
-            padding: 12px;  
-            border-radius: 10px;  
-            text-decoration: none;  
-            color: white;  
-            font-weight: 600;  
-            transition: 0.3s;  
-            gap: 10px;  
-        }  
-  
-        .btn-yt { background: #FF0000; }  
-        .btn-fb { background: #1877F2; }  
-        .btn-wa { background: #25D366; }  
-        .btn-mail { background: #ea4335; }  
-        
-        /* সোনালি বাটন ডিজাইন */
-        .btn-gold { 
-            background: #FFD700; 
-            color: #000 !important;
-        }  
-  
-        .btn:hover {  
-            transform: translateY(-3px);  
-            filter: brightness(1.1);  
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3);  
-        }  
-  
-        .parent-info {  
-            text-align: center;  
-            margin: 30px 0;  
-            font-style: italic;  
-            color: #cbd5e1;  
-        }  
-  
-        footer {  
-            text-align: center;  
-            padding: 40px;  
-            font-size: 0.9rem;  
-            opacity: 0.7;  
-        }  
-  
-        @media (max-width: 600px) {  
-            h1 { font-size: 1.8rem; }  
-            .section { margin-top: -20px; padding: 20px; }  
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Login | Ghoti Market</title>
+
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #0f172a;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      overflow: hidden; /* পেজ নড়াচড়া বন্ধ করার জন্য */
+    }
+
+    .box {
+      background: #1e293b;
+      padding: 40px;
+      border-radius: 12px;
+      width: 100%;
+      max-width: 350px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+      text-align: center;
+    }
+
+    h2 {
+      color: white;
+      margin-bottom: 25px;
+    }
+
+    input {
+      width: 100%;
+      padding: 12px;
+      margin-bottom: 15px;
+      border: 1px solid #334155;
+      border-radius: 6px;
+      background: #0f172a;
+      color: white;
+      outline: none;
+    }
+
+    input:focus {
+      border-color: #22c55e;
+    }
+
+    button {
+      width: 100%;
+      padding: 12px;
+      background: #22c55e;
+      border: none;
+      color: white;
+      border-radius: 6px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    button:hover {
+      background: #16a34a;
+    }
+
+    .error {
+      color: #ef4444;
+      font-size: 14px;
+      margin-top: 15px;
+      min-height: 20px;
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="box">
+  <h2>Admin Login</h2>
+
+  <input type="email" id="email" placeholder="Email Address">
+  <input type="password" id="password" placeholder="Password">
+
+  <button type="button" onclick="login()">Login</button>
+
+  <p class="error" id="error"></p>
+</div>
+
+<script>
+  const firebaseConfig = {
+    apiKey: "AIzaSyBUhNhYvuo_FTvZ5RZR6Gn-4hsUY21S0XE",
+    authDomain: "ghotimarket.firebaseapp.com",
+    projectId: "ghotimarket",
+    databaseURL: "https://ghotimarket-default-rtdb.firebaseio.com",
+    storageBucket: "ghotimarket.firebasestorage.app",
+    messagingSenderId: "481257644093",
+    appId: "1:481257644093:web:0dfc3699d6b3c86afeca54",
+    measurementId: "G-4SR8V2EKC1"
+  };
+
+  firebase.initializeApp(firebaseConfig);
+  const auth = firebase.auth();
+
+  function login() {
+    const email = document.getElementById("email").value;
+    const password = document.getElementById("password").value;
+    const errorEl = document.getElementById("error");
+
+    errorEl.innerText = "Processing...";
+
+    auth.signInWithEmailAndPassword(email, password)
+      .then((userCredential) => {
+        if (userCredential.user.email === "support@ghotimarket.com") {
+          window.location.href = "home.html";
+        } else {
+          auth.signOut();
+          errorEl.innerText = "Access Denied!";
         }
-    </style>
-  </head>
-  <body>
-    <header>
-      <img src="https://i.ibb.co/HDrLQvPW/1774155213894.jpg" alt="Nazrul Islam" class="profile-img" />
-      <h1>
-        NAZRUL ISLAM - নজরুল ইসলাম
-      </h1>
-      <p class="tagline">
-        App Developer | Web Developer | Graphics Designer | Youtuber
-      </p>
-    </header>
-    <div class="container">
-      <div class="section">
-        <div class="parent-info">
-          <p>
-            পিতার নাম: মোঃ লিটন মিয়া | মাতার নাম: সুজিয়া বেগম
-          </p>
-          <p>
-            <i class="fas fa-map-marker-alt"></i>
-            গ্রাম: চরেরবন্দ, ছাতক, সুনামগঞ্জ
-          </p>
-        </div>
-        <h3 style="border-bottom: 2px solid #334155; padding-bottom: 10px;">
-          আমার সোশ্যাল লিংকসমূহ
-        </h3>
-        <div class="links-container">
-          <!-- YouTube Channels -->
-          <a href="https://youtube.com/@amr_technology_nazrul?si=Ncs2Rqo1swr3bP85" class="btn btn-yt">          <i class="fab fa-youtube"></i>
-          AMR Technology
-</a>
-          <a href="https://youtube.com/@hashir_bazar_funny?si=QpCg3Bhi12jXRIDy" class="btn btn-yt">          <i class="fab fa-youtube"></i>
-          HASHIR BAZAR
-</a>
-          <a href="https://youtube.com/@amr_shop_chhatak?si=M2NzGxg0emCn9rpI" class="btn btn-yt">          <i class="fab fa-youtube"></i>
-          AMR SHOP
-</a>
-          <!-- Facebook -->
-          <a href="https://www.facebook.com/share/1E13UkJPbK/" class="btn btn-fb">          <i class="fab fa-facebook"></i>
-          AMR NAZRUL
-</a>
-          <a href="https://www.facebook.com/share/1J1UPAehQa/" class="btn btn-fb">          <i class="fab fa-facebook"></i>
-          AMR SHOP
-</a>
-          <a href="https://www.facebook.com/share/1CWM9mmJoZ/" class="btn btn-fb">          <i class="fab fa-facebook"></i>
-          HASHIR BAZAR
-</a>
-          <!-- Websites (Gold Buttons) -->
-          <a href="https://amrshop.zatiq.app/" class="btn btn-gold">          <i class="fas fa-globe"></i>
-          E-commerce Site
-</a>
-          <a href="https://amrshop.apk.com/" class="btn btn-gold">          <i class="fas fa-globe"></i>
-          AMR SHOP APK
-</a>
-          <a href="https://share.google/AVsyyymPbeDuq3eNF" class="btn btn-gold">          <i class="fas fa-globe"></i>
-          Business Profile
-</a>
-        </div>
-        <h3 style="margin-top: 40px; border-bottom: 2px solid #334155; padding-bottom: 10px;">
-          যোগাযোগ করুন
-        </h3>
-        <div class="links-container">
-          <a href="https://wa.me/8801316487435" class="btn btn-wa">          <i class="fab fa-whatsapp"></i>
-          WhatsApp
-</a>
-          <a href="mailto:nazrulislam887441234@gmail.com" class="btn btn-mail">          <i class="fas fa-envelope"></i>
-          Email Me
-</a>
-        </div>
-        <div class="info-grid">
-          <div class="info-card">
-            <h4>
-              <i class="fas fa-code"></i>
-              Development
-            </h4>
-            <p>
-              অ্যান্ড্রয়েড অ্যাপ এবং আধুনিক ওয়েবসাইট তৈরিতে আমি দক্ষ। আপনার ব্যবসার জন্য কাস্টম সলিউশন দিতে পারি।
-            </p>
-          </div>
-          <div class="info-card">
-            <h4>
-              <i class="fas fa-paint-brush"></i>
-              Designing
-            </h4>
-            <p>
-              লোগো, ব্যানার এবং প্রিমিয়াম ইউআই/ইউএক্স ডিজাইন করি যা আপনার ব্র্যান্ডকে অনন্য করে তুলবে।
-            </p>
-          </div>
-        </div>
-      </div>
-      <footer>
-        <p>
-          © 2026 Nazrul Islam. All Rights Reserved.
-        </p>
-        <p>
-          Designed with ❤️ for a Professional Developer
-        </p>
-      </footer>
-    </div>
-    <!-- Ads Script -->
-    <script src="https://pl29558377.effectivecpmnetwork.com/45/ae/39/45ae39810f4793724e55800f05de9f9b.js"></script>
-  </body>
+      })
+      .catch((error) => {
+        errorEl.innerText = "Invalid credentials!";
+      });
+  }
+
+  // অটো রিডাইরেক্ট (যদি অলরেডি লগইন থাকে)
+  auth.onAuthStateChanged((user) => {
+    if (user && user.email === "support@ghotimarket.com") {
+      window.location.href = "home.html";
+    }
+  });
+</script>
+
+</body>
 </html>
