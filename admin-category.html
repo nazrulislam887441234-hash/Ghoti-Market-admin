@@ -1,0 +1,844 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Category | GHOTI MARKET</title>
+    <meta name="description" content="Ghoti Market Admin Category Management Panel">
+    <meta name="theme-color" content="#16A34A">
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <style>
+        :root {
+            --primary: #16A34A;
+            --primary-hover: #15803D;
+            --danger: #DC2626;
+            --danger-hover: #B91C1C;
+            --white: #FFFFFF;
+            --bg: #F8FAFC;
+            --text-main: #1E293B;
+            --text-muted: #64748B;
+            --border: #E2E8F0;
+            --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+            --glass: rgba(255, 255, 255, 0.8);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text-main);
+            min-height: 100vh;
+        }
+
+        .hidden { display: none !important; }
+
+        /* --- Login Screen --- */
+        #login-screen {
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+            padding: 20px;
+        }
+
+        .login-card {
+            background: var(--white);
+            padding: 2rem;
+            border-radius: 1.5rem;
+            box-shadow: var(--shadow-lg);
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+            animation: slideUp 0.5s ease-out;
+        }
+
+        .login-card h1 {
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+            font-weight: 700;
+        }
+
+        .login-card p {
+            color: var(--text-muted);
+            margin-bottom: 2rem;
+        }
+
+        /* --- Dashboard Layout --- */
+        #admin-panel {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1rem;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem 0;
+            margin-bottom: 1.5rem;
+        }
+
+        .logo-area h2 {
+            color: var(--primary);
+            font-weight: 700;
+        }
+
+        /* --- Stats Grid --- */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: var(--white);
+            padding: 1.5rem;
+            border-radius: 1rem;
+            box-shadow: var(--shadow);
+            border-left: 4px solid var(--primary);
+        }
+
+        .stat-card span {
+            font-size: 0.875rem;
+            color: var(--text-muted);
+        }
+
+        .stat-card h3 {
+            font-size: 1.5rem;
+            margin-top: 0.5rem;
+        }
+
+        /* --- Form Section --- */
+        .card {
+            background: var(--white);
+            padding: 1.5rem;
+            border-radius: 1rem;
+            box-shadow: var(--shadow);
+            margin-bottom: 2rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1px solid var(--border);
+            border-radius: 0.5rem;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.1);
+        }
+
+        /* --- Image Upload Preview --- */
+        .image-upload-wrapper {
+            position: relative;
+            width: 100%;
+            height: 180px;
+            border: 2px dashed var(--border);
+            border-radius: 0.75rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            overflow: hidden;
+            background: #f8fafc;
+            transition: all 0.3s;
+        }
+
+        .image-upload-wrapper:hover {
+            border-color: var(--primary);
+        }
+
+        .image-upload-wrapper img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+
+        .upload-placeholder {
+            text-align: center;
+            color: var(--text-muted);
+            z-index: 1;
+        }
+
+        /* --- Buttons --- */
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            justify-content: center;
+        }
+
+        .btn-primary { background: var(--primary); color: white; width: 100%; }
+        .btn-primary:hover { background: var(--primary-hover); }
+        .btn-danger { background: var(--danger); color: white; }
+        .btn-danger:hover { background: var(--danger-hover); }
+        .btn-outline { background: transparent; border: 1px solid var(--border); }
+
+        /* --- Category List --- */
+        .list-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .search-box {
+            position: relative;
+            flex: 1;
+            max-width: 400px;
+        }
+
+        .category-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .category-card {
+            background: var(--white);
+            border-radius: 1rem;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            transition: transform 0.2s;
+            animation: fadeIn 0.4s ease-out;
+        }
+
+        .category-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .card-img {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+            background: #eee;
+        }
+
+        .card-content {
+            padding: 1.25rem;
+        }
+
+        .card-content h4 {
+            font-size: 1.1rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .card-content p {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            margin-bottom: 1rem;
+        }
+
+        .card-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .card-actions .btn {
+            flex: 1;
+            padding: 0.5rem;
+            font-size: 0.85rem;
+        }
+
+        /* --- Modals --- */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            padding: 1rem;
+            backdrop-filter: blur(4px);
+        }
+
+        .modal {
+            background: var(--white);
+            width: 100%;
+            max-width: 500px;
+            border-radius: 1.25rem;
+            padding: 2rem;
+            position: relative;
+            animation: zoomIn 0.3s ease-out;
+        }
+
+        /* --- Progress Bar --- */
+        .progress-container {
+            width: 100%;
+            height: 6px;
+            background: #eee;
+            border-radius: 10px;
+            margin: 10px 0;
+            display: none;
+        }
+        .progress-bar {
+            height: 100%;
+            background: var(--primary);
+            width: 0%;
+            border-radius: 10px;
+            transition: width 0.3s;
+        }
+
+        /* --- Toasts --- */
+        #toast-container {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 9999;
+        }
+
+        .toast {
+            padding: 1rem 1.5rem;
+            border-radius: 0.5rem;
+            color: white;
+            margin-top: 10px;
+            box-shadow: var(--shadow-lg);
+            animation: slideInRight 0.3s forwards;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .toast.success { background: var(--primary); }
+        .toast.error { background: var(--danger); }
+
+        /* --- Loading Spinner --- */
+        .spinner {
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,0.3);
+            border-top: 3px solid white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        /* --- Skeleton Loading --- */
+        .skeleton {
+            background: #e2e8f0;
+            background: linear-gradient(90deg, #e2e8f0 25%, #f1f5f9 50%, #e2e8f0 75%);
+            background-size: 200% 100%;
+            animation: skeleton-loading 1.5s infinite;
+        }
+
+        @keyframes skeleton-loading {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes zoomIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
+        @keyframes slideInRight { from { transform: translateX(100%); } to { transform: translateX(0); } }
+
+        /* Mobile Adjustments */
+        @media (max-width: 640px) {
+            .category-grid { grid-template-columns: 1fr; }
+            .header { flex-direction: column; gap: 1rem; text-align: center; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Login View -->
+    <section id="login-screen">
+        <div class="login-card">
+            <h1>GHOTI MARKET</h1>
+            <p>Admin Category Panel Access</p>
+            <div class="form-group" style="text-align: left;">
+                <label>Admin Email</label>
+                <input type="email" id="login-email" value="support@ghotimarket.com" readonly>
+            </div>
+            <div class="form-group" style="text-align: left;">
+                <label>Password</label>
+                <input type="password" id="login-password" placeholder="••••••••">
+            </div>
+            <button class="btn btn-primary" id="login-btn">
+                <span>Login Securely</span>
+            </button>
+        </div>
+    </section>
+
+    <!-- Admin Dashboard View -->
+    <main id="admin-panel" class="hidden">
+        <header>
+            <div class="logo-area">
+                <h2>GHOTI MARKET</h2>
+                <p style="font-size: 0.8rem; color: var(--text-muted);">Category Management Console</p>
+            </div>
+            <button class="btn btn-outline" id="logout-btn">
+                <i data-lucide="log-out"></i> Logout
+            </button>
+        </header>
+
+        <!-- Stats -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <span>Total Categories</span>
+                <h3 id="stat-total">0</h3>
+            </div>
+            <div class="stat-card">
+                <span>Last Added</span>
+                <h3 id="stat-last" style="font-size: 1rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">N/A</h3>
+            </div>
+        </div>
+
+        <!-- Add Category Form -->
+        <div class="card">
+            <h3 style="margin-bottom: 1.5rem;">Create New Category</h3>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem;">
+                <!-- Image Side -->
+                <div>
+                    <label>Category Image (Auto WebP)</label>
+                    <div class="image-upload-wrapper" onclick="document.getElementById('cat-image').click()">
+                        <img id="preview-img" src="" class="hidden">
+                        <div class="upload-placeholder" id="placeholder-text">
+                            <i data-lucide="image-plus" style="width: 40px; height: 40px; margin-bottom: 0.5rem;"></i>
+                            <p>Click to upload image</p>
+                        </div>
+                    </div>
+                    <input type="file" id="cat-image" class="hidden" accept="image/*">
+                    <div class="progress-container" id="upload-progress-container">
+                        <div class="progress-bar" id="upload-progress-bar"></div>
+                    </div>
+                </div>
+
+                <!-- Fields Side -->
+                <div>
+                    <div class="form-group">
+                        <label>Category Name</label>
+                        <input type="text" id="cat-name" placeholder="e.g. Home Appliances">
+                    </div>
+                    <div class="form-group">
+                        <label>Slug (URL Friendly)</label>
+                        <input type="text" id="cat-slug" placeholder="home-appliances">
+                    </div>
+                    <button class="btn btn-primary" id="save-cat-btn">
+                        <i data-lucide="plus-circle"></i>
+                        <span>Create Category</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Search & Filter -->
+        <div class="list-header">
+            <h3>Existing Categories</h3>
+            <div class="search-box">
+                <input type="text" id="search-input" placeholder="Search by name or slug...">
+            </div>
+        </div>
+
+        <!-- Categories List -->
+        <div id="category-list-container" class="category-grid">
+            <!-- Skeleton items while loading -->
+            <div class="category-card"><div class="card-img skeleton"></div><div class="card-content"><div class="skeleton" style="height:20px; width:60%; margin-bottom:10px"></div><div class="skeleton" style="height:15px; width:40%"></div></div></div>
+            <div class="category-card"><div class="card-img skeleton"></div><div class="card-content"><div class="skeleton" style="height:20px; width:60%; margin-bottom:10px"></div><div class="skeleton" style="height:15px; width:40%"></div></div></div>
+        </div>
+
+        <!-- Empty State -->
+        <div id="empty-state" class="hidden" style="text-align: center; padding: 3rem;">
+            <i data-lucide="folder-x" style="width: 60px; height: 60px; color: var(--text-muted); opacity: 0.5;"></i>
+            <p style="margin-top: 1rem; color: var(--text-muted);">No categories found.</p>
+        </div>
+    </main>
+
+    <!-- Edit Modal -->
+    <div id="edit-modal" class="modal-overlay hidden">
+        <div class="modal">
+            <h3>Edit Category</h3>
+            <input type="hidden" id="edit-id">
+            <div class="form-group" style="margin-top: 1.5rem;">
+                <label>Category Name</label>
+                <input type="text" id="edit-name">
+            </div>
+            <div class="form-group">
+                <label>Slug</label>
+                <input type="text" id="edit-slug">
+            </div>
+            <div class="form-group">
+                <label>Change Image (Optional)</label>
+                <input type="file" id="edit-image-input" accept="image/*">
+            </div>
+            <div style="display: flex; gap: 1rem; margin-top: 2rem;">
+                <button class="btn btn-outline" style="flex:1" onclick="closeModal()">Cancel</button>
+                <button class="btn btn-primary" style="flex:1" id="update-btn">Update</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div id="toast-container"></div>
+
+    <!-- Firebase SDK -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { getFirestore, collection, addDoc, getDocs, updateDoc, deleteDoc, doc, query, orderBy, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        // ==========================================
+        // 1. CONFIGURATION (PASTE YOUR KEYS HERE)
+        // ==========================================
+        const firebaseConfig = {
+            apiKey: "AIzaSyBUhNhYvuo_FTvZ5RZR6Gn-4hsUY21S0XE",
+            authDomain: "ghotimarket.firebaseapp.com",
+            projectId: "ghotimarket",
+            storageBucket: "ghotimarket.firebasestorage.app",
+            messagingSenderId: "481257644093",
+            appId: "1:481257644093:web:0dfc3699d6b3c86afeca54"
+        };
+
+        const IMGBB_API_KEY = "e1da51b6d309ac3a5a235b5088ebc334";
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        // State
+        let allCategories = [];
+
+        // UI Selectors
+        const loginScreen = document.getElementById('login-screen');
+        const adminPanel = document.getElementById('admin-panel');
+        const catNameInput = document.getElementById('cat-name');
+        const catSlugInput = document.getElementById('cat-slug');
+        const catImgInput = document.getElementById('cat-image');
+        const previewImg = document.getElementById('preview-img');
+        const placeholderText = document.getElementById('placeholder-text');
+        const catListContainer = document.getElementById('category-list-container');
+        const searchInput = document.getElementById('search-input');
+
+        // ==========================================
+        // 2. AUTHENTICATION LOGIC
+        // ==========================================
+        document.getElementById('login-btn').addEventListener('click', async () => {
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+            const btn = document.getElementById('login-btn');
+
+            if(!password) return showToast("Enter password", "error");
+
+            btn.disabled = true;
+            btn.innerHTML = `<div class="spinner"></div>`;
+
+            try {
+                await signInWithEmailAndPassword(auth, email, password);
+                showToast("Login Successful", "success");
+            } catch (error) {
+                showToast("Invalid Credentials!", "error");
+                btn.disabled = false;
+                btn.innerHTML = `<span>Login Securely</span>`;
+            }
+        });
+
+        onAuthStateChanged(auth, (user) => {
+            if (user && user.email === "support@ghotimarket.com") {
+                loginScreen.classList.add('hidden');
+                adminPanel.classList.remove('hidden');
+                loadCategories();
+            } else {
+                loginScreen.classList.remove('hidden');
+                adminPanel.classList.add('hidden');
+            }
+        });
+
+        document.getElementById('logout-btn').addEventListener('click', () => signOut(auth));
+
+        // ==========================================
+        // 3. IMAGE PROCESSING (WebP & Compression)
+        // ==========================================
+        catImgInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    previewImg.src = event.target.result;
+                    previewImg.classList.remove('hidden');
+                    placeholderText.classList.add('hidden');
+                }
+                reader.readAsDataURL(file);
+            }
+        });
+
+        async function processAndUpload(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onload = (event) => {
+                    const img = new Image();
+                    img.src = event.target.result;
+                    img.onload = () => {
+                        const canvas = document.createElement('canvas');
+                        const ctx = canvas.getContext('2d');
+                        
+                        // Resize (max 800px width)
+                        const scale = Math.min(1, 800 / img.width);
+                        canvas.width = img.width * scale;
+                        canvas.height = img.height * scale;
+                        
+                        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                        
+                        // Convert to WebP
+                        canvas.toBlob(async (blob) => {
+                            try {
+                                const formData = new FormData();
+                                formData.append('image', blob);
+                                
+                                const response = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, {
+                                    method: 'POST',
+                                    body: formData
+                                });
+                                const data = await response.json();
+                                resolve(data.data.url);
+                            } catch (err) {
+                                reject(err);
+                            }
+                        }, 'image/webp', 0.8); // 80% quality
+                    };
+                };
+            });
+        }
+
+        // ==========================================
+        // 4. CRUD OPERATIONS
+        // ==========================================
+
+        // Auto-slugify
+        catNameInput.addEventListener('input', () => {
+            catSlugInput.value = catNameInput.value
+                .toLowerCase()
+                .replace(/[^a-z0-9 ]/g, '')
+                .replace(/\s+/g, '-');
+        });
+
+        document.getElementById('save-cat-btn').addEventListener('click', async () => {
+            const name = catNameInput.value.trim();
+            const slug = catSlugInput.value.trim();
+            const file = catImgInput.files[0];
+            const btn = document.getElementById('save-cat-btn');
+
+            if(!name || !slug || !file) return showToast("All fields + image required", "error");
+
+            // Check duplicates
+            if(allCategories.some(c => c.slug === slug)) return showToast("Slug already exists", "error");
+            if(allCategories.some(c => c.categoryName.toLowerCase() === name.toLowerCase())) return showToast("Name already exists", "error");
+
+            btn.disabled = true;
+            btn.innerHTML = `<div class="spinner"></div> Saving...`;
+            document.getElementById('upload-progress-container').style.display = 'block';
+            document.getElementById('upload-progress-bar').style.width = '50%';
+
+            try {
+                const imageUrl = await processAndUpload(file);
+                document.getElementById('upload-progress-bar').style.width = '90%';
+
+                await addDoc(collection(db, "categories"), {
+                    categoryName: name,
+                    slug: slug,
+                    image: imageUrl,
+                    createdAt: serverTimestamp(),
+                    updatedAt: serverTimestamp()
+                });
+
+                showToast("Category Created!", "success");
+                resetForm();
+                loadCategories();
+            } catch (error) {
+                console.error(error);
+                showToast("Error saving category", "error");
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = `<i data-lucide="plus-circle"></i> <span>Create Category</span>`;
+                document.getElementById('upload-progress-container').style.display = 'none';
+                lucide.createIcons();
+            }
+        });
+
+        async function loadCategories() {
+            try {
+                const q = query(collection(db, "categories"), orderBy("createdAt", "desc"));
+                const querySnapshot = await getDocs(q);
+                allCategories = [];
+                querySnapshot.forEach((doc) => {
+                    allCategories.push({ id: doc.id, ...doc.data() });
+                });
+                renderCategories(allCategories);
+                updateStats();
+            } catch (error) {
+                showToast("Error loading categories", "error");
+            }
+        }
+
+        function renderCategories(data) {
+            catListContainer.innerHTML = '';
+            if(data.length === 0) {
+                document.getElementById('empty-state').classList.remove('hidden');
+                return;
+            }
+            document.getElementById('empty-state').classList.add('hidden');
+
+            data.forEach(cat => {
+                const date = cat.createdAt?.toDate ? cat.createdAt.toDate().toLocaleDateString() : 'Just now';
+                const card = document.createElement('div');
+                card.className = 'category-card';
+                card.innerHTML = `
+                    <img src="${cat.image}" class="card-img" loading="lazy">
+                    <div class="card-content">
+                        <h4>${cat.categoryName}</h4>
+                        <p>/${cat.slug} • ${date}</p>
+                        <div class="card-actions">
+                            <button class="btn btn-outline" onclick="openEditModal('${cat.id}')">
+                                <i data-lucide="edit-3" style="width:16px"></i> Edit
+                            </button>
+                            <button class="btn btn-danger" onclick="deleteCategory('${cat.id}')">
+                                <i data-lucide="trash-2" style="width:16px"></i>
+                            </button>
+                        </div>
+                    </div>
+                `;
+                catListContainer.appendChild(card);
+            });
+            lucide.createIcons();
+        }
+
+        // Search Filter
+        searchInput.addEventListener('input', (e) => {
+            const term = e.target.value.toLowerCase();
+            const filtered = allCategories.filter(cat => 
+                cat.categoryName.toLowerCase().includes(term) || 
+                cat.slug.toLowerCase().includes(term)
+            );
+            renderCategories(filtered);
+        });
+
+        window.deleteCategory = async (id) => {
+            if(!confirm("Are you sure you want to delete this category?")) return;
+            try {
+                await deleteDoc(doc(db, "categories", id));
+                showToast("Deleted successfully", "success");
+                loadCategories();
+            } catch (error) {
+                showToast("Delete failed", "error");
+            }
+        };
+
+        // Edit Logic
+        window.openEditModal = (id) => {
+            const cat = allCategories.find(c => c.id === id);
+            document.getElementById('edit-id').value = id;
+            document.getElementById('edit-name').value = cat.categoryName;
+            document.getElementById('edit-slug').value = cat.slug;
+            document.getElementById('edit-modal').classList.remove('hidden');
+        };
+
+        window.closeModal = () => {
+            document.getElementById('edit-modal').classList.add('hidden');
+        };
+
+        document.getElementById('update-btn').addEventListener('click', async () => {
+            const id = document.getElementById('edit-id').value;
+            const name = document.getElementById('edit-name').value;
+            const slug = document.getElementById('edit-slug').value;
+            const file = document.getElementById('edit-image-input').files[0];
+            const btn = document.getElementById('update-btn');
+
+            btn.disabled = true;
+            btn.innerHTML = `<div class="spinner"></div>`;
+
+            try {
+                let updateData = {
+                    categoryName: name,
+                    slug: slug,
+                    updatedAt: serverTimestamp()
+                };
+
+                if(file) {
+                    const newUrl = await processAndUpload(file);
+                    updateData.image = newUrl;
+                }
+
+                await updateDoc(doc(db, "categories", id), updateData);
+                showToast("Updated successfully", "success");
+                closeModal();
+                loadCategories();
+            } catch (error) {
+                showToast("Update failed", "error");
+            } finally {
+                btn.disabled = false;
+                btn.innerText = "Update";
+            }
+        });
+
+        // ==========================================
+        // 5. UTILITIES
+        // ==========================================
+        function showToast(msg, type) {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.innerHTML = `<span>${msg}</span>`;
+            container.appendChild(toast);
+            setTimeout(() => toast.remove(), 3000);
+        }
+
+        function resetForm() {
+            catNameInput.value = '';
+            catSlugInput.value = '';
+            catImgInput.value = '';
+            previewImg.src = '';
+            previewImg.classList.add('hidden');
+            placeholderText.classList.remove('hidden');
+        }
+
+        function updateStats() {
+            document.getElementById('stat-total').innerText = allCategories.length;
+            document.getElementById('stat-last').innerText = allCategories[0] ? allCategories[0].categoryName : 'N/A';
+        }
+
+        // Init Lucide
+        lucide.createIcons();
+    </script>
+</body>
+</html>
