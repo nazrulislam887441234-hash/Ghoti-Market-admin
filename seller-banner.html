@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GHOTI MARKET | Admin Panel</title>
+<link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<style>
+/* ====== আগের সব CSS একই থাকবে ====== */
+:root{--primary:#FF6B00;--primary-dark:#E65C00;--bg:#f4f6f8;--card:#fff;--text:#212121;--muted:#757575;--border:#e0e0e0;--success:#4CAF50;--error:#f44336;}
+*{box-sizing:border-box;margin:0;padding:0;font-family:'Hind Siliguri', sans-serif;}
+body{background:var(--bg);color:var(--text);}
+.hidden{display:none!important;}
+#loader{position:fixed;inset:0;background:#fff;z-index:9999;display:flex;align-items:center;justify-content:center;}
+.spinner{width:50px;height:50px;border:5px solid #eee;border-top:5px solid var(--primary);border-radius:50%;animation:spin 1s linear infinite;}
+@keyframes spin{0%{transform:rotate(0)}100%{transform:rotate(360deg)}}
+header{background:linear-gradient(135deg,#FF6B00 0%,#FF3D00 100%);color:#fff;padding:15px 20px;display:flex;justify-content:space-between;align-items:center;box-shadow:0 2px 8px rgba(0,0,0,0.1);position:sticky;top:0;z-index:100;}
+header h1{font-size:20px;font-weight:700;}
+header button{background:rgba(255,255,255,0.2);border:1px solid #fff;color:#fff;padding:8px 15px;border-radius:8px;cursor:pointer;font-weight:600;}
+header button:hover{background:#fff;color:var(--primary);}
+.container{max-width:1200px;margin:20px auto;padding:0 15px;}
+.card{background:var(--card);border-radius:12px;box-shadow:0 4px 12px rgba(0,0,0,0.06);padding:20px;margin-bottom:20px;}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:15px;}
+.form-group{display:flex;flex-direction:column;}
+.form-group label{font-weight:600;margin-bottom:6px;font-size:14px;}
+.form-group input[type="text"],.form-group input[type="number"],.form-group input[type="file"]{padding:12px;border:1px solid var(--border);border-radius:8px;font-size:15px;outline:none;transition:0.2s;}
+.form-group input:focus{border-color:var(--primary);}
+.toggle{display:flex;align-items:center;gap:10px;}
+.toggle input{width:40px;height:20px;appearance:none;background:#ccc;border-radius:20px;position:relative;cursor:pointer;}
+.toggle input:checked{background:var(--success);}
+.toggle input::before{content:'';position:absolute;width:16px;height:16px;background:#fff;border-radius:50%;top:2px;left:2px;transition:0.2s;}
+.toggle input:checked::before{left:22px;}
+.btn{background:var(--primary);color:#fff;border:none;padding:12px 20px;border-radius:8px;font-size:16px;font-weight:600;cursor:pointer;width:100%;margin-top:10px;}
+.btn:hover{background:var(--primary-dark);}
+.btn:disabled{background:#ccc;cursor:not-allowed;}
+#previewImg{max-width:100%;max-height:150px;border-radius:8px;margin-top:10px;border:1px solid var(--border);display:none;}
+.search-box input{width:100%;padding:12px;border:1px solid var(--border);border-radius:8px;font-size:15px;}
+.banner-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:20px;}
+.banner-card{background:#fff;border-radius:12px;box-shadow:0 4px 12px rgba(0,0,0,0.06);overflow:hidden;border:1px solid var(--border);}
+.banner-card img{width:100%;height:170px;object-fit:cover;background:#eee;}
+.banner-body{padding:15px;}
+.banner-body p{font-size:13px;color:var(--muted);margin-bottom:5px;word-break:break-all;}
+.status{padding:4px 10px;border-radius:20px;font-size:12px;font-weight:600;display:inline-block;}
+.status.active{background:#E8F5E9;color:var(--success);}
+.status.inactive{background:#FFEBEE;color:var(--error);}
+.card-actions{display:flex;gap:10px;margin-top:15px;}
+.card-actions button{flex:1;padding:8px;border:none;border-radius:6px;cursor:pointer;font-weight:600;}
+.btn-edit{background:#E3F2FD;color:#1976D2;}
+.btn-delete{background:#FFEBEE;color:var(--error);}
+.empty{text-align:center;padding:40px;color:var(--muted);}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,0.5);display:flex;align-items:center;justify-content:center;z-index:2000;}
+.modal-content{background:#fff;padding:25px;border-radius:12px;max-width:400px;width:90%;text-align:center;}
+.modal-content h3{margin-bottom:10px;}
+.modal-actions{display:flex;gap:10px;margin-top:20px;}
+.modal-actions button{flex:1;padding:10px;border:none;border-radius:8px;font-weight:600;cursor:pointer;}
+.btn-confirm{background:var(--error);color:#fff;}
+.btn-cancel{background:#eee;}
+.toast{position:fixed;bottom:20px;right:20px;background:#333;color:#fff;padding:12px 20px;border-radius:8px;z-index:3000;opacity:0;transform:translateY(20px);transition:0.3s;}
+.toast.show{opacity:1;transform:translateY(0);}
+.toast.success{background:var(--success);}
+.toast.error{background:var(--error);}
+@media(max-width:768px){.form-grid{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+
+<div id="loader"><div class="spinner"></div></div>
+
+<div id="adminPanel" class="hidden">
+<header>
+  <h1><i class="fa-solid fa-shield-halved"></i> GHOTI MARKET Admin</h1>
+  <button id="logoutBtn"><i class="fa-solid fa-right-from-bracket"></i> Logout</button>
+</header>
+
+<div class="container">
+  <div class="card">
+    <h2 id="formTitle"><i class="fa-solid fa-plus"></i> নতুন Banner আপলোড</h2>
+    <form id="bannerForm">
+      <div class="form-grid">
+        <div class="form-group">
+          <label>Banner Image Select করুন</label>
+          <input type="file" id="imageFile" accept="image/*" required>
+          <img id="previewImg" alt="Preview">
+          <small style="color:var(--muted);">Upload হবে ImgBB তে</small>
+        </div>
+        <div class="form-group">
+          <label>Click Link</label>
+          <input type="text" id="clickLink" placeholder="https://ghotimarket.com/..." required>
+        </div>
+        <div class="form-group">
+          <label>Order Number</label>
+          <input type="number" id="orderNum" placeholder="1" required>
+        </div>
+        <div class="form-group toggle">
+          <label>Active Status</label>
+          <input type="checkbox" id="activeStatus" checked>
+        </div>
+      </div>
+      <button type="submit" class="btn" id="submitBtn"><i class="fa-solid fa-upload"></i> Save Banner</button>
+      <button type="button" class="btn hidden" id="cancelEditBtn" style="background:#757575;margin-top:8px;">Cancel</button>
+    </form>
+  </div>
+
+  <div class="card search-box">
+    <input type="text" id="searchBox" placeholder="🔍 Image URL অথবা Link দিয়ে Search করুন">
+  </div>
+
+  <div class="card">
+    <h2><i class="fa-solid fa-list"></i> সব Banner</h2>
+    <div id="bannerList" class="banner-grid"></div>
+    <div id="emptyState" class="empty hidden"><i class="fa-regular fa-image" style="font-size:40px;"></i><p>কোন Banner পাওয়া যায়নি</p></div>
+  </div>
+</div>
+</div>
+
+<div id="confirmModal" class="modal hidden">
+  <div class="modal-content">
+    <h3>আপনি কি নিশ্চিত?</h3>
+    <p>এই Banner টি স্থায়ীভাবে Delete হয়ে যাবে।</p>
+    <div class="modal-actions">
+      <button class="btn-cancel" id="cancelDelete">Cancel</button>
+      <button class="btn-confirm" id="confirmDelete">Delete</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast" class="toast"></div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+import { getFirestore, collection, addDoc, doc, updateDoc, deleteDoc, onSnapshot, query, orderBy, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+// ====== 1. CONFIG ======
+const IMGBB_API_KEY = "e1da51b6d309ac3a5a235b5088ebc334"; // এখানে আপনার ImgBB API Key বসান
+const firebaseConfig = {
+    apiKey: "AIzaSyBUhNhYvuo_FTvZ5RZR6Gn-4hsUY21S0XE",
+    authDomain: "ghotimarket.firebaseapp.com",
+    projectId: "ghotimarket",
+    storageBucket: "ghotimarket.firebasestorage.app",
+    messagingSenderId: "481257644093",
+    appId: "1:481257644093:web:0dfc3699d6b3c86afeca54"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+const bannerCol = collection(db, "seller_banner");
+
+let editingId = null;
+let allBanners = [];
+let deleteId = null;
+let uploadedImageUrl = ""; // imgbb থেকে আসা url
+
+// ====== 2. LOGIN CHECK ======
+onAuthStateChanged(auth, (user) => {
+  document.getElementById('loader').classList.add('hidden');
+  if(user){
+    document.getElementById('adminPanel').classList.remove('hidden');
+    loadBanners();
+  } else {
+    window.location.href = "index.html";
+  }
+});
+document.getElementById('logoutBtn').onclick = () => signOut(auth);
+
+// ====== 3. FILE SELECT + PREVIEW ======
+document.getElementById('imageFile').addEventListener('change', (e)=>{
+  const file = e.target.files[0];
+  if(file){
+    const reader = new FileReader();
+    reader.onload = (ev)=>{
+      document.getElementById('previewImg').src = ev.target.result;
+      document.getElementById('previewImg').style.display = 'block';
+    }
+    reader.readAsDataURL(file);
+  }
+});
+
+// ====== 4. IMGBB UPLOAD FUNCTION ======
+async function uploadToImgBB(file){
+  const formData = new FormData();
+  formData.append('image', file);
+  showToast('ImgBB তে Upload হচ্ছে...', 'success');
+
+  const res = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, {
+    method: 'POST',
+    body: formData
+  });
+  const data = await res.json();
+  if(data.success){
+    return data.data.url; // direct image link
+  } else {
+    throw new Error(data.error.message);
+  }
+}
+
+// ====== 5. FORM SUBMIT ======
+document.getElementById('bannerForm').onsubmit = async (e)=>{
+  e.preventDefault();
+  const fileInput = document.getElementById('imageFile');
+  const link = document.getElementById('clickLink').value.trim();
+  const order = parseInt(document.getElementById('orderNum').value);
+  const active = document.getElementById('activeStatus').checked;
+  const submitBtn = document.getElementById('submitBtn');
+
+  if(!link || isNaN(order)) return showToast('সব Field Required', 'error');
+  if(!link.startsWith('http://') &&!link.startsWith('https://')) return showToast('Link http:// বা https:// দিয়ে শুরু হতে হবে', 'error');
+
+  submitBtn.disabled = true;
+  submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Uploading...';
+
+  try{
+    let imageUrl = uploadedImageUrl;
+    // নতুন ফাইল সিলেক্ট করলে Upload করবে
+    if(fileInput.files[0] &&!editingId){
+      imageUrl = await uploadToImgBB(fileInput.files[0]);
+    }
+    if(editingId && fileInput.files[0]){ // Edit এর সময় নতুন ছবি দিলে
+      imageUrl = await uploadToImgBB(fileInput.files[0]);
+    }
+
+    if(!imageUrl) throw new Error('Image Upload হয়নি');
+
+    if(editingId){
+      await updateDoc(doc(db, "seller_banner", editingId), {image: imageUrl, link, order, active});
+      showToast('Banner Update হয়েছে', 'success');
+      resetForm();
+    } else {
+      await addDoc(bannerCol, {image: imageUrl, link, order, active, createdAt: serverTimestamp()});
+      showToast('Banner Upload হয়েছে', 'success');
+      e.target.reset();
+      document.getElementById('previewImg').style.display='none';
+    }
+  }catch(err){
+    showToast('Error: '+err.message, 'error');
+  } finally {
+    submitBtn.disabled = false;
+    submitBtn.innerHTML = '<i class="fa-solid fa-upload"></i> Save Banner';
+  }
+};
+
+// ====== 6. LOAD + RENDER + EDIT + DELETE + SEARCH - আগের মতোই ======
+function loadBanners(){
+  const q = query(bannerCol, orderBy("order", "asc"));
+  onSnapshot(q, (snapshot)=>{
+    allBanners = [];
+    snapshot.forEach(docSnap => allBanners.push({id: docSnap.id,...docSnap.data()}));
+    renderBanners(allBanners);
+  });
+}
+
+function renderBanners(banners){
+  const list = document.getElementById('bannerList');
+  const empty = document.getElementById('emptyState');
+  list.innerHTML = '';
+  if(banners.length === 0){ empty.classList.remove('hidden'); return; }
+  empty.classList.add('hidden');
+
+  banners.forEach(b=>{
+    const date = b.createdAt? new Date(b.createdAt.seconds*1000).toLocaleDateString('bn-BD') : 'N/A';
+    list.innerHTML += `
+      <div class="banner-card">
+        <img src="${b.image}" alt="Banner">
+        <div class="banner-body">
+          <p><b>Image:</b> ${b.image}</p>
+          <p><b>Link:</b> ${b.link}</p>
+          <p><b>Order:</b> ${b.order}</p>
+          <p><b>Status:</b> <span class="status ${b.active?'active':'inactive'}">${b.active?'Active':'Inactive'}</span></p>
+          <p><b>Date:</b> ${date}</p>
+          <div class="card-actions">
+            <button class="btn-edit" onclick="editBanner('${b.id}')"><i class="fa-solid fa-pen"></i> Edit</button>
+            <button class="btn-delete" onclick="openDelete('${b.id}')"><i class="fa-solid fa-trash"></i> Delete</button>
+          </div>
+        </div>
+      </div>
+    `;
+  });
+}
+
+window.editBanner = (id)=>{
+  const b = allBanners.find(x=>x.id===id);
+  editingId = id;
+  uploadedImageUrl = b.image; // পুরাতন url save
+  document.getElementById('formTitle').innerHTML = '<i class="fa-solid fa-pen"></i> Banner Edit করুন';
+  document.getElementById('clickLink').value = b.link;
+  document.getElementById('orderNum').value = b.order;
+  document.getElementById('activeStatus').checked = b.active;
+  document.getElementById('previewImg').src = b.image;
+  document.getElementById('previewImg').style.display='block';
+  document.getElementById('imageFile').required = false; // Edit এর সময় file optional
+  document.getElementById('submitBtn').innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Update Banner';
+  document.getElementById('cancelEditBtn').classList.remove('hidden');
+  window.scrollTo({top:0,behavior:'smooth'});
+};
+
+document.getElementById('cancelEditBtn').onclick = resetForm;
+function resetForm(){
+  editingId = null;
+  uploadedImageUrl = "";
+  document.getElementById('bannerForm').reset();
+  document.getElementById('previewImg').style.display='none';
+  document.getElementById('imageFile').required = true;
+  document.getElementById('formTitle').innerHTML = '<i class="fa-solid fa-plus"></i> নতুন Banner আপলোড';
+  document.getElementById('submitBtn').innerHTML = '<i class="fa-solid fa-upload"></i> Save Banner';
+  document.getElementById('cancelEditBtn').classList.add('hidden');
+}
+
+window.openDelete = (id)=>{
+  deleteId = id;
+  document.getElementById('confirmModal').classList.remove('hidden');
+};
+document.getElementById('cancelDelete').onclick = ()=>document.getElementById('confirmModal').classList.add('hidden');
+document.getElementById('confirmDelete').onclick = async ()=>{
+  await deleteDoc(doc(db, "seller_banner", deleteId));
+  showToast('Banner Delete হয়েছে', 'success');
+  document.getElementById('confirmModal').classList.add('hidden');
+};
+
+document.getElementById('searchBox').oninput = (e)=>{
+  const val = e.target.value.toLowerCase();
+  const filtered = allBanners.filter(b=>b.image.toLowerCase().includes(val) || b.link.toLowerCase().includes(val));
+  renderBanners(filtered);
+};
+
+function showToast(msg,type){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = `toast ${type} show`;
+  setTimeout(()=>t.classList.remove('show'),3000);
+}
+</script>
+</body>
+</html>
