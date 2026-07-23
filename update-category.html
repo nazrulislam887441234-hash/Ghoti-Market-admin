@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bulk Category Manager - GHOTI MARKET Admin</title>
+<link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;600;700&family=Poppins:wght@700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<style>
+:root{--primary:#FF6B00;--accent:#FF8C00;--success:#22c55e;--danger:#ef4444;--warning:#f59e0b;--info:#3b82f6;--muted:#6b7280;--bg1:#FFF7ED;--bg2:#FFEDD5;}
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Hind Siliguri',sans-serif;}
+body{min-height:100vh;background:linear-gradient(135deg,var(--bg1) 0%,var(--bg2) 100%);padding:15px;color:#1f2937;}
+.container{max-width:1450px;margin:0 auto;background:rgba(255,255,255,.92);backdrop-filter:blur(20px);padding:25px;border-radius:20px;border:1px solid rgba(255,107,0,.1);box-shadow:0 15px 50px rgba(255,107,0,.12);}
+.header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;flex-wrap:wrap;gap:10px;}
+.header h1{font-family:'Poppins';font-size:24px;background:linear-gradient(90deg,var(--primary),var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.header.nav{display:flex;gap:12px;align-items:center;}
+.header a,.logout{color:var(--primary);font-weight:700;text-decoration:none;cursor:pointer;}
+.logout{color:var(--danger);}
+
+/* Toolbar */
+.toolbar{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:15px;align-items:center;padding:15px;background:rgba(255,107,0,.05);border-radius:12px;}
+.toolbar input,.toolbar select{flex:1;min-width:200px;padding:11px 14px;border:2px solid #fed7aa;border-radius:10px;font-size:14px;}
+.toolbar input:focus,.toolbar select:focus{outline:none;border-color:var(--primary);}
+.btn{padding:11px 16px;border:none;border-radius:9px;font-weight:700;cursor:pointer;transition:.2s;font-size:14px;display:inline-flex;align-items:center;gap:6px;}
+.btn-primary{background:linear-gradient(90deg,var(--primary),var(--accent));color:#fff;}
+.btn-secondary{background:#f1f5f9;color:#334155;border:1px solid #e2e8f0;}
+.btn-danger{background:var(--danger);color:#fff;}
+.btn:disabled{background:#d1d5db;cursor:not-allowed;}
+.selection-info{background:var(--primary);color:#fff;padding:8px 14px;border-radius:20px;font-weight:700;font-size:13px;}
+
+/* Stats + Progress */
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:10px;margin:15px 0;}
+.stat{background:#fff;padding:12px;border-radius:10px;border:1px solid #ffedd5;text-align:center;}
+.stat.num{font-size:19px;font-weight:700;color:var(--primary);}
+.stat.label{font-size:11px;color:var(--muted);}
+.progress{background:rgba(255,107,0,.06);padding:14px;border-radius:12px;margin-bottom:15px;}
+.progress-bar{width:100%;height:10px;background:#ffedd5;border-radius:8px;overflow:hidden;}
+.progress-fill{height:100%;width:0%;background:linear-gradient(90deg,var(--primary),var(--accent));transition:width.3s ease;}
+
+/* Product Grid */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px;max-height:60vh;overflow-y:auto;padding:4px;}
+.card{background:#fff;border:2px solid #ffedd5;border-radius:12px;padding:12px;display:flex;gap:10px;position:relative;transition:.2s;}
+.card.selected{border-color:var(--primary);background:rgba(255,107,0,.04);}
+.card input[type=checkbox]{position:absolute;top:10px;left:10px;width:17px;height:17px;z-index:2;}
+.card img{width:55px;height:55px;object-fit:cover;border-radius:8px;flex-shrink:0;margin-left:22px;}
+.info{flex:1;min-width:0;}
+.info.name{font-weight:600;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.info.meta{font-size:11px;color:var(--muted);margin:2px 0;}
+.badge{padding:3px 8px;border-radius:14px;font-size:10px;font-weight:700;display:inline-block;}
+.b-waiting{background:#f3f4f6;color:#4b5563;}
+.b-updating{background:rgba(59,130,246,.15);color:var(--info);}
+.b-updated{background:rgba(34,197,94,.15);color:var(--success);}
+.b-failed{background:rgba(239,68,68,.15);color:var(--danger);}
+.loader{width:12px;height:12px;border:2px solid #ffedd5;border-top:2px solid var(--primary);border-radius:50%;animation:spin 1s linear infinite;display:inline-block;margin-right:4px;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.load-more{text-align:center;margin:15px 0;}
+
+/* Modal */
+.modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.6);z-index:999;justify-content:center;align-items:center;}
+.modal-box{background:#fff;padding:25px;border-radius:18px;max-width:450px;text-align:center;}
+.modal-box h3{margin-bottom:12px;}
+.modal-actions{display:flex;gap:10px;justify-content:center;margin-top:15px;}
+
+@media(max-width:768px){.grid{grid-template-columns:1fr;}.toolbar{flex-direction:column;align-items:stretch;}}
+</style>
+</head>
+<body>
+
+<div class="container" id="app" style="display:none;">
+    <div class="header">
+        <h1><i class="fas fa-tags"></i> Bulk Category Manager</h1>
+        <div class="nav">
+            <a href="dashboard.html"><i class="fas fa-arrow-left"></i> Dashboard</a>
+            <span class="logout" id="logout"><i class="fas fa-sign-out-alt"></i> Logout</span>
+        </div>
+    </div>
+
+    <!-- Toolbar -->
+    <div class="toolbar">
+        <input type="text" id="search" placeholder="Search: Name / Slug / Shop">
+        <select id="categorySelect">
+            <option value="">-- Category Select করুন --</option>
+        </select>
+        <span class="selection-info" id="selectedCount">Selected: 0</span>
+        <button class="btn btn-secondary" id="selectAll"><i class="fas fa-check-square"></i> Select All</button>
+        <button class="btn btn-secondary" id="deselectAll"><i class="fas fa-square"></i> Deselect All</button>
+        <button class="btn btn-secondary" id="invert"><i class="fas fa-random"></i> Invert</button>
+        <button class="btn btn-primary" id="bulkUpdate"><i class="fas fa-sync"></i> Update Selected</button>
+    </div>
+
+    <!-- Stats + Progress -->
+    <div class="progress">
+        <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+        <div class="stats">
+            <div class="stat"><div class="num" id="loaded">0</div><div class="label">Loaded</div></div>
+            <div class="stat"><div class="num" id="selected">0</div><div class="label">Selected</div></div>
+            <div class="stat"><div class="num" id="updated">0</div><div class="label">Updated</div></div>
+            <div class="stat"><div class="num" id="failed">0</div><div class="label">Failed</div></div>
+            <div class="stat"><div class="num" id="remaining">0</div><div class="label">Remaining</div></div>
+        </div>
+    </div>
+
+    <!-- Products -->
+    <div class="grid" id="grid"></div>
+    <div class="load-more"><button class="btn btn-primary" id="loadMore"><i class="fas fa-plus"></i> Load More</button></div>
+</div>
+
+<!-- Confirmation Modal -->
+<div class="modal" id="confirmModal">
+    <div class="modal-box">
+        <h3>Confirmation</h3>
+        <p id="confirmText"></p>
+        <div class="modal-actions">
+            <button class="btn btn-danger" id="confirmYes">Yes, Update</button>
+            <button class="btn btn-secondary" id="confirmNo">Cancel</button>
+        </div>
+    </div>
+</div>
+
+<!-- Summary Modal -->
+<div class="modal" id="summaryModal">
+    <div class="modal-box">
+        <h3>✅ Update Complete</h3>
+        <p id="summaryText"></p>
+        <button class="btn btn-primary" onclick="location.reload()">Close</button>
+    </div>
+</div>
+
+<script type="module">
+// ========== FIREBASE INIT ==========
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+import { getFirestore, collection, query, orderBy, limit, startAfter, getDocs, doc, writeBatch } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBUhNhYvuo_FTvZ5RZR6Gn-4hsUY21S0XE",
+  authDomain: "ghotimarket.firebaseapp.com",
+  projectId: "ghotimarket"
+};
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+// ========== AUTH GUARD ==========
+onAuthStateChanged(auth, user => {
+    if(user && user.email === "support@ghotimarket.com"){
+        document.getElementById('app').style.display = 'block';
+        init();
+    }else{
+        window.location.href = "index.html";
+    }
+});
+document.getElementById('logout').onclick = () => signOut(auth);
+
+// ========== GLOBAL STATE ==========
+const BATCH = 20;
+let lastDoc = null;
+let allProducts = [];
+let categories = [];
+let selected = new Set();
+let isUpdating = false;
+const stats = {loaded:0, updated:0, failed:0};
+
+// ========== UTILS ==========
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+
+// ========== LOAD CATEGORIES ==========
+async function loadCategories(){
+    const snap = await getDocs(collection(db,"categories"));
+    categories = snap.docs.map(d => ({id:d.id,...d.data()}));
+    const select = document.getElementById('categorySelect');
+    select.innerHTML = '<option value="">-- Category Select করুন --</option>';
+    categories.sort((a,b)=>a.categoryName.localeCompare(b.categoryName)).forEach(c=>{
+        select.innerHTML += `<option value='${JSON.stringify({name:c.categoryName, slug:c.categorySlug})}'>${c.categoryName}</option>`;
+    });
+}
+
+// ========== LOAD PRODUCTS WITH PAGINATION ==========
+async function loadProducts(){
+    document.getElementById('loadMore').disabled = true;
+    let q = query(collection(db,"products"), orderBy("createdAt","desc"), limit(BATCH));
+    if(lastDoc) q = query(collection(db,"products"), orderBy("createdAt","desc"), startAfter(lastDoc), limit(BATCH));
+
+    const snap = await getDocs(q);
+    if(!snap.empty){
+        lastDoc = snap.docs[snap.docs.length-1];
+        const batch = snap.docs.map(d => ({id:d.id, _status:'waiting',...d.data()}));
+        allProducts.push(...batch);
+        stats.loaded += batch.length;
+        batch.forEach(renderCard);
+    }
+    if(snap.size < BATCH) document.getElementById('loadMore').style.display = 'none';
+    document.getElementById('loadMore').disabled = false;
+    updateStats();
+}
+
+// ========== RENDER CARD ==========
+function renderCard(p){
+    let card = document.getElementById('card-'+p.id);
+    if(!card){
+        card = document.createElement('div');
+        card.id = 'card-'+p.id;
+        card.className = 'card';
+        document.getElementById('grid').appendChild(card);
+    }
+    if(selected.has(p.id)) card.classList.add('selected'); else card.classList.remove('selected');
+
+    const status = p._status || 'waiting';
+    const badge = {waiting:'b-waiting',updating:'b-updating',updated:'b-updated',failed:'b-failed'}[status];
+    const text = {waiting:'Waiting',updating:'Updating',updated:'Updated',failed:'Failed'}[status];
+
+    card.innerHTML = `
+        <input type="checkbox" class="chk" data-id="${p.id}" ${selected.has(p.id)?'checked':''}>
+        <img src="${p.images?.[0] || 'https://via.placeholder.com/55'}">
+        <div class="info">
+            <div class="name">${p.name}</div>
+            <div class="meta">Category: ${p.categoryName || 'N/A'}</div>
+            <div class="meta">Slug: ${p.categorySlug || 'N/A'}</div>
+            <div class="meta">Shop: ${p.shopName || 'N/A'}</div>
+            <span class="badge ${badge}">${status==='updating'?'<span class="loader"></span>':''}${text}</span>
+        </div>
+    `;
+    card.querySelector('.chk').onchange = e => {
+        if(e.target.checked) selected.add(p.id); else selected.delete(p.id);
+        updateStats();
+    }
+}
+
+// ========== SEARCH ==========
+document.getElementById('search').oninput = e => {
+    const term = e.target.value.toLowerCase();
+    document.getElementById('grid').innerHTML = '';
+    const filtered = allProducts.filter(p =>
+        p.name.toLowerCase().includes(term) ||
+        (p.slug||'').toLowerCase().includes(term) ||
+        (p.shopName||'').toLowerCase().includes(term)
+    );
+    filtered.forEach(renderCard);
+}
+
+// ========== SELECTION ==========
+document.getElementById('selectAll').onclick = () => {
+    allProducts.forEach(p => selected.add(p.id));
+    allProducts.forEach(renderCard);
+    updateStats();
+}
+document.getElementById('deselectAll').onclick = () => {
+    selected.clear();
+    allProducts.forEach(renderCard);
+    updateStats();
+}
+document.getElementById('invert').onclick = () => {
+    allProducts.forEach(p => {
+        if(selected.has(p.id)) selected.delete(p.id); else selected.add(p.id);
+    });
+    allProducts.forEach(renderCard);
+    updateStats();
+}
+
+function updateStats(){
+    document.getElementById('loaded').innerText = stats.loaded;
+    document.getElementById('selected').innerText = selected.size;
+    document.getElementById('updated').innerText = stats.updated;
+    document.getElementById('failed').innerText = stats.failed;
+    const processed = stats.updated + stats.failed;
+    document.getElementById('remaining').innerText = selected.size - processed;
+    document.getElementById('selectedCount').innerText = `Selected: ${selected.size}`;
+    const percent = selected.size > 0? (processed / selected.size) * 100 : 0;
+    document.getElementById('progressFill').style.width = percent + '%';
+}
+
+// ========== BULK UPDATE WITH BATCH ==========
+async function bulkUpdate(){
+    if(isUpdating || selected.size === 0) return alert("Please select products and category");
+    const catVal = document.getElementById('categorySelect').value;
+    if(!catVal) return alert("Please select a category");
+    const category = JSON.parse(catVal);
+
+    document.getElementById('confirmText').innerText = `আপনি ${selected.size} টি Product এর Category "${category.name}" করতে চান?`;
+    document.getElementById('confirmModal').style.display = 'flex';
+
+    document.getElementById('confirmYes').onclick = async () => {
+        document.getElementById('confirmModal').style.display = 'none';
+        await processUpdate(category);
+    }
+    document.getElementById('confirmNo').onclick = () => {
+        document.getElementById('confirmModal').style.display = 'none';
+    }
+}
+
+async function processUpdate(category){
+    isUpdating = true;
+    document.getElementById('bulkUpdate').disabled = true;
+    document.getElementById('bulkUpdate').innerHTML = '<span class="loader"></span> Updating...';
+
+    const toUpdate = allProducts.filter(p => selected.has(p.id));
+    const BATCH_SIZE = 500;
+
+    for(let i=0; i<toUpdate.length; i+=BATCH_SIZE){
+        const chunk = toUpdate.slice(i, i+BATCH_SIZE);
+        const batch = writeBatch(db);
+
+        chunk.forEach(p => {
+            p._status = 'updating';
+            renderCard(p);
+            batch.update(doc(db,"products",p.id), {
+                categoryName: category.name,
+                categorySlug: category.slug
+            });
+        });
+
+        try{
+            await batch.commit();
+            chunk.forEach(p => {
+                p.categoryName = category.name;
+                p.categorySlug = category.slug;
+                p._status = 'updated';
+                stats.updated++;
+                selected.delete(p.id); // auto uncheck
+                renderCard(p);
+            });
+        }catch(e){
+            chunk.forEach(p => {
+                p._status = 'failed';
+                stats.failed++;
+                renderCard(p);
+            });
+            console.error("Batch failed", e);
+        }
+        updateStats();
+        await sleep(100); // prevent UI block
+    }
+
+    const timeTaken = ((Date.now() - window.startTime)/1000).toFixed(2);
+    document.getElementById('summaryText').innerHTML = `
+        Total Selected: <b>${toUpdate.length}</b><br>
+        Successfully Updated: <b style="color:var(--success)">${stats.updated}</b><br>
+        Failed: <b style="color:var(--danger)">${stats.failed}</b><br>
+        Time Taken: <b>${timeTaken}s</b>
+    `;
+    document.getElementById('summaryModal').style.display = 'flex';
+
+    document.getElementById('bulkUpdate').disabled = false;
+    document.getElementById('bulkUpdate').innerHTML = '<i class="fas fa-sync"></i> Update Selected';
+    isUpdating = false;
+}
+
+document.getElementById('bulkUpdate').onclick = () => {
+    window.startTime = Date.now();
+    bulkUpdate();
+};
+document.getElementById('loadMore').onclick = loadProducts;
+
+// ========== INIT ==========
+async function init(){
+    await loadCategories();
+    loadProducts();
+}
+</script>
+</body>
+</html>
