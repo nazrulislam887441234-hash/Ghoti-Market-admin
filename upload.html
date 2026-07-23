@@ -184,8 +184,18 @@ async function loadCategories(){
     const select = document.getElementById('category');
     const snapshot = await getDocs(collection(db, "categories"));
     const cats = snapshot.docs.map(doc => ({id: doc.id,...doc.data()}));
-    cats.sort((a,b) => a.name.localeCompare(b.name));
-    select.innerHTML = '<option value="">Category Select করুন *</option>';
+    cats.sort((a,b) => a.categoryName.localeCompare(b.categoryName));
+
+cats.forEach(cat => {
+    select.innerHTML += `
+        <option value='${JSON.stringify({
+            name: cat.categoryName,
+            slug: cat.slug
+        })}'>
+            ${cat.categoryName}
+        </option>
+    `;
+});
     cats.forEach(cat => {
         select.innerHTML += `<option value='${JSON.stringify({name: cat.name, slug: cat.slug})}'>${cat.name}</option>`;
     });
