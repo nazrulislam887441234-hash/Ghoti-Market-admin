@@ -193,13 +193,31 @@ onAuthStateChanged(auth, user => {
 document.getElementById('logout').onclick = () => signOut(auth);
 
 // Load Categories
-async function loadCategories(){
+async function loadCategories() {
     const snap = await getDocs(collection(db, "categories"));
-    allCategories = snap.docs.map(d => ({id:d.id,...d.data()}));
-    const select = document.getElementById('editCategory');
-    select.innerHTML = allCategories.map(c => `<option value='${JSON.stringify({name:c.name,slug:c.slug})}'>${c.name}</option>`).join('');
-}
 
+    allCategories = snap.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+    }));
+
+    const select = document.getElementById("editCategory");
+
+    select.innerHTML = "";
+
+    allCategories.forEach(cat => {
+        const option = document.createElement("option");
+
+        option.value = JSON.stringify({
+            name: cat.categoryName,
+            slug: cat.slug
+        });
+
+        option.textContent = cat.categoryName;
+
+        select.appendChild(option);
+    });
+}
 // Load Products with Pagination
 async function loadProducts(reset = false){
     document.getElementById('status').innerText = "Loading...";
