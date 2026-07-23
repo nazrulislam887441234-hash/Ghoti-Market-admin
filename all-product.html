@@ -405,7 +405,6 @@ document.getElementById('bulkDeleteBtn').onclick = async () => {
         selected.forEach(id => batch.delete(doc(db,"products",id)));
         await batch.commit();
         alert("সফলভাবে Delete হয়েছে");
-        loadProducts(true);
     }
 }
 </script>
