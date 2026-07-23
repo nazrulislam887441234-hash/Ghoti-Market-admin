@@ -3,121 +3,97 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Admin Username Manager - GHOTI MARKET</title>
+<title>Admin User Manager - GHOTI MARKET</title>
 <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;600;700&family=Poppins:wght@700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 <style>
 :root{--primary:#FF6B00;--accent:#FF8C00;--success:#22c55e;--danger:#ef4444;--warning:#f59e0b;--info:#3b82f6;--muted:#6b7280;--bg1:#FFF7ED;--bg2:#FFEDD5;}
 *{margin:0;padding:0;box-sizing:border-box;font-family:'Hind Siliguri',sans-serif;}
 body{min-height:100vh;background:linear-gradient(135deg,var(--bg1) 0%,var(--bg2) 100%);padding:15px;color:#1f2937;}
-.container{max-width:1400px;margin:0 auto;background:rgba(255,255,255,.92);backdrop-filter:blur(20px);padding:25px;border-radius:20px;border:1px solid rgba(255,107,0,.1);box-shadow:0 15px 50px rgba(255,107,0,.12);}
+.container{max-width:1400px;margin:0 auto;background:rgba(255,255,255,.95);backdrop-filter:blur(20px);padding:25px;border-radius:20px;border:1px solid rgba(255,107,0,.1);box-shadow:0 15px 50px rgba(255,107,0,.12);}
 .header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;flex-wrap:wrap;gap:10px;}
 .header h1{font-family:'Poppins';font-size:24px;background:linear-gradient(90deg,var(--primary),var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
-.header.nav{display:flex;gap:12px;align-items:center;}
 .header a,.logout{color:var(--primary);font-weight:700;text-decoration:none;cursor:pointer;}
 .logout{color:var(--danger);}
-
-/* Stats */
-.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:20px;}
-.stat-card{background:#fff;padding:15px;border-radius:12px;border:1px solid #ffedd5;text-align:center;}
-.stat-card.num{font-size:22px;font-weight:700;color:var(--primary);}
-.stat-card.label{font-size:12px;color:var(--muted);}
-
-/* Toolbar */
 .toolbar{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:15px;align-items:center;}
 .toolbar input{flex:1;min-width:250px;padding:12px 14px;border:2px solid #fed7aa;border-radius:10px;font-size:15px;}
-.toolbar input:focus{outline:none;border-color:var(--primary);}
 .btn{padding:11px 16px;border:none;border-radius:9px;font-weight:700;cursor:pointer;transition:.2s;font-size:14px;display:inline-flex;align-items:center;gap:6px;}
 .btn-primary{background:linear-gradient(90deg,var(--primary),var(--accent));color:#fff;}
 .btn-secondary{background:#f1f5f9;color:#334155;border:1px solid #e2e8f0;}
-.btn-success{background:var(--success);color:#fff;}
+.btn-danger{background:var(--danger);color:#fff;}
+.btn-warning{background:var(--warning);color:#fff;}
 .btn:disabled{background:#d1d5db;cursor:not-allowed;}
-.selection-info{background:var(--primary);color:#fff;padding:8px 14px;border-radius:20px;font-weight:700;font-size:13px;}
-
-/* Seller Grid */
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:15px;max-height:65vh;overflow-y:auto;padding:4px;}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(350px,1fr));gap:15px;max-height:70vh;overflow-y:auto;padding:4px;}
 .card{background:#fff;border:2px solid #ffedd5;border-radius:14px;padding:15px;position:relative;transition:.2s;}
-.card.selected{border-color:var(--primary);background:rgba(255,107,0,.04);}
-.card input[type=checkbox]{position:absolute;top:12px;left:12px;width:18px;height:18px;z-index:2;}
-.card-header{display:flex;gap:12px;margin-left:25px;}
+.card-header{display:flex;gap:12px;}
 .card-header img{width:50px;height:50px;border-radius:10px;object-fit:cover;background:#eee;}
 .card-header h3{font-size:15px;margin-bottom:2px;}
-.verified{color:var(--info);font-size:14px;}
-.card-body{margin-top:10px;font-size:13px;}
-.card-body p{margin:4px 0;color:var(--muted);}
-.card-body .username{font-weight:700;color:var(--primary);background:#fff7ed;padding:4px 8px;border-radius:6px;display:inline-block;}
-.status-badge{padding:4px 10px;border-radius:15px;font-size:11px;font-weight:700;display:inline-block;margin:8px 0;}
-.status-set{background:rgba(34,197,94,.15);color:var(--success);}
-.status-missing{background:rgba(239,68,68,.15);color:var(--danger);}
-.card-actions{display:flex;gap:8px;margin-top:10px;}
+.card-body{margin-top:10px;font-size:12px;max-height:150px;overflow-y:auto;}
+.card-body.field{display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px dashed #ffedd5;}
+.card-body.field b{color:var(--muted);}
+.card-actions{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;}
+.badge{padding:3px 8px;border-radius:12px;font-size:10px;font-weight:700;}
+.b-active{background:rgba(34,197,94,.15);color:var(--success);}
+.b-inactive{background:rgba(239,68,68,.15);color:var(--danger);}
 
 /* Modal */
-.modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.6);z-index:999;justify-content:center;align-items:center;}
-.modal-box{background:#fff;padding:25px;border-radius:18px;max-width:500px;width:90%;}
+.modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.6);z-index:999;justify-content:center;align-items:center;overflow-y:auto;}
+.modal-box{background:#fff;padding:25px;border-radius:18px;max-width:600px;width:95%;max-height:90vh;overflow-y:auto;}
 .modal-box h3{margin-bottom:15px;}
-.modal-box input{width:100%;padding:12px;border:2px solid #fed7aa;border-radius:8px;font-size:15px;margin:8px 0;}
-.modal-box .preview{background:#fff7ed;padding:10px;border-radius:8px;font-size:13px;margin:10px 0;word-break:break-all;}
-.availability{font-size:13px;margin:5px 0;font-weight:600;}
-.avail-yes{color:var(--success);}
-.avail-no{color:var(--danger);}
+.modal-box label{font-weight:600;font-size:13px;display:block;margin-top:10px;}
+.modal-box input,.modal-box textarea,.modal-box select{width:100%;padding:10px;border:2px solid #fed7aa;border-radius:8px;font-size:14px;margin-top:4px;}
 .modal-actions{display:flex;gap:10px;justify-content:flex-end;margin-top:15px;}
-
-/* Toast */
 .toast{position:fixed;bottom:20px;right:20px;background:#333;color:#fff;padding:14px 20px;border-radius:10px;display:none;z-index:1000;}
 .toast.show{display:block;animation:slideUp.3s;}
 @keyframes slideUp{from{transform:translateY(20px);opacity:0;}to{transform:translateY(0);opacity:1;}}
 .load-more{text-align:center;margin:15px 0;}
 .loader{width:14px;height:14px;border:2px solid #ffedd5;border-top:2px solid var(--primary);border-radius:50%;animation:spin 1s linear infinite;display:inline-block;}
 @keyframes spin{to{transform:rotate(360deg);}}
-@media(max-width:768px){.grid{grid-template-columns:1fr;}.toolbar{flex-direction:column;align-items:stretch;}}
+.confirm-box{background:#fff7ed;padding:12px;border-radius:8px;margin:10px 0;text-align:center;}
+@media(max-width:768px){.grid{grid-template-columns:1fr;}}
 </style>
 </head>
 <body>
 
 <div class="container" id="app" style="display:none;">
     <div class="header">
-        <h1><i class="fas fa-user-shield"></i> Admin Username Manager</h1>
+        <h1><i class="fas fa-users-cog"></i> Admin User Manager</h1>
         <div class="nav">
             <a href="dashboard.html"><i class="fas fa-arrow-left"></i> Dashboard</a>
             <span class="logout" id="logout"><i class="fas fa-sign-out-alt"></i> Logout</span>
         </div>
     </div>
 
-    <!-- Stats -->
-    <div class="stats">
-        <div class="stat-card"><div class="num" id="totalSellers">0</div><div class="label">Total Sellers</div></div>
-        <div class="stat-card"><div class="num" id="usernameCreated">0</div><div class="label">Username Created</div></div>
-        <div class="stat-card"><div class="num" id="usernameMissing">0</div><div class="label">Username Missing</div></div>
-        <div class="stat-card"><div class="num" id="verifiedSellers">0</div><div class="label">Verified Sellers</div></div>
-        <div class="stat-card"><div class="num" id="searchCount">0</div><div class="label">Search Result</div></div>
-    </div>
-
-    <!-- Toolbar -->
     <div class="toolbar">
-        <input type="text" id="search" placeholder="Search: UID / Username / Shop / Email">
-        <span class="selection-info" id="selectedCount">Selected: 0</span>
-        <button class="btn btn-secondary" id="selectAll"><i class="fas fa-check-square"></i> Select All</button>
-        <button class="btn btn-secondary" id="unselectAll"><i class="fas fa-square"></i> Unselect All</button>
-        <button class="btn btn-success" id="bulkGenerate"><i class="fas fa-magic"></i> Bulk Generate</button>
+        <input type="text" id="search" placeholder="Search: UID / Name / Email / Username">
+        <button class="btn btn-primary" id="addNew"><i class="fas fa-plus"></i> Add New User</button>
     </div>
 
-    <!-- Sellers -->
     <div class="grid" id="grid"></div>
     <div class="load-more"><button class="btn btn-primary" id="loadMore"><i class="fas fa-plus"></i> Load More</button></div>
 </div>
 
-<!-- Username Modal -->
-<div class="modal" id="usernameModal">
+<!-- Edit/Add Modal -->
+<div class="modal" id="editModal">
     <div class="modal-box">
-        <h3 id="modalTitle">Create Username</h3>
-        <label>Username</label>
-        <input type="text" id="usernameInput" placeholder="only a-z 0-9">
-        <div class="preview">Live URL: <span id="urlPreview">https://ghotimarket.com/seller/@</span></div>
-        <div class="availability" id="availability"></div>
-        <button class="btn btn-secondary" id="suggestBtn"><i class="fas fa-lightbulb"></i> Generate Suggestion</button>
+        <h3 id="modalTitle">Edit User</h3>
+        <div id="formFields"></div>
         <div class="modal-actions">
+            <button class="btn btn-danger" id="deleteBtn" style="margin-right:auto;"><i class="fas fa-trash"></i> Delete</button>
             <button class="btn btn-secondary" id="cancelBtn">Cancel</button>
             <button class="btn btn-primary" id="saveBtn">Save</button>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Confirm -->
+<div class="modal" id="confirmModal">
+    <div class="modal-box" style="max-width:400px;">
+        <h3>Are you sure?</h3>
+        <div class="confirm-box">This will permanently delete this user</div>
+        <div class="modal-actions">
+            <button class="btn btn-secondary" id="confirmCancel">Cancel</button>
+            <button class="btn btn-danger" id="confirmDelete">Yes, Delete</button>
         </div>
     </div>
 </div>
@@ -127,7 +103,7 @@ body{min-height:100vh;background:linear-gradient(135deg,var(--bg1) 0%,var(--bg2)
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-import { getFirestore, collection, query, orderBy, limit, startAfter, getDocs, doc, updateDoc, where, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { getFirestore, collection, query, orderBy, limit, startAfter, getDocs, doc, updateDoc, deleteDoc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 const firebaseConfig = {apiKey:"AIzaSyBUhNhYvuo_FTvZ5RZR6Gn-4hsUY21S0XE",authDomain:"ghotimarket.firebaseapp.com",projectId:"ghotimarket"};
 const app = initializeApp(firebaseConfig);
@@ -138,7 +114,7 @@ const db = getFirestore(app);
 onAuthStateChanged(auth, user => {
     if(user && user.email === "support@ghotimarket.com"){
         document.getElementById('app').style.display = 'block';
-        init();
+        loadUsers();
     }else{
         window.location.href = "index.html";
     }
@@ -148,11 +124,9 @@ document.getElementById('logout').onclick = () => signOut(auth);
 // ========== GLOBAL ==========
 const BATCH = 20;
 let lastDoc = null;
-let allSellers = [];
-let selected = new Set();
+let allUsers = [];
 let currentEditingId = null;
-let usernameCache = new Set();
-const stats = {total:0, created:0, missing:0, verified:0};
+let isNewUser = false;
 
 // ========== UTILS ==========
 const showToast = (msg, type='success') => {
@@ -160,217 +134,160 @@ const showToast = (msg, type='success') => {
     t.innerText = msg; t.style.background = type==='error'?'var(--danger)':'var(--success)';
     t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),3000);
 }
-const validateUsername = (u) => /^[a-z0-9]{3,30}$/.test(u);
-const makeUsernameLower = (u) => u.toLowerCase();
 
-// ========== LOAD SELLERS ==========
-async function loadSellers(){
+// ========== LOAD USERS ==========
+async function loadUsers(){
     document.getElementById('loadMore').disabled = true;
-    let q = query(collection(db,"users"), where("role","==","seller"), orderBy("createdAt","desc"), limit(BATCH));
-    if(lastDoc) q = query(collection(db,"users"), where("role","==","seller"), orderBy("createdAt","desc"), startAfter(lastDoc), limit(BATCH));
-    
+    let q = query(collection(db,"users"), orderBy("createdAt","desc"), limit(BATCH));
+    if(lastDoc) q = query(collection(db,"users"), orderBy("createdAt","desc"), startAfter(lastDoc), limit(BATCH));
+
     const snap = await getDocs(q);
     if(!snap.empty){
         lastDoc = snap.docs[snap.docs.length-1];
         const batch = snap.docs.map(d => ({uid:d.id,...d.data()}));
-        allSellers.push(...batch);
+        allUsers.push(...batch);
         batch.forEach(renderCard);
-        updateStats();
     }
     if(snap.size < BATCH) document.getElementById('loadMore').style.display = 'none';
     document.getElementById('loadMore').disabled = false;
 }
 
 // ========== RENDER CARD ==========
-function renderCard(s){
-    let card = document.getElementById('card-'+s.uid);
+function renderCard(u){
+    let card = document.getElementById('card-'+u.uid);
     if(!card){
         card = document.createElement('div');
-        card.id = 'card-'+s.uid;
+        card.id = 'card-'+u.uid;
         card.className = 'card';
         document.getElementById('grid').appendChild(card);
     }
-    if(selected.has(s.uid)) card.classList.add('selected'); else card.classList.remove('selected');
 
-    const hasUsername = !!s.username;
-    const statusClass = hasUsername ? 'status-set' : 'status-missing';
-    const statusText = hasUsername ? '✅ Username Set' : '❌ Username Not Set';
+    const name = u.shopName || u.fullName || 'No Name';
+    const statusClass = u.active? 'b-active' : 'b-inactive';
+    const statusText = u.active? 'Active' : 'Inactive';
+
+    let fieldsHtml = '';
+    Object.keys(u).slice(0,6).forEach(key=>{
+        if(key === 'uid') return;
+        fieldsHtml += `<div class="field"><b>${key}:</b> <span>${String(u[key]).substring(0,30)}</span></div>`;
+    });
 
     card.innerHTML = `
-        <input type="checkbox" class="chk" data-id="${s.uid}" ${selected.has(s.uid)?'checked':''}>
         <div class="card-header">
-            <img src="${s.shopLogo || 'https://via.placeholder.com/50'}" onerror="this.src='https://via.placeholder.com/50'">
+            <img src="${u.shopLogo || 'https://via.placeholder.com/50'}" onerror="this.src='https://via.placeholder.com/50'">
             <div>
-                <h3>${s.shopName || 'No Shop Name'} ${s.verified?'<i class="fas fa-check-circle verified"></i>':''}</h3>
-                <p style="font-size:12px;color:var(--muted)">${s.email}</p>
+                <h3>${name}</h3>
+                <span class="badge ${statusClass}">${statusText}</span>
+                <p style="font-size:11px;color:var(--muted)">${u.email}</p>
             </div>
         </div>
-        <div class="card-body">
-            <p><b>UID:</b> ${s.uid}</p>
-            <p><b>Username:</b> ${hasUsername?`<span class="username">@${s.username}</span>`:'Not Set'}</p>
-            <span class="status-badge ${statusClass}">${statusText}</span>
-        </div>
+        <div class="card-body">${fieldsHtml}</div>
         <div class="card-actions">
-            <button class="btn ${hasUsername?'btn-secondary':'btn-primary'}" onclick="openModal('${s.uid}')">${hasUsername?'Update Username':'Create Username'}</button>
+            <button class="btn btn-warning" onclick="openEdit('${u.uid}')"><i class="fas fa-edit"></i> Edit</button>
+            <button class="btn btn-danger" onclick="openDelete('${u.uid}')"><i class="fas fa-trash"></i> Delete</button>
         </div>
     `;
-    card.querySelector('.chk').onchange = e => {
-        if(e.target.checked) selected.add(s.uid); else selected.delete(s.uid);
-        updateStats();
-    }
 }
 
 // ========== SEARCH ==========
 document.getElementById('search').oninput = e => {
     const term = e.target.value.toLowerCase();
     document.getElementById('grid').innerHTML = '';
-    const filtered = allSellers.filter(s => 
-        s.uid.toLowerCase().includes(term) ||
-        (s.username||'').toLowerCase().includes(term) ||
-        (s.shopName||'').toLowerCase().includes(term) ||
-        (s.email||'').toLowerCase().includes(term)
+    const filtered = allUsers.filter(u =>
+        u.uid.toLowerCase().includes(term) ||
+        (u.email||'').toLowerCase().includes(term) ||
+        (u.shopName||u.fullName||'').toLowerCase().includes(term) ||
+        (u.username||'').toLowerCase().includes(term)
     );
     filtered.forEach(renderCard);
-    document.getElementById('searchCount').innerText = filtered.length;
 }
 
-// ========== SELECTION ==========
-document.getElementById('selectAll').onclick = () => {
-    allSellers.forEach(s => selected.add(s.uid));
-    allSellers.forEach(renderCard);
-    updateStats();
-}
-document.getElementById('unselectAll').onclick = () => {
-    selected.clear();
-    allSellers.forEach(renderCard);
-    updateStats();
-}
-
-// ========== STATS ==========
-function updateStats(){
-    stats.total = allSellers.length;
-    stats.created = allSellers.filter(s=>s.username).length;
-    stats.missing = stats.total - stats.created;
-    stats.verified = allSellers.filter(s=>s.verified).length;
-    document.getElementById('totalSellers').innerText = stats.total;
-    document.getElementById('usernameCreated').innerText = stats.created;
-    document.getElementById('usernameMissing').innerText = stats.missing;
-    document.getElementById('verifiedSellers').innerText = stats.verified;
-    document.getElementById('selectedCount').innerText = `Selected: ${selected.size}`;
-}
-
-// ========== MODAL LOGIC ==========
-const modal = document.getElementById('usernameModal');
-const usernameInput = document.getElementById('usernameInput');
-const urlPreview = document.getElementById('urlPreview');
-const availability = document.getElementById('availability');
-
-window.openModal = async (uid) => {
+// ========== EDIT MODAL ==========
+window.openEdit = (uid) => {
+    isNewUser = false;
     currentEditingId = uid;
-    const seller = allSellers.find(s=>s.uid===uid);
-    document.getElementById('modalTitle').innerText = seller.username?'Update Username':'Create Username';
-    usernameInput.value = seller.username || '';
-    modal.style.display = 'flex';
-    checkAvailability();
+    const user = allUsers.find(u=>u.uid===uid);
+    document.getElementById('modalTitle').innerText = 'Edit User: ' + uid.substring(0,8);
+    document.getElementById('deleteBtn').style.display = 'inline-flex';
+    buildForm(user);
+    document.getElementById('editModal').style.display = 'flex';
 }
 
-document.getElementById('cancelBtn').onclick = () => modal.style.display = 'none';
-
-usernameInput.oninput = () => {
-    usernameInput.value = usernameInput.value.toLowerCase().replace(/[^a-z0-9]/g,'');
-    urlPreview.innerText = `https://ghotimarket.com/seller/@${usernameInput.value}`;
-    checkAvailability();
+document.getElementById('addNew').onclick = () => {
+    isNewUser = true;
+    currentEditingId = 'new_' + Date.now();
+    document.getElementById('modalTitle').innerText = 'Add New User';
+    document.getElementById('deleteBtn').style.display = 'none';
+    buildForm({});
+    document.getElementById('editModal').style.display = 'flex';
 }
 
-document.getElementById('suggestBtn').onclick = async () => {
-    const seller = allSellers.find(s=>s.uid===currentEditingId);
-    const base = (seller.shopName || 'shop').toLowerCase().replace(/[^a-z0-9]/g,'').substring(0,15) || 'shop';
-    let suggested = base;
-    let i = 1;
-    while(await usernameExists(suggested)){ suggested = base + i; i++; }
-    usernameInput.value = suggested;
-    checkAvailability();
+function buildForm(data){
+    const container = document.getElementById('formFields');
+    container.innerHTML = '';
+    const fields = ['email','fullName','shopName','username','whatsapp','active','shopLogo','shopBanner','verified'];
+
+    fields.forEach(key=>{
+        const val = data[key]?? '';
+        let input = '';
+        if(key === 'active' || key === 'verified'){
+            input = `<select id="field-${key}"><option value="true" ${val==true?'selected':''}>True</option><option value="false" ${val==false?'selected':''}>False</option></select>`;
+        }else if(key.includes('Logo') || key.includes('Banner')){
+            input = `<input type="text" id="field-${key}" value="${val}" placeholder="Image URL">`;
+        }else{
+            input = `<input type="text" id="field-${key}" value="${val}">`;
+        }
+        container.innerHTML += `<label>${key}</label>${input}`;
+    });
 }
 
-async function usernameExists(u){
-    if(usernameCache.has(u)) return true;
-    const q = query(collection(db,"users"), where("usernameLower","==",u.toLowerCase()), limit(1));
-    const snap = await getDocs(q);
-    return !snap.empty;
-}
-
-async function checkAvailability(){
-    const u = usernameInput.value;
-    if(u.length < 3){ availability.innerText = ''; return; }
-    if(!validateUsername(u)){ availability.innerText = 'Invalid: only a-z 0-9, 3-30 chars'; availability.className='availability avail-no'; return; }
-    const exists = await usernameExists(u);
-    if(exists){ availability.innerText = '❌ Not Available'; availability.className='availability avail-no'; }
-    else{ availability.innerText = '✅ Available'; availability.className='availability avail-yes'; }
-}
+document.getElementById('cancelBtn').onclick = () => document.getElementById('editModal').style.display = 'none';
 
 // ========== SAVE ==========
 document.getElementById('saveBtn').onclick = async () => {
-    const u = usernameInput.value;
-    if(!validateUsername(u)) return showToast('Invalid Username', 'error');
-    if(await usernameExists(u)) return showToast('Username already taken', 'error');
-    
+    const data = {};
+    document.querySelectorAll('#formFields input, #formFields select').forEach(inp=>{
+        const key = inp.id.replace('field-','');
+        let val = inp.value;
+        if(val === 'true') val = true;
+        if(val === 'false') val = false;
+        if(!isNaN(val) && val!== '') val = Number(val);
+        data[key] = val;
+    });
+    data.updatedAt = serverTimestamp();
+
     try{
-        await updateDoc(doc(db,"users",currentEditingId),{
-            username: u,
-            usernameLower: makeUsernameLower(u),
-            usernameCreatedAt: serverTimestamp(),
-            usernameUpdatedAt: serverTimestamp(),
-            updatedByAdmin: true,
-            updatedByUID: auth.currentUser.uid,
-            updatedByEmail: auth.currentUser.email
-        });
-        const seller = allSellers.find(s=>s.uid===currentEditingId);
-        seller.username = u;
-        seller.usernameLower = makeUsernameLower(u);
-        renderCard(seller);
-        modal.style.display = 'none';
-        updateStats();
-        showToast('Username Saved Successfully');
-    }catch(e){ showToast('Save Failed: '+e.message, 'error'); }
+        if(isNewUser){
+            await setDoc(doc(db,"users",currentEditingId), data);
+            allUsers.unshift({uid:currentEditingId,...data});
+        }else{
+            await updateDoc(doc(db,"users",currentEditingId), data);
+            const user = allUsers.find(u=>u.uid===currentEditingId);
+            Object.assign(user, data);
+        }
+        renderCard(allUsers.find(u=>u.uid===currentEditingId));
+        document.getElementById('editModal').style.display = 'none';
+        showToast('Saved Successfully');
+    }catch(e){ showToast('Error: '+e.message, 'error'); }
 }
 
-// ========== BULK GENERATE ==========
-document.getElementById('bulkGenerate').onclick = async () => {
-    if(selected.size === 0) return showToast('Select sellers first', 'error');
-    const toProcess = allSellers.filter(s => selected.has(s.uid) && !s.username);
-    if(toProcess.length === 0) return showToast('Selected sellers already have username', 'error');
-    
-    for(const s of toProcess){
-        const base = (s.shopName || 'shop').toLowerCase().replace(/[^a-z0-9]/g,'').substring(0,15) || 'shop';
-        let suggested = base; let i=1;
-        while(await usernameExists(suggested)){ suggested = base + i; i++; }
-        
-        await updateDoc(doc(db,"users",s.uid),{
-            username: suggested,
-            usernameLower: makeUsernameLower(suggested),
-            usernameCreatedAt: serverTimestamp(),
-            updatedByAdmin: true,
-            updatedByUID: auth.currentUser.uid,
-            updatedByEmail: auth.currentUser.email
-        });
-        s.username = suggested;
-        s.usernameLower = makeUsernameLower(suggested);
-        renderCard(s);
-    }
-    updateStats();
-    showToast(`${toProcess.length} Username Generated`);
-    selected.clear();
+// ========== DELETE ==========
+window.openDelete = (uid) => {
+    currentEditingId = uid;
+    document.getElementById('confirmModal').style.display = 'flex';
+}
+document.getElementById('confirmCancel').onclick = () => document.getElementById('confirmModal').style.display = 'none';
+document.getElementById('confirmDelete').onclick = async () => {
+    try{
+        await deleteDoc(doc(db,"users",currentEditingId));
+        allUsers = allUsers.filter(u=>u.uid!== currentEditingId);
+        document.getElementById('card-'+currentEditingId).remove();
+        document.getElementById('confirmModal').style.display = 'none';
+        showToast('Deleted Successfully');
+    }catch(e){ showToast('Delete Failed', 'error'); }
 }
 
-document.getElementById('loadMore').onclick = loadSellers;
-
-// ========== INIT ==========
-async function init(){
-    // preload existing usernames
-    const snap = await getDocs(query(collection(db,"users"), where("usernameLower","!=",null), limit(2000)));
-    snap.forEach(d => { if(d.data().usernameLower) usernameCache.add(d.data().usernameLower); });
-    loadSellers();
-}
+document.getElementById('loadMore').onclick = loadUsers;
 </script>
 </body>
 </html>
