@@ -1,0 +1,1244 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GHOTI MARKET - Admin Notifications</title>
+
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet">
+<!-- Font Awesome -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+<style>
+  :root {
+    --orange: #FF6A00;
+    --orange-light: #FFF4EC;
+    --orange-dark: #E55F00;
+    --white: #FFFFFF;
+    --text: #1A1A1A;
+    --text-light: #666666;
+    --border: rgba(255, 106, 0, 0.15);
+    --shadow: 0 10px 30px rgba(255, 106, 0, 0.1);
+    --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Hind Siliguri', sans-serif;
+  }
+
+  body {
+    background: linear-gradient(135deg, #FFF4EC 0%, #FFF9F5 50%, #FFFFFF 100%);
+    color: var(--text);
+    min-height: 100vh;
+    padding-bottom: 50px;
+  }
+
+  /* Header */
+  header {
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    padding: 15px 20px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.03);
+  }
+
+  .header-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+  }
+
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--orange);
+  }
+
+  .admin-profile {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: var(--orange-light);
+    padding: 6px 15px;
+    border-radius: 50px;
+    border: 1px solid var(--border);
+  }
+
+  .admin-avatar {
+    width: 35px;
+    height: 35px;
+    background: var(--orange);
+    color: var(--white);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+  }
+
+  .admin-info {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .admin-email {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text);
+  }
+
+  .admin-badge {
+    font-size: 10px;
+    color: var(--orange);
+    font-weight: 700;
+    text-transform: uppercase;
+  }
+
+  /* Main Container */
+  .container {
+    max-width: 1200px;
+    margin: 30px auto;
+    padding: 0 20px;
+    display: grid;
+    grid-template-columns: 400px 1fr;
+    gap: 30px;
+  }
+
+  @media(max-width: 968px) {
+    .container {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  /* Glass Card */
+  .glass-card {
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid var(--border);
+    border-radius: 24px;
+    padding: 25px;
+    box-shadow: var(--shadow);
+    transition: var(--transition);
+  }
+
+  /* Form Styles */
+  .form-title {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .form-title i {
+    color: var(--orange);
+  }
+
+  .form-group {
+    margin-bottom: 16px;
+  }
+
+  .form-label {
+    display: block;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 6px;
+  }
+
+  .form-control {
+    width: 100%;
+    padding: 12px 16px;
+    background: rgba(255, 255, 255, 0.9);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: 12px;
+    font-size: 14px;
+    color: var(--text);
+    transition: var(--transition);
+    outline: none;
+  }
+
+  .form-control:focus {
+    border-color: var(--orange);
+    box-shadow: 0 0 0 3px rgba(255, 106, 0, 0.15);
+    background: var(--white);
+  }
+
+  textarea.form-control {
+    resize: vertical;
+    min-height: 100px;
+  }
+
+  /* Upload Preview */
+  .upload-container {
+    border: 2px dashed rgba(255, 106, 0, 0.3);
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
+    background: var(--orange-light);
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    transition: var(--transition);
+  }
+
+  .upload-container:hover {
+    border-color: var(--orange);
+    background: rgba(255, 106, 0, 0.08);
+  }
+
+  .upload-input {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    cursor: pointer;
+  }
+
+  .upload-placeholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    color: var(--text-light);
+    font-size: 13px;
+  }
+
+  .upload-placeholder i {
+    font-size: 24px;
+    color: var(--orange);
+  }
+
+  .preview-box {
+    margin-top: 10px;
+    position: relative;
+    border-radius: 8px;
+    overflow: hidden;
+    max-height: 150px;
+    display: none;
+  }
+
+  .preview-box img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 8px;
+  }
+
+  .remove-image {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    background: rgba(0,0,0,0.6);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 25px;
+    height: 25px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+  }
+
+  /* Progress Bar */
+  .progress-bar-container {
+    width: 100%;
+    height: 6px;
+    background: rgba(0,0,0,0.05);
+    border-radius: 3px;
+    margin-top: 10px;
+    overflow: hidden;
+    display: none;
+  }
+
+  .progress-bar {
+    width: 0%;
+    height: 100%;
+    background: var(--orange);
+    transition: width 0.2s ease;
+  }
+
+  /* Buttons & Ripple */
+  .btn {
+    width: 100%;
+    padding: 14px;
+    background: linear-gradient(135deg, var(--orange) 0%, #FF8533 100%);
+    color: var(--white);
+    border: none;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    box-shadow: 0 4px 15px rgba(255, 106, 0, 0.3);
+    position: relative;
+    overflow: hidden;
+    transition: var(--transition);
+  }
+
+  .btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(255, 106, 0, 0.4);
+  }
+
+  .btn:active {
+    transform: translateY(0);
+  }
+
+  .btn:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+    transform: none;
+  }
+
+  .ripple {
+    position: absolute;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.4);
+    transform: scale(0);
+    animation: rippleEffect 0.6s linear;
+    pointer-events: none;
+  }
+
+  @keyframes rippleEffect {
+    to {
+      transform: scale(4);
+      opacity: 0;
+    }
+  }
+
+  /* Right Section Controls */
+  .dashboard-main {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .controls-bar {
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .search-box {
+    flex: 1;
+    min-width: 250px;
+    position: relative;
+  }
+
+  .search-box i {
+    position: absolute;
+    left: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-light);
+  }
+
+  .search-box input {
+    padding-left: 45px;
+  }
+
+  .sort-select {
+    width: 180px;
+  }
+
+  /* Notification List / Grid */
+  .notification-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+  }
+
+  .notif-card {
+    background: rgba(255, 255, 255, 0.9);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 20px;
+    display: flex;
+    gap: 20px;
+    position: relative;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.02);
+    transition: var(--transition);
+  }
+
+  .notif-card:hover {
+    box-shadow: 0 8px 25px rgba(255, 106, 0, 0.08);
+    border-color: rgba(255, 106, 0, 0.3);
+  }
+
+  .notif-img {
+    width: 100px;
+    height: 100px;
+    border-radius: 12px;
+    object-fit: cover;
+    flex-shrink: 0;
+    background: var(--orange-light);
+  }
+
+  .notif-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .notif-header-row {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 10px;
+  }
+
+  .notif-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text);
+  }
+
+  .notif-badge {
+    background: var(--orange-light);
+    color: var(--orange);
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+    border: 1px solid var(--border);
+  }
+
+  .notif-message {
+    font-size: 14px;
+    color: var(--text-light);
+    line-height: 1.5;
+    white-space: pre-line;
+  }
+
+  .notif-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-top: 8px;
+    font-size: 12px;
+    color: var(--text-light);
+  }
+
+  .notif-meta span {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+
+  .notif-meta i {
+    color: var(--orange);
+  }
+
+  .notif-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 10px;
+  }
+
+  .action-btn {
+    padding: 6px 12px;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    transition: var(--transition);
+  }
+
+  .btn-edit {
+    background: rgba(33, 150, 243, 0.1);
+    color: #1976D2;
+  }
+
+  .btn-edit:hover {
+    background: rgba(33, 150, 243, 0.2);
+  }
+
+  .btn-delete {
+    background: rgba(244, 67, 54, 0.1);
+    color: #D32F2F;
+  }
+
+  .btn-delete:hover {
+    background: rgba(244, 67, 54, 0.2);
+  }
+
+  /* Empty State */
+  .empty-state {
+    text-align: center;
+    padding: 50px 20px;
+    background: rgba(255,255,255,0.5);
+    border-radius: 16px;
+    border: 1px dashed var(--border);
+  }
+
+  .empty-icon {
+    font-size: 48px;
+    color: var(--orange);
+    margin-bottom: 15px;
+    animation: float 3s ease-in-out infinite;
+  }
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
+  }
+
+  .empty-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 5px;
+  }
+
+  .empty-desc {
+    font-size: 13px;
+    color: var(--text-light);
+  }
+
+  /* Skeleton Loaders */
+  .skeleton {
+    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+    border-radius: 8px;
+  }
+
+  @keyframes shimmer {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+  }
+
+  .skeleton-card {
+    background: rgba(255,255,255,0.8);
+    border-radius: 16px;
+    padding: 20px;
+    display: flex;
+    gap: 20px;
+    border: 1px solid var(--border);
+  }
+
+  .skeleton-img {
+    width: 100px;
+    height: 100px;
+    border-radius: 12px;
+  }
+
+  .skeleton-lines {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .skeleton-line {
+    height: 14px;
+  }
+
+  /* Modals */
+  .modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(5px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    opacity: 0;
+    visibility: hidden;
+    transition: var(--transition);
+  }
+
+  .modal-overlay.active {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  .modal {
+    background: var(--white);
+    border-radius: 20px;
+    padding: 30px;
+    width: 90%;
+    max-width: 450px;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+    transform: scale(0.9);
+    transition: var(--transition);
+  }
+
+  .modal-overlay.active .modal {
+    transform: scale(1);
+  }
+
+  .modal-title {
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 10px;
+  }
+
+  .modal-desc {
+    font-size: 14px;
+    color: var(--text-light);
+    margin-bottom: 20px;
+  }
+
+  .modal-actions {
+    display: flex;
+    gap: 10px;
+  }
+
+  .btn-secondary {
+    background: rgba(0,0,0,0.05);
+    color: var(--text);
+    box-shadow: none;
+  }
+  .btn-secondary:hover {
+    background: rgba(0,0,0,0.1);
+  }
+
+  .btn-danger {
+    background: #D32F2F;
+    box-shadow: 0 4px 15px rgba(211, 47, 47, 0.3);
+  }
+
+  /* Toast Notifications */
+  #toast-container {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 2000;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .toast {
+    background: var(--white);
+    padding: 14px 20px;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 14px;
+    font-weight: 600;
+    border-left: 4px solid var(--orange);
+    animation: slideIn 0.3s ease forwards;
+    max-width: 350px;
+  }
+
+  .toast.success { border-left-color: #4CAF50; }
+  .toast.success i { color: #4CAF50; }
+
+  .toast.error { border-left-color: #F44336; }
+  .toast.error i { color: #F44336; }
+
+  @keyframes slideIn {
+    from { transform: translateX(100%); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+  }
+
+  @keyframes fadeOut {
+    to { transform: translateX(100%); opacity: 0; }
+  }
+
+  /* Responsive Adjustments */
+  @media(max-width: 600px) {
+    .notif-card {
+      flex-direction: column;
+    }
+    .notif-img {
+      width: 100%;
+      height: 150px;
+    }
+  }
+</style>
+</head>
+<body>
+
+  <!-- Sticky Header -->
+  <header>
+    <div class="header-container">
+      <div class="brand">
+        <i class="fa-solid fa-bullhorn"></i>
+        <span>GHOTI ADMIN</span>
+      </div>
+      <div class="admin-profile">
+        <div class="admin-avatar" id="adminAvatar">A</div>
+        <div class="admin-info">
+          <span class="admin-email" id="adminEmailHeader">Loading...</span>
+          <span class="admin-badge">Authorized Admin</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Grid Layout -->
+  <div class="container">
+    
+    <!-- Left Column: Notification Form -->
+    <div class="glass-card">
+      <div class="form-title">
+        <i class="fa-solid fa-circle-plus"></i>
+        <span id="formTitleText">Create Notification</span>
+      </div>
+      
+      <form id="notificationForm">
+        <input type="hidden" id="editNotificationId" value="">
+        
+        <div class="form-group">
+          <label class="form-label">Notification Title *</label>
+          <input type="text" id="notifTitle" class="form-control" placeholder="Enter title..." required>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Notification Message *</label>
+          <textarea id="notifMessage" class="form-control" placeholder="Write detailed message..." required></textarea>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Notification Email (Optional)</label>
+          <input type="email" id="notifEmail" class="form-control" placeholder="admin@ghotimarket.com">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Click Link (Optional)</label>
+          <input type="url" id="notifLink" class="form-control" placeholder="https://ghotimarket.com/...">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Banner Image (Optional)</label>
+          <div class="upload-container" id="uploadContainer">
+            <input type="file" id="notifImageFile" class="upload-input" accept="image/*">
+            <div class="upload-placeholder" id="uploadPlaceholder">
+              <i class="fa-solid fa-cloud-arrow-up"></i>
+              <span>Click or Drag image to upload</span>
+            </div>
+            <div class="preview-box" id="previewBox">
+              <img id="imagePreview" src="" alt="Preview">
+              <button type="button" class="remove-image" id="removeImageBtn"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+          </div>
+          <div class="progress-bar-container" id="progressBarContainer">
+            <div class="progress-bar" id="progressBar"></div>
+          </div>
+        </div>
+
+        <button type="submit" class="btn" id="sendBtn">
+          <i class="fa-solid fa-paper-plane" id="sendBtnIcon"></i>
+          <span id="sendBtnText">Send Notification</span>
+        </button>
+        <button type="button" class="btn btn-secondary" id="cancelEditBtn" style="display: none; margin-top: 10px;">
+          Cancel Edit
+        </button>
+      </form>
+    </div>
+
+    <!-- Right Column: Dashboard List & Controls -->
+    <div class="dashboard-main">
+      
+      <div class="glass-card controls-bar">
+        <div class="search-box form-group" style="margin-bottom:0;">
+          <i class="fa-solid fa-magnifying-glass"></i>
+          <input type="text" id="searchInput" class="form-control" placeholder="Search by title, message, email...">
+        </div>
+        <div class="form-group" style="margin-bottom:0;">
+          <select id="sortSelect" class="form-control sort-select">
+            <option value="newest">Newest First</option>
+            <option value="oldest">Oldest First</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Notification Realtime Container -->
+      <div class="notification-list" id="notificationList">
+        <!-- Skeleton Loaders initially -->
+        <div class="skeleton-card">
+          <div class="skeleton skeleton-img"></div>
+          <div class="skeleton-lines">
+            <div class="skeleton skeleton-line" style="width: 60%;"></div>
+            <div class="skeleton skeleton-line" style="width: 100%;"></div>
+            <div class="skeleton skeleton-line" style="width: 40%;"></div>
+          </div>
+        </div>
+        <div class="skeleton-card">
+          <div class="skeleton skeleton-img"></div>
+          <div class="skeleton-lines">
+            <div class="skeleton skeleton-line" style="width: 60%;"></div>
+            <div class="skeleton skeleton-line" style="width: 100%;"></div>
+            <div class="skeleton skeleton-line" style="width: 40%;"></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- Delete Confirmation Modal -->
+  <div class="modal-overlay" id="deleteModal">
+    <div class="modal">
+      <div class="modal-title">Delete Notification?</div>
+      <div class="modal-desc">Are you sure you want to delete this notification? This action cannot be undone.</div>
+      <div class="modal-actions">
+        <button class="btn btn-secondary" id="cancelDeleteBtn">Cancel</button>
+        <button class="btn btn-danger" id="confirmDeleteBtn">Delete</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Container -->
+  <div id="toast-container"></div>
+
+  <!-- Firebase Modular Scripts & Application Logic -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    import { getFirestore, collection, addDoc, updateDoc, deleteDoc, doc, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+    // Firebase Configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyBUhNhYvuo_FTvZ5RZR6Gn-4hsUY21S0XE",
+      authDomain: "ghotimarket.firebaseapp.com",
+      databaseURL: "https://ghotimarket-default-rtdb.firebaseio.com",
+      projectId: "ghotimarket",
+      storageBucket: "ghotimarket.firebasestorage.app",
+      messagingSenderId: "481257644093",
+      appId: "1:481257644093:web:0dfc3699d6b3c86afeca54"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    const ALLOWED_ADMIN = "support@ghotimarket.com";
+    let currentUser = null;
+    let uploadedImageUrl = "";
+    let notificationsData = [];
+    let deleteTargetId = null;
+
+    // DOM Elements
+    const adminEmailHeader = document.getElementById('adminEmailHeader');
+    const adminAvatar = document.getElementById('adminAvatar');
+    const notificationForm = document.getElementById('notificationForm');
+    const formTitleText = document.getElementById('formTitleText');
+    const editNotificationId = document.getElementById('editNotificationId');
+    const notifTitle = document.getElementById('notifTitle');
+    const notifMessage = document.getElementById('notifMessage');
+    const notifEmail = document.getElementById('notifEmail');
+    const notifLink = document.getElementById('notifLink');
+    const notifImageFile = document.getElementById('notifImageFile');
+    const uploadPlaceholder = document.getElementById('uploadPlaceholder');
+    const previewBox = document.getElementById('previewBox');
+    const imagePreview = document.getElementById('imagePreview');
+    const removeImageBtn = document.getElementById('removeImageBtn');
+    const progressBarContainer = document.getElementById('progressBarContainer');
+    const progressBar = document.getElementById('progressBar');
+    const sendBtn = document.getElementById('sendBtn');
+    const sendBtnText = document.getElementById('sendBtnText');
+    const sendBtnIcon = document.getElementById('sendBtnIcon');
+    const cancelEditBtn = document.getElementById('cancelEditBtn');
+    const notificationList = document.getElementById('notificationList');
+    const searchInput = document.getElementById('searchInput');
+    const sortSelect = document.getElementById('sortSelect');
+    const deleteModal = document.getElementById('deleteModal');
+    const cancelDeleteBtn = document.getElementById('cancelDeleteBtn');
+    const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
+
+    // Toast Utility
+    function showToast(message, type = 'success') {
+      const container = document.getElementById('toast-container');
+      const toast = document.createElement('div');
+      toast.className = `toast ${type}`;
+      toast.innerHTML = `
+        <i class="fa-solid ${type === 'success' ? 'fa-circle-check' : 'fa-circle-exclamation'}"></i>
+        <span>${message}</span>
+      `;
+      container.appendChild(toast);
+      setTimeout(() => {
+        toast.style.animation = 'fadeOut 0.3s ease forwards';
+        setTimeout(() => toast.remove(), 300);
+      }, 3500);
+    }
+
+    // Ripple Effect Utility
+    function createRipple(event) {
+      const button = event.currentTarget;
+      const ripple = document.createElement('span');
+      const rect = button.getBoundingClientRect();
+      const size = Math.max(rect.width, rect.height);
+      ripple.style.width = ripple.style.height = `${size}px`;
+      ripple.style.left = `${event.clientX - rect.left - size / 2}px`;
+      ripple.style.top = `${event.clientY - rect.top - size / 2}px`;
+      ripple.className = 'ripple';
+      button.appendChild(ripple);
+      setTimeout(() => ripple.remove(), 600);
+    }
+
+    // Auth Protection Check
+    onAuthStateChanged(auth, async (user) => {
+      if (!user) {
+        window.location.href = 'index.html';
+        return;
+      }
+      if (user.email !== ALLOWED_ADMIN) {
+        try {
+          await signOut(auth);
+        } catch (e) {
+          console.error(e);
+        }
+        window.location.href = 'index.html';
+        return;
+      }
+
+      currentUser = user;
+      adminEmailHeader.textContent = user.email;
+      adminAvatar.textContent = user.email.charAt(0).toUpperCase();
+
+      // Initialize Realtime Listeners after auth verification
+      initRealtimeNotifications();
+    });
+
+    // ImgBB Upload Handler
+    async function uploadToImgBB(file) {
+      const apiKey = "4a123a31c54b238d2a6cfcd6a57865c3"; // ImgBB free tier key mapping for system integration
+      const formData = new FormData();
+      formData.append('image', file);
+
+      progressBarContainer.style.display = 'block';
+      progressBar.style.width = '30%';
+
+      try {
+        progressBar.style.width = '60%';
+        const response = await fetch(`https://api.imgbb.com/1/upload?key=e103f56e30129a007137f265b38d3567`, {
+          method: 'POST',
+          body: formData
+        });
+        
+        progressBar.style.width = '90%';
+        const data = await response.json();
+        
+        if (data.success) {
+          progressBar.style.width = '100%';
+          setTimeout(() => { progressBarContainer.style.display = 'none'; progressBar.style.width = '0%'; }, 500);
+          return data.data.url;
+        } else {
+          throw new Error(data.error?.message || "Image upload failed");
+        }
+      } catch (err) {
+        progressBarContainer.style.display = 'none';
+        progressBar.style.width = '0%';
+        throw err;
+      }
+    }
+
+    // Image Input Selection Event
+    notifImageFile.addEventListener('change', async (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      try {
+        sendBtn.disabled = true;
+        sendBtnText.textContent = "Uploading Image...";
+        
+        // Local preview immediately
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          imagePreview.src = e.target.result;
+          previewBox.style.display = 'block';
+          uploadPlaceholder.style.display = 'none';
+        };
+        reader.readAsDataURL(file);
+
+        // Upload to ImgBB
+        uploadedImageUrl = await uploadToImgBB(file);
+        showToast("Image uploaded successfully!", "success");
+      } catch (err) {
+        showToast(err.message || "Failed to upload image", "error");
+        clearImageSelection();
+      } finally {
+        sendBtn.disabled = false;
+        sendBtnText.textContent = editNotificationId.value ? "Update Notification" : "Send Notification";
+      }
+    });
+
+    function clearImageSelection() {
+      notifImageFile.value = "";
+      uploadedImageUrl = "";
+      imagePreview.src = "";
+      previewBox.style.display = 'none';
+      uploadPlaceholder.style.display = 'flex';
+    }
+
+    removeImageBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      clearImageSelection();
+    });
+
+    // Bengali Locale Date Formatting Helper
+    function formatBengaliDateTime(timestamp) {
+      if (!timestamp) return "Just now";
+      const date = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
+      
+      const months = ["জানুয়ারি", "ফেব্রুয়ারি", "মার্চ", "এপ্রিল", "মে", "জুন", "জুলাই", "আগস্ট", "সেপ্টেম্বর", "অক্টোবর", "নভেম্বর", "ডিসেম্বর"];
+      const day = date.getDate();
+      const month = months[date.getMonth()];
+      const year = date.getFullYear();
+
+      // Convert numbers to Bengali digits mapping
+      const bnDigits = ['০', '১', '২', '৩', '৪', '৫', '৬', '৭', '৮', '৯'];
+      const toBnNum = (str) => String(str).replace(/\d/g, d => bnDigits[d]);
+
+      const formattedDay = toBnNum(day);
+      const formattedYear = toBnNum(year);
+
+      let hours = date.getHours();
+      const minutes = String(date.getMinutes()).padStart(2, '0');
+      const ampm = hours >= 12 ? 'PM' : 'AM';
+      hours = hours % 12;
+      hours = hours ? hours : 12;
+      const formattedTime = `${toBnNum(hours)}:${toBnNum(minutes)} ${ampm}`;
+
+      return `${formattedDay} ${month} ${formattedYear}<br>${formattedTime}`;
+    }
+
+    // Render Notification List
+    function renderNotifications() {
+      const searchTerm = searchInput.value.toLowerCase().trim();
+      const sortOrder = sortSelect.value;
+
+      let filtered = notificationsData.filter(item => {
+        const title = (item.title || "").toLowerCase();
+        const message = (item.message || "").toLowerCase();
+        const email = (item.email || "").toLowerCase();
+        return title.includes(searchTerm) || message.includes(searchTerm) || email.includes(searchTerm);
+      });
+
+      filtered.sort((a, b) => {
+        const timeA = a.createdAt?.toMillis ? a.createdAt.toMillis() : (a.createdAt?.seconds ? a.createdAt.seconds * 1000 : 0);
+        const timeB = b.createdAt?.toMillis ? b.createdAt.toMillis() : (b.createdAt?.seconds ? b.createdAt.seconds * 1000 : 0);
+        return sortOrder === 'newest' ? timeB - timeA : timeA - timeB;
+      });
+
+      if (filtered.length === 0) {
+        notificationList.innerHTML = `
+          <div class="empty-state">
+            <div class="empty-icon"><i class="fa-solid fa-bell-slash"></i></div>
+            <div class="empty-title">No Notifications Found</div>
+            <div class="empty-desc">Create your first notification using the form on the left.</div>
+          </div>
+        `;
+        return;
+      }
+
+      notificationList.innerHTML = filtered.map(item => `
+        <div class="notif-card" data-id="${item.id}">
+          ${item.image ? `<img src="${item.image}" class="notif-img" alt="Banner">` : ''}
+          <div class="notif-content">
+            <div class="notif-header-row">
+              <span class="notif-title">${escapeHtml(item.title)}</span>
+              <span class="notif-badge">Admin Broadcast</span>
+            </div>
+            <div class="notif-message">${escapeHtml(item.message)}</div>
+            <div class="notif-meta">
+              ${item.email ? `<span><i class="fa-solid fa-envelope"></i> ${escapeHtml(item.email)}</span>` : ''}
+              ${item.link ? `<span><i class="fa-solid fa-link"></i> <a href="${escapeHtml(item.link)}" target="_blank" style="color:var(--orange);text-decoration:none;">Open Link</a></span>` : ''}
+              <span><i class="fa-regular fa-calendar-days"></i> ${formatBengaliDateTime(item.createdAt)}</span>
+              <span><i class="fa-solid fa-user-shield"></i> ${escapeHtml(item.createdByEmail || 'Admin')}</span>
+            </div>
+            <div class="notif-actions">
+              <button class="action-btn btn-edit" onclick="window.prepareEdit('${item.id}')">
+                <i class="fa-solid fa-pen"></i> Edit
+              </button>
+              <button class="action-btn btn-delete" onclick="window.prepareDelete('${item.id}')">
+                <i class="fa-solid fa-trash"></i> Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function escapeHtml(text) {
+      if (!text) return '';
+      return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+    }
+
+    // Realtime Firestore Listener
+    function initRealtimeNotifications() {
+      onSnapshot(collection(db, "notifications"), (snapshot) => {
+        notificationsData = snapshot.docs.map(docSnap => ({
+          id: docSnap.id,
+          ...docSnap.data()
+        }));
+        renderNotifications();
+      }, (error) => {
+        console.error("Firestore snapshot error:", error);
+        showToast("Failed to load realtime data", "error");
+      });
+    }
+
+    // Form Submit Handler (Create / Update)
+    notificationForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      createRipple(e);
+
+      const title = notifTitle.value.trim();
+      const message = notifMessage.value.trim();
+      const email = notifEmail.value.trim();
+      const link = notifLink.value.trim();
+      const docId = editNotificationId.value;
+
+      if (!title || !message) {
+        showToast("Please fill in all required fields", "error");
+        return;
+      }
+
+      sendBtn.disabled = true;
+      sendBtnText.textContent = docId ? "Updating..." : "Sending...";
+      sendBtnIcon.className = "fa-solid fa-spinner fa-spin";
+
+      try {
+        if (docId) {
+          // Update Document
+          await updateDoc(doc(db, "notifications", docId), {
+            title,
+            message,
+            email,
+            link,
+            image: uploadedImageUrl || "",
+            updatedAt: serverTimestamp()
+          });
+          showToast("Notification updated successfully!", "success");
+          resetFormState();
+        } else {
+          // Create New Document
+          await addDoc(collection(db, "notifications"), {
+            title,
+            message,
+            email,
+            link,
+            image: uploadedImageUrl || "",
+            createdAt: serverTimestamp(),
+            updatedAt: serverTimestamp(),
+            createdBy: currentUser.uid,
+            createdByEmail: currentUser.email
+          });
+          showToast("Notification sent successfully!", "success");
+          resetFormState();
+        }
+      } catch (err) {
+        console.error(err);
+        showToast(err.message || "Operation failed", "error");
+      } finally {
+        sendBtn.disabled = false;
+        sendBtnText.textContent = "Send Notification";
+        sendBtnIcon.className = "fa-solid fa-paper-plane";
+      }
+    });
+
+    function resetFormState() {
+      notificationForm.reset();
+      clearImageSelection();
+      editNotificationId.value = "";
+      formTitleText.textContent = "Create Notification";
+      sendBtnText.textContent = "Send Notification";
+      cancelEditBtn.style.display = "none";
+    }
+
+    cancelEditBtn.addEventListener('click', () => {
+      resetFormState();
+    });
+
+    // Global Edit & Delete Handlers
+    window.prepareEdit = function(id) {
+      const item = notificationsData.find(n => n.id === id);
+      if (!item) return;
+
+      editNotificationId.value = item.id;
+      notifTitle.value = item.title || "";
+      notifMessage.value = item.message || "";
+      notifEmail.value = item.email || "";
+      notifLink.value = item.link || "";
+      
+      if (item.image) {
+        uploadedImageUrl = item.image;
+        imagePreview.src = item.image;
+        previewBox.style.display = 'block';
+        uploadPlaceholder.style.display = 'none';
+      } else {
+        clearImageSelection();
+      }
+
+      formTitleText.textContent = "Edit Notification";
+      sendBtnText.textContent = "Update Notification";
+      cancelEditBtn.style.display = "block";
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
+
+    window.prepareDelete = function(id) {
+      deleteTargetId = id;
+      deleteModal.classList.add('active');
+    };
+
+    cancelDeleteBtn.addEventListener('click', () => {
+      deleteTargetId = null;
+      deleteModal.classList.remove('active');
+    });
+
+    confirmDeleteBtn.addEventListener('click', async () => {
+      if (!deleteTargetId) return;
+
+      try {
+        await deleteDoc(doc(db, "notifications", deleteTargetId));
+        showToast("Notification deleted successfully", "success");
+      } catch (err) {
+        console.error(err);
+        showToast("Failed to delete notification", "error");
+      } finally {
+        deleteTargetId = null;
+        deleteModal.classList.remove('active');
+      }
+    });
+
+    // Search and Sort Event Listeners
+    searchInput.addEventListener('input', renderNotifications);
+    sortSelect.addEventListener('change', renderNotifications);
+
+  </script>
+</body>
+</html>
