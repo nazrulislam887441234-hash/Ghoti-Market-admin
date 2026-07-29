@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>404 - Access Denied | GHOTI MARKET Admin</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;600;700&display=swap" rel="stylesheet">
+
+<style>
+:root{
+    --primary: #ff1744;
+    --primary-dark: #d50000;
+    --bg: #f5f5f5;
+    --card: #ffffff;
+    --text: #212121;
+    --text-sub: #757575;
+    --border: #e0e0e0;
+    --accent: #2563eb;
+}
+
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body{
+    font-family: 'Hind Siliguri', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    padding: 20px;
+}
+
+.error-container{
+    max-width: 480px;
+    width: 100%;
+    text-align: center;
+    background: var(--card);
+    padding: 50px 30px;
+    border-radius: 20px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.08);
+    border: 1px solid var(--border);
+}
+
+.error-icon{
+    font-size: 90px;
+    color: var(--primary);
+    margin-bottom: 25px;
+    animation: shake 1s ease infinite;
+}
+
+@keyframes shake{
+    0%, 100%{ transform: rotate(0deg); }
+    25%{ transform: rotate(-10deg); }
+    75%{ transform: rotate(10deg); }
+}
+
+.error-title{
+    font-size: 28px;
+    font-weight: 800;
+    margin-bottom: 15px;
+    color: var(--primary);
+}
+
+.error-desc{
+    font-size: 16px;
+    color: var(--text-sub);
+    line-height: 1.8;
+    margin-bottom: 30px;
+}
+
+.logo{
+    margin-bottom: 25px;
+}
+.logo img{
+    width: 70px;
+    height: 70px;
+    object-fit: contain;
+}
+
+.btn-group{
+    display: flex;
+    gap: 12px;
+    flex-direction: column;
+}
+
+.btn{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 15px 20px;
+    border-radius: 14px;
+    font-size: 16px;
+    font-weight: 700;
+    text-decoration: none;
+    transition: 0.3s;
+}
+
+.btn-shop{
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+    color: #fff;
+    box-shadow: 0 6px 15px rgba(255,23,68,0.25);
+}
+.btn-shop:hover{
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(255,23,68,0.35);
+}
+
+.btn-support{
+    background: #fff;
+    color: var(--accent);
+    border: 2px solid var(--accent);
+}
+.btn-support:hover{
+    background: rgba(37,99,235,0.05);
+}
+
+@media (max-width: 600px){
+    .error-container{ padding: 40px 20px; }
+    .error-title{ font-size: 24px; }
+}
+</style>
+</head>
+<body>
+
+<div class="error-container">
+    <div class="logo">
+        <img src="https://ghotimarket.com/logo.png" alt="Ghoti Market">
+    </div>
+
+    <div class="error-icon">
+        <i class="fas fa-ban"></i>
+    </div>
+
+    <h1 class="error-title">আপনি অ্যাডমিন না</h1>
+    <p class="error-desc">
+        এই পেজটি শুধুমাত্র অ্যাডমিন প্যানেলের জন্য।<br>
+        আপনার প্রবেশাধিকার নেই।<br><br>
+        তবে আপনি আমাদের ওয়েবসাইট থেকে কেনাকাটা করতে পারেন।
+    </p>
+
+    <div class="btn-group">
+        <a href="https://ghotimarket.com" class="btn btn-shop">
+            <i class="fas fa-store"></i> কেনাকাটা করুন
+        </a>
+        <a href="https://ghotimarket.com/contact" class="btn btn-support">
+            <i class="fas fa-headset"></i> সাপোর্টে যোগাযোগ করুন
+        </a>
+    </div>
+
+</div>
+
+</body>
+</html>
