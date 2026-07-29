@@ -275,7 +275,14 @@ window.closeModal = () => document.getElementById('detailsModal').classList.remo
 // 7. UPDATE FIELD
 window.updateField = async (id, field, value) => {
   if(value==='Update Status'||value==='Payment'||value==='Delivery') return;
-  await updateDoc(doc(db,"orders",id), {[field]: value});
+  const order = allOrders.find(o => o.id === id);
+  if(!order) return;
+  
+  await Promise.all([
+    updateDoc(doc(db,"orders",id), {[field]: value}),
+    updateDoc(doc(db,"order_tracking",order.orderTrackId), {[field]: value})
+  ]);
+  
   showToast(`${field} updated!`);
 }
 
@@ -286,7 +293,14 @@ window.deleteOrder = (id) => {
 }
 window.closeConfirm = () => document.getElementById('confirmModal').classList.remove('show');
 document.getElementById('confirmDeleteBtn').onclick = async () => {
-  await deleteDoc(doc(db,"orders",deleteId));
+  const order = allOrders.find(o => o.id === deleteId);
+  if(!order) return;
+
+  await Promise.all([
+    deleteDoc(doc(db,"orders",deleteId)),
+    deleteDoc(doc(db,"order_tracking",order.orderTrackId))
+  ]);
+
   closeConfirm();
   showToast('Order Deleted!');
 }
