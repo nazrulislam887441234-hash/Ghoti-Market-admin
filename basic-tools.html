@@ -38,6 +38,60 @@
         .img-preview { width: 100%; border-radius: 8px; margin-top: 8px; max-height: 180px; object-fit: cover; }
         .delete-icon { color: var(--danger); font-size: 20px; cursor: pointer; padding: 5px; }
         .action-btn { padding: 5px 10px; border-radius: 5px; border: none; color: white; cursor: pointer; font-size: 12px; margin-left: 5px; }
+
+        /* Professional Sticky Search and Filter UI */
+        .sticky-controls {
+            position: sticky;
+            top: 0;
+            background: var(--bg);
+            padding: 10px 0;
+            z-index: 100;
+            margin-bottom: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .search-bar-container {
+            position: relative;
+            width: 100%;
+        }
+        .search-bar-container i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #7f8c8d;
+        }
+        .search-input {
+            width: 100%;
+            padding: 12px 15px 12px 45px;
+            border: 1px solid #ddd;
+            border-radius: 25px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            box-sizing: border-box;
+            font-size: 14px;
+            font-family: 'Hind Siliguri', sans-serif;
+            outline: none;
+            transition: all 0.2s;
+            background: white;
+        }
+        .search-input:focus {
+            border-color: var(--accent);
+            box-shadow: 0 4px 12px rgba(52, 152, 219, 0.15);
+        }
+        .filter-select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 12px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+            box-sizing: border-box;
+            font-size: 14px;
+            font-family: 'Hind Siliguri', sans-serif;
+            background: white;
+            outline: none;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
@@ -66,69 +120,61 @@
         <div class="card" onclick="openSection('verify-sec')"><i class="fas fa-user-check"></i><h3>ভেরিফিকেশন চেক</h3></div>
         <div class="card" onclick="openSection('unlock-sec')"><i class="fas fa-unlock"></i><h3>প্রোফাইল আনলক</h3></div>
         <div class="card" onclick="openSection('user-sec')"><i class="fas fa-user-slash"></i><h3>ইউজার ব্যান</h3></div>
-        <div class="card" onclick="openSection('prod-sec')"><i class="fas fa-box"></i><h3>পণ্যসমূহ</h3></div>
-        <div class="card" onclick="openSection('req-sec')"><i class="fas fa-paper-plane"></i><h3>অ্যাড রিকোয়েস্ট</h3></div>
-        <div class="card" onclick="openSection('banner-sec')"><i class="fas fa-images"></i><h3>হোমপেইজ ব্যানার</h3></div>
-        <div class="card" onclick="openSection('home-ad-sec')"><i class="fas fa-ad"></i><h3>হোমপেইজ অ্যাড</h3></div>
-        <div class="card" onclick="openSection('prod-ad-sec')"><i class="fas fa-cart-arrow-down"></i><h3>পণ্যের নিচে অ্যাড</h3></div>
-        <div class="card" onclick="openSection('uid-sec')"><i class="fas fa-id-card"></i><h3>ইউআইডি তালিকা</h3></div>
     </div>
 
     <div id="verify-sec" class="section">
         <button class="back-btn" onclick="goBack()"><i class="fas fa-arrow-left"></i> ফিরে যান</button>
         <h2>Seller Verification</h2>
+        <div class="sticky-controls">
+            <div class="search-bar-container">
+                <i class="fas fa-search"></i>
+                <input type="text" id="verify-search" class="search-input" placeholder="ইমেইল, দোকানের নাম বা UID লিখে খুঁজুন" oninput="filterVerifyData()">
+            </div>
+            <select id="verify-filter" class="filter-select" onchange="filterVerifyData()">
+                <option value="all">All Users</option>
+                <option value="pending">Pending Verification</option>
+                <option value="verified">Verified Users</option>
+                <option value="rejected">Rejected</option>
+            </select>
+        </div>
         <div id="verify-list"></div>
     </div>
 
     <div id="unlock-sec" class="section">
         <button class="back-btn" onclick="goBack()"><i class="fas fa-arrow-left"></i> ফিরে যান</button>
         <h2>Profile Unlock Manager</h2>
+        <div class="sticky-controls">
+            <div class="search-bar-container">
+                <i class="fas fa-search"></i>
+                <input type="text" id="unlock-search" class="search-input" placeholder="ইমেইল, দোকানের নাম বা UID লিখে খুঁজুন" oninput="filterUnlockData()">
+            </div>
+            <select id="unlock-filter" class="filter-select" onchange="filterUnlockData()">
+                <option value="all">All</option>
+                <option value="unlocked">Unlocked</option>
+                <option value="locked">Locked</option>
+                <option value="expired">Expired Unlock</option>
+            </select>
+        </div>
         <div id="unlock-list"></div>
     </div>
 
     <div id="user-sec" class="section">
         <button class="back-btn" onclick="goBack()"><i class="fas fa-arrow-left"></i> ফিরে যান</button>
         <h2>ইউজার তালিকা</h2>
+        <div class="sticky-controls">
+            <div class="search-bar-container">
+                <i class="fas fa-search"></i>
+                <input type="text" id="user-search" class="search-input" placeholder="ইমেইল, দোকানের নাম বা UID লিখে খুঁজুন" oninput="filterUserData()">
+            </div>
+            <select id="user-filter" class="filter-select" onchange="filterUserData()">
+                <option value="all">All Users</option>
+                <option value="active">Active</option>
+                <option value="banned">Banned</option>
+                <option value="verified">Verified</option>
+                <option value="pending">Pending</option>
+            </select>
+        </div>
         <div id="user-list"></div>
-    </div>
-
-    <div id="prod-sec" class="section">
-        <button class="back-btn" onclick="goBack()"><i class="fas fa-arrow-left"></i> ফিরে যান</button>
-        <h2>পণ্যসমূহ</h2>
-        <div id="prod-list"></div>
-    </div>
-
-    <div id="req-sec" class="section">
-        <button class="back-btn" onclick="goBack()"><i class="fas fa-arrow-left"></i> ফিরে যান</button>
-        <h2>অ্যাড রিকোয়েস্ট</h2>
-        <div id="req-list"></div>
-    </div>
-
-    <div id="banner-sec" class="section">
-        <button class="back-btn" onclick="goBack()"><i class="fas fa-arrow-left"></i> ফিরে যান</button>
-        <h2>ব্যানার লিস্ট</h2>
-        <div id="banner-list"></div>
-        <button class="add-more-btn" onclick="uploadImg('banners')">আরো ব্যানার যোগ করুন</button>
-    </div>
-
-    <div id="home-ad-sec" class="section">
-        <button class="back-btn" onclick="goBack()"><i class="fas fa-arrow-left"></i> ফিরে যান</button>
-        <h2>হোমপেইজ অ্যাড লিস্ট</h2>
-        <div id="home-ad-list"></div>
-        <button class="add-more-btn" onclick="showAdModal('home_ads')">আরো অ্যাড যোগ করুন</button>
-    </div>
-
-    <div id="prod-ad-sec" class="section">
-        <button class="back-btn" onclick="goBack()"><i class="fas fa-arrow-left"></i> ফিরে যান</button>
-        <h2>পণ্যের নিচে অ্যাড লিস্ট</h2>
-        <div id="prod-ad-list"></div>
-        <button class="add-more-btn" onclick="showAdModal('product_ads')">আরো অ্যাড যোগ করুন</button>
-    </div>
-
-    <div id="uid-sec" class="section">
-        <button class="back-btn" onclick="goBack()"><i class="fas fa-arrow-left"></i> ফিরে যান</button>
-        <h2>ইউআইডি তালিকা</h2>
-        <div id="uid-list"></div>
     </div>
 
     <script type="module">
@@ -146,6 +192,8 @@
         const auth = getAuth(app);
         const imgbbKey = "e1da51b6d309ac3a5a235b5088ebc334";
 
+        let allUsersCache = [];
+
         // এডমিন লগইন চেক
         onAuthStateChanged(auth, (user) => {
             if (user && user.email === "support@ghotimarket.com") {
@@ -161,18 +209,13 @@
             } catch(e) { alert("লগইন ব্যর্থ! ইমেইল বা পাসওয়ার্ড চেক করুন।"); }
         }
 
-        let currentAdType = "";
-
         window.openSection = (id) => {
             document.getElementById('main-menu').style.display = 'none';
             document.querySelectorAll('.section').forEach(s => s.style.display = 'none');
             document.getElementById(id).style.display = 'block';
-            if(id === 'banner-sec') loadBanners();
-            if(id === 'home-ad-sec') loadAds('home_ads', 'home-ad-list');
-            if(id === 'prod-ad-sec') loadAds('product_ads', 'prod-ad-list');
-            if(id === 'user-sec' || id === 'uid-sec') loadUsers(id);
-            if(id === 'verify-sec') loadSellerRequests();
-            if(id === 'unlock-sec') loadUnlockProfiles();
+            if(id === 'user-sec' || id === 'verify-sec' || id === 'unlock-sec') {
+                fetchAllUsersAndRender(id);
+            }
         }
 
         window.goBack = () => {
@@ -180,41 +223,122 @@
             document.getElementById('main-menu').style.display = 'grid';
         }
 
-        async function loadSellerRequests() {
+        function fetchAllUsersAndRender(sectionId) {
             onSnapshot(collection(db, "users"), (snap) => {
-                let html = "";
+                allUsersCache = [];
                 snap.forEach(d => {
-                    const u = d.data();
-                    const statusText = u.verified ? "Verified" : "Pending";
-                    html += `<div class="item-list">
-                        <div><strong>${u.shopName || 'Shop'}</strong><br><small>${u.email}</small><br><small>${statusText}</small></div>
-                        <div>
-                            <button class="action-btn" style="background:var(--accent)" onclick="viewDetails('${d.id}')">View</button>
-                            <button class="action-btn" style="background:var(--success)" onclick="verifyUser('${d.id}', true)">Verify</button>
-                            <button class="action-btn" style="background:var(--danger)" onclick="deleteItem('users','${d.id}')">Delete</button>
-                        </div>
-                    </div>`;
+                    allUsersCache.push({ id: d.id, ...d.data() });
                 });
-                document.getElementById('verify-list').innerHTML = html;
+                if(sectionId === 'verify-sec') filterVerifyData();
+                if(sectionId === 'unlock-sec') filterUnlockData();
+                if(sectionId === 'user-sec') filterUserData();
             });
         }
 
-        async function loadUnlockProfiles() {
-            onSnapshot(collection(db, "users"), (snap) => {
-                let html = "";
-                snap.forEach(d => {
-                    const u = d.data();
-                    const isUnlocked = u.profileUnlockedUntil > Date.now();
-                    html += `<div class="item-list">
-                        <div><strong>${u.email}</strong><br><small>${isUnlocked ? 'Unlocked' : 'Locked'}</small></div>
-                        <div>
-                            <button class="action-btn" style="background:var(--success)" onclick="unlockPopup('${d.id}')">Unlock</button>
-                            <button class="action-btn" style="background:var(--danger)" onclick="lockUser('${d.id}')">Lock</button>
-                        </div>
-                    </div>`;
-                });
-                document.getElementById('unlock-list').innerHTML = html;
+        function matchesSearch(u, queryText) {
+            if (!queryText) return true;
+            const q = queryText.toLowerCase().trim();
+            const searchableValues = [
+                u.id,
+                u.shopName,
+                u.email,
+                u.phone,
+                u.name,
+                u.phoneNumber
+            ];
+            
+            // Also check any available text fields in user document
+            for (let key in u) {
+                if (typeof u[key] === 'string' || typeof u[key] === 'number') {
+                    searchableValues.push(String(u[key]));
+                }
+            }
+
+            return searchableValues.some(val => val && String(val).toLowerCase().includes(q));
+        }
+
+        window.filterVerifyData = () => {
+            const searchText = document.getElementById('verify-search').value;
+            const filterVal = document.getElementById('verify-filter').value;
+
+            const filtered = allUsersCache.filter(u => {
+                const matchesText = matchesSearch(u, searchText);
+                if (!matchesText) return false;
+
+                if (filterVal === 'pending') return !u.verified;
+                if (filterVal === 'verified') return u.verified === true;
+                if (filterVal === 'rejected') return u.status === 'rejected' || u.verified === 'rejected';
+                return true;
             });
+
+            let html = "";
+            filtered.forEach(u => {
+                const statusText = u.verified ? "Verified" : "Pending";
+                html += `<div class="item-list">
+                    <div><strong>${u.shopName || 'Shop'}</strong><br><small>${u.email || u.id}</small><br><small>${statusText}</small></div>
+                    <div>
+                        <button class="action-btn" style="background:var(--accent)" onclick="viewDetails('${u.id}')">View</button>
+                        <button class="action-btn" style="background:var(--success)" onclick="verifyUser('${u.id}', true)">Verify</button>
+                        <button class="action-btn" style="background:var(--danger)" onclick="deleteItem('users','${u.id}')">Delete</button>
+                    </div>
+                </div>`;
+            });
+            document.getElementById('verify-list').innerHTML = html;
+        }
+
+        window.filterUnlockData = () => {
+            const searchText = document.getElementById('unlock-search').value;
+            const filterVal = document.getElementById('unlock-filter').value;
+            const now = Date.now();
+
+            const filtered = allUsersCache.filter(u => {
+                const matchesText = matchesSearch(u, searchText);
+                if (!matchesText) return false;
+
+                const unlockUntil = u.profileUnlockedUntil || 0;
+                const isUnlocked = unlockUntil > now;
+                const isExpired = unlockUntil > 0 && unlockUntil <= now;
+
+                if (filterVal === 'unlocked') return isUnlocked;
+                if (filterVal === 'locked') return !isUnlocked && !isExpired;
+                if (filterVal === 'expired') return isExpired;
+                return true;
+            });
+
+            let html = "";
+            filtered.forEach(u => {
+                const isUnlocked = (u.profileUnlockedUntil || 0) > now;
+                html += `<div class="item-list">
+                    <div><strong>${u.email || u.id}</strong><br><small>${isUnlocked ? 'Unlocked' : 'Locked'}</small></div>
+                    <div>
+                        <button class="action-btn" style="background:var(--success)" onclick="unlockPopup('${u.id}')">Unlock</button>
+                        <button class="action-btn" style="background:var(--danger)" onclick="lockUser('${u.id}')">Lock</button>
+                    </div>
+                </div>`;
+            });
+            document.getElementById('unlock-list').innerHTML = html;
+        }
+
+        window.filterUserData = () => {
+            const searchText = document.getElementById('user-search').value;
+            const filterVal = document.getElementById('user-filter').value;
+
+            const filtered = allUsersCache.filter(u => {
+                const matchesText = matchesSearch(u, searchText);
+                if (!matchesText) return false;
+
+                if (filterVal === 'active') return u.active === true;
+                if (filterVal === 'banned') return u.active === false || u.banned === true;
+                if (filterVal === 'verified') return u.verified === true;
+                if (filterVal === 'pending') return !u.verified;
+                return true;
+            });
+
+            let html = "";
+            filtered.forEach(u => {
+                html += `<div class="item-list"><div><strong>${u.shopName || 'No Name'}</strong><br><small>${u.email || u.id}</small></div><i class="fas fa-trash-alt delete-icon" onclick="deleteItem('users','${u.id}')"></i></div>`;
+            });
+            document.getElementById('user-list').innerHTML = html;
         }
 
         window.verifyUser = async (id, status) => { await updateDoc(doc(db, "users", id), { verified: status }); alert("Status Updated!"); }
@@ -228,57 +352,8 @@
         }
         window.lockUser = async (id) => { await updateDoc(doc(db, "users", id), { profileUnlockedUntil: 0, active: false }); alert("Profile Locked!"); }
         window.viewDetails = async (id) => {
-            const snap = await getDocs(collection(db, "users"));
-            snap.forEach(d => { if(d.id === id) alert(JSON.stringify(d.data(), null, 2)); });
-        }
-        async function loadUsers(id) {
-            const snap = await getDocs(collection(db, "users"));
-            let html = "";
-            snap.forEach(d => {
-                const u = d.data();
-                html += `<div class="item-list"><div><strong>${u.shopName || 'No Name'}</strong><br><small>${u.email || d.id}</small></div><i class="fas fa-trash-alt delete-icon" onclick="deleteItem('users','${d.id}')"></i></div>`;
-            });
-            document.getElementById(id === 'user-sec' ? 'user-list' : 'uid-list').innerHTML = html;
-        }
-
-        window.showAdModal = (type) => { currentAdType = type; document.getElementById('ad-modal').style.display = 'flex'; }
-        window.closeModal = () => { document.getElementById('ad-modal').style.display = 'none'; }
-        window.saveAd = async () => {
-            const script = document.getElementById('ad-script-input').value;
-            const days = document.getElementById('ad-days-input').value;
-            const expiryTime = days ? Date.now() + (parseInt(days) * 24 * 60 * 60 * 1000) : null;
-            await addDoc(collection(db, "ghoti_ads"), { code: script, type: currentAdType, expiry: expiryTime, createdAt: Date.now() });
-            alert("অ্যাড সেভ হয়েছে!"); closeModal();
-        }
-        function loadAds(type, listId) {
-            onSnapshot(query(collection(db, "ghoti_ads"), orderBy("createdAt", "desc")), (snap) => {
-                let html = "";
-                snap.forEach(d => {
-                    const ad = d.data();
-                    if(ad.type === type) {
-                        html += `<div class="item-list"><div><code>${ad.code.substring(0,30)}...</code></div><i class="fas fa-trash-alt delete-icon" onclick="deleteItem('ghoti_ads','${d.id}')"></i></div>`;
-                    }
-                });
-                document.getElementById(listId).innerHTML = html;
-            });
-        }
-        window.uploadImg = (col) => {
-            const fileInput = document.createElement('input'); fileInput.type = 'file';
-            fileInput.onchange = async () => {
-                const file = fileInput.files[0];
-                const formData = new FormData(); formData.append("image", file);
-                const res = await fetch(`https://api.imgbb.com/1/upload?key=${imgbbKey}`, { method: "POST", body: formData });
-                const json = await res.json();
-                await addDoc(collection(db, col), { url: json.data.url, createdAt: Date.now() });
-                alert("সফল হয়েছে!");
-            }; fileInput.click();
-        }
-        function loadBanners() {
-            onSnapshot(query(collection(db, "banners"), orderBy("createdAt", "desc")), (snap) => {
-                let html = "";
-                snap.forEach(d => { html += `<div class="item-list" style="flex-direction:column"><img src="${d.data().url}" class="img-preview"><i class="fas fa-trash-alt delete-icon" onclick="deleteItem('banners','${d.id}')"></i></div>`; });
-                document.getElementById('banner-list').innerHTML = html;
-            });
+            const target = allUsersCache.find(d => d.id === id);
+            if(target) alert(JSON.stringify(target, null, 2));
         }
         window.deleteItem = async (col, id) => { if(confirm("ডিলিট করতে চান?")) await deleteDoc(doc(db, col, id)); }
     </script>
