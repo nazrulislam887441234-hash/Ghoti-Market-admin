@@ -1,725 +1,491 @@
-<!DOCTYPE html>
-<html lang="bn">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ghoti Market - Admin User Manager</title>
-    <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        :root {
-            --primary: #4f46e5;
-            --primary-hover: #4338ca;
-            --bg-color: #f3f4f6;
-            --card-bg: #ffffff;
-            --text-main: #1f2937;
-            --text-muted: #6b7280;
-            --danger: #ef4444;
-            --danger-hover: #dc2626;
-            --success: #10b981;
-            --border: #e5e7eb;
-        }
+<!DOCTYPE html>          <html lang="bn">          
+<head>          
+<meta charset="UTF-8">          
+<meta name="viewport" content="width=device-width, initial-scale=1.0">          
+<title>Admin User Manager - GHOTI MARKET</title>          
+<link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;600;700&family=Poppins:wght@700&display=swap" rel="stylesheet">          
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">          
+<style>          
+:root{--primary:#FF6B00;--accent:#FF8C00;--success:#22c55e;--danger:#ef4444;--warning:#f59e0b;--info:#3b82f6;--muted:#6b7280;--bg1:#FFF7ED;--bg2:#FFEDD5;}          
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Hind Siliguri',sans-serif;}          
+body{min-height:100vh;background:linear-gradient(135deg,var(--bg1) 0%,var(--bg2) 100%);padding:15px;color:#1f2937;}          
+.container{max-width:1400px;margin:0 auto;background:rgba(255,255,255,.95);backdrop-filter:blur(20px);padding:25px;border-radius:20px;border:1px solid rgba(255,107,0,.1);box-shadow:0 15px 50px rgba(255,107,0,.12);}          
+.header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;flex-wrap:wrap;gap:10px;}          
+.header h1{font-family:'Poppins';font-size:24px;background:linear-gradient(90deg,var(--primary),var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}          
+.header a,.logout{color:var(--primary);font-weight:700;text-decoration:none;cursor:pointer;}          
+.logout{color:var(--danger);}          
+.toolbar{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:15px;align-items:center;}          
+.toolbar input{flex:1;min-width:250px;padding:12px 14px;border:2px solid #fed7aa;border-radius:10px;font-size:15px;}          
+.btn{padding:11px 16px;border:none;border-radius:9px;font-weight:700;cursor:pointer;transition:.2s;font-size:14px;display:inline-flex;align-items:center;gap:6px;}          
+.btn-primary{background:linear-gradient(90deg,var(--primary),var(--accent));color:#fff;}          
+.btn-secondary{background:#f1f5f9;color:#334155;border:1px solid #e2e8f0;}          
+.btn-danger{background:var(--danger);color:#fff;}          
+.btn-warning{background:var(--warning);color:#fff;}          
+.btn:disabled{background:#d1d5db;cursor:not-allowed;}          
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(350px,1fr));gap:15px;max-height:70vh;overflow-y:auto;padding:4px;}          
+.card{background:#fff;border:2px solid #ffedd5;border-radius:14px;padding:15px;position:relative;transition:.2s;}          
+.card-header{display:flex;gap:12px;}          
+.card-header img{width:50px;height:50px;border-radius:10px;object-fit:cover;background:#eee;}          
+.card-header h3{font-size:15px;margin-bottom:2px;}          
+.card-body{margin-top:10px;font-size:12px;max-height:150px;overflow-y:auto;}          
+.card-body.field{display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px dashed #ffedd5;}          
+.card-body.field b{color:var(--muted);}          
+.card-actions{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;}          
+.badge{padding:3px 8px;border-radius:12px;font-size:10px;font-weight:700;}          
+.b-active{background:rgba(34,197,94,.15);color:var(--success);}          
+.b-inactive{background:rgba(239,68,68,.15);color:var(--danger);}          /* Modal */
+.modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.6);z-index:999;justify-content:center;align-items:center;overflow-y:auto;}
+.modal-box{background:#fff;padding:25px;border-radius:18px;max-width:600px;width:95%;max-height:90vh;overflow-y:auto;}
+.modal-box h3{margin-bottom:15px;}
+.modal-box label{font-weight:600;font-size:13px;display:block;margin-top:10px;}
+.modal-box input,.modal-box textarea,.modal-box select{width:100%;padding:10px;border:2px solid #fed7aa;border-radius:8px;font-size:14px;margin-top:4px;}
+.modal-actions{display:flex;gap:10px;justify-content:flex-end;margin-top:15px;}
+.toast{position:fixed;bottom:20px;right:20px;background:#333;color:#fff;padding:14px 20px;border-radius:10px;display:none;z-index:1000;}
+.toast.show{display:block;animation:slideUp.3s;}
+@keyframes slideUp{from{transform:translateY(20px);opacity:0;}to{transform:translateY(0);opacity:1;}}
+.load-more{text-align:center;margin:15px 0;}
+.loader{width:14px;height:14px;border:2px solid #ffedd5;border-top:2px solid var(--primary);border-radius:50%;animation:spin 1s linear infinite;display:inline-block;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.confirm-box{background:#fff7ed;padding:12px;border-radius:8px;margin:10px 0;text-align:center;}
+/* New Styling Enhancements for Description Counter & Keywords Chips */
+.char-counter{font-size:11px;text-align:right;margin-top:3px;font-weight:600;color:var(--muted);}
+.char-counter.error{color:var(--danger);}
+.textarea-error{border-color:var(--danger)!important;}
+.keyword-container{margin-top:4px;}
+.keyword-input-group{display:flex;gap:8px;}
+.keyword-list{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;max-height:100px;overflow-y:auto;}
+.keyword-chip{background:#ffedd5;color:#9a3412;padding:4px 10px;border-radius:20px;font-size:12px;display:inline-flex;align-items:center;gap:6px;font-weight:600;}
+.keyword-chip span{cursor:pointer;color:var(--danger);font-weight:bold;}
+.keyword-example-box{background:#fff7ed;border:1px dashed #fed7aa;padding:10px;border-radius:8px;font-size:11px;margin-top:8px;color:#7c2d12;}
+.keyword-example-box ul{margin-left:15px;margin-top:4px;}
+.chips-grid{display:flex;flex-wrap:wrap;gap:4px;margin-top:4px;}
+.chip-sm{background:#ffedd5;color:#9a3412;padding:2px 6px;border-radius:10px;font-size:10px;font-weight:600;}
+.image-preview-container{margin-top:5px;display:flex;align-items:center;gap:10px;}
+.image-preview-container img{width:40px;height:40px;border-radius:6px;object-fit:cover;border:1px solid #fed7aa;background:#eee;}
+@media(max-width:768px){.grid{grid-template-columns:1fr;}}
+</style>
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Hind Siliguri', sans-serif;
-        }
+</head>          
+<body>          <div class="container" id="app" style="display:none;">          
+    <div class="header">          
+        <h1><i class="fas fa-users-cog"></i> Admin User Manager</h1>          
+        <div class="nav">          
+            <a href="dashboard.html"><i class="fas fa-arrow-left"></i> Dashboard</a>          
+            <span class="logout" id="logout"><i class="fas fa-sign-out-alt"></i> Logout</span>          
+        </div>          
+    </div>          <div class="toolbar">          
+    <input type="text" id="search" placeholder="Search: UID / Name / Email / Username / Description / WhatsApp">          
+    <button class="btn btn-primary" id="addNew"><i class="fas fa-plus"></i> Add New User</button>          
+</div>          
+      
+<div class="grid" id="grid"></div>          
+<div class="load-more"><button class="btn btn-primary" id="loadMore"><i class="fas fa-plus"></i> Load More</button></div>
 
-        body {
-            background-color: var(--bg-color);
-            color: var(--text-main);
-            padding: 20px;
-        }
+</div>          <!-- Edit/Add Modal -->          <div class="modal" id="editModal">          
+    <div class="modal-box">          
+        <h3 id="modalTitle">Edit User</h3>          
+        <div id="formFields"></div>          
+        <div class="modal-actions">          
+            <button class="btn btn-danger" id="deleteBtn" style="margin-right:auto;"><i class="fas fa-trash"></i> Delete</button>          
+            <button class="btn btn-secondary" id="cancelBtn">Cancel</button>          
+            <button class="btn btn-primary" id="saveBtn">Save</button>          
+        </div>          
+    </div>          
+</div>          <!-- Delete Confirm -->          <div class="modal" id="confirmModal">          
+    <div class="modal-box" style="max-width:400px;">          
+        <h3>Are you sure?</h3>          
+        <div class="confirm-box">This will permanently delete this user</div>          
+        <div class="modal-actions">          
+            <button class="btn btn-secondary" id="confirmCancel">Cancel</button>          
+            <button class="btn btn-danger" id="confirmDelete">Yes, Delete</button>          
+        </div>          
+    </div>          
+</div>          <div class="toast" id="toast"></div>          <script type="module">          
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";          
+import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";          
+import { getFirestore, collection, query, orderBy, limit, startAfter, getDocs, doc, updateDoc, deleteDoc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";          
+          
+const firebaseConfig = {apiKey:"AIzaSyBUhNhYvuo_FTvZ5RZR6Gn-4hsUY21S0XE",authDomain:"ghotimarket.firebaseapp.com",projectId:"ghotimarket"};          
+const app = initializeApp(firebaseConfig);          
+const auth = getAuth(app);          
+const db = getFirestore(app);          
+          
+// ========== SECURITY ==========          
+onAuthStateChanged(auth, user => {          
+    try {
+        if(user && user.email === "support@ghotimarket.com"){          
+            document.getElementById('app').style.display = 'block';          
+            loadUsers();          
+        }else{          
+            window.location.href = "index.html";          
+        }          
+    } catch(e) {
+        showToast('Authentication error: ' + e.message, 'error');
+    }
+});          
+document.getElementById('logout').onclick = () => signOut(auth);          
+          
+// ========== GLOBAL ==========          
+const BATCH = 20;          
+let lastDoc = null;          
+let allUsers = [];          
+let currentEditingId = null;          
+let isNewUser = false;          
+let dynamicEditorsState = {}; // Stores runtime state for arrays/complex editors
+          
+// ========== UTILS ==========          
+const showToast = (msg, type='success') => {          
+    try {
+        const t = document.getElementById('toast');          
+        t.innerText = msg; t.style.background = type==='error'?'var(--danger)':'var(--success)';          
+        t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),3000);          
+    } catch(err) {
+        console.error(msg);
+    }
+}          
+          
+// ========== LOAD USERS ==========          
+async function loadUsers(){          
+    try {
+        document.getElementById('loadMore').disabled = true;          
+        let q = query(collection(db,"users"), orderBy("createdAt","desc"), limit(BATCH));          
+        if(lastDoc) q = query(collection(db,"users"), orderBy("createdAt","desc"), startAfter(lastDoc), limit(BATCH));          
+              
+        const snap = await getDocs(q);          
+        if(!snap.empty){          
+            lastDoc = snap.docs[snap.docs.length-1];          
+            const batch = snap.docs.map(d => ({uid:d.id,...d.data()}));          
+            // Avoid duplicate pushes
+            batch.forEach(newItem => {
+                if(!allUsers.some(u => u.uid === newItem.uid)){
+                    allUsers.push(newItem);
+                    renderCard(newItem);
+                }
+            });          
+        }          
+        if(snap.size < BATCH) document.getElementById('loadMore').style.display = 'none';          
+        document.getElementById('loadMore').disabled = false;          
+    } catch(e) {
+        showToast('Failed to load users: ' + e.message, 'error');
+        document.getElementById('loadMore').disabled = false;
+    }
+}          
+          
+// ========== RENDER CARD ==========          
+function renderCard(u){          
+    let card = document.getElementById('card-'+u.uid);          
+    if(!card){          
+        card = document.createElement('div');          
+        card.id = 'card-'+u.uid;          
+        card.className = 'card';          
+        document.getElementById('grid').appendChild(card);          
+    }          
+          
+    const name = u.shopName || u.fullName || 'No Name';          
+    const statusClass = u.active? 'b-active' : 'b-inactive';          
+    const statusText = u.active? 'Active' : 'Inactive';          
+          
+    let fieldsHtml = '';          
+    Object.keys(u).slice(0,6).forEach(key=>{          
+        if(key === 'uid' || key === 'shopDescription' || key === 'shopKeywords') return;          
+        fieldsHtml += `<div class="field"><b>${key}:</b> <span>${String(u[key]).substring(0,30)}</span></div>`;          
+    });          
+          
+    let customPreviewHtml = '';
+    if(u.shopDescription) {
+        customPreviewHtml += `<div class="field"><b>Description:</b> <span>${String(u.shopDescription).substring(0, 60)}</span></div>`;
+    }
+    if(u.shopKeywords && Array.isArray(u.shopKeywords) && u.shopKeywords.length > 0) {
+        let chips = u.shopKeywords.map(k => `<span class="chip-sm">${k}</span>`).join('');
+        customPreviewHtml += `<div class="field" style="flex-direction:column;align-items:flex-start;gap:4px;"><b>Keywords:</b> <div class="chips-grid">${chips}</div></div>`;
+    }
+          
+    card.innerHTML = `          
+        <div class="card-header">          
+            <img src="${u.shopLogo || 'https://via.placeholder.com/50'}" onerror="this.src='https://via.placeholder.com/50'">          
+            <div>          
+                <h3>${name}</h3>          
+                <span class="badge ${statusClass}">${statusText}</span>          
+                <p style="font-size:11px;color:var(--muted)">${u.email || ''}</p>          
+            </div>          
+        </div>          
+        <div class="card-body">${customPreviewHtml}${fieldsHtml}</div>          
+        <div class="card-actions">          
+            <button class="btn btn-warning" onclick="openEdit('${u.uid}')"><i class="fas fa-edit"></i> Edit</button>          
+            <button class="btn btn-danger" onclick="openDelete('${u.uid}')"><i class="fas fa-trash"></i> Delete</button>          
+        </div>          
+    `;          
+}          
+          
+// ========== SEARCH ==========          
+document.getElementById('search').oninput = e => {          
+    const term = e.target.value.toLowerCase();          
+    document.getElementById('grid').innerHTML = '';          
+    const filtered = allUsers.filter(u => {
+        return Object.keys(u).some(key => {
+            const val = u[key];
+            if(val === null || val === undefined) return false;
+            if(Array.isArray(val)) {
+                return val.some(item => String(item).toLowerCase().includes(term));
+            }
+            return String(val).toLowerCase().includes(term);
+        });
+    });          
+    filtered.forEach(renderCard);          
+}          
+          
+// ========== EDIT MODAL ==========          
+window.openEdit = (uid) => {          
+    isNewUser = false;          
+    currentEditingId = uid;          
+    const user = allUsers.find(u=>u.uid===uid);          
+    document.getElementById('modalTitle').innerText = 'Edit User: ' + uid.substring(0,8);          
+    document.getElementById('deleteBtn').style.display = 'inline-flex';          
+    buildForm(user || {});          
+    document.getElementById('editModal').style.display = 'flex';          
+}          
+          
+document.getElementById('addNew').onclick = () => {          
+    isNewUser = true;          
+    currentEditingId = 'new_' + Date.now();          
+    document.getElementById('modalTitle').innerText = 'Add New User';          
+    document.getElementById('deleteBtn').style.display = 'none';          
+    buildForm({email: '', fullName: '', shopName: '', active: true, shopDescription: '', shopKeywords: []});          
+    document.getElementById('editModal').style.display = 'flex';          
+}          
+          
+// ========== DYNAMIC FORM GENERATOR ==========
+function buildForm(data){          
+    const container = document.getElementById('formFields');          
+    container.innerHTML = '';          
+    dynamicEditorsState = {}; // Reset state cache
 
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-        }
+    // Standard baseline fields to always present if missing in new/empty items
+    const defaultKeys = ['email','fullName','shopName','username','whatsapp','active','shopLogo','shopBanner','verified','shopDescription','shopKeywords'];
+    const combinedKeys = Array.from(new Set([...defaultKeys, ...Object.keys(data)]));
+    
+    // Filter out internal UID if present
+    const keysToRender = combinedKeys.filter(k => k !== 'uid');
 
-        header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: var(--card-bg);
-            padding: 20px 30px;
-            border-radius: 16px;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-            margin-bottom: 25px;
-        }
-
-        header h1 {
-            font-size: 24px;
-            color: var(--primary);
-            font-weight: 700;
-        }
-
-        .header-actions {
-            display: flex;
-            gap: 15px;
-            align-items: center;
-        }
-
-        .search-box {
-            position: relative;
-        }
-
-        .search-box input {
-            padding: 10px 15px 10px 40px;
-            border: 1px solid var(--border);
-            border-radius: 10px;
-            outline: none;
-            width: 250px;
-            font-size: 14px;
-            transition: all 0.3s;
-        }
-
-        .search-box input:focus {
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
-        }
-
-        .search-box i {
-            position: absolute;
-            left: 15px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: var(--text-muted);
-        }
-
-        .btn {
-            background: var(--primary);
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 10px;
-            cursor: pointer;
-            font-weight: 600;
-            font-size: 14px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            transition: background 0.3s;
-        }
-
-        .btn:hover {
-            background: var(--primary-hover);
-        }
-
-        .btn-danger {
-            background: var(--danger);
-        }
-        .btn-danger:hover {
-            background: var(--danger-hover);
-        }
-
-        .users-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 20px;
-            margin-bottom: 25px;
-        }
-
-        .user-card {
-            background: var(--card-bg);
-            border-radius: 16px;
-            padding: 20px;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            position: relative;
-            border: 1px solid var(--border);
-        }
-
-        .user-info h3 {
-            font-size: 18px;
-            margin-bottom: 5px;
-            color: var(--text-main);
-        }
-
-        .user-info p {
-            font-size: 14px;
-            color: var(--text-muted);
-            margin-bottom: 4px;
-        }
-
-        .user-desc {
-            font-size: 13px;
-            color: #4b5563;
-            background: #f9fafb;
-            padding: 8px 12px;
-            border-radius: 8px;
-            margin: 10px 0;
-            border-left: 3px solid var(--primary);
-            word-break: break-word;
-        }
-
-        .card-chips {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 5px;
-            margin-bottom: 15px;
-        }
-
-        .preview-chip {
-            background: #e0e7ff;
-            color: var(--primary);
-            font-size: 11px;
-            padding: 3px 8px;
-            border-radius: 12px;
-            font-weight: 500;
-        }
-
-        .card-actions {
-            display: flex;
-            gap: 10px;
-            margin-top: 10px;
-        }
-
-        .card-actions button {
-            flex: 1;
-            padding: 8px;
-            border-radius: 8px;
-            border: none;
-            cursor: pointer;
-            font-weight: 600;
-            font-size: 13px;
-        }
-
-        .btn-edit {
-            background: #e0e7ff;
-            color: var(--primary);
-        }
-        .btn-edit:hover { background: #c7d2fe; }
-
-        .btn-del {
-            background: #fee2e2;
-            color: var(--danger);
-        }
-        .btn-del:hover { background: #fecaca; }
-
-        /* Pagination */
-        .pagination {
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-            align-items: center;
-            background: var(--card-bg);
-            padding: 15px;
-            border-radius: 12px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-        }
-
-        .pagination button {
-            padding: 8px 16px;
-            border: 1px solid var(--border);
-            background: white;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 600;
-        }
-
-        .pagination button:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-
-        .pagination span {
-            font-weight: 600;
-            font-size: 14px;
-        }
-
-        /* Modal Styles */
-        .modal {
-            position: fixed;
-            inset: 0;
-            background: rgba(0, 0, 0, 0.5);
-            display: none;
-            align-items: center;
-            justify-content: center;
-            z-index: 1000;
-            padding: 15px;
-        }
-
-        .modal-content {
-            background: white;
-            padding: 30px;
-            border-radius: 20px;
-            width: 100%;
-            max-width: 450px;
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
-            max-height: 90vh;
-            overflow-y: auto;
-        }
-
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-
-        .modal-header h2 {
-            font-size: 20px;
-            color: var(--text-main);
-        }
-
-        .close-modal {
-            background: none;
-            border: none;
-            font-size: 20px;
-            cursor: pointer;
-            color: var(--text-muted);
-        }
-
-        .form-group {
-            margin-bottom: 15px;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 6px;
-            font-weight: 600;
-            font-size: 13px;
-            color: #4b5563;
-        }
-
-        .form-control {
-            width: 100%;
-            padding: 10px 14px;
-            border: 1px solid var(--border);
-            border-radius: 10px;
-            outline: none;
-            font-size: 14px;
-            font-family: 'Hind Siliguri', sans-serif;
-        }
-
-        .form-control:focus {
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
-        }
-
-        textarea.form-control {
-            resize: none;
-            height: 90px;
-        }
-
-        .error-border {
-            border-color: var(--danger) !important;
-        }
-
-        .char-counter {
-            display: block;
-            text-align: right;
-            font-size: 11px;
-            color: var(--text-muted);
-            margin-top: 4px;
-        }
-
-        .char-counter.error-text {
-            color: var(--danger);
-            font-weight: 600;
-        }
-
-        /* Keywords Builder inside Modal */
-        .keyword-input-row {
-            display: flex;
-            gap: 8px;
-        }
-
-        .keyword-add-trigger {
-            background: var(--primary);
-            color: white;
-            border: none;
-            padding: 0 15px;
-            border-radius: 10px;
-            cursor: pointer;
-            font-weight: 600;
-        }
-
-        .keywords-chip-container {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 6px;
-            margin-top: 8px;
-            min-height: 35px;
-            background: #f9fafb;
-            padding: 8px;
-            border-radius: 10px;
-            border: 1px dashed var(--border);
-        }
-
-        .chip {
-            background: #e0e7ff;
-            color: var(--primary);
-            padding: 4px 10px;
-            border-radius: 16px;
-            font-size: 12px;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            font-weight: 500;
-        }
-
-        .chip i {
-            cursor: pointer;
-            font-size: 10px;
-            color: var(--danger);
-        }
-
-        /* Toast Notification */
-        #toast {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background: var(--text-main);
-            color: white;
-            padding: 12px 24px;
-            border-radius: 10px;
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-            display: none;
-            z-index: 1100;
-            font-size: 14px;
-            font-weight: 500;
-        }
-
-        #toast.success { background: var(--success); }
-        #toast.error { background: var(--danger); }
-    </style>
-</head>
-<body>
-
-    <div class="container">
-        <header>
-            <h1><i class="fas fa-store"></i> Ghoti Market - Admin</h1>
-            <div class="header-actions">
-                <div class="search-box">
-                    <i class="fas fa-search"></i>
-                    <input type="text" id="searchInput" placeholder="ইউজার খুঁজুন..." oninput="handleSearch()">
-                </div>
-                <button class="btn" onclick="openAddModal()"><i class="fas fa-user-plus"></i> নতুন ইউজার</button>
-            </div>
-        </header>
-
-        <div id="usersGrid" class="users-grid">
-            <!-- Dynamic User Cards will render here -->
-        </div>
-
-        <div class="pagination" id="paginationBar">
-            <button id="prevBtn" onclick="changePage(-1)" disabled><i class="fas fa-chevron-left"></i> পূর্ববর্তী</button>
-            <span id="pageInfo">পৃষ্ঠা ১ / ১</span>
-            <button id="nextBtn" onclick="changePage(1)" disabled>পরবর্তী <i class="fas fa-chevron-right"></i></button>
-        </div>
-    </div>
-
-    <!-- Edit User Modal -->
-    <div class="modal" id="editModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2>ইউজার সম্পাদনা</h2>
-                <button class="close-modal" onclick="closeEditModal()">&times;</button>
-            </div>
-            <input type="hidden" id="editUserId">
-            <div class="form-group">
-                <label>দোকানের নাম</label>
-                <input type="text" id="editShopName" class="form-control">
-            </div>
-            <div class="form-group">
-                <label>WhatsApp নাম্বার</label>
-                <input type="text" id="editWhatsapp" class="form-control">
-            </div>
-            
-            <!-- 1. Shop Description Edit Field -->
-            <div class="form-group">
-                <label>Shop Description</label>
-                <textarea id="editShopDescription" class="form-control" placeholder="আপনার শপ সম্পর্কে সংক্ষেপে লিখুন..." oninput="handleDescInput()"></textarea>
-                <span id="descCounter" class="char-counter">0 / 200</span>
-            </div>
-
-            <!-- 2. Shop Keywords Edit Section -->
-            <div class="form-group">
-                <label>Shop Keywords (সর্বোচ্চ ১০টি)</label>
-                <div class="keyword-input-row">
-                    <input type="text" id="keywordInputBox" class="form-control" placeholder="একটি করে কিওয়ার্ড লিখুন..." onkeypress="handleKeywordKeypress(event)">
-                    <button type="button" class="keyword-add-trigger" onclick="addKeywordChip()">Add</button>
-                </div>
-                <div id="editKeywordsContainer" class="keywords-chip-container">
-                    <!-- Chips will populate here -->
-                </div>
-            </div>
-
-            <button class="btn" style="width: 100%; justify-content: center; margin-top: 10px;" id="saveEditBtn" onclick="saveUserChanges()">সংরক্ষণ করুন</button>
-        </div>
-    </div>
-
-    <!-- Toast Notification Box -->
-    <div id="toast"></div>
-
-    <!-- Firebase v10 Modular SDK -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-        import { getFirestore, collection, getDocs, doc, updateDataDoc, updateDoc, deleteDoc, setDoc, query, orderBy } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-
-        const firebaseConfig = {
-            apiKey: "AIzaSyBUhNhYvuo_FTvZ5RZR6Gn-4hsUY21S0XE",
-            projectId: "ghotimarket",
-            authDomain: "ghotimarket.firebaseapp.com"
-        };
-
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
-
-        let allUsers = [];
-        let filteredUsers = [];
-        let currentPage = 1;
-        const limitPerPage = 6;
-        let activeEditKeywords = [];
-
-        // Global Toast Utility
-        window.showToast = function(message, type = 'success') {
-            const toast = document.getElementById('toast');
-            toast.innerText = message;
-            toast.className = `show ${type}`;
-            toast.style.display = 'block';
+    keysToRender.forEach(key => {
+        const val = data[key] !== undefined ? data[key] : '';
+        let inputHtml = '';
+        
+        // Specific specialized handling
+        if(key === 'shopDescription') {
+            const descVal = val || '';
+            container.innerHTML += `
+                <label>${key}</label>
+                <textarea id="field-${key}" rows="3" placeholder="Enter shop description (Max 200 chars)">${descVal}</textarea>
+                <div id="descCounter" class="char-counter">${descVal.length} / 200</div>
+            `;
+            // Bind listener later or inline check
             setTimeout(() => {
-                toast.style.display = 'none';
-            }, 3000);
-        }
-
-        // Fetch Users Data
-        async function fetchUsers() {
-            try {
-                const querySnapshot = await getDocs(collection(db, "users"));
-                allUsers = [];
-                querySnapshot.forEach((docSnap) => {
-                    allUsers.push({ id: docSnap.id, ...docSnap.data() });
-                });
-                filteredUsers = [...allUsers];
-                renderUsers();
-            } catch (error) {
-                showToast("ইউজার ডেটা লোড করতে সমস্যা হয়েছে: " + error.message, "error");
-            }
-        }
-
-        // Render Users Grid with Pagination & Card Preview for Description & Keywords
-        window.renderUsers = function() {
-            const grid = document.getElementById('usersGrid');
-            grid.innerHTML = '';
-
-            const start = (currentPage - 1) * limitPerPage;
-            const end = start + limitPerPage;
-            const paginatedItems = filteredUsers.slice(start, end);
-
-            if (paginatedItems.length === 0) {
-                grid.innerHTML = `<p style="grid-column: 1/-1; text-align: center; color: var(--text-muted); padding: 40px;">কোনো ইউজার পাওয়া যায়নি</p>`;
-                updatePaginationControls();
-                return;
-            }
-
-            paginatedItems.forEach(user => {
-                const card = document.createElement('div');
-                card.className = 'user-card';
-
-                // Format Keywords Chips for Card Preview
-                let chipsHtml = '';
-                if (Array.isArray(user.shopKeywords) && user.shopKeywords.length > 0) {
-                    chipsHtml = `<div class="card-chips">` + user.shopKeywords.map(kw => `<span class="preview-chip">${kw}</span>`).join('') + `</div>`;
+                const descTextarea = document.getElementById('field-shopDescription');
+                const descCounter = document.getElementById('descCounter');
+                const saveBtn = document.getElementById('saveBtn');
+                if(descTextarea && descCounter) {
+                    descTextarea.oninput = (e) => {
+                        const len = e.target.value.length;
+                        descCounter.innerText = `${len} / 200`;
+                        if(len > 200) {
+                            descTextarea.classList.add('textarea-error');
+                            descCounter.classList.add('error');
+                            saveBtn.disabled = true;
+                        } else {
+                            descTextarea.classList.remove('textarea-error');
+                            descCounter.classList.remove('error');
+                            saveBtn.disabled = false;
+                        }
+                    };
                 }
+            }, 0);
+            return;
+        }
 
-                const descText = user.shopDescription ? user.shopDescription : '<span style="color:#9ca3af; font-style:italic;">কোনো বর্ণনা নেই</span>';
-
-                card.innerHTML = `
-                    <div class="user-info">
-                        <h3><i class="fas fa-store" style="color:var(--primary);"></i> ${user.shopName || 'নামহীন শপ'}</h3>
-                        <p><i class="fab fa-whatsapp"></i> ${user.whatsapp || 'নম্বর নেই'}</p>
-                        <p style="font-size: 12px; color: var(--text-muted);">UID: ${user.id}</p>
-                        <div class="user-desc">${descText}</div>
-                        ${chipsHtml}
+        if(key === 'shopKeywords' || Array.isArray(val)) {
+            dynamicEditorsState[key] = Array.isArray(val) ? [...val] : [];
+            container.innerHTML += `
+                <label>${key}</label>
+                <div class="keyword-container" data-field-array="${key}">
+                    <div class="keyword-input-group">
+                        <input type="text" id="arrayInput-${key}" placeholder="Add item and press enter">
+                        <button type="button" class="btn btn-primary" onclick="window.addArrayItem('${key}')" style="padding: 8px 12px;"><i class="fas fa-plus"></i></button>
                     </div>
-                    <div class="card-actions">
-                        <button class="btn-edit" onclick="openEditModal('${user.id}')"><i class="fas fa-edit"></i> এডিট</button>
-                        <button class="btn-del" onclick="deleteUser('${user.id}')"><i class="fas fa-trash"></i> ডিলিট</button>
-                    </div>
-                `;
-                grid.appendChild(card);
-            });
-
-            updatePaginationControls();
+                    <div id="arrayLimitMsg-${key}" style="font-size:11px;color:var(--danger);margin-top:2px;display:none;">Maximum limit reached</div>
+                    <div class="keyword-list" id="arrayListContainer-${key}"></div>
+                    ${key === 'shopKeywords' ? `
+                    <div class="keyword-example-box">
+                        <b>কিভাবে Keyword লিখবেন?</b>
+                        <ul><li>fashion, shirt, mens clothing, shoes, cosmetics</li></ul>
+                        <div style="margin-top:4px;color:var(--danger);font-size:10px;">
+                            ❌ Phone Number লিখবেন না | ❌ Shop Name লিখবেন না | ❌ একই Keyword বারবার লিখবেন না
+                        </div>
+                    </div>` : ''}
+                </div>
+            `;
+            setTimeout(() => renderArrayChips(key), 0);
+            return;
         }
 
-        function updatePaginationControls() {
-            const totalPages = Math.ceil(filteredUsers.length / limitPerPage) || 1;
-            document.getElementById('pageInfo').innerText = `পৃষ্ঠা ${currentPage} / ${totalPages}`;
-            document.getElementById('prevBtn').disabled = currentPage === 1;
-            document.getElementById('nextBtn').disabled = currentPage >= totalPages;
+        // Automatic type detection rules
+        if(typeof val === 'boolean' || key === 'active' || key === 'verified') {
+            inputHtml = `<select id="field-${key}">
+                <option value="true" ${val===true?'selected':''}>True</option>
+                <option value="false" ${val===false?'selected':''}>False</option>
+            </select>`;
+        } else if(val && typeof val === 'object' && val.seconds !== undefined) {
+            // Firestore Timestamp detection
+            const dateStr = new Date(val.seconds * 1000).toLocaleString();
+            inputHtml = `<input type="text" id="field-${key}" value="${dateStr}" readonly style="background:#f1f5f9;cursor:not-allowed;">`;
+        } else if(val && typeof val === 'object') {
+            // General Object / Map
+            inputHtml = `<textarea id="field-${key}" rows="3">${JSON.stringify(val, null, 2)}</textarea>`;
+        } else if(typeof val === 'number') {
+            inputHtml = `<input type="number" id="field-${key}" value="${val}">`;
+        } else if(typeof val === 'string' && (key.toLowerCase().includes('logo') || key.toLowerCase().includes('banner') || val.startsWith('http'))) {
+            inputHtml = `
+                <input type="text" id="field-${key}" value="${val}" placeholder="Image URL">
+                <div class="image-preview-container">
+                    <img src="${val || 'https://via.placeholder.com/40'}" onerror="this.src='https://via.placeholder.com/40'">
+                    <span style="font-size:11px;color:var(--muted);">Image Preview</span>
+                </div>
+            `;
+        } else if(typeof val === 'string' && val.length > 100) {
+            inputHtml = `<textarea id="field-${key}" rows="4">${val}</textarea>`;
+        } else {
+            inputHtml = `<input type="text" id="field-${key}" value="${val !== null && val !== undefined ? val : ''}">`;
         }
 
-        window.changePage = function(direction) {
-            currentPage += direction;
-            renderUsers();
-        }
+        container.innerHTML += `<label>${key}</label>${inputHtml}`;
+    });          
+}          
 
-        window.handleSearch = function() {
-            const keyword = document.getElementById('searchInput').value.toLowerCase().trim();
-            filteredUsers = allUsers.filter(u => 
-                (u.shopName && u.shopName.toLowerCase().includes(keyword)) ||
-                (u.whatsapp && u.whatsapp.toLowerCase().includes(keyword)) ||
-                (u.id && u.id.toLowerCase().includes(keyword))
-            );
-            currentPage = 1;
-            renderUsers();
-        }
+// Helper for dynamic array/chip editors inside modals
+window.addArrayItem = (key) => {
+    const inputEl = document.getElementById(`arrayInput-${key}`);
+    if(!inputEl) return;
+    const val = inputEl.value.trim();
+    if(!val) return;
+    
+    if(!dynamicEditorsState[key]) dynamicEditorsState[key] = [];
+    
+    if(key === 'shopKeywords' && dynamicEditorsState[key].length >= 10) {
+        showToast('Maximum 10 keywords allowed', 'error');
+        return;
+    }
+    if(dynamicEditorsState[key].includes(val)) {
+        showToast('Duplicate entry not allowed', 'error');
+        return;
+    }
+    
+    dynamicEditorsState[key].push(val);
+    inputEl.value = '';
+    renderArrayChips(key);
+};
 
-        // Description Validation & Counter Logic
-        window.handleDescInput = function() {
-            const descArea = document.getElementById('editShopDescription');
-            const counter = document.getElementById('descCounter');
-            const saveBtn = document.getElementById('saveEditBtn');
-            const len = descArea.value.length;
+window.removeArrayItem = (key, index) => {
+    if(dynamicEditorsState[key]) {
+        dynamicEditorsState[key].splice(index, 1);
+        renderArrayChips(key);
+    }
+};
 
-            counter.innerText = `${len} / 200`;
+function renderArrayChips(key) {
+    const container = document.getElementById(`arrayListContainer-${key}`);
+    const inputEl = document.getElementById(`arrayInput-${key}`);
+    const limitMsg = document.getElementById(`arrayLimitMsg-${key}`);
+    if(!container) return;
 
-            if (len > 200) {
-                descArea.classList.add('error-border');
-                counter.classList.add('error-text');
-                saveBtn.disabled = true;
-                saveBtn.style.opacity = '0.5';
-            } else {
-                descArea.classList.remove('error-border');
-                counter.classList.remove('error-text');
-                saveBtn.disabled = false;
-                saveBtn.style.opacity = '1';
-            }
-        }
+    container.innerHTML = '';
+    const items = dynamicEditorsState[key] || [];
+    
+    items.forEach((item, index) => {
+        const chip = document.createElement('div');
+        chip.className = 'keyword-chip';
+        chip.innerHTML = `${item} <span onclick="window.removeArrayItem('${key}', ${index})">&times;</span>`;
+        container.appendChild(chip);
+    });
 
-        // Keyword System Logic inside Modal
-        window.renderModalKeywords = function() {
-            const container = document.getElementById('editKeywordsContainer');
-            container.innerHTML = '';
-            
-            if(activeEditKeywords.length === 0) {
-                container.innerHTML = `<span style="font-size:12px; color:var(--text-muted); width:100%; text-align:center; padding:4px;">কোনো কিওয়ার্ড যোগ করা হয়নি</span>`;
-                return;
-            }
-
-            activeEditKeywords.forEach((kw, index) => {
-                const chip = document.createElement('div');
-                chip.className = 'chip';
-                chip.innerHTML = `${kw} <i class="fas fa-times" onclick="removeKeywordItem(${index})"></i>`;
-                container.appendChild(chip);
-            });
-        }
-
-        window.addKeywordChip = function() {
-            const input = document.getElementById('keywordInputBox');
-            const val = input.value.trim();
-
-            if (!val) return;
-
-            if (activeEditKeywords.length >= 10) {
-                showToast("সর্বোচ্চ ১০টি কিওয়ার্ড যোগ করা যাবে।", "error");
-                return;
-            }
-
-            if (activeEditKeywords.includes(val)) {
-                showToast("এই কিওয়ার্ডটি ইতিমধ্যে যোগ করা হয়েছে!", "error");
-                return;
-            }
-
-            activeEditKeywords.push(val);
-            input.value = '';
-            renderModalKeywords();
-        }
-
-        window.handleKeywordKeypress = function(e) {
-            if (e.key === 'Enter') {
-                e.preventDefault();
-                addKeywordChip();
-            }
-        }
-
-        window.removeKeywordItem = function(index) {
-            activeEditKeywords.splice(index, 1);
-            renderModalKeywords();
-        }
-
-        // Open/Close Edit Modal
-        window.openEditModal = function(userId) {
-            const user = allUsers.find(u => u.id === userId);
-            if (!user) return;
-
-            document.getElementById('editUserId').value = user.id;
-            document.getElementById('editShopName').value = user.shopName || '';
-            document.getElementById('editWhatsapp').value = user.whatsapp || '';
-            document.getElementById('editShopDescription').value = user.shopDescription || '';
-            
-            activeEditKeywords = Array.isArray(user.shopKeywords) ? [...user.shopKeywords] : [];
-
-            handleDescInput();
-            renderModalKeywords();
-
-            document.getElementById('editModal').style.display = 'flex';
-        }
-
-        window.closeEditModal = function() {
-            document.getElementById('editModal').style.display = 'none';
-        }
-
-        // Save User Changes (Firestore Update)
-        window.saveUserChanges = async function() {
-            const userId = document.getElementById('editUserId').value;
-            const shopName = document.getElementById('editShopName').value.trim();
-            const whatsapp = document.getElementById('editWhatsapp').value.trim();
-            const shopDescription = document.getElementById('editShopDescription').value.trim();
-
-            if (shopDescription.length > 200) {
-                showToast("শপের বর্ণনা সর্বোচ্চ ২০০ অক্ষরের মধ্যে হতে হবে!", "error");
-                return;
-            }
-
-            try {
-                const userRef = doc(db, "users", userId);
-                await updateDoc(userRef, {
-                    shopName: shopName,
-                    whatsapp: whatsapp,
-                    shopDescription: shopDescription,
-                    shopKeywords: activeEditKeywords
-                });
-
-                showToast("সফলভাবে আপডেট করা হয়েছে!", "success");
-                closeEditModal();
-                fetchUsers();
-            } catch (error) {
-                showToast("আপডেট করতে সমস্যা হয়েছে: " + error.message, "error");
-            }
-        }
-
-        // Delete User Functionality placeholder/handler safety
-        window.deleteUser = async function(userId) {
-            if(confirm("আপনি কি নিশ্চিত এই ইউজারটি ডিলিট করতে চান?")) {
-                try {
-                    await deleteDoc(doc(db, "users", userId));
-                    showToast("ইউজার সফলভাবে মুছে ফেলা হয়েছে", "success");
-                    fetchUsers();
-                } catch (err) {
-                    showToast("ডিলিট করতে সমস্যা হয়েছে: " + err.message, "error");
+    if(key === 'shopKeywords' && items.length >= 10) {
+        if(inputEl) inputEl.disabled = true;
+        if(limitMsg) limitMsg.style.display = 'block';
+    } else {
+        if(inputEl) inputEl.disabled = false;
+        if(limitMsg) limitMsg.style.display = 'none';
+    }
+}
+          
+document.getElementById('cancelBtn').onclick = () => document.getElementById('editModal').style.display = 'none';          
+          
+// ========== SAVE ==========          
+document.getElementById('saveBtn').onclick = async () => {          
+    try {
+        const data = {};          
+        document.querySelectorAll('#formFields input, #formFields select, #formFields textarea').forEach(inp => {          
+            if(inp.id && inp.id.startsWith('field-')) {
+                const key = inp.id.replace('field-','');          
+                let val = inp.value;          
+                if(val === 'true') val = true;          
+                else if(val === 'false') val = false;          
+                else if(inp.type === 'number' && val !== '') val = Number(val);          
+                else {
+                    try {
+                        // Check if it's JSON object text
+                        if(val.startsWith('{') && val.endsWith('}')) {
+                            val = JSON.parse(val);
+                        }
+                    } catch(err) {}
                 }
+                data[key] = val;          
             }
-        }
+        });          
 
-        window.openAddModal = function() {
-            showToast("নতুন ইউজার যোগ করার ফিচারটি সচল আছে।", "success");
-        }
-
-        // Initial Data Execution on Load
-        window.addEventListener('DOMContentLoaded', () => {
-            fetchUsers();
+        // Merge runtime dynamic arrays state
+        Object.keys(dynamicEditorsState).forEach(arrayKey => {
+            data[arrayKey] = dynamicEditorsState[arrayKey];
         });
 
-    </script>
-</body>
+        data.updatedAt = serverTimestamp();          
+              
+        if(isNewUser){          
+            await setDoc(doc(db,"users",currentEditingId), data);          
+            const newEntry = {uid: currentEditingId, ...data};
+            allUsers.unshift(newEntry);          
+            renderCard(newEntry);
+        }else{          
+            await updateDoc(doc(db,"users",currentEditingId), data);          
+            const user = allUsers.find(u=>u.uid===currentEditingId);          
+            if(user) Object.assign(user, data);          
+            renderCard(allUsers.find(u=>u.uid===currentEditingId));          
+        }          
+        document.getElementById('editModal').style.display = 'none';          
+        showToast('Saved Successfully');          
+    } catch(e) { 
+        showToast('Error saving data: '+e.message, 'error'); 
+    }          
+}          
+          
+// ========== DELETE ==========          
+window.openDelete = (uid) => {          
+    currentEditingId = uid;          
+    document.getElementById('confirmModal').style.display = 'flex';          
+}          
+document.getElementById('confirmCancel').onclick = () => document.getElementById('confirmModal').style.display = 'none';          
+document.getElementById('confirmDelete').onclick = async () => {          
+    try {          
+        await deleteDoc(doc(db,"users",currentEditingId));          
+        allUsers = allUsers.filter(u => u.uid !== currentEditingId);          
+        const cardElem = document.getElementById('card-'+currentEditingId);
+        if(cardElem) cardElem.remove();          
+        document.getElementById('confirmModal').style.display = 'none';          
+        showToast('Deleted Successfully');          
+    } catch(e) { 
+        showToast('Delete Failed: ' + e.message, 'error'); 
+        document.getElementById('confirmModal').style.display = 'none';
+    }          
+}          
+          
+document.getElementById('loadMore').onclick = loadUsers;          
+</script>          </body>          
 </html>
