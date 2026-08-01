@@ -36,7 +36,6 @@
             font-family: 'Hind Siliguri', sans-serif;
         }
 
-        /* Initial Hide for Auth Verification Protection */
         body {
             background-color: var(--bg-color);
             color: var(--text-main);
@@ -281,6 +280,45 @@
             min-width: 100px;
         }
 
+        /* Financial Information Section (Green Background) */
+        .financial-section {
+            background: #F0FDF4;
+            border: 1px solid #BBF7D0;
+            border-radius: 12px;
+            padding: 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .financial-title {
+            font-size: 13px;
+            font-weight: 700;
+            color: #166534;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 2px;
+            border-bottom: 1px solid #DCFCE7;
+            padding-bottom: 4px;
+        }
+
+        .financial-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 13px;
+            color: #14532D;
+        }
+
+        .financial-row.balance-highlight {
+            font-size: 18px;
+            font-weight: 700;
+            color: #15803D;
+            border-top: 1px dashed #BBF7D0;
+            padding-top: 6px;
+            margin-top: 2px;
+        }
+
         .affiliate-actions {
             display: flex;
             gap: 10px;
@@ -372,7 +410,7 @@
             background: var(--card-bg);
             border-radius: var(--radius);
             padding: 20px;
-            height: 200px;
+            height: 250px;
             animation: pulse 1.5s infinite ease-in-out;
             border: 1px solid var(--border-color);
         }
@@ -545,20 +583,40 @@
         <!-- Stats Section -->
         <div class="stats-grid">
             <div class="stat-card">
-                <span class="stat-title">মোট অ্যাফিলিয়েট</span>
-                <span class="stat-value" id="statTotal">0</span>
+                <span class="stat-title">মোট অ্যাফিলিয়েট ব্যালেন্স</span>
+                <span class="stat-value" id="statTotalBalance">৳ ০</span>
             </div>
             <div class="stat-card">
-                <span class="stat-title">যাচাইকৃত (Verified)</span>
-                <span class="stat-value" id="statVerified">0</span>
+                <span class="stat-title">মোট পেন্ডিং কমিশন</span>
+                <span class="stat-value" id="statTotalPending">৳ ০</span>
             </div>
             <div class="stat-card">
-                <span class="stat-title">সক্রিয় (Active)</span>
-                <span class="stat-value" id="statActive">0</span>
+                <span class="stat-title">মোট অর্জিত কমিশন</span>
+                <span class="stat-value" id="statTotalEarned">৳ ০</span>
             </div>
             <div class="stat-card">
-                <span class="stat-title">নিষ্ক্রিয় (Inactive)</span>
-                <span class="stat-value" id="statInactive">0</span>
+                <span class="stat-title">মোট উত্তোলিত (Withdrawn)</span>
+                <span class="stat-value" id="statTotalWithdrawn">৳ ০</span>
+            </div>
+        </div>
+
+        <!-- Secondary Stats Grid (User count info) -->
+        <div class="stats-grid" style="grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); margin-bottom: 24px;">
+            <div class="stat-card" style="padding: 14px;">
+                <span class="stat-title">মোট অ্যাকাউন্ট</span>
+                <span class="stat-value" style="font-size: 20px;" id="statTotal">0</span>
+            </div>
+            <div class="stat-card" style="padding: 14px;">
+                <span class="stat-title">যাচাইকৃত</span>
+                <span class="stat-value" style="font-size: 20px;" id="statVerified">0</span>
+            </div>
+            <div class="stat-card" style="padding: 14px;">
+                <span class="stat-title">সক্রিয়</span>
+                <span class="stat-value" style="font-size: 20px;" id="statActive">0</span>
+            </div>
+            <div class="stat-card" style="padding: 14px;">
+                <span class="stat-title">নিষ্ক্রিয়</span>
+                <span class="stat-value" style="font-size: 20px;" id="statInactive">0</span>
             </div>
         </div>
 
@@ -566,7 +624,7 @@
         <div class="search-section">
             <div class="search-input-wrapper">
                 <i class="fa-solid fa-search"></i>
-                <input type="text" id="searchInput" class="search-input" placeholder="UID, Email অথবা Phone Number দিয়ে খুঁজুন...">
+                <input type="text" id="searchInput" class="search-input" placeholder="UID, Email, Phone, Name অথবা Referral Code দিয়ে খুঁজুন...">
             </div>
         </div>
 
@@ -637,13 +695,13 @@
 
         // Provided Firebase Configuration
         const firebaseConfig = {
-    apiKey: "AIzaSyBUhNhYvuo_FTvZ5RZR6Gn-4hsUY21S0XE",
-    authDomain: "ghotimarket.firebaseapp.com",
-    projectId: "ghotimarket",
-    storageBucket: "ghotimarket.appspot.com",
-    messagingSenderId: "9382019283",
-    appId: "1:9382019283:web:abc12345"
-};
+            apiKey: "AIzaSyBUhNhYvuo_FTvZ5RZR6Gn-4hsUY21S0XE",
+            authDomain: "ghotimarket.firebaseapp.com",
+            projectId: "ghotimarket",
+            storageBucket: "ghotimarket.appspot.com",
+            messagingSenderId: "9382019283",
+            appId: "1:9382019283:web:abc12345"
+        };
 
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
@@ -665,6 +723,10 @@
         const statVerified = document.getElementById('statVerified');
         const statActive = document.getElementById('statActive');
         const statInactive = document.getElementById('statInactive');
+        const statTotalBalance = document.getElementById('statTotalBalance');
+        const statTotalPending = document.getElementById('statTotalPending');
+        const statTotalEarned = document.getElementById('statTotalEarned');
+        const statTotalWithdrawn = document.getElementById('statTotalWithdrawn');
 
         // Modals
         const editModalOverlay = document.getElementById('editModalOverlay');
@@ -677,7 +739,12 @@
         let allAffiliatesCache = [];
         let currentEditingUid = null;
         let currentDeletingUid = null;
-        let unsubscribeRealtime = null;
+
+        // Bangladeshi Number Currency Format Function
+        function formatCurrency(amount) {
+            const num = Number(amount) || 0;
+            return '৳ ' + num.toLocaleString('en-IN');
+        }
 
         // Toast Notification System
         function showToast(message, type = 'success') {
@@ -701,7 +768,6 @@
                 return;
             }
 
-            // Access Granted, Reveal Page & Initialize Dashboard
             authLoadingScreen.style.display = 'none';
             document.body.style.display = 'flex';
             initDashboard();
@@ -716,7 +782,6 @@
             }
         });
 
-        // Initialize Realtime Stats & Affiliates
         function initDashboard() {
             setupRealtimeSync();
             loadInitialAffiliates();
@@ -731,18 +796,32 @@
                     let verified = 0;
                     let active = 0;
                     let inactive = 0;
+                    let sumBalance = 0;
+                    let sumPending = 0;
+                    let sumEarned = 0;
+                    let sumWithdrawn = 0;
 
                     snapshot.forEach((doc) => {
                         const data = doc.data();
                         if (data.verified === true) verified++;
                         if (data.active === true) active++;
                         if (data.active === false) inactive++;
+
+                        sumBalance += Number(data.balance) || 0;
+                        sumPending += Number(data.pendingCommission) || 0;
+                        sumEarned += Number(data.totalCommission) || 0;
+                        sumWithdrawn += Number(data.withdrawn) || 0;
                     });
 
                     statTotal.textContent = total;
                     statVerified.textContent = verified;
                     statActive.textContent = active;
                     statInactive.textContent = inactive;
+
+                    statTotalBalance.textContent = formatCurrency(sumBalance);
+                    statTotalPending.textContent = formatCurrency(sumPending);
+                    statTotalEarned.textContent = formatCurrency(sumEarned);
+                    statTotalWithdrawn.textContent = formatCurrency(sumWithdrawn);
                 }, (error) => {
                     showToast('ডেটা সিঙ্ক করতে সমস্যা হয়েছে', 'error');
                 });
@@ -751,7 +830,6 @@
             }
         }
 
-        // Load Initial 20 Affiliates
         async function loadInitialAffiliates() {
             try {
                 affiliatesContainer.innerHTML = '';
@@ -789,7 +867,6 @@
             }
         }
 
-        // Load More Pagination
         loadMoreBtn.addEventListener('click', async () => {
             if (!lastVisibleDoc) return;
             loadMoreBtn.disabled = true;
@@ -819,7 +896,6 @@
             }
         });
 
-        // Render Affiliate Cards Dynamically (Supporting ANY new field automatically)
         function renderAffiliates(affiliates) {
             affiliatesContainer.innerHTML = '';
             affiliates.forEach(aff => {
@@ -834,7 +910,7 @@
 
             let dynamicFieldsHTML = '';
             for (const [key, value] of Object.entries(aff)) {
-                if (key === 'id') continue;
+                if (key === 'id' || key === 'balance' || key === 'pendingCommission' || key === 'totalCommission' || key === 'withdrawn') continue;
                 
                 let displayVal = value;
                 if (typeof value === 'object' && value !== null && value.seconds) {
@@ -853,13 +929,19 @@
                 `;
             }
 
+            const balance = Number(aff.balance) || 0;
+            const pendingCommission = Number(aff.pendingCommission) || 0;
+            const totalCommission = Number(aff.totalCommission) || 0;
+            const withdrawn = Number(aff.withdrawn) || 0;
+            const netBalance = balance + pendingCommission;
+
             const verifiedBadge = aff.verified ? `<span class="badge badge-verified">Verified</span>` : ``;
             const activeBadge = aff.active !== false ? `<span class="badge badge-active">Active</span>` : `<span class="badge badge-inactive">Inactive</span>`;
 
             card.innerHTML = `
                 <div>
                     <div class="affiliate-header">
-                        <div class="affiliate-name">${escapeHtml(aff.fullName || aff.name || 'নামহীন')}</div>
+                        <div class="affiliate-name">${escapeHtml(aff.fullName || aff.name || aff.uid || 'নামহীন')}</div>
                         <div class="badges">
                             ${verifiedBadge}
                             ${activeBadge}
@@ -867,6 +949,29 @@
                     </div>
                     <div class="affiliate-details">
                         ${dynamicFieldsHTML}
+                    </div>
+                    <div class="financial-section">
+                        <div class="financial-title">Financial Information</div>
+                        <div class="financial-row">
+                            <span>Available Balance</span>
+                            <span>${formatCurrency(balance)}</span>
+                        </div>
+                        <div class="financial-row">
+                            <span>Pending Commission</span>
+                            <span>${formatCurrency(pendingCommission)}</span>
+                        </div>
+                        <div class="financial-row">
+                            <span>Total Earned</span>
+                            <span>${formatCurrency(totalCommission)}</span>
+                        </div>
+                        <div class="financial-row">
+                            <span>Withdrawn</span>
+                            <span>${formatCurrency(withdrawn)}</span>
+                        </div>
+                        <div class="financial-row balance-highlight">
+                            <span>Net Balance</span>
+                            <span>${formatCurrency(netBalance)}</span>
+                        </div>
                     </div>
                 </div>
                 <div class="affiliate-actions">
@@ -881,7 +986,7 @@
             affiliatesContainer.appendChild(card);
         }
 
-        // Instant Search System (UID, Email, Phone)
+        // Search System (UID, Email, Phone, Name, Referral Code)
         searchInput.addEventListener('input', (e) => {
             const searchTerm = e.target.value.trim().toLowerCase();
 
@@ -897,8 +1002,14 @@
                 const uid = (aff.uid || aff.id || '').toLowerCase();
                 const email = (aff.email || '').toLowerCase();
                 const phone = (aff.phoneNumber || aff.phone || '').toLowerCase();
+                const name = (aff.fullName || aff.name || '').toLowerCase();
+                const referralCode = (aff.referralCode || aff.code || '').toLowerCase();
 
-                return uid.includes(searchTerm) || email.includes(searchTerm) || phone.includes(searchTerm);
+                return uid.includes(searchTerm) || 
+                       email.includes(searchTerm) || 
+                       phone.includes(searchTerm) || 
+                       name.includes(searchTerm) || 
+                       referralCode.includes(searchTerm);
             });
 
             if (filtered.length === 0) {
@@ -913,7 +1024,7 @@
             }
         });
 
-        // Edit Modal System (Dynamic Fields Generation excluding uid & createdAt)
+        // Edit Modal System with Auto Type Detection
         window.openEditModal = async function(uid) {
             currentEditingUid = uid;
             modalFormFields.innerHTML = '<div style="text-align:center; padding: 20px;">লোড হচ্ছে...</div>';
@@ -933,22 +1044,13 @@
                 modalFormFields.innerHTML = '';
 
                 for (const [key, value] of Object.entries(data)) {
-                    // Exclude uid and createdAt as required
                     if (key === 'uid' || key === 'createdAt') continue;
-
-                    let inputType = 'text';
-                    let valStr = value !== null ? value : '';
-
-                    if (typeof value === 'boolean') {
-                        inputType = 'select-boolean';
-                    } else if (typeof value === 'number') {
-                        inputType = 'number';
-                    }
 
                     const group = document.createElement('div');
                     group.className = 'modal-form-group';
+                    const valStr = value !== null && value !== undefined ? value : '';
 
-                    if (inputType === 'select-boolean') {
+                    if (typeof value === 'boolean') {
                         group.innerHTML = `
                             <label class="modal-label">${escapeHtml(key)}</label>
                             <select class="modal-input" name="${escapeHtml(key)}">
@@ -956,10 +1058,15 @@
                                 <option value="false" ${value === false ? 'selected' : ''}>না (False)</option>
                             </select>
                         `;
+                    } else if (typeof value === 'number') {
+                        group.innerHTML = `
+                            <label class="modal-label">${escapeHtml(key)}</label>
+                            <input type="number" step="any" class="modal-input" name="${escapeHtml(key)}" value="${escapeHtml(String(valStr))}">
+                        `;
                     } else {
                         group.innerHTML = `
                             <label class="modal-label">${escapeHtml(key)}</label>
-                            <input type="${inputType}" class="modal-input" name="${escapeHtml(key)}" value="${escapeHtml(String(valStr))}">
+                            <input type="text" class="modal-input" name="${escapeHtml(key)}" value="${escapeHtml(String(valStr))}">
                         `;
                     }
                     modalFormFields.appendChild(group);
@@ -984,18 +1091,21 @@
             const updatedData = {};
 
             for (let [key, value] of formData.entries()) {
-                // Convert back boolean strings
-                if (value === 'true') value = true;
-                else if (value === 'false') value = false;
-                
-                updatedData[key] = value;
+                if (value === 'true') {
+                    updatedData[key] = true;
+                } else if (value === 'false') {
+                    updatedData[key] = false;
+                } else if (!isNaN(value) && value.trim() !== '') {
+                    updatedData[key] = Number(value);
+                } else {
+                    updatedData[key] = value;
+                }
             }
 
             try {
                 const docRef = doc(db, 'Affiliates', currentEditingUid);
                 await updateDoc(docRef, updatedData);
 
-                // Update cache locally
                 const index = allAffiliatesCache.findIndex(item => item.id === currentEditingUid);
                 if (index !== -1) {
                     allAffiliatesCache[index] = { ...allAffiliatesCache[index], ...updatedData };
@@ -1009,7 +1119,6 @@
             }
         });
 
-        // Delete System
         window.promptDelete = function(uid) {
             currentDeletingUid = uid;
             deleteModalOverlay.classList.add('active');
@@ -1024,14 +1133,12 @@
             if (!currentDeletingUid) return;
 
             try {
-                // Delete Firestore document
                 await deleteDoc(doc(db, 'Affiliates', currentDeletingUid));
 
-                // Remove from cache and UI instantly
                 allAffiliatesCache = allAffiliatesCache.filter(item => item.id !== currentDeletingUid);
                 renderAffiliates(allAffiliatesCache);
 
-                showToast('അക്കൗണ്ട് সফলভাবে ডিলিট করা হয়েছে');
+                showToast('অ্যাকাউন্ট সফলভাবে ডিলিট করা হয়েছে');
                 closeDeleteModal();
             } catch (error) {
                 showToast('ডিলিট করতে সমস্যা হয়েছে', 'error');
@@ -1039,9 +1146,8 @@
             }
         });
 
-        // Helper Escaping Function for XSS prevention
         function escapeHtml(str) {
-            return str
+            return String(str)
                 .replace(/&/g, "&amp;")
                 .replace(/</g, "&lt;")
                 .replace(/>/g, "&gt;")
