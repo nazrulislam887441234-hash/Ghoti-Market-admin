@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Dashboard | GHOTI MARKET</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<style>
+:root{--primary:#FF6A00;--bg:#FFF8F3;--card:#fff;--shadow:0 8px 30px rgba(255,106,0,0.1);--muted:#666;--border:#FFE3D1;}
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Hind Siliguri',sans-serif;}
+body{background:var(--bg);display:none;}
+header{background:var(--card);padding:15px 20px;display:flex;justify-content:space-between;align-items:center;box-shadow:var(--shadow);position:sticky;top:0;z-index:99;}
+.logo{font-size:20px;font-weight:800;color:var(--primary);}
+.container{max-width:1400px;margin:20px auto;padding:0 15px;}
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:15px;margin-bottom:25px;}
+.stat-card{background:var(--card);padding:18px;border-radius:18px;box-shadow:var(--shadow);}
+.stat-card h4{font-size:12px;color:var(--muted);}
+.stat-card h2{font-size:24px;color:var(--primary);margin-top:5px;}
+.toolbar{display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap;}
+.toolbar input,.toolbar select{padding:12px;border:1.5px solid var(--border);border-radius:10px;flex:1;min-width:160px;background:#fff;}
+.order-card{background:var(--card);border-radius:18px;padding:18px;margin-bottom:15px;box-shadow:var(--shadow);}
+.order-top{display:flex;gap:15px;}
+.order-top img{width:90px;height:90px;border-radius:12px;object-fit:cover;}
+.meta{font-size:13px;margin:3px 0;}
+.badge{padding:5px 10px;border-radius:20px;font-size:11px;font-weight:700;display:inline-block;}
+.badge-Pending{background:#FEF3C7;color:#92400E;}
+.badge-Confirmed{background:#DBEAFE;color:#1E40AF;}
+.badge-Packaging{background:#FEF08A;color:#713F12;}
+.badge-Processing{background:#DBEAFE;color:#1E40AF;}
+.badge-Shipped{background:#FEE2E2;color:#991B1B;}
+.badge-Delivered{background:#D1FAE5;color:#065F46;}
+.badge-Cancelled{background:#F3F4F6;color:#374151;}
+.badge-Returned{background:#FED7AA;color:#9A3412;}
+.badge-affiliate{background:#E0E7FF;color:#3730A3;}
+.btn{padding:10px 14px;border:none;border-radius:10px;cursor:pointer;font-weight:700;margin-right:8px;margin-top:5px;}
+.btn-primary{background:var(--primary);color:#fff;}
+.btn-danger{background:#EF4444;color:#fff;}
+.modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:9999;justify-content:center;align-items:center;padding:20px;}
+.modal.show{display:flex;}
+.modal-content{background:#fff;border-radius:20px;width:100%;max-width:750px;max-height:90vh;overflow-y:auto;padding:25px;position:relative;}
+.info-box{background:#FFF4EC;padding:12px;border-radius:10px;margin-top:10px;}
+.info-box h4{color:var(--primary);margin-bottom:8px;font-size:14px;}
+#toast{position:fixed;bottom:20px;right:20px;background:#22c55e;color:#fff;padding:14px 20px;border-radius:12px;display:none;z-index:10000;}
+.skeleton{background:linear-gradient(90deg,#f1f5f9 25%,#e2e8f0 50%,#f1f5f9 75%);background-size:200% 100%;animation:load 1.5s infinite;border-radius:18px;height:180px;margin-bottom:15px;}
+@keyframes load{0%{background-position:200% 0}100%{background-position:-200% 0}}
+.new-order-alert{position:fixed;top:80px;right:20px;background:var(--primary);color:#fff;padding:15px 25px;border-radius:15px;display:none;z-index:10001;animation:slideIn 0.5s;}
+@keyframes slideIn{from{transform:translateX(200px)}to{transform:translateX(0)}}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo"><i class="fas fa-shield-halved"></i> GHOTI ADMIN</div>
+  <div>
+    <span id="adminEmail" style="font-weight:600;margin-right:15px;"></span>
+    <button id="logoutBtn" class="btn btn-danger"><i class="fas fa-sign-out-alt"></i> Logout</button>
+  </div>
+</header>
+
+<div class="container">
+  <div class="stats-grid" id="statsGrid"></div>
+
+  <div class="toolbar">
+    <input type="text" id="searchInput" placeholder="Track ID, Name, Phone, Product, Seller ID, Promo, Affiliate UID...">
+    <select id="affiliateFilter">
+      <option value="">All Orders (Affiliate & Normal)</option>
+      <option value="affiliate">Affiliate Orders Only</option>
+      <option value="normal">Normal Orders Only</option>
+    </select>
+    <select id="statusFilter"><option value="">All Status</option></select>
+    <select id="divisionFilter"><option value="">All Division</option></select>
+    <select id="sortFilter"><option value="desc">Newest First</option><option value="asc">Oldest First</option></select>
+    <button class="btn btn-primary" onclick="exportCSV()"><i class="fas fa-file-csv"></i> Export CSV</button>
+    <button class="btn btn-primary" onclick="window.print()"><i class="fas fa-print"></i> Print</button>
+  </div>
+
+  <div id="loading"><div class="skeleton"></div><div class="skeleton"></div></div>
+  <div id="ordersList"></div>
+  <div id="emptyState" style="text-align:center;padding:50px;display:none;"><i class="fas fa-box-open" style="font-size:60px;color:#ccc;"></i><h3>No Orders Found</h3></div>
+</div>
+
+<!-- Order Details Modal -->
+<div id="detailsModal" class="modal">
+  <div class="modal-content">
+    <span onclick="closeModal()" style="float:right;font-size:28px;cursor:pointer;font-weight:bold;">&times;</span>
+    <div id="modalBody"></div>
+  </div>
+</div>
+
+<!-- Confirm Delete -->
+<div id="confirmModal" class="modal">
+  <div style="background:#fff;border-radius:20px;padding:30px;width:90%;max-width:400px;text-align:center;">
+    <h3>Are you sure?</h3>
+    <p>This will permanently delete the order from database.</p>
+    <div style="display:flex;gap:10px;margin-top:20px;justify-content:center;">
+      <button class="btn" onclick="closeConfirm()">Cancel</button>
+      <button class="btn btn-danger" id="confirmDeleteBtn">Delete</button>
+    </div>
+  </div>
+</div>
+
+<div id="newOrderAlert" class="new-order-alert"><i class="fas fa-bell"></i> New Order Received!</div>
+<div id="toast"></div>
+<audio id="notifSound" src="https://cdn.freesound.org/previews/270/270404_5123851-lq.mp3"></audio>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { getFirestore, collection, onSnapshot, doc, updateDoc, deleteDoc, query, orderBy } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+// ========== CONFIG ==========
+const firebaseConfig = {
+  apiKey: "AIzaSyBUhNhYvuo_FTvZ5RZR6Gn-4hsUY21S0XE",
+  authDomain: "ghotimarket.firebaseapp.com",
+  projectId: "ghotimarket",
+  storageBucket: "ghotimarket.firebasestorage.app",
+  messagingSenderId: "481257644093",
+  appId: "1:481257644093:web:0dfc3699d6b3c86afeca54"
+};
+const ADMIN_EMAIL = "support@ghotimarket.com";
+// ============================
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+let allOrders = [];
+let deleteId = null;
+
+// 1. AUTH CHECK
+onAuthStateChanged(auth, async (user) => {
+  if(!user){
+    window.location.href = "index.html";
+    return;
+  }
+  if(user.email!== ADMIN_EMAIL){
+    await signOut(auth);
+    alert("Access Denied! Only Admin can login.");
+    window.location.href = "index.html";
+    return;
+  }
+  document.body.style.display = 'block';
+  document.getElementById('adminEmail').innerText = user.email;
+  loadOrders();
+});
+
+// 2. LOGOUT
+document.getElementById('logoutBtn').onclick = async () => {
+  await signOut(auth);
+  window.location.href = 'index.html';
+};
+
+// 3. LOAD ORDERS REALTIME
+function loadOrders(){
+  const q = query(collection(db, "orders"), orderBy("createdAt", "desc"));
+  onSnapshot(q, (snapshot) => {
+    const newOrders = snapshot.docChanges().filter(c => c.type === 'added');
+    if(newOrders.length > 0){
+      document.getElementById('notifSound').play().catch(()=>{});
+      document.getElementById('newOrderAlert').style.display = 'block';
+      setTimeout(()=>document.getElementById('newOrderAlert').style.display = 'none', 4000);
+    }
+
+    allOrders = snapshot.docs.map(d => ({id: d.id, ...d.data()}));
+    document.getElementById('loading').style.display = 'none';
+    renderStats();
+    renderOrders();
+    fillFilters();
+  });
+}
+
+// 4. RENDER STATS
+function renderStats(){
+  const now = new Date();
+  const stats = {
+    total: allOrders.length,
+    pending: allOrders.filter(o=>o.orderStatus==='Pending').length,
+    confirmed: allOrders.filter(o=>o.orderStatus==='Confirmed').length,
+    processing: allOrders.filter(o=>o.orderStatus==='Processing').length,
+    shipped: allOrders.filter(o=>o.orderStatus==='Shipped').length,
+    delivered: allOrders.filter(o=>o.orderStatus==='Delivered').length,
+    cancelled: allOrders.filter(o=>o.orderStatus==='Cancelled').length,
+    today: allOrders.filter(o=>o.createdAt?.toDate().toDateString()===now.toDateString()).length,
+    month: allOrders.filter(o=>o.createdAt?.toDate().getMonth()===now.getMonth()).length,
+    sales: allOrders.reduce((a,b)=>a+(b.grandTotal||0),0),
+    delivery: allOrders.reduce((a,b)=>a+(b.deliveryCharge||0),0),
+    affiliateCount: allOrders.filter(o=>o.affiliateApplied === true).length
+  }
+  stats.revenue = stats.sales + stats.delivery;
+
+  document.getElementById('statsGrid').innerHTML = `
+    <div class="stat-card"><h4>Total Orders</h4><h2>${stats.total}</h2></div>
+    <div class="stat-card"><h4>Affiliate Orders</h4><h2>${stats.affiliateCount}</h2></div>
+    <div class="stat-card"><h4>Pending</h4><h2>${stats.pending}</h2></div>
+    <div class="stat-card"><h4>Confirmed</h4><h2>${stats.confirmed}</h2></div>
+    <div class="stat-card"><h4>Processing</h4><h2>${stats.processing}</h2></div>
+    <div class="stat-card"><h4>Shipped</h4><h2>${stats.shipped}</h2></div>
+    <div class="stat-card"><h4>Delivered</h4><h2>${stats.delivered}</h2></div>
+    <div class="stat-card"><h4>Cancelled</h4><h2>${stats.cancelled}</h2></div>
+    <div class="stat-card"><h4>Today's Orders</h4><h2>${stats.today}</h2></div>
+    <div class="stat-card"><h4>Total Sales</h4><h2>৳${stats.sales}</h2></div>
+    <div class="stat-card"><h4>Delivery Charge</h4><h2>৳${stats.delivery}</h2></div>
+    <div class="stat-card"><h4>Total Revenue</h4><h2>৳${stats.revenue}</h2></div>
+  `;
+}
+
+// 5. RENDER ORDERS
+function renderOrders(){
+  const search = document.getElementById('searchInput').value.toLowerCase();
+  const affiliateFilter = document.getElementById('affiliateFilter').value;
+  const status = document.getElementById('statusFilter').value;
+  const division = document.getElementById('divisionFilter').value;
+  const sort = document.getElementById('sortFilter').value;
+
+  let filtered = allOrders.filter(o=>{
+    const matchSearch =
+      o.orderTrackId?.toLowerCase().includes(search) ||
+      o.customerName?.toLowerCase().includes(search) ||
+      o.customerPhone?.includes(search) ||
+      o.productName?.toLowerCase().includes(search) ||
+      o.sellerId?.toLowerCase().includes(search) ||
+      o.shopName?.toLowerCase().includes(search) ||
+      o.affiliatePromoCode?.toLowerCase().includes(search) ||
+      o.affiliateUserId?.toLowerCase().includes(search);
+
+    const matchAffiliate = affiliateFilter === 'affiliate' ? o.affiliateApplied === true :
+                           affiliateFilter === 'normal' ? !o.affiliateApplied : true;
+
+    const matchStatus = status ? o.orderStatus === status : true;
+    const matchDiv = division ? o.division === division : true;
+
+    return matchSearch && matchAffiliate && matchStatus && matchDiv;
+  });
+
+  if(sort==='asc') filtered.reverse();
+
+  if(filtered.length===0){
+    document.getElementById('emptyState').style.display='block';
+    document.getElementById('ordersList').innerHTML='';
+    return;
+  }
+  document.getElementById('emptyState').style.display='none';
+
+  document.getElementById('ordersList').innerHTML = filtered.map(o=>{
+    const date = o.createdAt?.toDate().toLocaleString('bn-BD') || 'N/A';
+    const updatedDate = o.updatedAt?.toDate().toLocaleString('bn-BD') || 'N/A';
+    const isAffiliate = o.affiliateApplied === true;
+
+    return `
+    <div class="order-card">
+      <div class="order-top">
+        <img src="${o.productImage || 'https://via.placeholder.com/90'}">
+        <div style="flex:1;">
+          <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+            <b>${o.productName || 'N/A'}</b>
+            ${isAffiliate ? '<span class="badge badge-affiliate"><i class="fas fa-handshake"></i> Affiliate Order</span>' : ''}
+          </div>
+          <div class="meta"><b>Track ID:</b> ${o.orderTrackId || 'N/A'}</div>
+          <div class="meta"><b>Shop:</b> ${o.shopName || 'N/A'} | <b>Seller ID:</b> ${o.sellerId || 'N/A'}</div>
+          <div class="meta"><b>Customer:</b> ${o.customerName || 'N/A'} - ${o.customerPhone || 'N/A'}</div>
+          <div class="meta"><b>Address:</b> ${o.division || ''}, ${o.district || ''}, ${o.upazila || ''}</div>
+          <div class="meta">Qty: ${o.quantity || 1} | Price: ৳${o.productPrice || 0} | Delivery: ৳${o.deliveryCharge || 0}</div>
+          
+          ${isAffiliate ? `
+            <div class="info-box" style="margin:8px 0; padding:8px 12px;">
+              <p style="font-size:12px; color:var(--primary); font-weight:bold;"><i class="fas fa-tag"></i> Affiliate Details</p>
+              <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(140px, 1fr)); gap:5px; font-size:12px; margin-top:4px;">
+                <div><b>Promo:</b> ${o.affiliatePromoCode || 'N/A'}</div>
+                <div><b>Affiliate User ID:</b> ${o.affiliateUserId || 'N/A'}</div>
+                <div><b>Discount:</b> ৳${o.affiliateDiscount || 0}</div>
+                <div><b>Original Subtotal:</b> ৳${o.originalSubtotal || o.subtotal || 0}</div>
+                <div><b>After Discount:</b> ৳${o.discountedSubtotal || o.subtotal || 0}</div>
+                <div><b>Final Payment:</b> ৳${o.grandTotal || 0}</div>
+              </div>
+            </div>
+          ` : ''}
+
+          <div class="meta"><b>Grand Total: ৳${o.grandTotal || 0}</b></div>
+          <div class="meta">Payment: ${o.paymentMethod || 'N/A'} - <span class="badge badge-${o.paymentStatus}">${o.paymentStatus || 'Unpaid'}</span></div>
+          <div class="meta">Status: <span class="badge badge-${o.orderStatus}">${o.orderStatus || 'Pending'}</span> | Delivery Status: ${o.deliveryStatus || 'New'}</div>
+          <div class="meta"><b>Order Date:</b> ${date} | <b>Updated Date:</b> ${updatedDate}</div>
+          ${o.orderNote ? `<div class="meta"><b>Note:</b> ${o.orderNote}</div>` : ''}
+        </div>
+      </div>
+      <div style="margin-top:12px; display:flex; flex-wrap:wrap; gap:8px; align-items:center;">
+        <button class="btn btn-primary" onclick="viewOrder('${o.id}')"><i class="fas fa-eye"></i> View</button>
+        <select onchange="updateField('${o.id}','orderStatus',this.value)" style="padding:8px; border-radius:8px; border:1px solid var(--border);">
+          <option value="">Update Status</option>
+          <option value="Pending">Pending</option>
+          <option value="Confirmed">Confirmed</option>
+          <option value="Packaging">Packaging</option>
+          <option value="Processing">Processing</option>
+          <option value="Shipped">Shipped</option>
+          <option value="Delivered">Delivered</option>
+          <option value="Cancelled">Cancelled</option>
+          <option value="Returned">Returned</option>
+        </select>
+        <select onchange="updateField('${o.id}','paymentStatus',this.value)" style="padding:8px; border-radius:8px; border:1px solid var(--border);">
+          <option value="">Payment Status</option>
+          <option value="Unpaid">Unpaid</option>
+          <option value="Paid">Paid</option>
+          <option value="Refunded">Refunded</option>
+        </select>
+        <select onchange="updateField('${o.id}','deliveryStatus',this.value)" style="padding:8px; border-radius:8px; border:1px solid var(--border);">
+          <option value="">Delivery Status</option>
+          <option value="New">New</option>
+          <option value="Accepted">Accepted</option>
+          <option value="Dispatched">Dispatched</option>
+          <option value="Delivered">Delivered</option>
+          <option value="Returned">Returned</option>
+        </select>
+        <button class="btn btn-danger" onclick="deleteOrder('${o.id}')"><i class="fas fa-trash"></i></button>
+      </div>
+    </div>
+    `;
+  }).join('');
+}
+
+// 6. VIEW MODAL
+window.viewOrder = (id) => {
+  const o = allOrders.find(x=>x.id===id);
+  if(!o) return;
+  const date = o.createdAt?.toDate ? o.createdAt.toDate().toLocaleString('bn-BD') : 'N/A';
+  const updatedDate = o.updatedAt?.toDate ? o.updatedAt.toDate().toLocaleString('bn-BD') : 'N/A';
+  const isAffiliate = o.affiliateApplied === true;
+
+  document.getElementById('modalBody').innerHTML = `
+    <div style="text-align:center; margin-bottom:15px;">
+      <img src="${o.productImage || 'https://via.placeholder.com/120'}" style="width:120px;height:120px;border-radius:15px;object-fit:cover;">
+      <h2 style="margin-top:10px;">${o.productName || 'N/A'}</h2>
+      <p style="color:var(--muted);">Price: ৳${o.productPrice || 0} × Qty: ${o.quantity || 1} = Subtotal: ৳${o.subtotal || 0}</p>
+    </div>
+
+    <div style="background:#FFF4EC; padding:12px; border-radius:12px; margin-bottom:15px; display:flex; justify-content:space-between; align-items:center;">
+      <div>
+        <p style="font-size:13px; color:var(--muted);">Track ID</p>
+        <b style="font-size:16px;">${o.orderTrackId || 'N/A'}</b>
+      </div>
+      <button class="btn btn-primary" style="margin:0;" onclick="navigator.clipboard.writeText('${o.orderTrackId}')"><i class="fas fa-copy"></i> Copy Track ID</button>
+    </div>
+
+    ${isAffiliate ? `
+      <div class="info-box">
+        <h4><i class="fas fa-handshake"></i> Affiliate Discount Details</h4>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; font-size:13px; margin-top:8px;">
+          <div><b>Promo Code:</b> ${o.affiliatePromoCode || 'N/A'}</div>
+          <div><b>Affiliate User ID:</b> ${o.affiliateUserId || 'N/A'}</div>
+          <div><b>Discount Amount:</b> ৳${o.affiliateDiscount || 0}</div>
+          <div><b>Original Subtotal:</b> ৳${o.originalSubtotal || o.subtotal || 0}</div>
+          <div><b>Discounted Subtotal:</b> ৳${o.discountedSubtotal || o.subtotal || 0}</div>
+          <div><b>Delivery Charge:</b> ৳${o.deliveryCharge || 0}</div>
+          <div style="grid-column:span 2; font-weight:bold; color:var(--primary); font-size:14px;">Final Customer Payment: ৳${o.grandTotal || 0}</div>
+        </div>
+      </div>
+    ` : ''}
+
+    <div class="info-box">
+      <h4><i class="fas fa-user"></i> Customer Information</h4>
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; font-size:13px; margin-top:8px;">
+        <div><b>Name:</b> ${o.customerName || 'N/A'}</div>
+        <div><b>Phone:</b> <a href="tel:${o.customerPhone}">${o.customerPhone || 'N/A'}</a></div>
+        <div><b>Division:</b> ${o.division || 'N/A'}</div>
+        <div><b>District:</b> ${o.district || 'N/A'}</div>
+        <div><b>Upazila:</b> ${o.upazila || 'N/A'}</div>
+        <div style="grid-column:span 2;"><b>Full Address:</b> ${o.fullAddress || o.address || 'N/A'}</div>
+      </div>
+    </div>
+
+    <div class="info-box">
+      <h4><i class="fas fa-store"></i> Seller Information</h4>
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; font-size:13px; margin-top:8px;">
+        <div><b>Shop Name:</b> ${o.shopName || 'N/A'}</div>
+        <div><b>Seller ID:</b> ${o.sellerId || 'N/A'}</div>
+      </div>
+    </div>
+
+    <div class="info-box">
+      <h4><i class="fas fa-info-circle"></i> Order & Payment Info</h4>
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; font-size:13px; margin-top:8px;">
+        <div><b>Order Status:</b> <span class="badge badge-${o.orderStatus}">${o.orderStatus || 'Pending'}</span></div>
+        <div><b>Delivery Status:</b> ${o.deliveryStatus || 'New'}</div>
+        <div><b>Payment Method:</b> ${o.paymentMethod || 'N/A'}</div>
+        <div><b>Payment Status:</b> <span class="badge badge-${o.paymentStatus}">${o.paymentStatus || 'Unpaid'}</span></div>
+        <div><b>Order Date:</b> ${date}</div>
+        <div><b>Updated Date:</b> ${updatedDate}</div>
+        <div style="grid-column:span 2;"><b>Order Note:</b> ${o.orderNote || 'No note provided'}</div>
+      </div>
+    </div>
+  `;
+  document.getElementById('detailsModal').classList.add('show');
+}
+window.closeModal = () => document.getElementById('detailsModal').classList.remove('show');
+
+// 7. UPDATE FIELD
+window.updateField = async (id, field, value) => {
+  if(!value || value.startsWith('Update') || value.startsWith('Payment') || value.startsWith('Delivery')) return;
+  const order = allOrders.find(o => o.id === id);
+  if(!order) return;
+  
+  const updates = {
+    [field]: value,
+    updatedAt: new Date()
+  };
+
+  try {
+    await Promise.all([
+      updateDoc(doc(db, "orders", id), updates),
+      updateDoc(doc(db, "order_tracking", order.orderTrackId), updates)
+    ]);
+    showToast(`${field} updated successfully!`);
+  } catch (err) {
+    console.error("Update error:", err);
+    showToast('Failed to update status!');
+  }
+}
+
+// 8. DELETE
+window.deleteOrder = (id) => {
+  deleteId = id;
+  document.getElementById('confirmModal').classList.add('show');
+}
+window.closeConfirm = () => document.getElementById('confirmModal').classList.remove('show');
+document.getElementById('confirmDeleteBtn').onclick = async () => {
+  const order = allOrders.find(o => o.id === deleteId);
+  if(!order) return;
+
+  try {
+    await Promise.all([
+      deleteDoc(doc(db, "orders", deleteId)),
+      deleteDoc(doc(db, "order_tracking", order.orderTrackId))
+    ]);
+    closeConfirm();
+    showToast('Order Deleted Successfully!');
+  } catch (err) {
+    console.error("Delete error:", err);
+    showToast('Failed to delete order!');
+  }
+}
+
+// 9. EXPORT CSV
+window.exportCSV = () => {
+  let csv = 'Track ID,Product,Customer,Phone,Seller ID,Affiliate Applied,Promo Code,Affiliate User ID,Discount,Subtotal,Grand Total,Status\n';
+  allOrders.forEach(o => {
+    csv += `"${o.orderTrackId || ''}","${o.productName || ''}","${o.customerName || ''}","${o.customerPhone || ''}","${o.sellerId || ''}","${o.affiliateApplied ? 'Yes' : 'No'}","${o.affiliatePromoCode || ''}","${o.affiliateUserId || ''}","${o.affiliateDiscount || 0}","${o.subtotal || 0}","${o.grandTotal || 0}","${o.orderStatus || ''}"\n`;
+  });
+  const blob = new Blob(["\uFEFF" + csv], {type: 'text/csv;charset=utf-8;'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; 
+  a.download = `orders_export_${new Date().toISOString().slice(0,10)}.csv`; 
+  a.click();
+}
+
+// 10. HELPERS
+function showToast(msg){
+  const t = document.getElementById('toast');
+  t.innerText = msg; t.style.display = 'block';
+  setTimeout(()=>t.style.display='none', 3000);
+}
+
+function fillFilters(){
+  const statuses = [...new Set(allOrders.map(o=>o.orderStatus).filter(Boolean))];
+  const divisions = [...new Set(allOrders.map(o=>o.division).filter(Boolean))];
+  document.getElementById('statusFilter').innerHTML = '<option value="">All Status</option>' + statuses.map(s=>`<option value="${s}">${s}</option>`).join('');
+  document.getElementById('divisionFilter').innerHTML = '<option value="">All Division</option>' + divisions.map(d=>`<option value="${d}">${d}</option>`).join('');
+}
+
+// Events
+document.getElementById('searchInput').oninput = renderOrders;
+document.getElementById('affiliateFilter').onchange = renderOrders;
+document.getElementById('statusFilter').onchange = renderOrders;
+document.getElementById('divisionFilter').onchange = renderOrders;
+document.getElementById('sortFilter').onchange = renderOrders;
+</script>
+</body>
+</html>
