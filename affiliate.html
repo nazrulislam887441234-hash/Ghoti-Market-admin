@@ -583,19 +583,19 @@
         <!-- Stats Section -->
         <div class="stats-grid">
             <div class="stat-card">
-                <span class="stat-title">মোট অ্যাফিলিয়েট ব্যালেন্স</span>
+                <span class="stat-title">General Balance</span>
                 <span class="stat-value" id="statTotalBalance">৳ ০</span>
             </div>
             <div class="stat-card">
-                <span class="stat-title">মোট পেন্ডিং কমিশন</span>
+                <span class="stat-title">Commission (20%)</span>
                 <span class="stat-value" id="statTotalPending">৳ ০</span>
             </div>
             <div class="stat-card">
-                <span class="stat-title">মোট অর্জিত কমিশন</span>
+                <span class="stat-title">Withdrawn</span>
                 <span class="stat-value" id="statTotalEarned">৳ ০</span>
             </div>
             <div class="stat-card">
-                <span class="stat-title">মোট উত্তোলিত (Withdrawn)</span>
+                <span class="stat-title">Net Balance</span>
                 <span class="stat-value" id="statTotalWithdrawn">৳ ০</span>
             </div>
         </div>
@@ -737,13 +737,14 @@
 
         let lastVisibleDoc = null;
         let allAffiliatesCache = [];
+        let allDeliveredOrdersCache = [];
         let currentEditingUid = null;
         let currentDeletingUid = null;
 
         // Bangladeshi Number Currency Format Function
         function formatCurrency(amount) {
             const num = Number(amount) || 0;
-            return '৳ ' + num.toLocaleString('en-IN');
+            return '৳ ' + num.toLocaleString('en-IN', { maximumFractionDigits: 2 });
         }
 
         // Toast Notification System
@@ -784,33 +785,36 @@
 
         function initDashboard() {
             setupRealtimeSync();
-            loadInitialAffiliates();
         }
 
-        // Realtime Stats via onSnapshot
+        // Realtime Data Sync via onSnapshot for both Affiliates and Orders
         function setupRealtimeSync() {
             try {
-                const q = collection(db, 'Affiliates');
-                onSnapshot(q, (snapshot) => {
+                let affiliatesLoaded = false;
+                let ordersLoaded = false;
+
+                const checkAndRender = () => {
+                    if (affiliatesLoaded && ordersLoaded) {
+                        updateGlobalStats();
+                        renderAffiliates(allAffiliatesCache);
+                    }
+                };
+
+                // Sync Affiliates
+                onSnapshot(collection(db, 'Affiliates'), (snapshot) => {
                     let total = snapshot.size;
                     let verified = 0;
                     let active = 0;
                     let inactive = 0;
-                    let sumBalance = 0;
-                    let sumPending = 0;
-                    let sumEarned = 0;
-                    let sumWithdrawn = 0;
 
-                    snapshot.forEach((doc) => {
-                        const data = doc.data();
+                    const newAffiliates = [];
+                    snapshot.forEach((docSnap) => {
+                        const data = docSnap.data();
                         if (data.verified === true) verified++;
                         if (data.active === true) active++;
                         if (data.active === false) inactive++;
 
-                        sumBalance += Number(data.balance) || 0;
-                        sumPending += Number(data.pendingCommission) || 0;
-                        sumEarned += Number(data.totalCommission) || 0;
-                        sumWithdrawn += Number(data.withdrawn) || 0;
+                        newAffiliates.push({ id: docSnap.id, ...data });
                     });
 
                     statTotal.textContent = total;
@@ -818,52 +822,103 @@
                     statActive.textContent = active;
                     statInactive.textContent = inactive;
 
-                    statTotalBalance.textContent = formatCurrency(sumBalance);
-                    statTotalPending.textContent = formatCurrency(sumPending);
-                    statTotalEarned.textContent = formatCurrency(sumEarned);
-                    statTotalWithdrawn.textContent = formatCurrency(sumWithdrawn);
+                    allAffiliatesCache = newAffiliates;
+                    affiliatesLoaded = true;
+                    checkAndRender();
                 }, (error) => {
-                    showToast('ডেটা সিঙ্ক করতে সমস্যা হয়েছে', 'error');
+                    showToast('অ্যাফিলিয়েট ডেটা সিঙ্ক করতে সমস্যা হয়েছে', 'error');
                 });
+
+                // Sync Orders (Only Delivered orders filter or process all)
+                onSnapshot(collection(db, 'Orders'), (snapshot) => {
+                    const deliveredOrders = [];
+                    snapshot.forEach((docSnap) => {
+                        const data = docSnap.data();
+                        if (data.orderStatus === "Delivered") {
+                            deliveredOrders.push({ id: docSnap.id, ...data });
+                        }
+                    });
+
+                    allDeliveredOrdersCache = deliveredOrders;
+                    ordersLoaded = true;
+                    checkAndRender();
+                }, (error) => {
+                    showToast('অর্ডার ডেটা সিঙ্ক করতে সমস্যা হয়েছে', 'error');
+                });
+
+                // Load initial paginated view for list cards
+                loadInitialAffiliatesList();
+
             } catch (error) {
                 console.error(error);
             }
         }
 
-        async function loadInitialAffiliates() {
+        // Calculate financial numbers for a specific affiliate based on referralCode
+        function calculateFinancials(aff) {
+            const referralCode = (aff.referralCode || '').trim();
+            let generalBalance = 0;
+
+            if (referralCode) {
+                allDeliveredOrdersCache.forEach(order => {
+                    if (order.affiliateCode && String(order.affiliateCode).trim() === referralCode) {
+                        generalBalance += Number(order.discountAmount) || 0;
+                    }
+                });
+            }
+
+            const commission = generalBalance * 0.20;
+            const withdrawn = Number(aff.withdrawn) || 0;
+            const netBalance = generalBalance + commission - withdrawn;
+
+            return {
+                generalBalance,
+                commission,
+                deliveredDiscountTotal: generalBalance, // Total Earned renamed to Delivered Discount Total
+                withdrawn,
+                netBalance
+            };
+        }
+
+        // Update Stats Section with sum across all affiliates
+        function updateGlobalStats() {
+            let sumGeneralBalance = 0;
+            let sumCommission = 0;
+            let sumWithdrawn = 0;
+            let sumNetBalance = 0;
+
+            allAffiliatesCache.forEach(aff => {
+                const fin = calculateFinancials(aff);
+                sumGeneralBalance += fin.generalBalance;
+                sumCommission += fin.commission;
+                sumWithdrawn += fin.withdrawn;
+                sumNetBalance += fin.netBalance;
+            });
+
+            statTotalBalance.textContent = formatCurrency(sumGeneralBalance);
+            statTotalPending.textContent = formatCurrency(sumCommission);
+            statTotalEarned.textContent = formatCurrency(sumWithdrawn);
+            statTotalWithdrawn.textContent = formatCurrency(sumNetBalance);
+        }
+
+        async function loadInitialAffiliatesList() {
             try {
-                affiliatesContainer.innerHTML = '';
                 const q = query(collection(db, 'Affiliates'), limit(20));
                 const snapshot = await getDocs(q);
 
                 if (snapshot.empty) {
-                    affiliatesContainer.innerHTML = `
-                        <div class="empty-state">
-                            <i class="fa-solid fa-users-slash"></i>
-                            <p>কোনো অ্যাফিলিয়েট অ্যাকাউন্ট পাওয়া যায়নি।</p>
-                        </div>
-                    `;
                     loadMoreContainer.style.display = 'none';
                     return;
                 }
 
-                allAffiliatesCache = [];
-                snapshot.forEach((docSnap) => {
-                    allAffiliatesCache.push({ id: docSnap.id, ...docSnap.data() });
-                });
-
                 lastVisibleDoc = snapshot.docs[snapshot.docs.length - 1];
-                renderAffiliates(allAffiliatesCache);
-
                 if (snapshot.docs.length >= 20) {
                     loadMoreContainer.style.display = 'block';
                 } else {
                     loadMoreContainer.style.display = 'none';
                 }
-
             } catch (error) {
-                showToast('ডেটা লোড করতে ব্যর্থ হয়েছে', 'error');
-                affiliatesContainer.innerHTML = `<div class="empty-state"><p>অনুমতি অস্বীকৃত বা নেটওয়ার্ক সমস্যা।</p></div>`;
+                console.error(error);
             }
         }
 
@@ -879,7 +934,9 @@
                 if (!snapshot.empty) {
                     snapshot.forEach((docSnap) => {
                         const newData = { id: docSnap.id, ...docSnap.data() };
-                        allAffiliatesCache.push(newData);
+                        if (!allAffiliatesCache.some(item => item.id === newData.id)) {
+                            allAffiliatesCache.push(newData);
+                        }
                         renderSingleAffiliateCard(newData);
                     });
                     lastVisibleDoc = snapshot.docs[snapshot.docs.length - 1];
@@ -898,15 +955,29 @@
 
         function renderAffiliates(affiliates) {
             affiliatesContainer.innerHTML = '';
+            if (affiliates.length === 0) {
+                affiliatesContainer.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fa-solid fa-users-slash"></i>
+                        <p>কোনো অ্যাফিলিয়েট অ্যাকাউন্ট পাওয়া যায়নি।</p>
+                    </div>
+                `;
+                return;
+            }
             affiliates.forEach(aff => {
                 renderSingleAffiliateCard(aff);
             });
         }
 
         function renderSingleAffiliateCard(aff) {
-            const card = document.createElement('div');
-            card.className = 'affiliate-card';
-            card.setAttribute('data-id', aff.id);
+            // Check if card already exists in DOM, replace it, otherwise append
+            let card = affiliatesContainer.querySelector(`[data-id="${aff.id}"]`);
+            const isNew = !card;
+            if (isNew) {
+                card = document.createElement('div');
+                card.className = 'affiliate-card';
+                card.setAttribute('data-id', aff.id);
+            }
 
             let dynamicFieldsHTML = '';
             for (const [key, value] of Object.entries(aff)) {
@@ -929,11 +1000,7 @@
                 `;
             }
 
-            const balance = Number(aff.balance) || 0;
-            const pendingCommission = Number(aff.pendingCommission) || 0;
-            const totalCommission = Number(aff.totalCommission) || 0;
-            const withdrawn = Number(aff.withdrawn) || 0;
-            const netBalance = balance + pendingCommission;
+            const fin = calculateFinancials(aff);
 
             const verifiedBadge = aff.verified ? `<span class="badge badge-verified">Verified</span>` : ``;
             const activeBadge = aff.active !== false ? `<span class="badge badge-active">Active</span>` : `<span class="badge badge-inactive">Inactive</span>`;
@@ -953,24 +1020,24 @@
                     <div class="financial-section">
                         <div class="financial-title">Financial Information</div>
                         <div class="financial-row">
-                            <span>Available Balance</span>
-                            <span>${formatCurrency(balance)}</span>
+                            <span>General Balance</span>
+                            <span>${formatCurrency(fin.generalBalance)}</span>
                         </div>
                         <div class="financial-row">
-                            <span>Pending Commission</span>
-                            <span>${formatCurrency(pendingCommission)}</span>
+                            <span>Commission (20%)</span>
+                            <span>${formatCurrency(fin.commission)}</span>
                         </div>
                         <div class="financial-row">
-                            <span>Total Earned</span>
-                            <span>${formatCurrency(totalCommission)}</span>
+                            <span>Delivered Discount Total</span>
+                            <span>${formatCurrency(fin.deliveredDiscountTotal)}</span>
                         </div>
                         <div class="financial-row">
                             <span>Withdrawn</span>
-                            <span>${formatCurrency(withdrawn)}</span>
+                            <span>${formatCurrency(fin.withdrawn)}</span>
                         </div>
                         <div class="financial-row balance-highlight">
                             <span>Net Balance</span>
-                            <span>${formatCurrency(netBalance)}</span>
+                            <span>${formatCurrency(fin.netBalance)}</span>
                         </div>
                     </div>
                 </div>
@@ -983,7 +1050,9 @@
                     </button>
                 </div>
             `;
-            affiliatesContainer.appendChild(card);
+            if (isNew) {
+                affiliatesContainer.appendChild(card);
+            }
         }
 
         // Search System (UID, Email, Phone, Name, Referral Code)
@@ -1012,16 +1081,7 @@
                        referralCode.includes(searchTerm);
             });
 
-            if (filtered.length === 0) {
-                affiliatesContainer.innerHTML = `
-                    <div class="empty-state">
-                        <i class="fa-solid fa-magnifying-glass"></i>
-                        <p>কোনো মিলে যাওয়া অ্যাকাউন্ট পাওয়া যায়নি।</p>
-                    </div>
-                `;
-            } else {
-                renderAffiliates(filtered);
-            }
+            renderAffiliates(filtered);
         });
 
         // Edit Modal System with Auto Type Detection
@@ -1110,6 +1170,7 @@
                 if (index !== -1) {
                     allAffiliatesCache[index] = { ...allAffiliatesCache[index], ...updatedData };
                     renderAffiliates(allAffiliatesCache);
+                    updateGlobalStats();
                 }
 
                 showToast('সফলভাবে আপডেট করা হয়েছে');
@@ -1137,6 +1198,7 @@
 
                 allAffiliatesCache = allAffiliatesCache.filter(item => item.id !== currentDeletingUid);
                 renderAffiliates(allAffiliatesCache);
+                updateGlobalStats();
 
                 showToast('অ্যাকাউন্ট সফলভাবে ডিলিট করা হয়েছে');
                 closeDeleteModal();
