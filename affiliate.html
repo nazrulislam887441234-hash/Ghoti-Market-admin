@@ -12,42 +12,45 @@
         :root { --primary: #FF6A00; --bg: #FFF8F3; --card: #FFF; --text: #2D3748; --muted: #718096; --border: #E2E8F0; --radius: 16px; --shadow: 0 10px 25px -5px rgba(255, 106, 0, 0.08); --success: #10B981; --error: #EF4444; --warning: #F59E0B; }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Hind Siliguri', sans-serif; }
         body { background: var(--bg); padding: 20px; display: none; }
-      .auth-loading { position: fixed; inset: 0; background: var(--bg); display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 9999; gap: 16px; color: var(--primary); font-weight: 600; }
-      .spinner { width: 40px; height: 40px; border: 4px solid var(--border); border-top: 4px solid var(--primary); border-radius: 50%; animation: spin 0.8s linear infinite; }
-      .container { max-width: 1200px; margin: 0 auto; }
+     .auth-loading { position: fixed; inset: 0; background: var(--bg); display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 9999; gap: 16px; color: var(--primary); font-weight: 600; }
+     .spinner { width: 40px; height: 40px; border: 4px solid var(--border); border-top: 4px solid var(--primary); border-radius: 50%; animation: spin 0.8s linear infinite; }
+     .spinner-btn { width: 16px; height: 16px; border: 2px solid #fff; border-top: 2px solid transparent; border-radius: 50%; animation: spin 0.6s linear infinite; }
+     .container { max-width: 1200px; margin: 0 auto; }
         header { display: flex; justify-content: space-between; align-items: center; background: var(--card); padding: 16px 24px; border-radius: var(--radius); box-shadow: var(--shadow); margin-bottom: 24px; }
         header h1 { color: var(--primary); }
-      .logout-btn { background: rgba(239, 68, 68, 0.1); color: var(--error); border: none; padding: 10px 16px; border-radius: 8px; font-weight: 600; cursor: pointer; }
-      .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin-bottom: 24px; }
-      .stat-card { background: var(--card); padding: 20px; border-radius: var(--radius); box-shadow: var(--shadow); }
-      .stat-title { font-size: 14px; color: var(--muted); }
-      .stat-value { font-size: 26px; font-weight: 700; }
-      .search-input { width: 100%; padding: 14px 16px; border: 1.5px solid var(--border); border-radius: 10px; margin-bottom: 24px; font-size: 15px; }
-      .affiliates-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 20px; }
-      .affiliate-card { background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow); padding: 20px; display: flex; flex-direction: column; gap: 16px; }
-      .affiliate-name { font-size: 18px; font-weight: 700; }
-      .badges { display: flex; gap: 6px; }
-      .badge { font-size: 11px; padding: 3px 8px; border-radius: 6px; font-weight: 600; }
-      .badge-verified { background: rgba(16, 185, 129, 0.1); color: var(--success); }
-      .badge-active { background: rgba(59, 130, 246, 0.1); color: #3B82F6; }
-      .detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; font-size: 13px; border-top: 1px solid var(--border); padding-top: 12px; }
-      .detail-grid span:first-child { color: var(--muted); font-weight: 600; }
-      .financial { background: #F0FDF4; border: 1px solid #BBF7D0; border-radius: 12px; padding: 14px; }
-      .financial-row { display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 4px; }
-      .net { font-size: 18px; font-weight: 700; color: #15803D; border-top: 1px dashed #BBF7D0; padding-top: 6px; margin-top: 4px; }
-      .btn-group { display: flex; gap: 10px; }
-      .btn { flex: 1; padding: 10px; border-radius: 8px; font-weight: 600; cursor: pointer; border: none; display: flex; align-items: center; justify-content: center; gap: 6px; }
-      .btn-edit { background: rgba(245, 158, 11, 0.1); color: var(--warning); }
-      .btn-withdraw { background: rgba(16, 185, 129, 0.1); color: var(--success); }
-      .btn-delete { background: rgba(239, 68, 68, 0.1); color: var(--error); }
-      .modal { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.5); display: none; justify-content: center; align-items: center; z-index: 1000; }
-      .modal.active { display: flex; }
-      .modal-card { background: #FFF; padding: 28px; border-radius: var(--radius); width: 90%; max-width: 600px; max-height: 90vh; overflow-y: auto; }
-      .form-group { margin-bottom: 16px; }
-      .form-label { display: block; font-size: 14px; font-weight: 600; margin-bottom: 6px; }
-      .form-input { width: 100%; padding: 10px 14px; border: 1.5px solid var(--border); border-radius: 8px; font-size: 14px; }
-      .form-input[disabled] { background: #f1f5f9; cursor: not-allowed; }
-      .toast { position: fixed; bottom: 20px; right: 20px; background: #FFF; padding: 12px 20px; border-radius: 10px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); border-left: 4px solid var(--success); z-index: 2000; }
+     .logout-btn { background: rgba(239, 68, 68, 0.1); color: var(--error); border: none; padding: 10px 16px; border-radius: 8px; font-weight: 600; cursor: pointer; }
+     .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin-bottom: 24px; }
+     .stat-card { background: var(--card); padding: 20px; border-radius: var(--radius); box-shadow: var(--shadow); }
+     .stat-title { font-size: 14px; color: var(--muted); }
+     .stat-value { font-size: 26px; font-weight: 700; }
+     .search-input { width: 100%; padding: 14px 16px; border: 1.5px solid var(--border); border-radius: 10px; margin-bottom: 24px; font-size: 15px; }
+     .affiliates-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 20px; }
+     .affiliate-card { background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow); padding: 20px; display: flex; flex-direction: column; gap: 16px; }
+     .affiliate-name { font-size: 18px; font-weight: 700; }
+     .badges { display: flex; gap: 6px; }
+     .badge { font-size: 11px; padding: 3px 8px; border-radius: 6px; font-weight: 600; }
+     .badge-verified { background: rgba(16, 185, 129, 0.1); color: var(--success); }
+     .badge-active { background: rgba(59, 130, 246, 0.1); color: #3B82F6; }
+     .detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; font-size: 13px; border-top: 1px solid var(--border); padding-top: 12px; }
+     .detail-grid span:first-child { color: var(--muted); font-weight: 600; }
+     .financial { background: #F0FDF4; border: 1px solid #BBF7D0; border-radius: 12px; padding: 14px; }
+     .financial-row { display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 4px; }
+     .net { font-size: 18px; font-weight: 700; color: #15803D; border-top: 1px dashed #BBF7D0; padding-top: 6px; margin-top: 4px; }
+     .btn-group { display: flex; gap: 10px; }
+     .btn { flex: 1; padding: 10px; border-radius: 8px; font-weight: 600; cursor: pointer; border: none; display: flex; align-items: center; justify-content: center; gap: 6px; }
+     .btn:disabled { opacity: 0.6; cursor: not-allowed; }
+     .btn-edit { background: rgba(245, 158, 11, 0.1); color: var(--warning); }
+     .btn-withdraw { background: rgba(16, 185, 129, 0.1); color: var(--success); }
+     .btn-delete { background: rgba(239, 68, 68, 0.1); color: var(--error); }
+     .modal { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.5); display: none; justify-content: center; align-items: center; z-index: 1000; }
+     .modal.active { display: flex; }
+     .modal-card { background: #FFF; padding: 28px; border-radius: var(--radius); width: 90%; max-width: 600px; max-height: 90vh; overflow-y: auto; }
+     .form-group { margin-bottom: 16px; }
+     .form-label { display: block; font-size: 14px; font-weight: 600; margin-bottom: 6px; }
+     .form-input { width: 100%; padding: 10px 14px; border: 1.5px solid var(--border); border-radius: 8px; font-size: 14px; }
+     .form-input[disabled] { background: #f1f5f9; cursor: not-allowed; }
+     .toast { position: fixed; bottom: 20px; right: 20px; background: #FFF; padding: 12px 20px; border-radius: 10px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); border-left: 4px solid var(--success); z-index: 2000; }
+     .toast.error { border-left-color: var(--error); }
         @keyframes spin { to { transform: rotate(360deg); } }
     </style>
 </head>
@@ -101,7 +104,7 @@
                 </div>
                 <div style="display: flex; gap: 12px; margin-top: 24px;">
                     <button type="button" class="btn" style="background: var(--border);" onclick="closeWithdrawModal()">বাতিল</button>
-                    <button type="submit" class="btn" style="background: var(--success); color: #FFF;"><i class="fa-solid fa-paper-plane"></i> Withdraw Confirm</button>
+                    <button type="submit" class="btn" id="withdrawSubmitBtn" style="background: var(--success); color: #FFF;"><i class="fa-solid fa-paper-plane"></i> Withdraw Confirm</button>
                 </div>
             </form>
         </div>
@@ -124,7 +127,13 @@
         const PROTECTED_FIELDS = ['uid', 'createdAt', 'id'];
 
         const formatCurrency = (n) => '৳ ' + (Number(n) || 0).toLocaleString('en-IN', { maximumFractionDigits: 2 });
-        const showToast = (msg) => { const t = document.createElement('div'); t.className = 'toast'; t.innerHTML = `<i class="fa-solid fa-circle-check"></i> ${msg}`; document.getElementById('toastContainer').appendChild(t); setTimeout(() => t.remove(), 3000); }
+        const showToast = (msg, type = 'success') => {
+            const t = document.createElement('div');
+            t.className = `toast ${type}`;
+            t.innerHTML = `<i class="fa-solid ${type==='success'?'fa-circle-check':'fa-circle-exclamation'}"></i> ${msg}`;
+            document.getElementById('toastContainer').appendChild(t);
+            setTimeout(() => t.remove(), 4000);
+        }
 
         onAuthStateChanged(auth, async (user) => {
             if (!user || user.email!== ADMIN_EMAIL) { await signOut(auth); window.location.href = 'index.html'; return; }
@@ -142,7 +151,7 @@
             allOrders.forEach(o => { if (o.affiliateUserId === aff.id) general += Number(o.affiliateDiscount) || 0; });
             const commission = general * 0.20;
             const withdrawn = Number(aff.withdrawn) || 0;
-            const net = general - commission - withdrawn; // Net = Total - Commission - Withdrawn
+            const net = general - commission - withdrawn;
             return { general, commission, withdrawn, net };
         }
 
@@ -186,7 +195,7 @@
             });
         }
 
-        // WITHDRAW SYSTEM
+        // WITHDRAW SYSTEM - FIXED
         window.openWithdraw = (uid) => {
             withdrawUid = uid;
             const aff = allAffiliates.find(a => a.id === uid);
@@ -203,27 +212,44 @@
 
         document.getElementById('withdrawForm').addEventListener('submit', async (e) => {
             e.preventDefault();
+            const btn = document.getElementById('withdrawSubmitBtn');
             const amount = Number(document.getElementById('withdrawAmount').value);
             const note = document.getElementById('withdrawNote').value;
-            if(amount <= 0) return showToast('টাকার পরিমাণ 0 এর বেশি হতে হবে');
 
-            const affRef = doc(db,'Affiliates',withdrawUid);
-            const affSnap = await getDoc(affRef);
-            const currentWithdrawn = Number(affSnap.data().withdrawn) || 0;
-            const newWithdrawn = currentWithdrawn + amount;
+            if(amount <= 0) return showToast('টাকার পরিমাণ 0 এর বেশি হতে হবে', 'error');
 
-            await updateDoc(affRef, {
-                withdrawn: newWithdrawn,
-                withdrawHistory: arrayUnion({
-                    amount: amount,
-                    date: serverTimestamp(),
-                    note: note,
-                    admin: ADMIN_EMAIL
-                })
-            });
-            showToast(`${formatCurrency(amount)} Withdraw সফল`);
-            closeWithdrawModal();
-            document.getElementById('withdrawForm').reset();
+            const aff = allAffiliates.find(a => a.id === withdrawUid);
+            const fin = calc(aff);
+            if(amount > fin.net) return showToast(`Net Balance ${formatCurrency(fin.net)} এর বেশি Withdraw করা যাবে না`, 'error');
+
+            btn.disabled = true;
+            btn.innerHTML = `<div class="spinner-btn"></div> Processing...`;
+
+            try {
+                const affRef = doc(db,'Affiliates',withdrawUid);
+                const affSnap = await getDoc(affRef);
+                const currentWithdrawn = Number(affSnap.data().withdrawn) || 0;
+                const newWithdrawn = currentWithdrawn + amount;
+
+                await updateDoc(affRef, {
+                    withdrawn: newWithdrawn,
+                    withdrawHistory: arrayUnion({
+                        amount: amount,
+                        date: serverTimestamp(),
+                        note: note,
+                        admin: ADMIN_EMAIL
+                    })
+                });
+                showToast(`${formatCurrency(amount)} Withdraw সফলভাবে সেভ হয়েছে`, 'success');
+                closeWithdrawModal();
+                document.getElementById('withdrawForm').reset();
+            } catch (error) {
+                console.error("Withdraw Error:", error);
+                showToast(`Error: ${error.message}`, 'error');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = `<i class="fa-solid fa-paper-plane"></i> Withdraw Confirm`;
+            }
         });
 
         // EDIT SYSTEM
