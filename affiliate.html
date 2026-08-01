@@ -3,239 +3,199 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GHOTI MARKET - Affiliate Admin Panel</title>
-    
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <title>GHOTI MARKET - Pro Affiliate Admin Panel</title>
+
     <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <style>
-        :root {
-            --primary: #FF6A00; --primary-hover: #e55e00; --bg-color: #FFF8F3;
-            --card-bg: #FFFFFF; --text-main: #2D3748; --text-muted: #718096;
-            --border-color: #E2E8F0; --radius: 16px; --shadow: 0 10px 25px -5px rgba(255, 106, 0, 0.08);
-            --success: #10B981; --error: #EF4444; --warning: #F59E0B;
-        }
+        :root { --primary: #FF6A00; --bg: #FFF8F3; --card: #FFF; --text: #2D3748; --muted: #718096; --border: #E2E8F0; --radius: 16px; --shadow: 0 10px 25px -5px rgba(255, 106, 0, 0.08); --success: #10B981; --error: #EF4444; --warning: #F59E0B; }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Hind Siliguri', sans-serif; }
-        body { background-color: var(--bg-color); color: var(--text-main); min-height: 100vh; display: none; flex-direction: column; padding: 20px; }
-        .auth-loading-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg-color); display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 9999; gap: 16px; color: var(--primary); font-size: 18px; font-weight: 600; }
-        .auth-spinner { width: 40px; height: 40px; border: 4px solid var(--border-color); border-top: 4px solid var(--primary); border-radius: 50%; animation: spin 0.8s linear infinite; }
-        .container { width: 100%; max-width: 1200px; margin: 0 auto; }
-        header { display: flex; justify-content: space-between; align-items: center; background: var(--card-bg); padding: 16px 24px; border-radius: var(--radius); box-shadow: var(--shadow); margin-bottom: 24px; }
-        .logo-area h1 { color: var(--primary); font-size: 22px; font-weight: 700; }
-        .logout-btn { background: rgba(239, 68, 68, 0.1); color: var(--error); border: none; padding: 8px 16px; border-radius: 8px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 8px; }
-        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin-bottom: 24px; }
-        .stat-card { background: var(--card-bg); padding: 20px; border-radius: var(--radius); box-shadow: var(--shadow); }
-        .stat-title { font-size: 14px; color: var(--text-muted); font-weight: 500; }
-        .stat-value { font-size: 26px; font-weight: 700; color: var(--text-main); }
-        .search-section { background: var(--card-bg); padding: 20px; border-radius: var(--radius); box-shadow: var(--shadow); margin-bottom: 24px; }
-        .search-input { width: 100%; padding: 12px 16px; font-size: 15px; border: 1.5px solid var(--border-color); border-radius: 10px; }
-        .affiliates-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 20px; }
-        .affiliate-card { background: var(--card-bg); border-radius: var(--radius); box-shadow: var(--shadow); padding: 20px; display: flex; flex-direction: column; gap: 16px; }
-        .affiliate-name { font-size: 18px; font-weight: 700; }
-        .financial-section { background: #F0FDF4; border: 1px solid #BBF7D0; border-radius: 12px; padding: 14px; display: flex; flex-direction: column; gap: 8px; }
-        .financial-row { display: flex; justify-content: space-between; font-size: 13px; }
-        .balance-highlight { font-size: 18px; font-weight: 700; color: #15803D; border-top: 1px dashed #BBF7D0; padding-top: 6px; }
-        .btn-action { flex: 1; padding: 8px; border-radius: 8px; font-weight: 600; cursor: pointer; border: none; }
-        .btn-edit { background: rgba(245, 158, 11, 0.1); color: var(--warning); }
-        .btn-delete { background: rgba(239, 68, 68, 0.1); color: var(--error); }
-        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); display: none; justify-content: center; align-items: center; z-index: 1000; }
-        .modal-overlay.active { display: flex; }
-        .modal-card { background: #FFF; padding: 28px; border-radius: var(--radius); width: 90%; max-width: 500px; }
-        .toast-container { position: fixed; bottom: 20px; right: 20px; z-index: 2000; }
-        .toast { background: #FFF; padding: 12px 20px; border-radius: 10px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); border-left: 4px solid var(--success); }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        body { background: var(--bg); padding: 20px; display: none; }
+       .auth-loading { position: fixed; inset: 0; background: var(--bg); display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 9999; gap: 16px; color: var(--primary); font-weight: 600; }
+       .spinner { width: 40px; height: 40px; border: 4px solid var(--border); border-top: 4px solid var(--primary); border-radius: 50%; animation: spin 0.8s linear infinite; }
+       .container { max-width: 1200px; margin: 0 auto; }
+        header { display: flex; justify-content: space-between; align-items: center; background: var(--card); padding: 16px 24px; border-radius: var(--radius); box-shadow: var(--shadow); margin-bottom: 24px; }
+        header h1 { color: var(--primary); }
+       .logout-btn { background: rgba(239, 68, 68, 0.1); color: var(--error); border: none; padding: 10px 16px; border-radius: 8px; font-weight: 600; cursor: pointer; }
+       .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin-bottom: 24px; }
+       .stat-card { background: var(--card); padding: 20px; border-radius: var(--radius); box-shadow: var(--shadow); }
+       .stat-title { font-size: 14px; color: var(--muted); }
+       .stat-value { font-size: 26px; font-weight: 700; }
+       .search-input { width: 100%; padding: 14px 16px; border: 1.5px solid var(--border); border-radius: 10px; margin-bottom: 24px; font-size: 15px; }
+       .affiliates-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 20px; }
+       .affiliate-card { background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow); padding: 20px; display: flex; flex-direction: column; gap: 16px; }
+       .affiliate-name { font-size: 18px; font-weight: 700; }
+       .badges { display: flex; gap: 6px; }
+       .badge { font-size: 11px; padding: 3px 8px; border-radius: 6px; font-weight: 600; }
+       .badge-verified { background: rgba(16, 185, 129, 0.1); color: var(--success); }
+       .badge-active { background: rgba(59, 130, 246, 0.1); color: #3B82F6; }
+       .detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; font-size: 13px; border-top: 1px solid var(--border); padding-top: 12px; }
+       .detail-grid span:first-child { color: var(--muted); font-weight: 600; }
+       .financial { background: #F0FDF4; border: 1px solid #BBF7D0; border-radius: 12px; padding: 14px; }
+       .financial-row { display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 4px; }
+       .net { font-size: 18px; font-weight: 700; color: #15803D; border-top: 1px dashed #BBF7D0; padding-top: 6px; margin-top: 4px; }
+       .btn-group { display: flex; gap: 10px; }
+       .btn { flex: 1; padding: 10px; border-radius: 8px; font-weight: 600; cursor: pointer; border: none; display: flex; align-items: center; justify-content: center; gap: 6px; }
+       .btn-edit { background: rgba(245, 158, 11, 0.1); color: var(--warning); }
+       .btn-delete { background: rgba(239, 68, 68, 0.1); color: var(--error); }
+       .modal { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.5); display: none; justify-content: center; align-items: center; z-index: 1000; }
+       .modal.active { display: flex; }
+       .modal-card { background: #FFF; padding: 28px; border-radius: var(--radius); width: 90%; max-width: 600px; max-height: 90vh; overflow-y: auto; }
+       .form-group { margin-bottom: 16px; }
+       .form-label { display: block; font-size: 14px; font-weight: 600; margin-bottom: 6px; }
+       .form-input { width: 100%; padding: 10px 14px; border: 1.5px solid var(--border); border-radius: 8px; font-size: 14px; }
+       .form-input[disabled] { background: #f1f5f9; cursor: not-allowed; }
+       .toast { position: fixed; bottom: 20px; right: 20px; background: #FFF; padding: 12px 20px; border-radius: 10px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); border-left: 4px solid var(--success); z-index: 2000; }
+        @keyframes spin { to { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
-    <div class="auth-loading-screen" id="authLoadingScreen">
-        <div class="auth-spinner"></div>
-        <div>অ্যাডমিন অথেন্টিকেশন যাচাই করা হচ্ছে...</div>
-    </div>
+    <div class="auth-loading" id="authLoading"><div class="spinner"></div><div>অ্যাডমিন চেক হচ্ছে...</div></div>
 
     <div class="container">
         <header>
-            <div class="logo-area"><h1>GHOTI MARKET</h1><span>Affiliate Admin Panel</span></div>
+            <h1>GHOTI MARKET Admin</h1>
             <button class="logout-btn" id="logoutBtn"><i class="fa-solid fa-right-from-bracket"></i> লগআউট</button>
         </header>
 
         <div class="stats-grid">
             <div class="stat-card"><span class="stat-title">General Balance</span><span class="stat-value" id="statTotalBalance">৳ 0</span></div>
-            <div class="stat-card"><span class="stat-title">Commission (20%)</span><span class="stat-value" id="statTotalPending">৳ 0</span></div>
-            <div class="stat-card"><span class="stat-title">Withdrawn</span><span class="stat-value" id="statTotalEarned">৳ 0</span></div>
-            <div class="stat-card"><span class="stat-title">Net Balance</span><span class="stat-value" id="statTotalWithdrawn">৳ 0</span></div>
+            <div class="stat-card"><span class="stat-title">Commission 20%</span><span class="stat-value" id="statTotalPending">৳ 0</span></div>
+            <div class="stat-card"><span class="stat-title">Total Withdrawn</span><span class="stat-value" id="statTotalEarned">৳ 0</span></div>
+            <div class="stat-card"><span class="stat-title">Net Payable</span><span class="stat-value" id="statTotalWithdrawn">৳ 0</span></div>
         </div>
 
-        <div class="search-section">
-            <input type="text" id="searchInput" class="search-input" placeholder="UID, Email, Phone, Name দিয়ে খুঁজুন...">
-        </div>
+        <input type="text" id="searchInput" class="search-input" placeholder="UID, Email, Phone, Name দিয়ে খুঁজুন...">
 
         <div class="affiliates-container" id="affiliatesContainer"></div>
     </div>
 
-    <div class="modal-overlay" id="editModalOverlay">
+    <div class="modal" id="editModal">
         <div class="modal-card">
-            <div style="font-size: 20px; font-weight: 700; margin-bottom: 20px;">অ্যাফিলিয়েট তথ্য সম্পাদনা</div>
-            <form id="editForm"><div id="modalFormFields"></div>
+            <h2 style="margin-bottom: 20px;">অ্যাফিলিয়েট তথ্য সম্পাদনা</h2>
+            <form id="editForm"><div id="modalFields"></div>
                 <div style="display: flex; gap: 12px; margin-top: 24px;">
-                    <button type="button" class="btn-action" style="background: var(--border-color);" onclick="closeEditModal()">বাতিল</button>
-                    <button type="submit" class="btn-action" style="background: var(--primary); color: #FFF;">সংরক্ষণ করুন</button>
+                    <button type="button" class="btn" style="background: var(--border);" onclick="closeModal()">বাতিল</button>
+                    <button type="submit" class="btn" style="background: var(--primary); color: #FFF;">সংরক্ষণ করুন</button>
                 </div>
             </form>
         </div>
     </div>
-
-    <div class="toast-container" id="toastContainer"></div>
+    <div id="toastContainer"></div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-        import { getFirestore, collection, doc, getDoc, getDocs, updateDoc, deleteDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, collection, doc, getDoc, updateDoc, deleteDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyBUhNhYvuo_FTvZ5RZR6Gn-4hsUY21S0XE",
-            authDomain: "ghotimarket.firebaseapp.com",
-            projectId: "ghotimarket",
-            storageBucket: "ghotimarket.appspot.com",
-            messagingSenderId: "9382019283",
-            appId: "1:9382019283:web:abc12345"
-        };
+        const firebaseConfig = { apiKey: "AIzaSyBUhNhYvuo_FTvZ5RZR6Gn-4hsUY21S0XE", authDomain: "ghotimarket.firebaseapp.com", projectId: "ghotimarket", storageBucket: "ghotimarket.appspot.com", messagingSenderId: "9382019283", appId: "1:9382019283:web:abc12345" };
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
         const ADMIN_EMAIL = "support@ghotimarket.com";
 
-        let allAffiliatesCache = [];
-        let allDeliveredOrdersCache = [];
-        let currentEditingUid = null;
+        let allAffiliates = [], allOrders = [], editingUid = null;
+        const PROTECTED_FIELDS = ['uid', 'createdAt', 'id'];
 
-        function formatCurrency(amount) {
-            return '৳ ' + (Number(amount) || 0).toLocaleString('en-IN', { maximumFractionDigits: 2 });
-        }
-        function showToast(message, type = 'success') {
-            const toast = document.createElement('div');
-            toast.className = `toast`;
-            toast.innerHTML = `<i class="fa-solid fa-circle-check"></i> ${message}`;
-            document.getElementById('toastContainer').appendChild(toast);
-            setTimeout(() => toast.remove(), 3500);
-        }
+        const formatCurrency = (n) => '৳ ' + (Number(n) || 0).toLocaleString('en-IN', { maximumFractionDigits: 2 });
+        const showToast = (msg) => { const t = document.createElement('div'); t.className = 'toast'; t.innerHTML = `<i class="fa-solid fa-circle-check"></i> ${msg}`; document.getElementById('toastContainer').appendChild(t); setTimeout(() => t.remove(), 3000); }
 
         onAuthStateChanged(auth, async (user) => {
-            if (!user || user.email !== ADMIN_EMAIL) {
-                await signOut(auth);
-                window.location.href = 'index.html';
-                return;
-            }
-            document.getElementById('authLoadingScreen').style.display = 'none';
-            document.body.style.display = 'flex';
-            setupRealtimeSync();
+            if (!user || user.email!== ADMIN_EMAIL) { await signOut(auth); window.location.href = 'index.html'; return; }
+            document.getElementById('authLoading').style.display = 'none'; document.body.style.display = 'block'; init();
         });
-
         document.getElementById('logoutBtn').onclick = () => signOut(auth);
 
-        function setupRealtimeSync() {
-            onSnapshot(collection(db, 'Affiliates'), (snapshot) => {
-                allAffiliatesCache = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
-                renderAffiliates(allAffiliatesCache);
-                updateGlobalStats();
-            });
-            onSnapshot(collection(db, 'order_tracking'), (snapshot) => { // CHANGED: order_tracking
-                allDeliveredOrdersCache = snapshot.docs.map(d => d.data()).filter(o => o.deliveryStatus === "Delivered" && o.affiliateApplied === true);
-                updateGlobalStats();
-                renderAffiliates(allAffiliatesCache);
-            });
+        function init() {
+            onSnapshot(collection(db, 'Affiliates'), snap => { allAffiliates = snap.docs.map(d => ({ id: d.id,...d.data() })); render(); updateStats(); });
+            onSnapshot(collection(db, 'order_tracking'), snap => { allOrders = snap.docs.map(d => d.data()).filter(o => o.deliveryStatus === "Delivered" && o.affiliateApplied === true); render(); updateStats(); });
         }
 
-        function calculateFinancials(aff) { // CHANGED: UID দিয়ে হিসাব
-            const uid = aff.id;
-            let generalBalance = 0;
-            allDeliveredOrdersCache.forEach(order => {
-                if (order.affiliateUserId === uid) {
-                    generalBalance += Number(order.affiliateDiscount) || 0;
-                }
-            });
-            const commission = generalBalance * 0.20;
+        function calc(aff) {
+            let general = 0;
+            allOrders.forEach(o => { if (o.affiliateUserId === aff.id) general += Number(o.affiliateDiscount) || 0; });
+            const commission = general * 0.20;
             const withdrawn = Number(aff.withdrawn) || 0;
-            const netBalance = generalBalance - commission - withdrawn; // CHANGED: সঠিক ফর্মুলা
-            return { generalBalance, commission, withdrawn, netBalance };
+            const net = general - commission - withdrawn;
+            return { general, commission, withdrawn, net };
         }
 
-        function updateGlobalStats() {
-            let sumGeneral = 0, sumCommission = 0, sumWithdrawn = 0, sumNet = 0;
-            allAffiliatesCache.forEach(aff => {
-                const fin = calculateFinancials(aff);
-                sumGeneral += fin.generalBalance;
-                sumCommission += fin.commission;
-                sumWithdrawn += fin.withdrawn;
-                sumNet += fin.netBalance;
-            });
-            document.getElementById('statTotalBalance').textContent = formatCurrency(sumGeneral);
-            document.getElementById('statTotalPending').textContent = formatCurrency(sumCommission);
-            document.getElementById('statTotalEarned').textContent = formatCurrency(sumWithdrawn);
-            document.getElementById('statTotalWithdrawn').textContent = formatCurrency(sumNet);
+        function updateStats() {
+            let g=0,c=0,w=0,n=0; allAffiliates.forEach(a=>{const f=calc(a); g+=f.general; c+=f.commission; w+=f.withdrawn; n+=f.net;});
+            document.getElementById('statTotalBalance').textContent = formatCurrency(g);
+            document.getElementById('statTotalPending').textContent = formatCurrency(c);
+            document.getElementById('statTotalEarned').textContent = formatCurrency(w);
+            document.getElementById('statTotalWithdrawn').textContent = formatCurrency(n);
         }
 
-        function renderAffiliates(affiliates) {
-            const container = document.getElementById('affiliatesContainer');
-            container.innerHTML = '';
-            affiliates.forEach(aff => {
-                const fin = calculateFinancials(aff);
-                const card = `
+        function render(list = allAffiliates) {
+            const cont = document.getElementById('affiliatesContainer'); cont.innerHTML = '';
+            list.forEach(aff => {
+                const fin = calc(aff);
+                let details = '';
+                for(const [k,v] of Object.entries(aff)){
+                    if(PROTECTED_FIELDS.includes(k)) continue;
+                    let val = typeof v === 'object' && v?.seconds? new Date(v.seconds*1000).toLocaleDateString('bn-BD') : v;
+                    details += `<div><span>${k}:</span><span>${val}</span></div>`;
+                }
+                cont.innerHTML += `
                 <div class="affiliate-card">
-                    <div>
-                        <div class="affiliate-name">${aff.fullName || aff.name || aff.id}</div>
-                        <div style="font-size: 12px; color: var(--text-muted);">UID: ${aff.id}</div>
+                    <div style="display:flex; justify-content:space-between;">
+                        <div><div class="affiliate-name">${aff.fullName || aff.name || 'N/A'}</div><div style="font-size:12px; color:var(--muted);">${aff.id}</div></div>
+                        <div class="badges">${aff.verified?'<span class="badge badge-verified">Verified</span>':''}${aff.active?'<span class="badge badge-active">Active</span>':''}</div>
                     </div>
-                    <div class="financial-section">
-                        <div class="financial-row"><span>General Balance</span><span>${formatCurrency(fin.generalBalance)}</span></div>
+                    <div class="detail-grid">${details}</div>
+                    <div class="financial">
+                        <div class="financial-row"><span>General</span><span>${formatCurrency(fin.general)}</span></div>
                         <div class="financial-row"><span>Commission 20%</span><span>${formatCurrency(fin.commission)}</span></div>
                         <div class="financial-row"><span>Withdrawn</span><span>${formatCurrency(fin.withdrawn)}</span></div>
-                        <div class="financial-row balance-highlight"><span>Net Balance</span><span>${formatCurrency(fin.netBalance)}</span></div>
+                        <div class="financial-row net"><span>Net Balance</span><span>${formatCurrency(fin.net)}</span></div>
                     </div>
-                    <div style="display: flex; gap: 10px;">
-                        <button class="btn-action btn-edit" onclick="openEditModal('${aff.id}')"><i class="fa-solid fa-pen"></i> এডিট/Withdraw</button>
-                        <button class="btn-action btn-delete" onclick="deleteAff('${aff.id}')"><i class="fa-solid fa-trash"></i> ডিলিট</button>
+                    <div class="btn-group">
+                        <button class="btn btn-edit" onclick="openEdit('${aff.id}')"><i class="fa-solid fa-pen"></i> এডিট</button>
+                        <button class="btn btn-delete" onclick="deleteAff('${aff.id}')"><i class="fa-solid fa-trash"></i> ডিলিট</button>
                     </div>
                 </div>`;
-                container.innerHTML += card;
             });
         }
-        
-        window.openEditModal = async function(uid) {
-            currentEditingUid = uid;
-            const docSnap = await getDoc(doc(db, 'Affiliates', uid));
-            const data = docSnap.data();
-            document.getElementById('modalFormFields').innerHTML = `
-                <div style="margin-bottom: 16px;"><label>Withdrawn টাকা</label>
-                <input type="number" class="search-input" name="withdrawn" value="${data.withdrawn || 0}"></div>
-            `;
-            document.getElementById('editModalOverlay').classList.add('active');
+
+        window.openEdit = async (uid) => {
+            editingUid = uid; const snap = await getDoc(doc(db,'Affiliates',uid)); const data = snap.data();
+            let fields = '';
+            for(const [k,v] of Object.entries(data)){
+                const isProtected = PROTECTED_FIELDS.includes(k);
+                if(typeof v === 'boolean'){
+                    fields += `<div class="form-group"><label class="form-label">${k}</label><select name="${k}" class="form-input" ${isProtected?'disabled':''}><option value="true" ${v?'selected':''}>True</option><option value="false" ${!v?'selected':''}>False</option></select></div>`;
+                } else if(typeof v === 'number'){
+                    fields += `<div class="form-group"><label class="form-label">${k}</label><input type="number" step="any" name="${k}" value="${v}" class="form-input" ${isProtected?'disabled':''}></div>`;
+                } else {
+                    fields += `<div class="form-group"><label class="form-label">${k}</label><input type="text" name="${k}" value="${v||''}" class="form-input" ${isProtected?'disabled':''}></div>`;
+                }
+            }
+            document.getElementById('modalFields').innerHTML = fields;
+            document.getElementById('editModal').classList.add('active');
         }
-        window.closeEditModal = () => document.getElementById('editModalOverlay').classList.remove('active');
-        
+        window.closeModal = () => document.getElementById('editModal').classList.remove('active');
+
         document.getElementById('editForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const withdrawn = Number(new FormData(e.target).get('withdrawn'));
-            await updateDoc(doc(db, 'Affiliates', currentEditingUid), { withdrawn });
-            showToast('Withdraw আপডেট হয়েছে');
-            closeEditModal();
+            e.preventDefault(); const formData = new FormData(e.target); const updated = {};
+            for(let [k,v] of formData.entries()){
+                if(v==='true') updated[k]=true; else if(v==='false') updated[k]=false; else if(!isNaN(v) && v!=='') updated[k]=Number(v); else updated[k]=v;
+            }
+            await updateDoc(doc(db,'Affiliates',editingUid), updated);
+            showToast('সফলভাবে আপডেট হয়েছে'); closeModal();
         });
 
         window.deleteAff = async (uid) => {
-            if(confirm("ডিলিট করবেন?")) {
-                await deleteDoc(doc(db, 'Affiliates', uid));
-                showToast('ডিলিট হয়েছে', 'error');
-            }
+            if(confirm("এই অ্যাফিলিয়েট ডিলিট করবেন?")){ await deleteDoc(doc(db,'Affiliates',uid)); showToast('ডিলিট হয়েছে'); }
         }
-        
-        document.getElementById('searchInput').addEventListener('input', (e) => {
+
+        document.getElementById('searchInput').oninput = (e) => {
             const term = e.target.value.toLowerCase();
-            const filtered = allAffiliatesCache.filter(aff => 
-                (aff.id || '').includes(term) || (aff.email || '').includes(term) || (aff.fullName || '').includes(term)
-            );
-            renderAffiliates(filtered);
-        });
+            const filtered = allAffiliates.filter(a => (a.id+a.email+a.fullName).toLowerCase().includes(term));
+            render(filtered);
+        }
     </script>
 </body>
 </html>
