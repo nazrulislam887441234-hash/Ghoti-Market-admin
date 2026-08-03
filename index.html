@@ -9,88 +9,60 @@
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
 
   <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
+    * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       background: #0f172a;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      overflow: hidden; /* পেজ নড়াচড়া বন্ধ করার জন্য */
+      display: flex; justify-content: center; align-items: center;
+      height: 100vh; overflow: hidden;
     }
-
     .box {
-      background: #1e293b;
-      padding: 40px;
-      border-radius: 12px;
-      width: 100%;
-      max-width: 350px;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.3);
-      text-align: center;
+      background: #1e293b; padding: 40px; border-radius: 12px;
+      width: 100%; max-width: 350px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.3); text-align: center;
     }
-
-    h2 {
-      color: white;
-      margin-bottom: 25px;
+    .logo {
+      width: 80px; height: 80px; margin: 0 auto 20px;
+      background: #22c55e; border-radius: 16px;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: bold; font-size: 24px; color: #0f172a;
     }
-
+    .logo img { width: 100%; height: 100%; object-fit: contain; border-radius: 16px; }
+    h2 { color: white; margin-bottom: 25px; }
     input {
-      width: 100%;
-      padding: 12px;
-      margin-bottom: 15px;
-      border: 1px solid #334155;
-      border-radius: 6px;
-      background: #0f172a;
-      color: white;
-      outline: none;
+      width: 100%; padding: 12px; margin-bottom: 15px;
+      border: 1px solid #334155; border-radius: 6px;
+      background: #0f172a; color: white; outline: none;
     }
-
-    input:focus {
-      border-color: #22c55e;
-    }
-
+    input:focus { border-color: #22c55e; }
     button {
-      width: 100%;
-      padding: 12px;
-      background: #22c55e;
-      border: none;
-      color: white;
-      border-radius: 6px;
-      font-weight: bold;
-      cursor: pointer;
-      transition: background 0.3s;
+      width: 100%; padding: 12px; background: #22c55e;
+      border: none; color: white; border-radius: 6px;
+      font-weight: bold; cursor: pointer; transition: background 0.3s;
     }
-
-    button:hover {
-      background: #16a34a;
-    }
-
-    .error {
-      color: #ef4444;
-      font-size: 14px;
-      margin-top: 15px;
-      min-height: 20px;
-    }
+    button:hover:not(:disabled) { background: #16a34a; }
+    button:disabled { background: #475569; cursor: not-allowed; }
+    .error { color: #ef4444; font-size: 14px; margin-top: 15px; min-height: 20px; }
+    .info { color: #22c55e; font-size: 12px; margin-top: 10px; }
   </style>
 </head>
 
 <body>
 
 <div class="box">
+  <div class="logo">
+    <img src="https://ghotimarket.com/logo.png" alt="GHOTI MARKET Logo">
+  </div>
+
   <h2>Admin Login</h2>
 
   <input type="email" id="email" placeholder="Email Address">
   <input type="password" id="password" placeholder="Password">
 
-  <button type="button" onclick="login()">Login</button>
+  <button type="button" id="loginBtn" onclick="login()">Login</button>
 
   <p class="error" id="error"></p>
+  <p class="info" id="info"></p>
 </div>
 
 <script>
@@ -108,33 +80,109 @@
   firebase.initializeApp(firebaseConfig);
   const auth = firebase.auth();
 
-  function login() {
-    const email = document.getElementById("email").value;
-    const password = document.getElementById("password").value;
-    const errorEl = document.getElementById("error");
+  // সিকিউরিটি Key
+  const ADMIN_EMAIL = "support@ghotimarket.com";
+  const DEVICE_ID = 'gm_device_' + btoa(navigator.userAgent + navigator.language).substring(0,20);
+  
+  let pageLoadTime = Date.now();
+  const loginBtn = document.getElementById("loginBtn");
+  const errorEl = document.getElementById("error");
+  const infoEl = document.getElementById("info");
 
+  // পেজ লোডেই চেক
+  initSecurity();
+
+  function initSecurity(){
+    const isBanned = localStorage.getItem(DEVICE_ID + '_banned');
+    const attempts = parseInt(localStorage.getItem(DEVICE_ID + '_attempts') || 0);
+    
+    if(isBanned === 'true'){
+      lockDeviceForever("This device is permanently banned.");
+      return;
+    }
+    
+    if(attempts >= 3){
+      lockDeviceForever("Too many failed attempts. Device banned.");
+      return;
+    }
+    
+    // লগইন থাকলে ডাইরেক্ট হোমে
+    auth.onAuthStateChanged((user) => {
+      if (user && user.email === ADMIN_EMAIL) {
+        window.location.href = "home.html";
+      } else if(user) {
+        auth.signOut(); // অন্য কেউ লগইন থাকলে লগআউট
+      }
+    });
+  }
+
+  function lockDeviceForever(msg){
+    loginBtn.disabled = true;
+    document.getElementById("email").disabled = true;
+    document.getElementById("password").disabled = true;
+    errorEl.innerText = msg;
+    infoEl.innerText = "Contact Admin to unban this device.";
+    localStorage.setItem(DEVICE_ID + '_banned', 'true');
+  }
+
+  function login() {
+    const email = document.getElementById("email").value.trim();
+    const password = document.getElementById("password").value;
+
+    errorEl.innerText = ""; infoEl.innerText = "";
+
+    // রুল 1: 5 সেকেন্ড বট প্রটেকশন
+    if (Date.now() - pageLoadTime < 5000) {
+      errorEl.innerText = "Wait 5 seconds. Bot activity detected!";
+      banDevice();
+      return;
+    }
+
+    // রুল 2: শুধু Admin Email ই allow
+    if(email !== ADMIN_EMAIL){
+      errorEl.innerText = "Access Denied! Only Admin can login.";
+      addAttempt();
+      return;
+    }
+
+    if (!email || !password) {
+      errorEl.innerText = "Please enter email and password!";
+      return;
+    }
+
+    loginBtn.disabled = true;
     errorEl.innerText = "Processing...";
 
     auth.signInWithEmailAndPassword(email, password)
       .then((userCredential) => {
-        if (userCredential.user.email === "support@ghotimarket.com") {
-          window.location.href = "home.html";
-        } else {
-          auth.signOut();
-          errorEl.innerText = "Access Denied!";
-        }
+        // সফল হলে সব রিসেট
+        localStorage.removeItem(DEVICE_ID + '_attempts');
+        infoEl.innerText = "Login Successful! Redirecting...";
+        window.location.href = "home.html";
       })
       .catch((error) => {
+        addAttempt();
         errorEl.innerText = "Invalid credentials!";
+        loginBtn.disabled = false;
       });
   }
 
-  // অটো রিডাইরেক্ট (যদি অলরেডি লগইন থাকে)
-  auth.onAuthStateChanged((user) => {
-    if (user && user.email === "support@ghotimarket.com") {
-      window.location.href = "home.html";
+  function addAttempt(){
+    let attempts = parseInt(localStorage.getItem(DEVICE_ID + '_attempts') || 0);
+    attempts++;
+    localStorage.setItem(DEVICE_ID + '_attempts', attempts);
+    
+    if(attempts >= 3){
+      banDevice();
+    } else {
+      infoEl.innerText = `Attempt ${attempts}/3. After 3 fails device will be banned.`;
     }
-  });
+  }
+
+  function banDevice(){
+    localStorage.setItem(DEVICE_ID + '_banned', 'true');
+    lockDeviceForever("Device Permanently Banned!");
+  }
 </script>
 
 </body>
