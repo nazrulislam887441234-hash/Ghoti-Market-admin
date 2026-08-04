@@ -1,0 +1,1013 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Offer Banner Management - GHOTI MARKET</title>
+    <style>
+        /* Modern GHOTI MARKET Admin Theme CSS */
+        :root {
+            --primary: #0057FF;
+            --secondary: #00C6FF;
+            --orange: #FFA500;
+            --danger: #FF3D00;
+            --bg-color: #F5F7FB;
+            --card-bg: #FFFFFF;
+            --text-main: #1F2937;
+            --text-muted: #6B7280;
+            --border-color: #E5E7EB;
+            --radius: 10px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Full Screen Loading Screen */
+        #auth-loading {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #FFFFFF;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.3s ease;
+        }
+
+        .spinner {
+            width: 48px;
+            height: 48px;
+            border: 4px solid var(--border-color);
+            border-top: 4px solid var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 16px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Dashboard Container */
+        .admin-container {
+            max-width: 1200px;
+            width: 100%;
+            margin: 0 auto;
+            padding: 20px;
+            flex: 1;
+            display: none; /* Hidden until auth is verified */
+        }
+
+        /* Header */
+        header {
+            background: var(--card-bg);
+            padding: 20px 24px;
+            border-radius: var(--radius);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        header h1 {
+            font-size: 1.5rem;
+            color: var(--primary);
+        }
+
+        .admin-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .admin-email {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            background: var(--bg-color);
+            padding: 8px 14px;
+            border-radius: 20px;
+            font-weight: 500;
+        }
+
+        /* Buttons */
+        button, .btn {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            border: none;
+            padding: 10px 18px;
+            border-radius: var(--radius);
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: opacity 0.2s, transform 0.1s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        button:hover {
+            opacity: 0.9;
+        }
+
+        button:active {
+            transform: scale(0.98);
+        }
+
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .btn-danger {
+            background: var(--danger);
+        }
+
+        .btn-secondary {
+            background: var(--text-muted);
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+        }
+        .btn-outline:hover {
+            background: var(--bg-color);
+        }
+
+        /* Cards & Forms */
+        .card {
+            background: var(--card-bg);
+            padding: 24px;
+            border-radius: var(--radius);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            margin-bottom: 24px;
+        }
+
+        .card h2 {
+            font-size: 1.25rem;
+            margin-bottom: 20px;
+            color: var(--text-main);
+            border-bottom: 2px solid var(--bg-color);
+            padding-bottom: 10px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-group.full-width {
+            grid-column: span 2;
+        }
+        @media (max-width: 768px) {
+            .form-group.full-width {
+                grid-column: span 1;
+            }
+        }
+
+        label {
+            display: block;
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 6px;
+            color: var(--text-main);
+        }
+
+        input[type="text"], input[type="url"] {
+            width: 100%;
+            padding: 12px 14px;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius);
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        input[type="text"]:focus, input[type="url"]:focus {
+            border-color: var(--primary);
+        }
+
+        /* Image Upload Box */
+        .file-upload-wrapper {
+            border: 2px dashed var(--border-color);
+            padding: 20px;
+            border-radius: var(--radius);
+            text-align: center;
+            background: #FAFBFC;
+            position: relative;
+            cursor: pointer;
+        }
+
+        .file-upload-wrapper input[type="file"] {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        .preview-container {
+            margin-top: 10px;
+            display: none;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .preview-container img {
+            width: 80px;
+            height: 50px;
+            object-fit: cover;
+            border-radius: 6px;
+            border: 1px solid var(--border-color);
+        }
+
+        /* Search Section */
+        .search-box {
+            margin-bottom: 20px;
+        }
+
+        /* Banner Grid Layout */
+        .banners-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .banner-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+            transition: transform 0.2s;
+        }
+
+        .banner-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.05);
+        }
+
+        .banner-img-wrap {
+            width: 100%;
+            height: 160px;
+            background: #f0f2f5;
+            position: relative;
+        }
+
+        .banner-img-wrap img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .banner-body {
+            padding: 16px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .banner-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        .banner-link {
+            font-size: 0.85rem;
+            color: var(--primary);
+            text-decoration: none;
+            word-break: break-all;
+        }
+
+        .banner-dates {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-top: auto;
+            padding-top: 8px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .banner-actions {
+            padding: 12px 16px;
+            background: #FAFBFC;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            gap: 8px;
+            justify-content: space-between;
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 50px 20px;
+            grid-column: 1 / -1;
+            color: var(--text-muted);
+        }
+
+        .empty-state h3 {
+            font-size: 1.3rem;
+            margin-bottom: 6px;
+            color: var(--text-main);
+        }
+
+        /* Custom Modal Component */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.2s, visibility 0.2s;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal {
+            background: var(--card-bg);
+            padding: 24px;
+            border-radius: var(--radius);
+            max-width: 450px;
+            width: 90%;
+            box-shadow: 0 15px 30px rgba(0,0,0,0.2);
+            transform: translateY(-20px);
+            transition: transform 0.2s;
+            text-align: center;
+        }
+
+        .modal-overlay.active .modal {
+            transform: translateY(0);
+        }
+
+        .modal h3 {
+            margin-bottom: 12px;
+            font-size: 1.25rem;
+            color: var(--text-main);
+        }
+
+        .modal p {
+            color: var(--text-muted);
+            margin-bottom: 20px;
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+
+        .modal-img-preview {
+            width: 100%;
+            max-height: 250px;
+            object-fit: contain;
+            margin-bottom: 15px;
+            border-radius: 6px;
+            border: 1px solid var(--border-color);
+        }
+
+        .modal-actions {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Full Screen Loading Screen for Auth -->
+    <div id="auth-loading">
+        <div class="spinner"></div>
+        <p>Verifying Admin Access...</p>
+    </div>
+
+    <!-- Admin Dashboard Main Container -->
+    <div class="admin-container" id="admin-main-content">
+        <!-- Header -->
+        <header>
+            <div>
+                <h1>Offer Banner Management</h1>
+            </div>
+            <div class="admin-info">
+                <span class="admin-email" id="display-admin-email">support@ghotimarket.com</span>
+                <button id="logout-btn" class="btn btn-danger">Logout</button>
+            </div>
+        </header>
+
+        <!-- Add / Edit Banner Card -->
+        <div class="card">
+            <h2 id="form-section-title">Add New Offer Banner</h2>
+            <form id="banner-form">
+                <input type="hidden" id="editing-banner-id" value="">
+                <div class="form-grid">
+                    <div class="form-group full-width">
+                        <label>Banner Image (JPG, PNG, WEBP, GIF - Max 10MB)</label>
+                        <div class="file-upload-wrapper" id="drop-zone">
+                            <span id="upload-label-text">Click to select banner image or drag here</span>
+                            <input type="file" id="banner-image-input" accept="image/*">
+                        </div>
+                        <div class="preview-container" id="image-preview-box">
+                            <img id="img-preview-tag" src="" alt="Preview">
+                            <button type="button" id="change-img-btn" class="btn btn-outline" style="padding: 6px 12px; font-size: 0.85rem;">Change Image</button>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="banner-title-input">Banner Title * (Max 100 chars)</label>
+                        <input type="text" id="banner-title-input" maxlength="100" placeholder="e.g., Summer Mega Offer" autocomplete="off">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="banner-link-input">Click Link (Optional)</label>
+                        <input type="url" id="banner-link-input" placeholder="https://ghotimarket.com/offer" autocomplete="off">
+                    </div>
+
+                    <div class="form-group full-width" style="display: flex; gap: 10px;">
+                        <button type="submit" id="save-banner-btn">Save Banner</button>
+                        <button type="button" id="cancel-edit-btn" class="btn btn-secondary" style="display: none;">Cancel Edit</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <!-- Search Box -->
+        <div class="search-box">
+            <input type="text" id="search-input" placeholder="Search banners by title...">
+        </div>
+
+        <!-- All Offer Banners Section -->
+        <div class="card">
+            <h2>All Offer Banners</h2>
+            <div id="loading-banners" style="text-align: center; padding: 30px; display: none;">
+                <div class="spinner" style="width: 36px; height: 36px; border-width: 3px; margin: 0 auto 10px;"></div>
+                <p style="color: var(--text-muted);">Loading Offer Banners...</p>
+            </div>
+            <div class="banners-grid" id="banners-grid-container">
+                <!-- Dynamic cards will appear here -->
+            </div>
+            <!-- Empty State -->
+            <div id="empty-state" class="empty-state" style="display: none;">
+                <h3>No Offer Banners Found</h3>
+                <p>Create your first offer banner to get started.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Custom Modal Component -->
+    <div class="modal-overlay" id="custom-modal">
+        <div class="modal" id="modal-content-box">
+            <h3 id="modal-title">Notification</h3>
+            <div id="modal-custom-body">
+                <p id="modal-message">Message goes here...</p>
+            </div>
+            <div class="modal-actions" id="modal-actions-container">
+                <button id="modal-ok-btn" class="btn">OK</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase SDK & Script -->
+    <script type="module">
+        // ==========================================
+        // FIREBASE CONFIGURATION PLACEHOLDER
+        // ==========================================
+        const firebaseConfig = {
+  apiKey: "AIzaSyBUhNhYvuo_FTvZ5RZR6Gn-4hsUY21S0XE",
+  authDomain: "ghotimarket.firebaseapp.com",
+  databaseURL: "https://ghotimarket-default-rtdb.firebaseio.com",
+  projectId: "ghotimarket",
+  storageBucket: "ghotimarket.firebasestorage.app",
+  messagingSenderId: "481257644093",
+  appId: "1:481257644093:web:0dfc3699d6b3c86afeca54",
+  measurementId: "G-4SR8V2EKC1"
+};
+
+        // Import Firebase modular SDKs
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-app.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-auth.js";
+        import { 
+            getFirestore, 
+            collection, 
+            addDoc, 
+            getDocs, 
+            doc, 
+            updateDoc, 
+            deleteDoc, 
+            serverTimestamp 
+        } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-firestore.js";
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        const ADMIN_EMAIL = "support@ghotimarket.com";
+        const BANNERS_COLLECTION = "offer_banners";
+        const API_COLLECTION = "post_api";
+
+        // DOM Elements
+        const authLoading = document.getElementById("auth-loading");
+        const adminMainContent = document.getElementById("admin-main-content");
+        const displayAdminEmail = document.getElementById("display-admin-email");
+        const logoutBtn = document.getElementById("logout-btn");
+        
+        const bannerForm = document.getElementById("banner-form");
+        const formSectionTitle = document.getElementById("form-section-title");
+        const editingBannerId = document.getElementById("editing-banner-id");
+        const bannerImageInput = document.getElementById("banner-image-input");
+        const uploadLabelText = document.getElementById("upload-label-text");
+        const imagePreviewBox = document.getElementById("image-preview-box");
+        const imgPreviewTag = document.getElementById("img-preview-tag");
+        const changeImgBtn = document.getElementById("change-img-btn");
+        const bannerTitleInput = document.getElementById("banner-title-input");
+        const bannerLinkInput = document.getElementById("banner-link-input");
+        const saveBannerBtn = document.getElementById("save-banner-btn");
+        const cancelEditBtn = document.getElementById("cancel-edit-btn");
+        
+        const searchInput = document.getElementById("search-input");
+        const loadingBanners = document.getElementById("loading-banners");
+        const bannersGridContainer = document.getElementById("banners-grid-container");
+        const emptyState = document.getElementById("empty-state");
+
+        // Custom Modal Elements
+        const customModal = document.getElementById("custom-modal");
+        const modalTitle = document.getElementById("modal-title");
+        const modalCustomBody = document.getElementById("modal-custom-body");
+        const modalActionsContainer = document.getElementById("modal-actions-container");
+
+        let allBannersData = [];
+        let selectedFileObject = null;
+
+        // ==========================================
+        // 1. ADMIN AUTHENTICATION CHECK
+        // ==========================================
+        onAuthStateChanged(auth, (user) => {
+            if (!user || user.email !== ADMIN_EMAIL) {
+                window.location.href = "index.html";
+            } else {
+                displayAdminEmail.textContent = user.email;
+                authLoading.style.opacity = "0";
+                setTimeout(() => {
+                    authLoading.style.display = "none";
+                    adminMainContent.style.display = "block";
+                }, 300);
+                loadOfferBanners();
+            }
+        });
+
+        // Logout handling
+        logoutBtn.addEventListener("click", async () => {
+            try {
+                await signOut(auth);
+                window.location.href = "index.html";
+            } catch (error) {
+                showCustomModal("Error", "Failed to logout. Please try again.");
+            }
+        });
+
+        // ==========================================
+        // 23 & 24. CUSTOM POPUP / MODAL ENGINE
+        // ==========================================
+        function showCustomModal(title, messageHtmlContent, callback = null, isConfirm = false, customBodyHtml = null) {
+            modalTitle.textContent = title;
+            if (customBodyHtml) {
+                modalCustomBody.innerHTML = customBodyHtml;
+            } else {
+                modalCustomBody.innerHTML = `<p>${messageHtmlContent}</p>`;
+            }
+            modalActionsContainer.innerHTML = "";
+
+            if (isConfirm) {
+                const cancelBtn = document.createElement("button");
+                cancelBtn.className = "btn btn-secondary";
+                cancelBtn.textContent = "Cancel";
+                cancelBtn.onclick = () => closeCustomModal();
+
+                const confirmBtn = document.createElement("button");
+                confirmBtn.className = "btn btn-danger";
+                confirmBtn.textContent = "Delete";
+                confirmBtn.onclick = () => {
+                    closeCustomModal();
+                    if (callback) callback();
+                };
+
+                modalActionsContainer.appendChild(cancelBtn);
+                modalActionsContainer.appendChild(confirmBtn);
+            } else {
+                const okBtn = document.createElement("button");
+                okBtn.className = "btn";
+                okBtn.textContent = "OK";
+                okBtn.onclick = () => {
+                    closeCustomModal();
+                    if (callback) callback();
+                };
+                modalActionsContainer.appendChild(okBtn);
+            }
+
+            customModal.classList.add("active");
+        }
+
+        function closeCustomModal() {
+            customModal.classList.remove("active");
+        }
+
+        // ==========================================
+        // 8. IMAGE SELECTION & PREVIEW
+        // ==========================================
+        bannerImageInput.addEventListener("change", (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                // Validate size < 10MB
+                if (file.size > 10 * 1024 * 1024) {
+                    showCustomModal("Error", "Image size must be less than 10 MB.");
+                    bannerImageInput.value = "";
+                    return;
+                }
+                selectedFileObject = file;
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    imgPreviewTag.src = event.target.result;
+                    uploadLabelText.style.display = "none";
+                    imagePreviewBox.style.display = "flex";
+                }
+                reader.readAsDataURL(file);
+            }
+        });
+
+        changeImgBtn.addEventListener("click", () => {
+            bannerImageInput.click();
+        });
+
+        // ==========================================
+        // 5 & 6. FETCH IMGBB API KEY FROM post_api
+        // ==========================================
+        async function fetchImgbbApiKey() {
+            try {
+                const snapshot = await getDocs(collection(db, API_COLLECTION));
+                let apiKey = null;
+                snapshot.forEach((docSnap) => {
+                    const data = docSnap.data();
+                    if (data.imgbbApiKey && !apiKey) {
+                        apiKey = data.imgbbApiKey;
+                    }
+                });
+                return apiKey;
+            } catch (error) {
+                return null;
+            }
+        }
+
+        // ==========================================
+        // 21. DELETE FROM IMGBB VIA DELETE URL
+        // ==========================================
+        async function deleteImgbbImage(deleteUrl) {
+            if (!deleteUrl) return;
+            try {
+                await fetch(deleteUrl, { method: "GET", mode: "no-cors" });
+            } catch (err) {
+                // Silent fail or non-blocking warning as per requirement
+            }
+        }
+
+        // ==========================================
+        // URL VALIDATION HELPER
+        // ==========================================
+        function isValidUrl(string) {
+            if (!string) return true; // Optional link can be empty
+            try {
+                new URL(string);
+                return true;
+            } catch (_) {
+                return false;
+            }
+        }
+
+        // ==========================================
+        // 7, 12, 14, 18, 19, 20. FORM SUBMISSION (ADD / EDIT)
+        // ==========================================
+        bannerForm.addEventListener("submit", async (e) => {
+            e.preventDefault();
+
+            const title = bannerTitleInput.value.trim();
+            const clickLink = bannerLinkInput.value.trim();
+            const docId = editingBannerId.value;
+
+            // Validations
+            if (!title) {
+                showCustomModal("Error", "Banner title is required.");
+                return;
+            }
+            if (title.length > 100) {
+                showCustomModal("Error", "Banner title cannot exceed 100 characters.");
+                return;
+            }
+            if (!isValidUrl(clickLink)) {
+                showCustomModal("Error", "Please enter a valid URL.");
+                return;
+            }
+
+            if (!docId && !selectedFileObject) {
+                showCustomModal("Error", "Please select a banner image.");
+                return;
+            }
+
+            saveBannerBtn.disabled = true;
+
+            try {
+                let imageUrl = "";
+                let deleteUrl = "";
+
+                // If new image is selected, upload to ImgBB
+                if (selectedFileObject) {
+                    saveBannerBtn.textContent = "Fetching API Key...";
+                    const imgbbApiKey = await fetchImgbbApiKey();
+                    if (!imgbbApiKey) {
+                        showCustomModal("Error", "No ImgBB API Key is available. Please add one from API Key Management.");
+                        saveBannerBtn.disabled = false;
+                        saveBannerBtn.textContent = docId ? "Update Banner" : "Save Banner";
+                        return;
+                    }
+
+                    saveBannerBtn.textContent = "Uploading...";
+                    const formData = new FormData();
+                    formData.append("key", imgbbApiKey);
+                    formData.append("image", selectedFileObject);
+
+                    const response = await fetch("https://api.imgbb.com/1/upload", {
+                        method: "POST",
+                        body: formData
+                    });
+                    const result = await response.json();
+
+                    if (!result.success) {
+                        throw new Error("Image upload failed.");
+                    }
+
+                    imageUrl = result.data.url || result.data.display_url;
+                    deleteUrl = result.data.delete_url || "";
+                }
+
+                saveBannerBtn.textContent = "Saving...";
+
+                if (docId) {
+                    // Edit Mode
+                    const existingBanner = allBannersData.find(b => b.id === docId);
+                    const updatePayload = {
+                        title: title,
+                        clickLink: clickLink,
+                        updatedAt: serverTimestamp()
+                    };
+
+                    if (imageUrl) {
+                        updatePayload.imageUrl = imageUrl;
+                        updatePayload.imgbbDeleteUrl = deleteUrl;
+                    }
+
+                    await updateDoc(doc(db, BANNERS_COLLECTION, docId), updatePayload);
+
+                    // If new image replaced old one, attempt deleting old imgbb image
+                    if (imageUrl && existingBanner && existingBanner.imgbbDeleteUrl) {
+                        await deleteImgbbImage(existingBanner.imgbbDeleteUrl);
+                    }
+
+                    showCustomModal("Success", "✓ Banner updated successfully.");
+                } else {
+                    // Add Mode
+                    await addDoc(collection(db, BANNERS_COLLECTION), {
+                        title: title,
+                        imageUrl: imageUrl,
+                        clickLink: clickLink,
+                        imgbbDeleteUrl: deleteUrl,
+                        createdAt: serverTimestamp(),
+                        updatedAt: serverTimestamp()
+                    });
+                    showCustomModal("Success", "✓ Banner uploaded successfully.");
+                }
+
+                resetForm();
+                loadOfferBanners();
+
+            } catch (error) {
+                console.error(error);
+                showCustomModal("Error", "Banner could not be saved. Please try again.");
+            } finally {
+                saveBannerBtn.disabled = false;
+                saveBannerBtn.textContent = "Save Banner";
+            }
+        });
+
+        // ==========================================
+        // 16. LOAD & RENDER BANNERS LIST
+        // ==========================================
+        async function loadOfferBanners() {
+            loadingBanners.style.display = "block";
+            bannersGridContainer.innerHTML = "";
+            emptyState.style.display = "none";
+
+            try {
+                const querySnapshot = await getDocs(collection(db, BANNERS_COLLECTION));
+                allBannersData = [];
+                querySnapshot.forEach((docSnap) => {
+                    allBannersData.push({ id: docSnap.id, ...docSnap.data() });
+                });
+                renderBannersGrid(allBannersData);
+            } catch (error) {
+                showCustomModal("Error", "Failed to load offer banners.");
+            } finally {
+                loadingBanners.style.display = "none";
+            }
+        }
+
+        function renderBannersGrid(banners) {
+            bannersGridContainer.innerHTML = "";
+            if (banners.length === 0) {
+                emptyState.style.display = "block";
+                return;
+            }
+
+            emptyState.style.display = "none";
+
+            banners.forEach((banner) => {
+                const card = document.createElement("div");
+                card.className = "banner-card";
+
+                const createdDate = banner.createdAt?.toDate ? banner.createdAt.toDate().toLocaleDateString() : "N/A";
+                const updatedDate = banner.updatedAt?.toDate ? banner.updatedAt.toDate().toLocaleDateString() : "N/A";
+
+                card.innerHTML = `
+                    <div class="banner-img-wrap">
+                        <img src="${escapeHtml(banner.imageUrl)}" alt="${escapeHtml(banner.title)}">
+                    </div>
+                    <div class="banner-body">
+                        <div class="banner-title">${escapeHtml(banner.title)}</div>
+                        ${banner.clickLink ? `<a href="${escapeHtml(banner.clickLink)}" target="_blank" class="banner-link">${escapeHtml(banner.clickLink)}</a>` : '<span style="font-size:0.85rem; color:var(--text-muted);">No Link Provided</span>'}
+                        <div class="banner-dates">
+                            Created: ${createdDate} | Updated: ${updatedDate}
+                        </div>
+                    </div>
+                    <div class="banner-actions">
+                        <button class="btn btn-outline preview-btn" data-id="${banner.id}" style="padding: 6px 10px; font-size: 0.85rem;">Preview</button>
+                        <button class="btn btn-secondary edit-btn" data-id="${banner.id}" style="padding: 6px 10px; font-size: 0.85rem;">Edit</button>
+                        <button class="btn btn-danger delete-btn" data-id="${banner.id}" style="padding: 6px 10px; font-size: 0.85rem;">Delete</button>
+                    </div>
+                `;
+                bannersGridContainer.appendChild(card);
+            });
+
+            attachCardEventListeners();
+        }
+
+        function escapeHtml(str) {
+            if (!str) return "";
+            return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+        }
+
+        // ==========================================
+        // CARD EVENT LISTENERS (Preview, Edit, Delete)
+        // ==========================================
+        function attachCardEventListeners() {
+            // Preview Modal Action
+            document.querySelectorAll(".preview-btn").forEach(btn => {
+                btn.addEventListener("click", (e) => {
+                    const id = e.target.getAttribute("data-id");
+                    const banner = allBannersData.find(b => b.id === id);
+                    if (banner) {
+                        let bodyHtml = `<img src="${escapeHtml(banner.imageUrl)}" class="modal-img-preview" alt="Banner"><h4 style="margin-bottom:8px;">${escapeHtml(banner.title)}</h4>`;
+                        if (banner.clickLink) {
+                            bodyHtml += `<a href="${escapeHtml(banner.clickLink)}" target="_blank" class="btn" style="margin-top:10px; text-decoration:none;">Open Link</a>`;
+                        }
+                        showCustomModal("Banner Preview", bodyHtml, null, false, bodyHtml);
+                    }
+                });
+            });
+
+            // Edit Action
+            document.querySelectorAll(".edit-btn").forEach(btn => {
+                btn.addEventListener("click", (e) => {
+                    const id = e.target.getAttribute("data-id");
+                    const banner = allBannersData.find(b => b.id === id);
+                    if (banner) {
+                        editingBannerId.value = banner.id;
+                        bannerTitleInput.value = banner.title;
+                        bannerLinkInput.value = banner.clickLink || "";
+                        imgPreviewTag.src = banner.imageUrl;
+                        uploadLabelText.style.display = "none";
+                        imagePreviewBox.style.display = "flex";
+                        
+                        formSectionTitle.textContent = "Edit Offer Banner";
+                        saveBannerBtn.textContent = "Update Banner";
+                        cancelEditBtn.style.display = "inline-flex";
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                    }
+                });
+            });
+
+            // Delete Action with Custom Confirmation Modal
+            document.querySelectorAll(".delete-btn").forEach(btn => {
+                btn.addEventListener("click", (e) => {
+                    const id = e.target.getAttribute("data-id");
+                    showCustomModal(
+                        "Confirm Deletion",
+                        "Are you sure you want to delete this offer banner?",
+                        () => executeDeleteBanner(id),
+                        true
+                    );
+                });
+            });
+        }
+
+        // ==========================================
+        // EXECUTE DELETE BANNER
+        // ==========================================
+        async function executeDeleteBanner(id) {
+            try {
+                const banner = allBannersData.find(b => b.id === id);
+                await deleteDoc(doc(db, BANNERS_COLLECTION, id));
+
+                if (banner && banner.imgbbDeleteUrl) {
+                    await deleteImgbbImage(banner.imgbbDeleteUrl);
+                }
+
+                showCustomModal("Success", "Offer banner deleted successfully.");
+                loadOfferBanners();
+            } catch (error) {
+                showCustomModal("Error", "Failed to delete offer banner.");
+            }
+        }
+
+        // Cancel Edit Mode
+        cancelEditBtn.addEventListener("click", () => {
+            resetForm();
+        });
+
+        function resetForm() {
+            editingBannerId.value = "";
+            bannerTitleInput.value = "";
+            bannerLinkInput.value = "";
+            bannerImageInput.value = "";
+            selectedFileObject = null;
+            imgPreviewTag.src = "";
+            imagePreviewBox.style.display = "none";
+            uploadLabelText.style.display = "block";
+            formSectionTitle.textContent = "Add New Offer Banner";
+            saveBannerBtn.textContent = "Save Banner";
+            cancelEditBtn.style.display = "none";
+        }
+
+        // ==========================================
+        // 28. SEARCH REALTIME FILTER
+        // ==========================================
+        searchInput.addEventListener("input", (e) => {
+            const query = e.target.value.toLowerCase().trim();
+            const filtered = allBannersData.filter(item => 
+                item.title.toLowerCase().includes(query)
+            );
+            renderBannersGrid(filtered);
+        });
+
+    </script>
+</body>
+</html>
