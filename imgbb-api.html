@@ -1,31 +1,30 @@
 <!DOCTYPE html>
-<html lang="bn">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Offer Management System - GHOTI MARKET</title>
-    <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <title>Admin API Key Management</title>
     <style>
+        /* Modern CSS Reset & Styling */
         :root {
-            --primary: #2563EB;
-            --accent: #0EA5E9;
-            --orange: #F97316;
-            --green: #16A34A;
-            --danger: #DC2626;
-            --bg-color: #F4F6F8;
-            --card-bg: #FFFFFF;
-            --text-main: #1F2937;
-            --text-muted: #6B7280;
-            --border-color: #E5E7EB;
-            --radius: 12px;
+            --primary: #4f46e5;
+            --primary-hover: #4338ca;
+            --danger: #ef4444;
+            --danger-hover: #dc2626;
+            --success: #10b981;
+            --bg-color: #f3f4f6;
+            --card-bg: #ffffff;
+            --text-main: #1f2937;
+            --text-muted: #6b7280;
+            --border-color: #e5e7eb;
+            --radius: 8px;
         }
 
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: 'Hind Siliguri', sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
         body {
@@ -36,14 +35,14 @@
             flex-direction: column;
         }
 
-        /* Loading Screen */
+        /* Loading Screen Overlay */
         #auth-loading {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: #FFFFFF;
+            background: #ffffff;
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -53,8 +52,8 @@
         }
 
         .spinner {
-            width: 50px;
-            height: 50px;
+            width: 48px;
+            height: 48px;
             border: 4px solid var(--border-color);
             border-top: 4px solid var(--primary);
             border-radius: 50%;
@@ -67,22 +66,22 @@
             100% { transform: rotate(360deg); }
         }
 
-        /* Main Dashboard Container */
+        /* Main Container & Layout */
         .admin-container {
-            max-width: 1300px;
+            max-width: 1000px;
             width: 100%;
             margin: 0 auto;
             padding: 20px;
             flex: 1;
-            display: none;
+            display: none; /* Hidden until auth is verified */
         }
 
         /* Header */
         header {
             background: var(--card-bg);
-            padding: 20px 24px;
+            padding: 20px;
             border-radius: var(--radius);
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -93,10 +92,7 @@
 
         header h1 {
             font-size: 1.5rem;
-            color: var(--primary);
-            display: flex;
-            align-items: center;
-            gap: 10px;
+            color: var(--text-main);
         }
 
         .admin-info {
@@ -106,144 +102,77 @@
         }
 
         .admin-email {
-            font-size: 0.95rem;
+            font-size: 0.9rem;
             color: var(--text-muted);
             background: var(--bg-color);
-            padding: 8px 16px;
+            padding: 6px 12px;
             border-radius: 20px;
-            font-weight: 500;
         }
 
         /* Buttons */
         button, .btn {
-            background: var(--primary);
+            background-color: var(--primary);
             color: white;
             border: none;
-            padding: 10px 18px;
+            padding: 10px 16px;
             border-radius: var(--radius);
             font-size: 0.95rem;
-            font-weight: 600;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: background-color 0.2s, opacity 0.2s;
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            gap: 8px;
+            gap: 6px;
         }
 
         button:hover {
-            opacity: 0.9;
-            transform: translateY(-1px);
-        }
-
-        button:active {
-            transform: translateY(0);
+            background-color: var(--primary-hover);
         }
 
         button:disabled {
-            opacity: 0.6;
+            opacity: 0.7;
             cursor: not-allowed;
         }
 
-        .btn-danger { background: var(--danger); }
-        .btn-success { background: var(--green); }
-        .btn-orange { background: var(--orange); }
-        .btn-secondary { background: var(--text-muted); }
+        .btn-danger {
+            background-color: var(--danger);
+        }
+        .btn-danger:hover {
+            background-color: var(--danger-hover);
+        }
+
+        .btn-secondary {
+            background-color: #6b7280;
+        }
+        .btn-secondary:hover {
+            background-color: #4b5563;
+        }
+
         .btn-outline {
             background: transparent;
             border: 1px solid var(--border-color);
             color: var(--text-main);
         }
-        .btn-outline:hover { background: var(--bg-color); }
+        .btn-outline:hover {
+            background: var(--bg-color);
+        }
 
-        /* Cards & Layout */
+        /* Cards & Forms */
         .card {
             background: var(--card-bg);
             padding: 24px;
             border-radius: var(--radius);
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
             margin-bottom: 24px;
         }
 
         .card h2 {
-            font-size: 1.25rem;
-            margin-bottom: 20px;
-            color: var(--text-main);
-            border-bottom: 2px solid var(--bg-color);
-            padding-bottom: 10px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        /* Type Selector */
-        .type-selector {
-            display: flex;
-            gap: 15px;
-            margin-bottom: 24px;
-        }
-
-        .type-option {
-            flex: 1;
-            border: 2px solid var(--border-color);
-            padding: 16px;
-            border-radius: var(--radius);
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            transition: all 0.2s;
-            background: #FAFBFC;
-        }
-
-        .type-option input {
-            accent-color: var(--primary);
-            width: 18px;
-            height: 18px;
-        }
-
-        .type-option.active {
-            border-color: var(--primary);
-            background: #EFF6FF;
-        }
-
-        .type-option label {
-            cursor: pointer;
-            font-weight: 600;
-            font-size: 1.05rem;
-            width: 100%;
-        }
-
-        /* Form Layouts & Builder Grid */
-        .builder-grid {
-            display: grid;
-            grid-template-columns: 1fr 400px;
-            gap: 24px;
-        }
-
-        @media (max-width: 1024px) {
-            .builder-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        .form-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 16px;
+            font-size: 1.2rem;
+            margin-bottom: 16px;
         }
 
         .form-group {
             margin-bottom: 16px;
-        }
-
-        .form-group.full-width {
-            grid-column: span 2;
-        }
-
-        @media (max-width: 768px) {
-            .form-grid { grid-template-columns: 1fr; }
-            .form-group.full-width { grid-column: span 1; }
         }
 
         label {
@@ -251,315 +180,90 @@
             font-size: 0.9rem;
             font-weight: 600;
             margin-bottom: 6px;
-            color: var(--text-main);
         }
 
-        input[type="text"], input[type="url"], input[type="number"], input[type="datetime-local"], textarea {
+        input[type="text"] {
             width: 100%;
-            padding: 12px 14px;
+            padding: 10px 14px;
             border: 1px solid var(--border-color);
             border-radius: var(--radius);
             font-size: 1rem;
             outline: none;
             transition: border-color 0.2s;
-            background: #FAFBFC;
         }
 
-        input:focus, textarea:focus {
+        input[type="text"]:focus {
             border-color: var(--primary);
-            background: #FFFFFF;
         }
 
-        textarea { resize: vertical; min-height: 100px; }
-
-        .char-count {
-            font-size: 0.75rem;
-            color: var(--text-muted);
-            text-align: right;
-            margin-top: 4px;
-        }
-
-        /* Color Picker Row */
-        .color-picker-row {
+        .form-actions {
             display: flex;
             gap: 10px;
-            align-items: center;
         }
 
-        .color-picker-row input[type="color"] {
-            width: 50px;
-            height: 46px;
-            border: 1px solid var(--border-color);
-            border-radius: var(--radius);
-            cursor: pointer;
-            background: none;
-            padding: 2px;
-        }
-
-        /* File Upload */
-        .file-upload-box {
-            border: 2px dashed var(--border-color);
-            padding: 20px;
-            border-radius: var(--radius);
-            text-align: center;
-            background: #FAFBFC;
-            position: relative;
-            cursor: pointer;
-        }
-
-        .file-upload-box input {
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            opacity: 0; cursor: pointer;
-        }
-
-        .image-preview-container {
-            display: none;
-            align-items: center;
-            gap: 15px;
-            margin-top: 10px;
-        }
-
-        .image-preview-container img {
-            width: 90px; height: 60px; object-fit: cover; border-radius: 6px; border: 1px solid var(--border-color);
-        }
-
-        /* Buttons Builder Section */
-        .buttons-builder-box {
-            background: #FAFBFC;
-            border: 1px solid var(--border-color);
-            padding: 16px;
-            border-radius: var(--radius);
-            margin-bottom: 16px;
-        }
-
-        .dynamic-btn-item {
-            display: grid;
-            grid-template-columns: 1fr 1fr 80px 40px;
-            gap: 10px;
-            align-items: center;
-            margin-bottom: 10px;
-        }
-
-        @media (max-width: 600px) {
-            .dynamic-btn-item { grid-template-columns: 1fr; }
-        }
-
-        /* Live Preview Card */
-        .live-preview-wrapper {
-            background: #FAFBFC;
-            border: 1px solid var(--border-color);
-            border-radius: var(--radius);
-            padding: 20px;
-            position: sticky;
-            top: 20px;
-        }
-
-        .preview-card-box {
-            background: #FFFFFF;
-            border-radius: 12px;
-            overflow: hidden;
-            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
-            transition: all 0.3s;
-            border-left: 6px solid var(--primary);
-        }
-
-        .preview-card-img {
-            width: 100%;
-            height: 180px;
-            object-fit: cover;
-            background: #E5E7EB;
-        }
-
-        .preview-card-body {
-            padding: 16px;
-        }
-
-        .preview-card-title {
-            font-size: 1.15rem;
-            font-weight: 700;
-            margin-bottom: 6px;
-        }
-
-        .preview-card-desc {
-            font-size: 0.9rem;
-            color: var(--text-muted);
-            margin-bottom: 12px;
-            line-height: 1.4;
-        }
-
-        .preview-card-prices {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 14px;
-        }
-
-        .preview-current-price {
-            font-size: 1.25rem;
-            font-weight: 700;
-            color: var(--primary);
-        }
-
-        .preview-old-price {
-            font-size: 0.95rem;
-            color: var(--text-muted);
-            text-decoration: line-through;
-        }
-
-        .preview-card-btns {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-        }
-
-        .preview-btn-item {
-            padding: 6px 14px;
-            border-radius: 6px;
-            color: white;
-            font-size: 0.85rem;
-            font-weight: 600;
-            text-decoration: none;
-            display: inline-block;
-        }
-
-        /* Filter & Search Bar */
-        .filter-search-bar {
-            display: flex;
-            gap: 15px;
+        /* Search Box */
+        .search-box {
             margin-bottom: 20px;
-            flex-wrap: wrap;
-            justify-content: space-between;
         }
 
-        .search-input-wrap {
-            flex: 1;
-            min-width: 250px;
-            position: relative;
+        /* API List / Table Style */
+        .table-responsive {
+            overflow-x: auto;
         }
 
-        .search-input-wrap i {
-            position: absolute;
-            left: 14px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: var(--text-muted);
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
         }
 
-        .search-input-wrap input {
-            padding-left: 40px;
+        th, td {
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 0.95rem;
         }
 
-        .filter-chips {
-            display: flex;
-            gap: 8px;
-            flex-wrap: wrap;
-        }
-
-        .chip {
-            padding: 8px 16px;
-            border-radius: 20px;
-            background: #FFFFFF;
-            border: 1px solid var(--border-color);
-            cursor: pointer;
-            font-size: 0.85rem;
+        th {
+            background-color: #f9fafb;
             font-weight: 600;
             color: var(--text-muted);
-            transition: all 0.2s;
         }
 
-        .chip.active {
-            background: var(--primary);
-            color: white;
-            border-color: var(--primary);
-        }
-
-        /* Offers Grid */
-        .offers-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-            gap: 20px;
-        }
-
-        .offer-item-card {
-            background: #FFFFFF;
-            border: 1px solid var(--border-color);
-            border-radius: var(--radius);
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
-            transition: transform 0.2s;
-        }
-
-        .offer-item-card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 16px rgba(0,0,0,0.05);
-        }
-
-        .offer-card-header {
-            padding: 12px 16px;
-            background: #FAFBFC;
-            border-bottom: 1px solid var(--border-color);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .badge {
-            padding: 4px 10px;
-            border-radius: 12px;
-            font-size: 0.75rem;
-            font-weight: 700;
-            text-transform: uppercase;
-        }
-
-        .badge-active { background: #DCFCE7; color: var(--green); }
-        .badge-expired { background: #FEE2E2; color: var(--danger); }
-        .badge-type { background: #E0F2FE; color: var(--primary); }
-
-        .offer-card-content {
-            padding: 16px;
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-
-        .offer-card-title {
-            font-size: 1.1rem;
-            font-weight: 700;
-        }
-
-        .offer-card-meta {
-            font-size: 0.8rem;
-            color: var(--text-muted);
-        }
-
-        .offer-card-actions {
-            padding: 12px 16px;
-            background: #FAFBFC;
-            border-top: 1px solid var(--border-color);
+        .actions-cell {
             display: flex;
             gap: 8px;
-            justify-content: flex-end;
+            flex-wrap: wrap;
+        }
+
+        .key-display {
+            font-family: monospace;
+            background: var(--bg-color);
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.9rem;
         }
 
         /* Empty State */
         .empty-state {
             text-align: center;
-            padding: 60px 20px;
-            grid-column: 1 / -1;
+            padding: 40px 20px;
             color: var(--text-muted);
         }
 
-        .empty-state h3 { font-size: 1.3rem; margin-bottom: 6px; color: var(--text-main); }
+        .empty-state h3 {
+            font-size: 1.2rem;
+            margin-bottom: 8px;
+            color: var(--text-main);
+        }
 
-        /* Custom Modal Component */
+        /* Custom Popup Modal */
         .modal-overlay {
             position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.6);
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
             display: flex;
             justify-content: center;
             align-items: center;
@@ -569,283 +273,160 @@
             transition: opacity 0.2s, visibility 0.2s;
         }
 
-        .modal-overlay.active { opacity: 1; visibility: visible; }
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
 
         .modal {
             background: var(--card-bg);
             padding: 24px;
             border-radius: var(--radius);
-            max-width: 600px;
+            max-width: 400px;
             width: 90%;
-            max-height: 90vh;
-            overflow-y: auto;
-            box-shadow: 0 20px 25px -5px rgba(0,0,0,0.15);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
             transform: translateY(-20px);
             transition: transform 0.2s;
+            text-align: center;
         }
 
-        .modal-overlay.active .modal { transform: translateY(0); }
-
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 16px;
-            border-bottom: 1px solid var(--border-color);
-            padding-bottom: 10px;
+        .modal-overlay.active .modal {
+            transform: translateY(0);
         }
 
-        .modal-close-btn {
-            background: none; border: none; font-size: 1.25rem; cursor: pointer; color: var(--text-muted);
+        .modal h3 {
+            margin-bottom: 12px;
+            font-size: 1.25rem;
         }
 
-        /* Toast Notification */
-        #toast-container {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            z-index: 10000;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-
-        .toast {
-            background: #1F2937;
-            color: white;
-            padding: 12px 20px;
-            border-radius: var(--radius);
-            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
-            display: flex;
-            align-items: center;
-            gap: 10px;
+        .modal p {
+            color: var(--text-muted);
+            margin-bottom: 20px;
             font-size: 0.95rem;
-            animation: slideIn 0.3s ease forwards;
         }
 
-        .toast.success { background: var(--green); }
-        .toast.error { background: var(--danger); }
+        .modal-actions {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+        }
 
-        @keyframes slideIn {
-            from { transform: translateX(100%); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
+        /* Inline Validation Error */
+        .error-msg {
+            color: var(--danger);
+            font-size: 0.8rem;
+            margin-top: 4px;
+            display: none;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .admin-info {
+                width: 100%;
+                justify-content: space-between;
+            }
         }
     </style>
 </head>
 <body>
 
-    <!-- Auth Loading Screen -->
+    <!-- Loading Screen for Auth Verification -->
     <div id="auth-loading">
         <div class="spinner"></div>
         <p>Verifying Admin Access...</p>
     </div>
 
-    <!-- Toast Notification Container -->
-    <div id="toast-container"></div>
-
-    <!-- Admin Dashboard Main Container -->
+    <!-- Main Admin Dashboard Container -->
     <div class="admin-container" id="admin-main-content">
-        <!-- Header -->
+        <!-- Top Header -->
         <header>
-            <h1><i class="fa-solid fa-bullhorn"></i> Offer Management System</h1>
+            <div>
+                <h1>API Key Management</h1>
+            </div>
             <div class="admin-info">
                 <span class="admin-email" id="display-admin-email">support@ghotimarket.com</span>
-                <button id="logout-btn" class="btn btn-danger"><i class="fa-solid fa-right-from-bracket"></i> Logout</button>
+                <button id="logout-btn" class="btn btn-danger">Logout</button>
             </div>
         </header>
 
-        <!-- Add / Edit Offer Card -->
+        <!-- Add / Edit API Key Card -->
         <div class="card">
-            <h2 id="form-section-title"><i class="fa-solid fa-plus-circle"></i> Create New Offer</h2>
-            
-            <!-- Type Selector -->
-            <div class="type-selector">
-                <div class="type-option active" id="type-opt-custom">
-                    <input type="radio" name="postTypeRadio" id="radio-custom" value="custom" checked>
-                    <label for="radio-custom"><i class="fa-solid fa-rectangle-ad"></i> Custom Post Builder</label>
+            <h2 id="form-title">Add New ImgBB API Key</h2>
+            <form id="api-form">
+                <input type="hidden" id="editing-doc-id" value="">
+                <div class="form-group">
+                    <label for="api-key-name">API Key Name</label>
+                    <input type="text" id="api-key-name" placeholder="e.g., Main ImgBB API" autocomplete="off">
+                    <div class="error-msg" id="name-error">API Key Name is required.</div>
                 </div>
-                <div class="type-option" id="type-opt-html">
-                    <input type="radio" name="postTypeRadio" id="radio-html" value="html">
-                    <label for="radio-html"><i class="fa-solid fa-code"></i> HTML Post (Raw HTML)</label>
+                <div class="form-group">
+                    <label for="imgbb-api-key">ImgBB API Key</label>
+                    <input type="text" id="imgbb-api-key" placeholder="Enter ImgBB API Key" autocomplete="off">
+                    <div class="error-msg" id="key-error">ImgBB API Key is required.</div>
                 </div>
-            </div>
-
-            <form id="offer-form">
-                <input type="hidden" id="editing-offer-id" value="">
-
-                <!-- HTML POST CONTAINER -->
-                <div id="html-post-section" style="display: none;">
-                    <div class="form-group full-width">
-                        <label>HTML Content *</label>
-                        <textarea id="html-content-input" placeholder="<div class=&quot;offer-card&quot;>...</div>" style="min-height: 200px; font-family: monospace;"></textarea>
-                    </div>
-                    <div class="form-grid">
-                        <div class="form-group">
-                            <label>Slug * (URL friendly identifier)</label>
-                            <input type="text" id="html-slug-input" placeholder="e.g. summer-sale">
-                        </div>
-                        <div class="form-group">
-                            <label>Expire Date & Time *</label>
-                            <input type="datetime-local" id="html-expire-input">
-                        </div>
-                    </div>
-                    <div class="form-group full-width">
-                        <button type="submit" id="save-html-btn" class="btn"><i class="fa-solid fa-save"></i> Save HTML Offer</button>
-                        <button type="button" class="btn btn-secondary cancel-edit-btn" style="display: none;">Cancel</button>
-                    </div>
-                </div>
-
-                <!-- CUSTOM POST BUILDER CONTAINER -->
-                <div id="custom-post-section">
-                    <div class="builder-grid">
-                        <!-- Left Form Inputs -->
-                        <div>
-                            <div class="form-grid">
-                                <div class="form-group">
-                                    <label>Border Color</label>
-                                    <div class="color-picker-row">
-                                        <input type="color" id="border-color-picker" value="#2563EB">
-                                        <input type="text" id="border-color-hex" value="#2563EB">
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <label>Slug *</label>
-                                    <input type="text" id="custom-slug-input" placeholder="summer-mega-offer">
-                                </div>
-
-                                <div class="form-group full-width">
-                                    <label>Title * (Max 100 chars)</label>
-                                    <input type="text" id="custom-title-input" maxlength="100" placeholder="Summer Mega Offer">
-                                    <div class="char-count"><span id="title-count">0</span>/100</div>
-                                </div>
-
-                                <div class="form-group full-width">
-                                    <label>Description * (Max 1000 chars)</label>
-                                    <textarea id="custom-desc-input" maxlength="1000" placeholder="সব পণ্যে বিশেষ ছাড় পাচ্ছেন এখনই..."></textarea>
-                                    <div class="char-count"><span id="desc-count">0</span>/1000</div>
-                                </div>
-
-                                <div class="form-group full-width">
-                                    <label>Banner Image (Optional)</label>
-                                    <div class="file-upload-box">
-                                        <span id="upload-label-text"><i class="fa-solid fa-cloud-arrow-up"></i> Click or Drag to select image</span>
-                                        <input type="file" id="custom-image-input" accept="image/*">
-                                    </div>
-                                    <div class="image-preview-container" id="image-preview-box">
-                                        <img id="img-preview-tag" src="" alt="Preview">
-                                        <button type="button" id="remove-img-btn" class="btn btn-danger" style="padding: 6px 12px; font-size: 0.85rem;"><i class="fa-solid fa-trash"></i> Remove</button>
-                                    </div>
-                                </div>
-
-                                <div class="form-group">
-                                    <label>Price (Optional)</label>
-                                    <input type="number" id="custom-price-input" min="0" placeholder="499">
-                                </div>
-                                <div class="form-group">
-                                    <label>Old Price (Optional)</label>
-                                    <input type="number" id="custom-oldprice-input" min="0" placeholder="699">
-                                </div>
-
-                                <div class="form-group full-width">
-                                    <label style="display:flex; align-items:center; gap:8px; cursor:pointer;">
-                                        <input type="checkbox" id="click-enabled-checkbox" style="width:18px; height:18px; accent-color:var(--primary);">
-                                        Enable Card Click Link
-                                    </label>
-                                </div>
-
-                                <div class="form-group full-width" id="click-link-group" style="display: none;">
-                                    <label>Card Click Link *</label>
-                                    <input type="url" id="custom-clicklink-input" placeholder="https://ghotimarket.com/offers">
-                                </div>
-
-                                <div class="form-group full-width">
-                                    <label>Expire Date & Time *</label>
-                                    <input type="datetime-local" id="custom-expire-input">
-                                </div>
-                            </div>
-
-                            <!-- Dynamic Buttons Builder -->
-                            <div class="form-group full-width">
-                                <label style="display:flex; justify-content:space-between; align-items:center;">
-                                    <span>Offer Action Buttons</span>
-                                    <button type="button" id="add-btn-row" class="btn btn-outline" style="padding: 4px 10px; font-size: 0.85rem;"><i class="fa-solid fa-plus"></i> Add Button</button>
-                                </label>
-                                <div id="buttons-builder-container" style="margin-top: 8px;"></div>
-                            </div>
-
-                            <div class="form-group full-width" style="margin-top: 20px;">
-                                <button type="submit" id="save-custom-btn" class="btn"><i class="fa-solid fa-save"></i> Save Custom Offer</button>
-                                <button type="button" class="btn btn-secondary cancel-edit-btn" style="display: none;">Cancel</button>
-                            </div>
-                        </div>
-
-                        <!-- Right Live Preview -->
-                        <div>
-                            <div class="live-preview-wrapper">
-                                <h3 style="font-size: 1rem; margin-bottom: 12px; color: var(--text-muted);"><i class="fa-solid fa-eye"></i> Live Realtime Preview</h3>
-                                <div class="preview-card-box" id="live-preview-card" style="border-left-color: #2563EB;">
-                                    <img src="" class="preview-card-img" id="prev-img" style="display: none;" alt="Preview">
-                                    <div class="preview-card-body">
-                                        <div class="preview-card-title" id="prev-title">Summer Mega Offer</div>
-                                        <div class="preview-card-desc" id="prev-desc">সব পণ্যে বিশেষ ছাড় পাচ্ছেন এখনই।</div>
-                                        <div class="preview-card-prices" id="prev-prices-box">
-                                            <span class="preview-current-price" id="prev-price">৳499</span>
-                                            <span class="preview-old-price" id="prev-oldprice">৳699</span>
-                                        </div>
-                                        <div class="preview-card-btns" id="prev-btns-box"></div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                <div class="form-actions">
+                    <button type="submit" id="save-btn">Save API Key</button>
+                    <button type="button" id="cancel-edit-btn" class="btn btn-secondary" style="display: none;">Cancel</button>
                 </div>
             </form>
         </div>
 
-        <!-- Filter & Search Bar -->
-        <div class="filter-search-bar">
-            <div class="search-input-wrap">
-                <i class="fa-solid fa-search"></i>
-                <input type="text" id="search-input" placeholder="Search offers by title, slug...">
-            </div>
-            <div class="filter-chips">
-                <div class="chip active" data-filter="all">All</div>
-                <div class="chip" data-filter="custom">Custom</div>
-                <div class="chip" data-filter="html">HTML</div>
-                <div class="chip" data-filter="active">Active</div>
-                <div class="chip" data-filter="expired">Expired</div>
-            </div>
+        <!-- Search Box -->
+        <div class="search-box">
+            <input type="text" id="search-input" placeholder="Search API Key by name...">
         </div>
 
-        <!-- All Offers Section -->
+        <!-- Saved API Keys List -->
         <div class="card">
-            <h2><i class="fa-solid fa-list"></i> All Offers</h2>
-            <div id="loading-offers" style="text-align: center; padding: 40px; display: none;">
-                <div class="spinner" style="width: 40px; height: 40px; border-width: 3px; margin: 0 auto 10px;"></div>
-                <p style="color: var(--text-muted);">Loading Offers...</p>
+            <h2>Saved API Keys</h2>
+            <div id="loading-list" style="text-align: center; padding: 20px; display: none;">
+                <div class="spinner" style="width: 30px; height: 30px; border-width: 3px; margin: 0 auto 10px;"></div>
+                <p style="color: var(--text-muted); font-size: 0.9rem;">Loading API Keys...</p>
             </div>
-            <div class="offers-grid" id="offers-grid-container"></div>
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>API Name</th>
+                            <th>ImgBB API Key</th>
+                            <th>Created</th>
+                            <th>Updated</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="api-table-body">
+                        <!-- Dynamic rows will be injected here -->
+                    </tbody>
+                </table>
+            </div>
             <!-- Empty State -->
             <div id="empty-state" class="empty-state" style="display: none;">
-                <h3>No Offers Found</h3>
-                <p>Create your first offer to get started.</p>
+                <h3>No API Keys Found</h3>
+                <p>Add your first ImgBB API Key to get started.</p>
             </div>
         </div>
     </div>
 
-    <!-- Custom Modal Component -->
+    <!-- Custom Popup / Modal Component -->
     <div class="modal-overlay" id="custom-modal">
         <div class="modal">
-            <div class="modal-header">
-                <h3 id="modal-title">Preview</h3>
-                <button class="modal-close-btn" id="modal-close-trigger"><i class="fa-solid fa-xmark"></i></button>
+            <h3 id="modal-title">Notification</h3>
+            <p id="modal-message">Message goes here...</p>
+            <div class="modal-actions" id="modal-actions-container">
+                <button id="modal-ok-btn" class="btn">OK</button>
             </div>
-            <div id="modal-body-content"></div>
         </div>
     </div>
 
     <!-- Firebase SDK & Script -->
     <script type="module">
+        // ==========================================
+        // FIREBASE CONFIGURATION PLACEHOLDER
+        // ==========================================
         const firebaseConfig = {
   apiKey: "AIzaSyBUhNhYvuo_FTvZ5RZR6Gn-4hsUY21S0XE",
   authDomain: "ghotimarket.firebaseapp.com",
@@ -857,6 +438,7 @@
   measurementId: "G-4SR8V2EKC1"
 };
 
+        // Import Firebase modular SDKs
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-app.js";
         import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-auth.js";
         import { 
@@ -867,789 +449,379 @@
             doc, 
             updateDoc, 
             deleteDoc, 
-            serverTimestamp,
-            Timestamp 
+            serverTimestamp 
         } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-firestore.js";
 
+        // Initialize Firebase
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
 
         const ADMIN_EMAIL = "support@ghotimarket.com";
-        const OFFERS_COLLECTION = "offers";
-        const API_COLLECTION = "post_api";
+        const COLLECTION_NAME = "post_api";
 
-        let allOffersData = [];
-        let selectedFileObject = null;
-        let currentFilter = "all";
-        let searchQuery = "";
-
+        // DOM Elements
         const authLoading = document.getElementById("auth-loading");
         const adminMainContent = document.getElementById("admin-main-content");
-        const displayAdminEmail = document.getElementById("display-admin-email");
         const logoutBtn = document.getElementById("logout-btn");
-        
-        const radioCustom = document.getElementById("radio-custom");
-        const radioHtml = document.getElementById("radio-html");
-        const typeOptCustom = document.getElementById("type-opt-custom");
-        const typeOptHtml = document.getElementById("type-opt-html");
-        const customPostSection = document.getElementById("custom-post-section");
-        const htmlPostSection = document.getElementById("html-post-section");
-        const formSectionTitle = document.getElementById("form-section-title");
-        const offerForm = document.getElementById("offer-form");
-        const editingOfferId = document.getElementById("editing-offer-id");
-
-        const borderColorPicker = document.getElementById("border-color-picker");
-        const borderColorHex = document.getElementById("border-color-hex");
-        const customSlugInput = document.getElementById("custom-slug-input");
-        const customTitleInput = document.getElementById("custom-title-input");
-        const titleCount = document.getElementById("title-count");
-        const customDescInput = document.getElementById("custom-desc-input");
-        const descCount = document.getElementById("desc-count");
-        const customImageInput = document.getElementById("custom-image-input");
-        const uploadLabelText = document.getElementById("upload-label-text");
-        const imagePreviewBox = document.getElementById("image-preview-box");
-        const imgPreviewTag = document.getElementById("img-preview-tag");
-        const removeImgBtn = document.getElementById("remove-img-btn");
-        const customPriceInput = document.getElementById("custom-price-input");
-        const customOldPriceInput = document.getElementById("custom-oldprice-input");
-        const clickEnabledCheckbox = document.getElementById("click-enabled-checkbox");
-        const clickLinkGroup = document.getElementById("click-link-group");
-        const customClickLinkInput = document.getElementById("custom-clicklink-input");
-        const customExpireInput = document.getElementById("custom-expire-input");
-        const addBtnRow = document.getElementById("add-btn-row");
-        const buttonsBuilderContainer = document.getElementById("buttons-builder-container");
-
-        const htmlContentInput = document.getElementById("html-content-input");
-        const htmlSlugInput = document.getElementById("html-slug-input");
-        const htmlExpireInput = document.getElementById("html-expire-input");
-
-        const searchInput = document.getElementById("search-input");
-        const loadingOffers = document.getElementById("loading-offers");
-        const offersGridContainer = document.getElementById("offers-grid-container");
+        const apiForm = document.getElementById("api-form");
+        const formTitle = document.getElementById("form-title");
+        const saveBtn = document.getElementById("save-btn");
+        const cancelEditBtn = document.getElementById("cancel-edit-btn");
+        const apiKeyNameInput = document.getElementById("api-key-name");
+        const imgbbApiKeyInput = document.getElementById("imgbb-api-key");
+        const editingDocIdInput = document.getElementById("editing-doc-id");
+        const nameError = document.getElementById("name-error");
+        const keyError = document.getElementById("key-error");
+        const apiTableBody = document.getElementById("api-table-body");
         const emptyState = document.getElementById("empty-state");
+        const loadingList = document.getElementById("loading-list");
+        const searchInput = document.getElementById("search-input");
+        const displayAdminEmail = document.getElementById("display-admin-email");
 
+        // Custom Modal Elements
         const customModal = document.getElementById("custom-modal");
         const modalTitle = document.getElementById("modal-title");
-        const modalBodyContent = document.getElementById("modal-body-content");
-        const modalCloseTrigger = document.getElementById("modal-close-trigger");
+        const modalMessage = document.getElementById("modal-message");
+        const modalActionsContainer = document.getElementById("modal-actions-container");
 
+        let allApiKeysData = []; // Store raw data for searching
+
+        // ==========================================
+        // AUTHENTICATION CHECK
+        // ==========================================
         onAuthStateChanged(auth, (user) => {
             if (!user || user.email !== ADMIN_EMAIL) {
+                // If not logged in or email doesn't match admin email, redirect to index.html
                 window.location.href = "index.html";
             } else {
+                // Authorized Admin
                 displayAdminEmail.textContent = user.email;
                 authLoading.style.opacity = "0";
                 setTimeout(() => {
                     authLoading.style.display = "none";
                     adminMainContent.style.display = "block";
                 }, 300);
-                loadOffers();
+                // Load data after authentication is confirmed
+                loadApiKeys();
             }
         });
 
+        // ==========================================
+        // LOGOUT HANDLING
+        // ==========================================
         logoutBtn.addEventListener("click", async () => {
             try {
                 await signOut(auth);
                 window.location.href = "index.html";
             } catch (error) {
-                showToast("Failed to logout.", "error");
+                console.error("Logout error:", error);
+                showCustomModal("Error", "Failed to logout. Please try again.");
             }
         });
 
-        function showToast(message, type = "success") {
-            const container = document.getElementById("toast-container");
-            const toast = document.createElement("div");
-            toast.className = `toast ${type}`;
-            toast.innerHTML = `<i class="fa-solid ${type === 'success' ? 'fa-circle-check' : 'fa-circle-exclamation'}"></i> <span>${message}</span>`;
-            container.appendChild(toast);
-            setTimeout(() => {
-                toast.style.opacity = "0";
-                setTimeout(() => toast.remove(), 300);
-            }, 3000);
-        }
+        // ==========================================
+        // CUSTOM POPUP / MODAL FUNCTIONS
+        // ==========================================
+        function showCustomModal(title, message, callback = null, isConfirm = false) {
+            modalTitle.textContent = title;
+            modalMessage.textContent = message;
+            modalActionsContainer.innerHTML = "";
 
-        radioCustom.addEventListener("change", () => {
-            if (radioCustom.checked) {
-                customPostSection.style.display = "block";
-                htmlPostSection.style.display = "none";
-                typeOptCustom.classList.add("active");
-                typeOptHtml.classList.remove("active");
-            }
-        });
+            if (isConfirm) {
+                const cancelBtn = document.createElement("button");
+                cancelBtn.className = "btn btn-secondary";
+                cancelBtn.textContent = "Cancel";
+                cancelBtn.onclick = () => closeCustomModal();
 
-        radioHtml.addEventListener("change", () => {
-            if (radioHtml.checked) {
-                htmlPostSection.style.display = "block";
-                customPostSection.style.display = "none";
-                typeOptHtml.classList.add("active");
-                typeOptCustom.classList.remove("active");
-            }
-        });
+                const confirmBtn = document.createElement("button");
+                confirmBtn.className = "btn btn-danger";
+                confirmBtn.textContent = "Delete";
+                confirmBtn.onclick = () => {
+                    closeCustomModal();
+                    if (callback) callback();
+                };
 
-        typeOptCustom.addEventListener("click", () => { radioCustom.checked = true; radioCustom.dispatchEvent(new Event('change')); });
-        typeOptHtml.addEventListener("click", () => { radioHtml.checked = true; radioHtml.dispatchEvent(new Event('change')); });
-
-        borderColorPicker.addEventListener("input", (e) => {
-            borderColorHex.value = e.target.value;
-            updateLivePreview();
-        });
-        borderColorHex.addEventListener("input", (e) => {
-            const val = e.target.value;
-            if (/^#[0-9A-F]{6}$/i.test(val)) {
-                borderColorPicker.value = val;
-                updateLivePreview();
-            }
-        });
-
-        customTitleInput.addEventListener("input", (e) => {
-            titleCount.textContent = e.target.value.length;
-            if (!editingOfferId.value) {
-                customSlugInput.value = generateSlug(e.target.value);
-            }
-            updateLivePreview();
-        });
-
-        customDescInput.addEventListener("input", (e) => {
-            descCount.textContent = e.target.value.length;
-            updateLivePreview();
-        });
-
-        function generateSlug(text) {
-            return text.toLowerCase().trim()
-                .replace(/[^\w\s-]/g, '')
-                .replace(/[\s_-]+/g, '-')
-                .replace(/^-+|-+$/g, '');
-        }
-
-        customSlugInput.addEventListener("input", (e) => { e.target.value = generateSlug(e.target.value); });
-        htmlSlugInput.addEventListener("input", (e) => { e.target.value = generateSlug(e.target.value); });
-
-        customImageInput.addEventListener("change", (e) => {
-            const file = e.target.files[0];
-            if (file) {
-                selectedFileObject = file;
-                const reader = new FileReader();
-                reader.onload = function(event) {
-                    imgPreviewTag.src = event.target.result;
-                    imgPreviewTag.style.display = "block";
-                    uploadLabelText.innerHTML = `<i class="fa-solid fa-check"></i> Image Selected`;
-                    imagePreviewBox.style.display = "flex";
-                    updateLivePreview();
-                }
-                reader.readAsDataURL(file);
-            }
-        });
-
-        removeImgBtn.addEventListener("click", () => {
-            customImageInput.value = "";
-            selectedFileObject = null;
-            imgPreviewTag.src = "";
-            imgPreviewTag.style.display = "none";
-            imagePreviewBox.style.display = "none";
-            uploadLabelText.innerHTML = `<i class="fa-solid fa-cloud-arrow-up"></i> Click or Drag to select image`;
-            updateLivePreview();
-        });
-
-        clickEnabledCheckbox.addEventListener("change", (e) => {
-            clickLinkGroup.style.display = e.target.checked ? "block" : "none";
-        });
-
-        customPriceInput.addEventListener("input", updateLivePreview);
-        customOldPriceInput.addEventListener("input", updateLivePreview);
-
-        addBtnRow.addEventListener("click", () => addBuilderButtonRow());
-
-        function addBuilderButtonRow(name = "", link = "", color = "#2563EB") {
-            const div = document.createElement("div");
-            div.className = "dynamic-btn-item";
-            div.innerHTML = `
-                <input type="text" placeholder="Button Name" class="b-name" value="${escapeHtml(name)}">
-                <input type="url" placeholder="Button Link (https://...)" class="b-link" value="${escapeHtml(link)}">
-                <input type="color" class="b-color" value="${color}">
-                <button type="button" class="btn btn-danger remove-b-row" style="padding:10px;"><i class="fa-solid fa-trash"></i></button>
-            `;
-            div.querySelectorAll("input").forEach(inp => inp.addEventListener("input", updateLivePreview));
-            div.querySelector(".remove-b-row").addEventListener("click", () => {
-                div.remove();
-                updateLivePreview();
-            });
-            buttonsBuilderContainer.appendChild(div);
-            updateLivePreview();
-        }
-
-        function updateLivePreview() {
-            const borderCol = borderColorPicker.value;
-            const title = customTitleInput.value.trim() || "Summer Mega Offer";
-            const desc = customDescInput.value.trim() || "সব পণ্যে বিশেষ ছাড় পাচ্ছেন এখনই।";
-            const price = customPriceInput.value.trim();
-            const oldPrice = customOldPriceInput.value.trim();
-
-            document.getElementById("live-preview-card").style.borderLeftColor = borderCol;
-            document.getElementById("prev-title").textContent = title;
-            document.getElementById("prev-desc").textContent = desc;
-
-            const prevImg = document.getElementById("prev-img");
-            if (imgPreviewTag.src && imgPreviewTag.style.display !== "none") {
-                prevImg.src = imgPreviewTag.src;
-                prevImg.style.display = "block";
+                modalActionsContainer.appendChild(cancelBtn);
+                modalActionsContainer.appendChild(confirmBtn);
             } else {
-                prevImg.style.display = "none";
+                const okBtn = document.createElement("button");
+                okBtn.className = "btn";
+                okBtn.textContent = "OK";
+                okBtn.onclick = () => {
+                    closeCustomModal();
+                    if (callback) callback();
+                };
+                modalActionsContainer.appendChild(okBtn);
             }
 
-            const pricesBox = document.getElementById("prev-prices-box");
-            if (price || oldPrice) {
-                pricesBox.style.display = "flex";
-                document.getElementById("prev-price").textContent = price ? `৳${price}` : "";
-                document.getElementById("prev-oldprice").textContent = oldPrice ? `৳${oldPrice}` : "";
-            } else {
-                pricesBox.style.display = "none";
-            }
-
-            const btnsBox = document.getElementById("prev-btns-box");
-            btnsBox.innerHTML = "";
-            document.querySelectorAll(".dynamic-btn-item").forEach(row => {
-                const bName = row.querySelector(".b-name").value.trim() || "Button";
-                const bColor = row.querySelector(".b-color").value;
-                const a = document.createElement("span");
-                a.className = "preview-btn-item";
-                a.style.background = bColor;
-                a.textContent = bName;
-                btnsBox.appendChild(a);
-            });
+            customModal.classList.add("active");
         }
 
-        // ImgBB API Key Fetcher function (সংশোধিত ও উন্নত)
-        async function fetchImgbbApiKey() {
-            try {
-                const snapshot = await getDocs(collection(db, API_COLLECTION));
-                let apiKey = null;
-                snapshot.forEach((docSnap) => {
-                    const data = docSnap.data();
-                    if (data.imgbbApiKey && !apiKey) {
-                        apiKey = data.imgbbApiKey.trim();
-                    }
-                });
-                return apiKey;
-            } catch (err) {
-                console.error("Error fetching API Key:", err);
-                return null;
-            }
+        function closeCustomModal() {
+            customModal.classList.remove("active");
         }
 
-        async function uploadToImgBB(file) {
-            const apiKey = await fetchImgbbApiKey();
-            if (!apiKey) {
-                throw new Error("NO_API_KEY");
-            }
-            const formData = new FormData();
-            formData.append("key", apiKey);
-            formData.append("image", file);
-
-            const res = await fetch("https://api.imgbb.com/1/upload", {
-                method: "POST",
-                body: formData
-            });
-            const result = await res.json();
-            if (!result.success) throw new Error("UPLOAD_FAILED");
-            return {
-                imageUrl: result.data.url || result.data.display_url,
-                deleteUrl: result.data.delete_url || ""
-            };
+        // ==========================================
+        // FORMAT DATE HELPER
+        // ==========================================
+        function formatDate(timestamp) {
+            if (!timestamp) return "N/A";
+            const date = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
+            return date.toLocaleString();
         }
 
-        async function deleteImgbbImage(deleteUrl) {
-            if (!deleteUrl) return;
-            try {
-                await fetch(deleteUrl, { method: "GET", mode: "no-cors" });
-            } catch (err) {
-                console.warn("ImgBB image deletion failed:", err);
-            }
+        // ==========================================
+        // MASK API KEY HELPER
+        // ==========================================
+        function maskApiKey(key) {
+            if (!key || key.length <= 8) return "••••••••••••";
+            const start = key.slice(0, 4);
+            const end = key.slice(-4);
+            const middle = "•".repeat(Math.max(6, key.length - 8));
+            return `${start}${middle}${end}`;
         }
 
-        async function checkSlugUnique(slug, currentId = null) {
-            for (let offer of allOffersData) {
-                if (offer.slug === slug && offer.id !== currentId) {
-                    return false;
-                }
-            }
-            return true;
-        }
-
-        function isValidUrl(string) {
-            if (!string) return true;
-            try { new URL(string); return true; } catch (_) { return false; }
-        }
-
-        offerForm.addEventListener("submit", async (e) => {
-            e.preventDefault();
-
-            const isHtmlMode = radioHtml.checked;
-            const docId = editingOfferId.value;
-
-            if (isHtmlMode) {
-                const htmlContent = htmlContentInput.value.trim();
-                const slug = htmlSlugInput.value.trim();
-                const expireStr = htmlExpireInput.value;
-
-                if (!htmlContent || !slug || !expireStr) {
-                    showToast("All required fields must be filled.", "error");
-                    return;
-                }
-                const expireDate = new Date(expireStr);
-                if (expireDate <= new Date()) {
-                    showToast("Expire date and time must be in the future.", "error");
-                    return;
-                }
-                if (!(await checkSlugUnique(slug, docId))) {
-                    showToast("This slug is already in use.", "error");
-                    return;
-                }
-
-                const saveBtn = document.getElementById("save-html-btn");
-                saveBtn.disabled = true;
-                saveBtn.textContent = "Saving...";
-
-                try {
-                    const payload = {
-                        type: "html",
-                        htmlContent: htmlContent,
-                        slug: slug,
-                        expireAt: Timestamp.fromDate(expireDate),
-                        updatedAt: serverTimestamp()
-                    };
-
-                    if (docId) {
-                        await updateDoc(doc(db, OFFERS_COLLECTION, docId), payload);
-                        showToast("HTML Offer updated successfully.");
-                    } else {
-                        payload.createdAt = serverTimestamp();
-                        await addDoc(collection(db, OFFERS_COLLECTION), payload);
-                        showToast("HTML Offer created successfully.");
-                    }
-                    resetForm();
-                    loadOffers();
-                } catch (err) {
-                    showToast("Offer could not be saved.", "error");
-                } finally {
-                    saveBtn.disabled = false;
-                    saveBtn.innerHTML = '<i class="fa-solid fa-save"></i> Save HTML Offer';
-                }
-
-            } else {
-                const borderColor = borderColorHex.value.trim();
-                const slug = customSlugInput.value.trim();
-                const title = customTitleInput.value.trim();
-                const description = customDescInput.value.trim();
-                const priceVal = customPriceInput.value.trim();
-                const oldPriceVal = customOldPriceInput.value.trim();
-                const clickEnabled = clickEnabledCheckbox.checked;
-                const clickLink = customClickLinkInput.value.trim();
-                const expireStr = customExpireInput.value;
-
-                if (!slug || !title || !description || !expireStr) {
-                    showToast("Please fill all required fields.", "error");
-                    return;
-                }
-                if (title.length > 100 || description.length > 1000) {
-                    showToast("Character limit exceeded for title or description.", "error");
-                    return;
-                }
-                if (clickEnabled && !isValidUrl(clickLink)) {
-                    showToast("Please enter a valid URL.", "error");
-                    return;
-                }
-                const price = priceVal !== "" ? parseFloat(priceVal) : null;
-                const oldPrice = oldPriceVal !== "" ? parseFloat(oldPriceVal) : null;
-                
-                const expireDate = new Date(expireStr);
-                if (expireDate <= new Date()) {
-                    showToast("Expire date and time must be in the future.", "error");
-                    return;
-                }
-                if (!(await checkSlugUnique(slug, docId))) {
-                    showToast("This slug is already in use.", "error");
-                    return;
-                }
-
-                const buttons = [];
-                let btnError = false;
-                document.querySelectorAll(".dynamic-btn-item").forEach(row => {
-                    const name = row.querySelector(".b-name").value.trim();
-                    const link = row.querySelector(".b-link").value.trim();
-                    const color = row.querySelector(".b-color").value;
-                    if (name || link) {
-                        if (!name || !isValidUrl(link)) btnError = true;
-                        buttons.push({ name, link, color });
-                    }
-                });
-                if (btnError) {
-                    showToast("Please provide valid name and URL for all buttons.", "error");
-                    return;
-                }
-
-                const saveBtn = document.getElementById("save-custom-btn");
-                saveBtn.disabled = true;
-
-                try {
-                    let imageUrl = "";
-                    let deleteUrl = "";
-                    const existingOffer = docId ? allOffersData.find(o => o.id === docId) : null;
-
-                    if (selectedFileObject) {
-                        saveBtn.textContent = "Uploading Image...";
-                        try {
-                            const upRes = await uploadToImgBB(selectedFileObject);
-                            imageUrl = upRes.imageUrl;
-                            deleteUrl = upRes.deleteUrl;
-                        } catch (err) {
-                            if (err.message === "NO_API_KEY") {
-                                showToast("No ImgBB API Key Found in 'post_api'. Please add one.", "error");
-                            } else {
-                                showToast("Image upload failed. Check API Key validity.", "error");
-                            }
-                            saveBtn.disabled = false;
-                            saveBtn.innerHTML = '<i class="fa-solid fa-save"></i> Save Custom Offer';
-                            return;
-                        }
-                    } else if (existingOffer) {
-                        imageUrl = existingOffer.imageUrl || "";
-                        deleteUrl = existingOffer.imgbbDeleteUrl || "";
-                    }
-
-                    saveBtn.textContent = "Saving Offer...";
-
-                    const payload = {
-                        type: "custom",
-                        borderColor: borderColor,
-                        title: title,
-                        description: description,
-                        imageUrl: imageUrl,
-                        imgbbDeleteUrl: deleteUrl,
-                        clickEnabled: clickEnabled,
-                        clickLink: clickEnabled ? clickLink : "",
-                        buttons: buttons,
-                        price: price,
-                        oldPrice: oldPrice,
-                        slug: slug,
-                        expireAt: Timestamp.fromDate(expireDate),
-                        updatedAt: serverTimestamp()
-                    };
-
-                    if (docId) {
-                        await updateDoc(doc(db, OFFERS_COLLECTION, docId), payload);
-                        if (selectedFileObject && existingOffer && existingOffer.imgbbDeleteUrl) {
-                            await deleteImgbbImage(existingOffer.imgbbDeleteUrl);
-                        }
-                        showToast("Offer updated successfully.");
-                    } else {
-                        payload.createdAt = serverTimestamp();
-                        await addDoc(collection(db, OFFERS_COLLECTION), payload);
-                        showToast("Offer created successfully.");
-                    }
-
-                    resetForm();
-                    loadOffers();
-                } catch (err) {
-                    showToast("Offer could not be saved.", "error");
-                } finally {
-                    saveBtn.disabled = false;
-                    saveBtn.innerHTML = '<i class="fa-solid fa-save"></i> Save Custom Offer';
-                }
-            }
-        });
-
-        async function loadOffers() {
-            loadingOffers.style.display = "block";
-            offersGridContainer.innerHTML = "";
+        // ==========================================
+        // LOAD / FETCH API KEYS FROM FIRESTORE
+        // ==========================================
+        async function loadApiKeys() {
+            loadingList.style.display = "block";
+            apiTableBody.innerHTML = "";
             emptyState.style.display = "none";
 
             try {
-                const querySnapshot = await getDocs(collection(db, OFFERS_COLLECTION));
-                allOffersData = [];
+                const querySnapshot = await getDocs(collection(db, COLLECTION_NAME));
+                allApiKeysData = [];
                 querySnapshot.forEach((docSnap) => {
-                    allOffersData.push({ id: docSnap.id, ...docSnap.data() });
+                    allApiKeysData.push({ id: docSnap.id, ...docSnap.data() });
                 });
-                allOffersData.sort((a, b) => {
-                    const timeA = a.createdAt?.toMillis ? a.createdAt.toMillis() : 0;
-                    const timeB = b.createdAt?.toMillis ? b.createdAt.toMillis() : 0;
-                    return timeB - timeA;
-                });
-                renderOffersList();
-            } catch (err) {
-                showToast("Failed to load offers.", "error");
+
+                renderApiTable(allApiKeysData);
+            } catch (error) {
+                console.error("Error loading keys:", error);
+                showCustomModal("Error", "Something went wrong while loading API keys.");
             } finally {
-                loadingOffers.style.display = "none";
+                loadingList.style.display = "none";
             }
         }
 
-        function renderOffersList() {
-            offersGridContainer.innerHTML = "";
-            const now = new Date();
-
-            const filtered = allOffersData.filter(item => {
-                const expireDate = item.expireAt?.toDate ? item.expireAt.toDate() : new Date(item.expireAt);
-                const isExpired = expireDate <= now;
-
-                const matchSearch = item.title?.toLowerCase().includes(searchQuery) || 
-                                    item.slug?.toLowerCase().includes(searchQuery) || 
-                                    item.type?.toLowerCase().includes(searchQuery);
-                if (!matchSearch) return false;
-
-                if (currentFilter === "custom" && item.type !== "custom") return false;
-                if (currentFilter === "html" && item.type !== "html") return false;
-                if (currentFilter === "active" && isExpired) return false;
-                if (currentFilter === "expired" && !isExpired) return false;
-
-                return true;
-            });
-
-            if (filtered.length === 0) {
+        // ==========================================
+        // RENDER TABLE / LIST
+        // ==========================================
+        function renderApiTable(dataList) {
+            apiTableBody.innerHTML = "";
+            if (dataList.length === 0) {
                 emptyState.style.display = "block";
                 return;
             }
 
             emptyState.style.display = "none";
 
-            filtered.forEach(item => {
-                const expireDate = item.expireAt?.toDate ? item.expireAt.toDate() : new Date(item.expireAt);
-                const isExpired = expireDate <= now;
-                const createdDate = item.createdAt?.toDate ? item.createdAt.toDate().toLocaleDateString() : "N/A";
+            dataList.forEach((item) => {
+                const tr = document.createElement("tr");
 
-                const card = document.createElement("div");
-                card.className = "offer-item-card";
-                card.innerHTML = `
-                    <div class="offer-card-header">
-                        <span class="badge badge-type">${item.type.toUpperCase()}</span>
-                        <span class="badge ${isExpired ? 'badge-expired' : 'badge-active'}">${isExpired ? 'Expired' : 'Active'}</span>
-                    </div>
-                    <div class="offer-card-content">
-                        <div class="offer-card-title">${escapeHtml(item.title || item.slug)}</div>
-                        <div class="offer-card-meta">Slug: <code>${escapeHtml(item.slug)}</code></div>
-                        <div class="offer-card-meta">Expires: ${expireDate.toLocaleString()}</div>
-                        <div class="offer-card-meta">Created: ${createdDate}</div>
-                    </div>
-                    <div class="offer-card-actions">
-                        <button class="btn btn-outline preview-btn" data-id="${item.id}" style="padding: 6px 12px; font-size: 0.85rem;"><i class="fa-solid fa-eye"></i> Preview</button>
-                        <button class="btn btn-secondary edit-btn" data-id="${item.id}" style="padding: 6px 12px; font-size: 0.85rem;"><i class="fa-solid fa-pen"></i> Edit</button>
-                        <button class="btn btn-danger delete-btn" data-id="${item.id}" style="padding: 6px 12px; font-size: 0.85rem;"><i class="fa-solid fa-trash"></i> Delete</button>
-                    </div>
+                const maskedKey = maskApiKey(item.imgbbApiKey);
+
+                tr.innerHTML = `
+                    <td><strong>${escapeHtml(item.apiKeyName)}</strong></td>
+                    <td>
+                        <span class="key-display" id="key-span-${item.id}" data-full-key="${escapeHtml(item.imgbbApiKey)}">${maskedKey}</span>
+                    </td>
+                    <td>${formatDate(item.createdAt)}</td>
+                    <td>${formatDate(item.updatedAt)}</td>
+                    <td>
+                        <div class="actions-cell">
+                            <button class="btn btn-outline btn-sm toggle-show-btn" data-id="${item.id}">Show</button>
+                            <button class="btn btn-outline btn-sm copy-btn" data-key="${escapeHtml(item.imgbbApiKey)}">Copy</button>
+                            <button class="btn btn-secondary btn-sm edit-btn" data-id="${item.id}">Edit</button>
+                            <button class="btn btn-danger btn-sm delete-btn" data-id="${item.id}">Delete</button>
+                        </div>
+                    </td>
                 `;
-                offersGridContainer.appendChild(card);
+                apiTableBody.appendChild(tr);
             });
 
-            attachCardEventListeners();
+            attachRowEventListeners();
         }
 
+        // Helper to prevent XSS injection in names/keys
         function escapeHtml(str) {
             if (!str) return "";
             return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
         }
 
-        searchInput.addEventListener("input", (e) => {
-            searchQuery = e.target.value.toLowerCase().trim();
-            renderOffersList();
-        });
+        // ==========================================
+        // ROW EVENT LISTENERS (Show, Copy, Edit, Delete)
+        // ==========================================
+        function attachRowEventListeners() {
+            // Show / Hide Key
+            document.querySelectorAll(".toggle-show-btn").forEach(btn => {
+                btn.addEventListener("click", (e) => {
+                    const id = e.target.getAttribute("data-id");
+                    const span = document.getElementById(`key-span-${id}`);
+                    const fullKey = span.getAttribute("data-full-key");
 
-        document.querySelectorAll(".chip").forEach(chip => {
-            chip.addEventListener("click", (e) => {
-                document.querySelectorAll(".chip").forEach(c => c.classList.remove("active"));
-                e.target.classList.add("active");
-                currentFilter = e.target.getAttribute("data-filter");
-                renderOffersList();
-            });
-        });
-
-        function attachCardEventListeners() {
-            document.querySelectorAll(".preview-btn").forEach(btn => {
-                btn.addEventListener("click", () => {
-                    const id = btn.dataset.id;
-                    if (!id) return;
-                    const offer = allOffersData.find(o => o.id === id);
-                    if (offer) openPreviewModal(offer);
+                    if (btn.textContent === "Show") {
+                        span.textContent = fullKey;
+                        btn.textContent = "Hide";
+                        btn.classList.add("btn-secondary");
+                    } else {
+                        span.textContent = maskApiKey(fullKey);
+                        btn.textContent = "Show";
+                        btn.classList.remove("btn-secondary");
+                    }
                 });
             });
 
-            document.querySelectorAll(".edit-btn").forEach(btn => {
-                btn.addEventListener("click", () => {
-                    const id = btn.dataset.id;
-                    if (!id) return;
-                    const offer = allOffersData.find(o => o.id === id);
-                    if (offer) loadOfferIntoForm(offer);
-                });
-            });
-
-            document.querySelectorAll(".delete-btn").forEach(btn => {
-                btn.addEventListener("click", () => {
-                    const id = btn.dataset.id;
-                    if (!id) return;
-                    openConfirmDeleteModal(id);
-                });
-            });
-        }
-
-        function openPreviewModal(offer) {
-            modalTitle.textContent = `Preview: ${offer.title || offer.slug}`;
-            const expireDate = offer.expireAt?.toDate ? offer.expireAt.toDate() : new Date(offer.expireAt);
-            const isExpired = expireDate <= new Date();
-
-            if (offer.type === "html") {
-                modalBodyContent.innerHTML = `
-                    ${isExpired ? '<div style="background:#FEE2E2; color:#DC2626; padding:8px; text-align:center; font-weight:bold; margin-bottom:10px; border-radius:6px;">EXPIRED</div>' : ''}
-                    <iframe sandbox="allow-scripts" srcdoc="${escapeHtml(offer.htmlContent)}" style="width:100%; height:400px; border:1px solid var(--border-color); border-radius:8px; background:#fff;"></iframe>
-                `;
-            } else {
-                let btnsHtml = "";
-                if (offer.buttons && offer.buttons.length > 0) {
-                    offer.buttons.forEach(b => {
-                        btnsHtml += `<a href="${escapeHtml(b.link)}" target="_blank" class="preview-btn-item" style="background:${b.color};">${escapeHtml(b.name)}</a>`;
+            // Copy Key
+            document.querySelectorAll(".copy-btn").forEach(btn => {
+                btn.addEventListener("click", (e) => {
+                    const key = e.target.getAttribute("data-key");
+                    navigator.clipboard.writeText(key).then(() => {
+                        showCustomModal("Success", "API Key successfully copied to clipboard.");
+                    }).catch(err => {
+                        console.error("Clipboard error:", err);
+                        showCustomModal("Error", "Failed to copy API key.");
                     });
-                }
+                });
+            });
 
-                modalBodyContent.innerHTML = `
-                    ${isExpired ? '<div style="background:#FEE2E2; color:#DC2626; padding:8px; text-align:center; font-weight:bold; margin-bottom:10px; border-radius:6px;">EXPIRED</div>' : ''}
-                    <div class="preview-card-box" style="border-left-color:${offer.borderColor};">
-                        ${offer.imageUrl ? `<img src="${escapeHtml(offer.imageUrl)}" class="preview-card-img" alt="Banner">` : ''}
-                        <div class="preview-card-body">
-                            <div class="preview-card-title">${escapeHtml(offer.title)}</div>
-                            <div class="preview-card-desc" style="white-space: pre-wrap;">${escapeHtml(offer.description)}</div>
-                            ${(offer.price !== null || offer.oldPrice !== null) ? `
-                                <div class="preview-card-prices">
-                                    ${offer.price !== null ? `<span class="preview-current-price">৳${offer.price}</span>` : ''}
-                                    ${offer.oldPrice !== null ? `<span class="preview-old-price">৳${offer.oldPrice}</span>` : ''}
-                                </div>
-                            ` : ''}
-                            <div class="preview-card-btns">${btnsHtml}</div>
-                        </div>
-                    </div>
-                `;
-            }
-            customModal.classList.add("active");
+            // Edit Action
+            document.querySelectorAll(".edit-btn").forEach(btn => {
+                btn.addEventListener("click", (e) => {
+                    const id = e.target.getAttribute("data-id");
+                    const item = allApiKeysData.find(d => d.id === id);
+                    if (item) {
+                        editingDocIdInput.value = item.id;
+                        apiKeyNameInput.value = item.apiKeyName;
+                        imgbbApiKeyInput.value = item.imgbbApiKey;
+                        formTitle.textContent = "Edit API Key";
+                        saveBtn.textContent = "Update API Key";
+                        cancelEditBtn.style.display = "inline-flex";
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                    }
+                });
+            });
+
+            // Delete Action with Custom Confirmation Modal
+            document.querySelectorAll(".delete-btn").forEach(btn => {
+                btn.addEventListener("click", (e) => {
+                    const id = e.target.getAttribute("data-id");
+                    showCustomModal(
+                        "Confirm Deletion",
+                        "Are you sure you want to delete this API Key?",
+                        () => executeDelete(id),
+                        true
+                    );
+                });
+            });
         }
 
-        modalCloseTrigger.addEventListener("click", () => customModal.classList.remove("active"));
-        customModal.addEventListener("click", (e) => { if (e.target === customModal) customModal.classList.remove("active"); });
+        // ==========================================
+        // SAVE / UPDATE FORM SUBMISSION
+        // ==========================================
+        apiForm.addEventListener("submit", async (e) => {
+            e.preventDefault();
 
-        function loadOfferIntoForm(offer) {
-            editingOfferId.value = offer.id;
-            formSectionTitle.innerHTML = `<i class="fa-solid fa-pen-to-square"></i> Edit Offer`;
-            document.querySelectorAll(".cancel-edit-btn").forEach(btn => btn.style.display = "inline-flex");
+            // Clear previous errors
+            nameError.style.display = "none";
+            keyError.style.display = "none";
 
-            if (offer.type === "html") {
-                radioHtml.checked = true;
-                radioHtml.dispatchEvent(new Event('change'));
-                htmlContentInput.value = offer.htmlContent || "";
-                htmlSlugInput.value = offer.slug || "";
-                if (offer.expireAt) {
-                    const dt = offer.expireAt.toDate ? offer.expireAt.toDate() : new Date(offer.expireAt);
-                    htmlExpireInput.value = dt.toISOString().slice(0, 16);
-                }
-            } else {
-                radioCustom.checked = true;
-                radioCustom.dispatchEvent(new Event('change'));
-                borderColorPicker.value = offer.borderColor || "#2563EB";
-                borderColorHex.value = offer.borderColor || "#2563EB";
-                customSlugInput.value = offer.slug || "";
-                customTitleInput.value = offer.title || "";
-                titleCount.textContent = (offer.title || "").length;
-                customDescInput.value = offer.description || "";
-                descCount.textContent = (offer.description || "").length;
-                customPriceInput.value = offer.price !== null ? offer.price : "";
-                customOldPriceInput.value = offer.oldPrice !== null ? offer.oldPrice : "";
+            const nameVal = apiKeyNameInput.value.trim();
+            const keyVal = imgbbApiKeyInput.value.trim();
+            const docId = editingDocIdInput.value;
 
-                if (offer.imageUrl) {
-                    imgPreviewTag.src = offer.imageUrl;
-                    imgPreviewTag.style.display = "block";
-                    uploadLabelText.innerHTML = `<i class="fa-solid fa-check"></i> Existing Image`;
-                    imagePreviewBox.style.display = "flex";
-                }
-
-                clickEnabledCheckbox.checked = !!offer.clickEnabled;
-                clickLinkGroup.style.display = offer.clickEnabled ? "block" : "none";
-                customClickLinkInput.value = offer.clickLink || "";
-
-                if (offer.expireAt) {
-                    const dt = offer.expireAt.toDate ? offer.expireAt.toDate() : new Date(offer.expireAt);
-                    customExpireInput.value = dt.toISOString().slice(0, 16);
-                }
-
-                buttonsBuilderContainer.innerHTML = "";
-                if (offer.buttons && offer.buttons.length > 0) {
-                    offer.buttons.forEach(b => addBuilderButtonRow(b.name, b.link, b.color));
-                }
-                updateLivePreview();
+            let isValid = true;
+            if (!nameVal) {
+                nameError.style.display = "block";
+                isValid = false;
+            }
+            if (!keyVal) {
+                keyError.style.display = "block";
+                isValid = false;
             }
 
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
+            if (!isValid) return;
 
-        document.querySelectorAll(".cancel-edit-btn").forEach(btn => {
-            btn.addEventListener("click", resetForm);
+            // Prevent duplicate requests by disabling button
+            saveBtn.disabled = true;
+
+            try {
+                if (docId) {
+                    // Update Mode
+                    saveBtn.textContent = "Updating...";
+                    const docRef = doc(db, COLLECTION_NAME, docId);
+                    await updateDoc(docRef, {
+                        apiKeyName: nameVal,
+                        imgbbApiKey: keyVal,
+                        updatedAt: serverTimestamp()
+                    });
+                    showCustomModal("Success", "API Key successfully updated.");
+                } else {
+                    // Add Mode
+                    saveBtn.textContent = "Saving...";
+                    await addDoc(collection(db, COLLECTION_NAME), {
+                        apiKeyName: nameVal,
+                        imgbbApiKey: keyVal,
+                        createdAt: serverTimestamp(),
+                        updatedAt: serverTimestamp()
+                    });
+                    showCustomModal("Success", "API Key successfully saved.");
+                }
+
+                resetForm();
+                loadApiKeys();
+            } catch (error) {
+                console.error("Save/Update error:", error);
+                showCustomModal("Error", "Something went wrong. Operation failed.");
+            } finally {
+                saveBtn.disabled = false;
+                saveBtn.textContent = docId ? "Update API Key" : "Save API Key";
+            }
+        });
+
+        // Cancel Edit Mode
+        cancelEditBtn.addEventListener("click", () => {
+            resetForm();
         });
 
         function resetForm() {
-            editingOfferId.value = "";
-            formSectionTitle.innerHTML = `<i class="fa-solid fa-plus-circle"></i> Create New Offer`;
-            document.querySelectorAll(".cancel-edit-btn").forEach(btn => btn.style.display = "none");
-            offerForm.reset();
-            selectedFileObject = null;
-            imgPreviewTag.src = "";
-            imgPreviewTag.style.display = "none";
-            imagePreviewBox.style.display = "none";
-            uploadLabelText.innerHTML = `<i class="fa-solid fa-cloud-arrow-up"></i> Click or Drag to select image`;
-            buttonsBuilderContainer.innerHTML = "";
-            titleCount.textContent = "0";
-            descCount.textContent = "0";
-            clickLinkGroup.style.display = "none";
-            radioCustom.checked = true;
-            radioCustom.dispatchEvent(new Event('change'));
-            updateLivePreview();
+            editingDocIdInput.value = "";
+            apiKeyNameInput.value = "";
+            imgbbApiKeyInput.value = "";
+            formTitle.textContent = "Add New ImgBB API Key";
+            saveBtn.textContent = "Save API Key";
+            cancelEditBtn.style.display = "none";
+            nameError.style.display = "none";
+            keyError.style.display = "none";
         }
 
-        function openConfirmDeleteModal(id) {
-            modalTitle.textContent = "Confirm Deletion";
-            modalBodyContent.innerHTML = `
-                <p style="margin-bottom:20px;">Are you sure you want to delete this offer?</p>
-                <div style="display:flex; justify-content:flex-end; gap:10px;">
-                    <button type="button" class="btn btn-secondary" id="modal-cancel-del">Cancel</button>
-                    <button type="button" class="btn btn-danger" id="modal-confirm-del"><i class="fa-solid fa-trash"></i> Delete</button>
-                </div>
-            `;
-            customModal.classList.add("active");
-
-            document.getElementById("modal-cancel-del").onclick = () => customModal.classList.remove("active");
-            document.getElementById("modal-confirm-del").onclick = async () => {
-                await executeDeleteOffer(id);
-            };
-        }
-
-        async function executeDeleteOffer(id) {
-            const confirmBtn = document.getElementById("modal-confirm-del");
-            if (confirmBtn) {
-                confirmBtn.disabled = true;
-                confirmBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Deleting...`;
-            }
-
+        // ==========================================
+        // EXECUTE DELETE
+        // ==========================================
+        async function executeDelete(id) {
             try {
-                const offer = allOffersData.find(o => o.id === id);
-                await deleteDoc(doc(db, OFFERS_COLLECTION, id));
-                allOffersData = allOffersData.filter(o => o.id !== id);
-
-                if (offer && offer.imgbbDeleteUrl) {
-                    await deleteImgbbImage(offer.imgbbDeleteUrl);
-                }
-
-                customModal.classList.remove("active");
-                renderOffersList();
-                showToast("Offer deleted successfully.", "success");
-            } catch (err) {
-                if (confirmBtn) {
-                    confirmBtn.disabled = false;
-                    confirmBtn.innerHTML = `<i class="fa-solid fa-trash"></i> Delete`;
-                }
-                showToast("Failed to delete offer.", "error");
+                await deleteDoc(doc(db, COLLECTION_NAME, id));
+                showCustomModal("Success", "API Key successfully deleted.");
+                loadApiKeys();
+            } catch (error) {
+                console.error("Delete error:", error);
+                showCustomModal("Error", "Failed to delete API Key.");
             }
         }
+
+        // ==========================================
+        // SEARCH FILTER FUNCTIONALITY
+        // ==========================================
+        searchInput.addEventListener("input", (e) => {
+            const query = e.target.value.toLowerCase().trim();
+            const filtered = allApiKeysData.filter(item => 
+                item.apiKeyName.toLowerCase().includes(query)
+            );
+            renderApiTable(filtered);
+        });
+
     </script>
 </body>
 </html>
