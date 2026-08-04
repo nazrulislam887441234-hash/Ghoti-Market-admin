@@ -1,165 +1,827 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="dark">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ImgBB API Keys Manager - Admin Dashboard</title>
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <!-- FontAwesome for Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Custom CSS -->
-    <link rel="stylesheet" href="imgbb-api.css">
+    <title>Admin API Key Management</title>
+    <style>
+        /* Modern CSS Reset & Styling */
+        :root {
+            --primary: #4f46e5;
+            --primary-hover: #4338ca;
+            --danger: #ef4444;
+            --danger-hover: #dc2626;
+            --success: #10b981;
+            --bg-color: #f3f4f6;
+            --card-bg: #ffffff;
+            --text-main: #1f2937;
+            --text-muted: #6b7280;
+            --border-color: #e5e7eb;
+            --radius: 8px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Loading Screen Overlay */
+        #auth-loading {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #ffffff;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.3s ease;
+        }
+
+        .spinner {
+            width: 48px;
+            height: 48px;
+            border: 4px solid var(--border-color);
+            border-top: 4px solid var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 16px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Main Container & Layout */
+        .admin-container {
+            max-width: 1000px;
+            width: 100%;
+            margin: 0 auto;
+            padding: 20px;
+            flex: 1;
+            display: none; /* Hidden until auth is verified */
+        }
+
+        /* Header */
+        header {
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: var(--radius);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        header h1 {
+            font-size: 1.5rem;
+            color: var(--text-main);
+        }
+
+        .admin-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .admin-email {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            background: var(--bg-color);
+            padding: 6px 12px;
+            border-radius: 20px;
+        }
+
+        /* Buttons */
+        button, .btn {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 10px 16px;
+            border-radius: var(--radius);
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: background-color 0.2s, opacity 0.2s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        button:hover {
+            background-color: var(--primary-hover);
+        }
+
+        button:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+
+        .btn-danger {
+            background-color: var(--danger);
+        }
+        .btn-danger:hover {
+            background-color: var(--danger-hover);
+        }
+
+        .btn-secondary {
+            background-color: #6b7280;
+        }
+        .btn-secondary:hover {
+            background-color: #4b5563;
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+        }
+        .btn-outline:hover {
+            background: var(--bg-color);
+        }
+
+        /* Cards & Forms */
+        .card {
+            background: var(--card-bg);
+            padding: 24px;
+            border-radius: var(--radius);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            margin-bottom: 24px;
+        }
+
+        .card h2 {
+            font-size: 1.2rem;
+            margin-bottom: 16px;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        label {
+            display: block;
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 6px;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 10px 14px;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius);
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        input[type="text"]:focus {
+            border-color: var(--primary);
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        /* Search Box */
+        .search-box {
+            margin-bottom: 20px;
+        }
+
+        /* API List / Table Style */
+        .table-responsive {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+
+        th, td {
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 0.95rem;
+        }
+
+        th {
+            background-color: #f9fafb;
+            font-weight: 600;
+            color: var(--text-muted);
+        }
+
+        .actions-cell {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .key-display {
+            font-family: monospace;
+            background: var(--bg-color);
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.9rem;
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--text-muted);
+        }
+
+        .empty-state h3 {
+            font-size: 1.2rem;
+            margin-bottom: 8px;
+            color: var(--text-main);
+        }
+
+        /* Custom Popup Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.2s, visibility 0.2s;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal {
+            background: var(--card-bg);
+            padding: 24px;
+            border-radius: var(--radius);
+            max-width: 400px;
+            width: 90%;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+            transform: translateY(-20px);
+            transition: transform 0.2s;
+            text-align: center;
+        }
+
+        .modal-overlay.active .modal {
+            transform: translateY(0);
+        }
+
+        .modal h3 {
+            margin-bottom: 12px;
+            font-size: 1.25rem;
+        }
+
+        .modal p {
+            color: var(--text-muted);
+            margin-bottom: 20px;
+            font-size: 0.95rem;
+        }
+
+        .modal-actions {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+        }
+
+        /* Inline Validation Error */
+        .error-msg {
+            color: var(--danger);
+            font-size: 0.8rem;
+            margin-top: 4px;
+            display: none;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .admin-info {
+                width: 100%;
+                justify-content: space-between;
+            }
+        }
+    </style>
 </head>
 <body>
 
-    <!-- Access Denied / Loading Screen Overlay -->
-    <div id="auth-loader" class="auth-loader">
+    <!-- Loading Screen for Auth Verification -->
+    <div id="auth-loading">
         <div class="spinner"></div>
-        <p>Verifying secure session...</p>
+        <p>Verifying Admin Access...</p>
     </div>
 
-    <!-- Main Dashboard Wrapper -->
-    <div id="dashboard-wrapper" class="dashboard-wrapper" style="display: none;">
-        
-        <!-- Sidebar Navigation -->
-        <aside class="sidebar">
-            <div class="sidebar-brand">
-                <i class="fa-solid fa-shield-halved brand-icon"></i>
-                <h2>AdminPanel</h2>
+    <!-- Main Admin Dashboard Container -->
+    <div class="admin-container" id="admin-main-content">
+        <!-- Top Header -->
+        <header>
+            <div>
+                <h1>API Key Management</h1>
             </div>
-            <ul class="sidebar-menu">
-                <li><a href="index.html"><i class="fa-solid fa-house"></i> Dashboard</a></li>
-                <li class="active"><a href="imgbb-api.html"><i class="fa-solid fa-key"></i> ImgBB APIs</a></li>
-                <li><a href="#" id="logout-btn"><i class="fa-solid fa-right-from-bracket"></i> Logout</a></li>
-            </ul>
-            <div class="sidebar-footer">
-                <div class="theme-toggle-container">
-                    <span>Theme</span>
-                    <button id="theme-toggle" class="theme-toggle-btn" aria-label="Toggle Theme">
-                        <i class="fa-solid fa-moon"></i>
-                    </button>
+            <div class="admin-info">
+                <span class="admin-email" id="display-admin-email">support@ghotimarket.com</span>
+                <button id="logout-btn" class="btn btn-danger">Logout</button>
+            </div>
+        </header>
+
+        <!-- Add / Edit API Key Card -->
+        <div class="card">
+            <h2 id="form-title">Add New ImgBB API Key</h2>
+            <form id="api-form">
+                <input type="hidden" id="editing-doc-id" value="">
+                <div class="form-group">
+                    <label for="api-key-name">API Key Name</label>
+                    <input type="text" id="api-key-name" placeholder="e.g., Main ImgBB API" autocomplete="off">
+                    <div class="error-msg" id="name-error">API Key Name is required.</div>
                 </div>
-            </div>
-        </aside>
-
-        <!-- Main Content Area -->
-        <main class="main-content">
-            <!-- Top Navbar -->
-            <header class="top-navbar">
-                <div class="navbar-title">
-                    <h1>ImgBB API Manager</h1>
-                    <p>Securely manage your ImgBB API credentials for backend image uploads.</p>
+                <div class="form-group">
+                    <label for="imgbb-api-key">ImgBB API Key</label>
+                    <input type="text" id="imgbb-api-key" placeholder="Enter ImgBB API Key" autocomplete="off">
+                    <div class="error-msg" id="key-error">ImgBB API Key is required.</div>
                 </div>
-                <div class="user-profile-widget">
-                    <div class="avatar"><i class="fa-solid fa-user-shield"></i></div>
-                    <div class="user-info">
-                        <span id="user-email-display" class="user-email">support@ghotimarket.com</span>
-                        <span class="user-role">Super Admin</span>
-                    </div>
+                <div class="form-actions">
+                    <button type="submit" id="save-btn">Save API Key</button>
+                    <button type="button" id="cancel-edit-btn" class="btn btn-secondary" style="display: none;">Cancel</button>
                 </div>
-            </header>
+            </form>
+        </div>
 
-            <!-- Dashboard Body Content -->
-            <div class="content-body">
-                
-                <!-- Create API Key Glassmorphism Card -->
-                <section class="card glass-card">
-                    <div class="card-header">
-                        <h3><i class="fa-solid fa-plus-circle"></i> Add New ImgBB API Key</h3>
-                    </div>
-                    <form id="api-form" class="api-form">
-                        <input type="hidden" id="edit-doc-id">
-                        <div class="form-grid">
-                            <div class="form-group">
-                                <label for="api-name">API Name <span class="required">*</span></label>
-                                <input type="text" id="api-name" placeholder="Example: Main ImgBB API" required autocomplete="off">
-                                <small class="error-msg" id="error-name"></small>
-                            </div>
-                            <div class="form-group">
-                                <label for="api-key-input">ImgBB API Key <span class="required">*</span></label>
-                                <input type="text" id="api-key-input" placeholder="Enter ImgBB API Key" required autocomplete="off">
-                                <small class="error-msg" id="error-key"></small>
-                            </div>
-                        </div>
-                        <div class="form-actions">
-                            <button type="submit" id="save-btn" class="btn btn-primary">
-                                <i class="fa-solid fa-floppy-disk"></i> Save API Key
-                            </button>
-                            <button type="button" id="clear-btn" class="btn btn-secondary">
-                                <i class="fa-solid fa-rotate-left"></i> Clear Form
-                            </button>
-                        </div>
-                    </form>
-                </section>
+        <!-- Search Box -->
+        <div class="search-box">
+            <input type="text" id="search-input" placeholder="Search API Key by name...">
+        </div>
 
-                <!-- API Keys Management Table Section -->
-                <section class="card glass-card table-section">
-                    <div class="table-header-flex">
-                        <h3><i class="fa-solid fa-list"></i> Configured API Keys</h3>
-                        <div class="search-box">
-                            <i class="fa-solid fa-magnifying-glass"></i>
-                            <input type="text" id="search-input" placeholder="Search by name or key...">
-                        </div>
-                    </div>
-
-                    <div class="table-responsive">
-                        <table id="api-table" class="modern-table">
-                            <thead>
-                                <tr>
-                                    <th>Serial</th>
-                                    <th>API Name</th>
-                                    <th>API Key</th>
-                                    <th>Status</th>
-                                    <th>Created Date</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody id="api-table-body">
-                                <!-- Dynamic rows injected via JS -->
-                            </tbody>
-                        </table>
-                    </div>
-
-                    <!-- Empty State -->
-                    <div id="empty-state" class="empty-state" style="display: none;">
-                        <i class="fa-solid fa-key-slash"></i>
-                        <p>No ImgBB API keys found.</p>
-                        <span>Add your first API key using the form above.</span>
-                    </div>
-
-                    <!-- Table Loading Spinner -->
-                    <div id="table-loader" class="table-loader" style="display: none;">
-                        <div class="spinner-small"></div>
-                        <span>Loading records...</span>
-                    </div>
-                </section>
-
+        <!-- Saved API Keys List -->
+        <div class="card">
+            <h2>Saved API Keys</h2>
+            <div id="loading-list" style="text-align: center; padding: 20px; display: none;">
+                <div class="spinner" style="width: 30px; height: 30px; border-width: 3px; margin: 0 auto 10px;"></div>
+                <p style="color: var(--text-muted); font-size: 0.9rem;">Loading API Keys...</p>
             </div>
-        </main>
-    </div>
-
-    <!-- Confirmation Modal -->
-    <div id="confirm-modal" class="modal-overlay" style="display: none;">
-        <div class="modal-card">
-            <div class="modal-icon warning">
-                <i class="fa-solid fa-triangle-exclamation"></i>
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>API Name</th>
+                            <th>ImgBB API Key</th>
+                            <th>Created</th>
+                            <th>Updated</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="api-table-body">
+                        <!-- Dynamic rows will be injected here -->
+                    </tbody>
+                </table>
             </div>
-            <h3 id="modal-title">Confirm Deletion</h3>
-            <p id="modal-desc">Are you sure you want to delete this API key? This action cannot be undone.</p>
-            <div class="modal-actions">
-                <button id="modal-cancel-btn" class="btn btn-secondary">Cancel</button>
-                <button id="modal-confirm-btn" class="btn btn-danger">Confirm</button>
+            <!-- Empty State -->
+            <div id="empty-state" class="empty-state" style="display: none;">
+                <h3>No API Keys Found</h3>
+                <p>Add your first ImgBB API Key to get started.</p>
             </div>
         </div>
     </div>
 
-    <!-- Toast Notifications Container -->
-    <div id="toast-container" class="toast-container"></div>
+    <!-- Custom Popup / Modal Component -->
+    <div class="modal-overlay" id="custom-modal">
+        <div class="modal">
+            <h3 id="modal-title">Notification</h3>
+            <p id="modal-message">Message goes here...</p>
+            <div class="modal-actions" id="modal-actions-container">
+                <button id="modal-ok-btn" class="btn">OK</button>
+            </div>
+        </div>
+    </div>
 
-    <!-- Firebase SDKs & App Script (Modular v10) -->
-    <script type="module" src="imgbb-api.js"></script>
+    <!-- Firebase SDK & Script -->
+    <script type="module">
+        // ==========================================
+        // FIREBASE CONFIGURATION PLACEHOLDER
+        // ==========================================
+        const firebaseConfig = {
+  apiKey: "AIzaSyBUhNhYvuo_FTvZ5RZR6Gn-4hsUY21S0XE",
+  authDomain: "ghotimarket.firebaseapp.com",
+  databaseURL: "https://ghotimarket-default-rtdb.firebaseio.com",
+  projectId: "ghotimarket",
+  storageBucket: "ghotimarket.firebasestorage.app",
+  messagingSenderId: "481257644093",
+  appId: "1:481257644093:web:0dfc3699d6b3c86afeca54",
+  measurementId: "G-4SR8V2EKC1"
+};
+
+        // Import Firebase modular SDKs
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-app.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-auth.js";
+        import { 
+            getFirestore, 
+            collection, 
+            addDoc, 
+            getDocs, 
+            doc, 
+            updateDoc, 
+            deleteDoc, 
+            serverTimestamp 
+        } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-firestore.js";
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        const ADMIN_EMAIL = "support@ghotimarket.com";
+        const COLLECTION_NAME = "post_api";
+
+        // DOM Elements
+        const authLoading = document.getElementById("auth-loading");
+        const adminMainContent = document.getElementById("admin-main-content");
+        const logoutBtn = document.getElementById("logout-btn");
+        const apiForm = document.getElementById("api-form");
+        const formTitle = document.getElementById("form-title");
+        const saveBtn = document.getElementById("save-btn");
+        const cancelEditBtn = document.getElementById("cancel-edit-btn");
+        const apiKeyNameInput = document.getElementById("api-key-name");
+        const imgbbApiKeyInput = document.getElementById("imgbb-api-key");
+        const editingDocIdInput = document.getElementById("editing-doc-id");
+        const nameError = document.getElementById("name-error");
+        const keyError = document.getElementById("key-error");
+        const apiTableBody = document.getElementById("api-table-body");
+        const emptyState = document.getElementById("empty-state");
+        const loadingList = document.getElementById("loading-list");
+        const searchInput = document.getElementById("search-input");
+        const displayAdminEmail = document.getElementById("display-admin-email");
+
+        // Custom Modal Elements
+        const customModal = document.getElementById("custom-modal");
+        const modalTitle = document.getElementById("modal-title");
+        const modalMessage = document.getElementById("modal-message");
+        const modalActionsContainer = document.getElementById("modal-actions-container");
+
+        let allApiKeysData = []; // Store raw data for searching
+
+        // ==========================================
+        // AUTHENTICATION CHECK
+        // ==========================================
+        onAuthStateChanged(auth, (user) => {
+            if (!user || user.email !== ADMIN_EMAIL) {
+                // If not logged in or email doesn't match admin email, redirect to index.html
+                window.location.href = "index.html";
+            } else {
+                // Authorized Admin
+                displayAdminEmail.textContent = user.email;
+                authLoading.style.opacity = "0";
+                setTimeout(() => {
+                    authLoading.style.display = "none";
+                    adminMainContent.style.display = "block";
+                }, 300);
+                // Load data after authentication is confirmed
+                loadApiKeys();
+            }
+        });
+
+        // ==========================================
+        // LOGOUT HANDLING
+        // ==========================================
+        logoutBtn.addEventListener("click", async () => {
+            try {
+                await signOut(auth);
+                window.location.href = "index.html";
+            } catch (error) {
+                console.error("Logout error:", error);
+                showCustomModal("Error", "Failed to logout. Please try again.");
+            }
+        });
+
+        // ==========================================
+        // CUSTOM POPUP / MODAL FUNCTIONS
+        // ==========================================
+        function showCustomModal(title, message, callback = null, isConfirm = false) {
+            modalTitle.textContent = title;
+            modalMessage.textContent = message;
+            modalActionsContainer.innerHTML = "";
+
+            if (isConfirm) {
+                const cancelBtn = document.createElement("button");
+                cancelBtn.className = "btn btn-secondary";
+                cancelBtn.textContent = "Cancel";
+                cancelBtn.onclick = () => closeCustomModal();
+
+                const confirmBtn = document.createElement("button");
+                confirmBtn.className = "btn btn-danger";
+                confirmBtn.textContent = "Delete";
+                confirmBtn.onclick = () => {
+                    closeCustomModal();
+                    if (callback) callback();
+                };
+
+                modalActionsContainer.appendChild(cancelBtn);
+                modalActionsContainer.appendChild(confirmBtn);
+            } else {
+                const okBtn = document.createElement("button");
+                okBtn.className = "btn";
+                okBtn.textContent = "OK";
+                okBtn.onclick = () => {
+                    closeCustomModal();
+                    if (callback) callback();
+                };
+                modalActionsContainer.appendChild(okBtn);
+            }
+
+            customModal.classList.add("active");
+        }
+
+        function closeCustomModal() {
+            customModal.classList.remove("active");
+        }
+
+        // ==========================================
+        // FORMAT DATE HELPER
+        // ==========================================
+        function formatDate(timestamp) {
+            if (!timestamp) return "N/A";
+            const date = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
+            return date.toLocaleString();
+        }
+
+        // ==========================================
+        // MASK API KEY HELPER
+        // ==========================================
+        function maskApiKey(key) {
+            if (!key || key.length <= 8) return "••••••••••••";
+            const start = key.slice(0, 4);
+            const end = key.slice(-4);
+            const middle = "•".repeat(Math.max(6, key.length - 8));
+            return `${start}${middle}${end}`;
+        }
+
+        // ==========================================
+        // LOAD / FETCH API KEYS FROM FIRESTORE
+        // ==========================================
+        async function loadApiKeys() {
+            loadingList.style.display = "block";
+            apiTableBody.innerHTML = "";
+            emptyState.style.display = "none";
+
+            try {
+                const querySnapshot = await getDocs(collection(db, COLLECTION_NAME));
+                allApiKeysData = [];
+                querySnapshot.forEach((docSnap) => {
+                    allApiKeysData.push({ id: docSnap.id, ...docSnap.data() });
+                });
+
+                renderApiTable(allApiKeysData);
+            } catch (error) {
+                console.error("Error loading keys:", error);
+                showCustomModal("Error", "Something went wrong while loading API keys.");
+            } finally {
+                loadingList.style.display = "none";
+            }
+        }
+
+        // ==========================================
+        // RENDER TABLE / LIST
+        // ==========================================
+        function renderApiTable(dataList) {
+            apiTableBody.innerHTML = "";
+            if (dataList.length === 0) {
+                emptyState.style.display = "block";
+                return;
+            }
+
+            emptyState.style.display = "none";
+
+            dataList.forEach((item) => {
+                const tr = document.createElement("tr");
+
+                const maskedKey = maskApiKey(item.imgbbApiKey);
+
+                tr.innerHTML = `
+                    <td><strong>${escapeHtml(item.apiKeyName)}</strong></td>
+                    <td>
+                        <span class="key-display" id="key-span-${item.id}" data-full-key="${escapeHtml(item.imgbbApiKey)}">${maskedKey}</span>
+                    </td>
+                    <td>${formatDate(item.createdAt)}</td>
+                    <td>${formatDate(item.updatedAt)}</td>
+                    <td>
+                        <div class="actions-cell">
+                            <button class="btn btn-outline btn-sm toggle-show-btn" data-id="${item.id}">Show</button>
+                            <button class="btn btn-outline btn-sm copy-btn" data-key="${escapeHtml(item.imgbbApiKey)}">Copy</button>
+                            <button class="btn btn-secondary btn-sm edit-btn" data-id="${item.id}">Edit</button>
+                            <button class="btn btn-danger btn-sm delete-btn" data-id="${item.id}">Delete</button>
+                        </div>
+                    </td>
+                `;
+                apiTableBody.appendChild(tr);
+            });
+
+            attachRowEventListeners();
+        }
+
+        // Helper to prevent XSS injection in names/keys
+        function escapeHtml(str) {
+            if (!str) return "";
+            return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+        }
+
+        // ==========================================
+        // ROW EVENT LISTENERS (Show, Copy, Edit, Delete)
+        // ==========================================
+        function attachRowEventListeners() {
+            // Show / Hide Key
+            document.querySelectorAll(".toggle-show-btn").forEach(btn => {
+                btn.addEventListener("click", (e) => {
+                    const id = e.target.getAttribute("data-id");
+                    const span = document.getElementById(`key-span-${id}`);
+                    const fullKey = span.getAttribute("data-full-key");
+
+                    if (btn.textContent === "Show") {
+                        span.textContent = fullKey;
+                        btn.textContent = "Hide";
+                        btn.classList.add("btn-secondary");
+                    } else {
+                        span.textContent = maskApiKey(fullKey);
+                        btn.textContent = "Show";
+                        btn.classList.remove("btn-secondary");
+                    }
+                });
+            });
+
+            // Copy Key
+            document.querySelectorAll(".copy-btn").forEach(btn => {
+                btn.addEventListener("click", (e) => {
+                    const key = e.target.getAttribute("data-key");
+                    navigator.clipboard.writeText(key).then(() => {
+                        showCustomModal("Success", "API Key successfully copied to clipboard.");
+                    }).catch(err => {
+                        console.error("Clipboard error:", err);
+                        showCustomModal("Error", "Failed to copy API key.");
+                    });
+                });
+            });
+
+            // Edit Action
+            document.querySelectorAll(".edit-btn").forEach(btn => {
+                btn.addEventListener("click", (e) => {
+                    const id = e.target.getAttribute("data-id");
+                    const item = allApiKeysData.find(d => d.id === id);
+                    if (item) {
+                        editingDocIdInput.value = item.id;
+                        apiKeyNameInput.value = item.apiKeyName;
+                        imgbbApiKeyInput.value = item.imgbbApiKey;
+                        formTitle.textContent = "Edit API Key";
+                        saveBtn.textContent = "Update API Key";
+                        cancelEditBtn.style.display = "inline-flex";
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                    }
+                });
+            });
+
+            // Delete Action with Custom Confirmation Modal
+            document.querySelectorAll(".delete-btn").forEach(btn => {
+                btn.addEventListener("click", (e) => {
+                    const id = e.target.getAttribute("data-id");
+                    showCustomModal(
+                        "Confirm Deletion",
+                        "Are you sure you want to delete this API Key?",
+                        () => executeDelete(id),
+                        true
+                    );
+                });
+            });
+        }
+
+        // ==========================================
+        // SAVE / UPDATE FORM SUBMISSION
+        // ==========================================
+        apiForm.addEventListener("submit", async (e) => {
+            e.preventDefault();
+
+            // Clear previous errors
+            nameError.style.display = "none";
+            keyError.style.display = "none";
+
+            const nameVal = apiKeyNameInput.value.trim();
+            const keyVal = imgbbApiKeyInput.value.trim();
+            const docId = editingDocIdInput.value;
+
+            let isValid = true;
+            if (!nameVal) {
+                nameError.style.display = "block";
+                isValid = false;
+            }
+            if (!keyVal) {
+                keyError.style.display = "block";
+                isValid = false;
+            }
+
+            if (!isValid) return;
+
+            // Prevent duplicate requests by disabling button
+            saveBtn.disabled = true;
+
+            try {
+                if (docId) {
+                    // Update Mode
+                    saveBtn.textContent = "Updating...";
+                    const docRef = doc(db, COLLECTION_NAME, docId);
+                    await updateDoc(docRef, {
+                        apiKeyName: nameVal,
+                        imgbbApiKey: keyVal,
+                        updatedAt: serverTimestamp()
+                    });
+                    showCustomModal("Success", "API Key successfully updated.");
+                } else {
+                    // Add Mode
+                    saveBtn.textContent = "Saving...";
+                    await addDoc(collection(db, COLLECTION_NAME), {
+                        apiKeyName: nameVal,
+                        imgbbApiKey: keyVal,
+                        createdAt: serverTimestamp(),
+                        updatedAt: serverTimestamp()
+                    });
+                    showCustomModal("Success", "API Key successfully saved.");
+                }
+
+                resetForm();
+                loadApiKeys();
+            } catch (error) {
+                console.error("Save/Update error:", error);
+                showCustomModal("Error", "Something went wrong. Operation failed.");
+            } finally {
+                saveBtn.disabled = false;
+                saveBtn.textContent = docId ? "Update API Key" : "Save API Key";
+            }
+        });
+
+        // Cancel Edit Mode
+        cancelEditBtn.addEventListener("click", () => {
+            resetForm();
+        });
+
+        function resetForm() {
+            editingDocIdInput.value = "";
+            apiKeyNameInput.value = "";
+            imgbbApiKeyInput.value = "";
+            formTitle.textContent = "Add New ImgBB API Key";
+            saveBtn.textContent = "Save API Key";
+            cancelEditBtn.style.display = "none";
+            nameError.style.display = "none";
+            keyError.style.display = "none";
+        }
+
+        // ==========================================
+        // EXECUTE DELETE
+        // ==========================================
+        async function executeDelete(id) {
+            try {
+                await deleteDoc(doc(db, COLLECTION_NAME, id));
+                showCustomModal("Success", "API Key successfully deleted.");
+                loadApiKeys();
+            } catch (error) {
+                console.error("Delete error:", error);
+                showCustomModal("Error", "Failed to delete API Key.");
+            }
+        }
+
+        // ==========================================
+        // SEARCH FILTER FUNCTIONALITY
+        // ==========================================
+        searchInput.addEventListener("input", (e) => {
+            const query = e.target.value.toLowerCase().trim();
+            const filtered = allApiKeysData.filter(item => 
+                item.apiKeyName.toLowerCase().includes(query)
+            );
+            renderApiTable(filtered);
+        });
+
+    </script>
 </body>
 </html>
