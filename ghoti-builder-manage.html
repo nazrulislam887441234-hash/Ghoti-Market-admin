@@ -1,0 +1,1445 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GHOTI BUILDER — Admin Shop Management Panel</title>
+  
+  <!-- Google Fonts: Hind Siliguri & Poppins -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --primary: #4f46e5;
+      --primary-hover: #4338ca;
+      --bg-body: #f3f4f6;
+      --bg-card: #ffffff;
+      --text-main: #1f2937;
+      --text-muted: #6b7280;
+      --border-color: #e5e7eb;
+      --sidebar-bg: #111827;
+      --sidebar-text: #9ca3af;
+      --success: #10b981;
+      --danger: #ef4444;
+      --warning: #f59e0b;
+      --info: #3b82f6;
+      --radius: 8px;
+      --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Poppins', 'Hind Siliguri', sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-body);
+      color: var(--text-main);
+      display: flex;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* Loading Overlay */
+    #app-loader {
+      position: fixed;
+      inset: 0;
+      background: #ffffff;
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      color: var(--primary);
+    }
+    .spinner {
+      width: 45px;
+      height: 45px;
+      border: 4px solid var(--border-color);
+      border-top-color: var(--primary);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin-bottom: 12px;
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* Layout Structure */
+    .app-container {
+      display: flex;
+      width: 100%;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      width: 260px;
+      background-color: var(--sidebar-bg);
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      transition: all 0.3s ease;
+      z-index: 100;
+      position: fixed;
+      top: 0;
+      bottom: 0;
+      left: 0;
+    }
+    .sidebar-brand {
+      padding: 20px;
+      font-size: 1.25rem;
+      font-weight: 700;
+      border-bottom: 1px solid #1f2937;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: #fff;
+    }
+    .sidebar-brand span { color: var(--primary); }
+    .sidebar-menu {
+      list-style: none;
+      padding: 20px 10px;
+      flex: 1;
+    }
+    .sidebar-menu li a {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 15px;
+      color: var(--sidebar-text);
+      text-decoration: none;
+      border-radius: var(--radius);
+      font-weight: 500;
+      margin-bottom: 6px;
+      transition: 0.2s;
+    }
+    .sidebar-menu li.active a, .sidebar-menu li a:hover {
+      background-color: rgba(79, 70, 229, 0.15);
+      color: #fff;
+    }
+
+    /* Main Content */
+    .main-wrapper {
+      margin-left: 260px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+      transition: margin-left 0.3s ease;
+    }
+
+    /* Dashboard Header */
+    .dashboard-header {
+      background: var(--bg-card);
+      padding: 15px 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--border-color);
+      position: sticky;
+      top: 0;
+      z-index: 90;
+    }
+    .header-title h2 {
+      font-size: 1.25rem;
+      font-weight: 600;
+    }
+    .admin-profile {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+    .admin-email {
+      font-size: 0.9rem;
+      font-weight: 500;
+      background: #f3f4f6;
+      padding: 6px 12px;
+      border-radius: 20px;
+      color: var(--text-main);
+    }
+    .btn-logout {
+      background: #fee2e2;
+      color: var(--danger);
+      border: none;
+      padding: 8px 16px;
+      border-radius: var(--radius);
+      cursor: pointer;
+      font-weight: 600;
+      transition: 0.2s;
+    }
+    .btn-logout:hover { background: #fca5a5; }
+
+    /* Main Content Area */
+    .content-body {
+      padding: 25px;
+    }
+
+    /* Statistics Cards */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 20px;
+      margin-bottom: 25px;
+    }
+    .stat-card {
+      background: var(--bg-card);
+      padding: 20px;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      border-left: 4px solid var(--primary);
+    }
+    .stat-card.verified { border-left-color: var(--success); }
+    .stat-card.unverified { border-left-color: var(--danger); }
+    .stat-card.active { border-left-color: var(--warning); }
+    .stat-card p {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      font-weight: 500;
+      text-transform: uppercase;
+    }
+    .stat-card h3 {
+      font-size: 1.8rem;
+      font-weight: 700;
+      margin-top: 5px;
+    }
+
+    /* Controls Bar */
+    .controls-card {
+      background: var(--bg-card);
+      padding: 20px;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      margin-bottom: 20px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 15px;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .search-box {
+      flex: 1;
+      min-width: 280px;
+      position: relative;
+    }
+    .search-box input {
+      width: 100%;
+      padding: 10px 15px;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius);
+      font-size: 0.95rem;
+      outline: none;
+      transition: 0.2s;
+    }
+    .search-box input:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+    }
+    .filter-box {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .filter-box select {
+      padding: 10px 15px;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius);
+      outline: none;
+      background: #fff;
+      font-size: 0.95rem;
+      cursor: pointer;
+    }
+
+    /* Table Styling */
+    .table-container {
+      background: var(--bg-card);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow-x: auto;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 0.9rem;
+    }
+    th, td {
+      padding: 14px 18px;
+      border-bottom: 1px solid var(--border-color);
+    }
+    th {
+      background-color: #f9fafb;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      font-size: 0.75rem;
+      letter-spacing: 0.05em;
+    }
+    tr:hover { background-color: #f9fafb; }
+
+    /* Dynamic Badges */
+    .badge {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 12px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+    .badge-success { background: #d1fae5; color: #065f46; }
+    .badge-danger { background: #fee2e2; color: #991b1b; }
+    .badge-warning { background: #fef3c7; color: #92400e; }
+    .badge-info { background: #e0f2fe; color: #075985; }
+
+    /* Action Buttons */
+    .action-btn {
+      padding: 6px 12px;
+      border-radius: 6px;
+      border: none;
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: 0.2s;
+      margin-right: 4px;
+    }
+    .btn-view { background: #e0e7ff; color: var(--primary); }
+    .btn-view:hover { background: #c7d2fe; }
+    .btn-edit { background: #fef3c7; color: #b45309; }
+    .btn-edit:hover { background: #fde68a; }
+    .btn-delete { background: #fee2e2; color: var(--danger); }
+    .btn-delete:hover { background: #fca5a5; }
+
+    /* Pagination */
+    .pagination-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 15px 20px;
+      background: var(--bg-card);
+      border-top: 1px solid var(--border-color);
+      border-radius: 0 0 var(--radius) var(--radius);
+    }
+    .page-btn {
+      padding: 8px 16px;
+      border: 1px solid var(--border-color);
+      background: #fff;
+      border-radius: var(--radius);
+      cursor: pointer;
+      font-weight: 500;
+      transition: 0.2s;
+    }
+    .page-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+    .page-btn:hover:not(:disabled) {
+      background: #f3f4f6;
+    }
+
+    /* Modals */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s ease;
+    }
+    .modal-overlay.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .modal-card {
+      background: var(--bg-card);
+      width: 100%;
+      max-width: 800px;
+      max-height: 90vh;
+      border-radius: var(--radius);
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      transform: translateY(20px);
+      transition: transform 0.25s ease;
+    }
+    .modal-overlay.active .modal-card {
+      transform: translateY(0);
+    }
+    .modal-header {
+      padding: 18px 24px;
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #fafafa;
+    }
+    .modal-header h3 { font-size: 1.15rem; font-weight: 600; }
+    .close-modal {
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+      color: var(--text-muted);
+    }
+    .modal-body {
+      padding: 24px;
+      overflow-y: auto;
+      flex: 1;
+    }
+    .modal-footer {
+      padding: 16px 24px;
+      border-top: 1px solid var(--border-color);
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      background: #fafafa;
+    }
+
+    /* Dynamic Form Field Controls */
+    .field-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      align-items: center;
+      padding: 12px 0;
+      border-bottom: 1px dashed var(--border-color);
+    }
+    .field-key {
+      flex: 1;
+      min-width: 140px;
+      font-weight: 600;
+      font-size: 0.85rem;
+      color: var(--text-main);
+      word-break: break-all;
+    }
+    .field-val-container {
+      flex: 2;
+      min-width: 240px;
+    }
+    .field-input, .field-select, .field-textarea {
+      width: 100%;
+      padding: 8px 12px;
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      font-size: 0.9rem;
+      outline: none;
+    }
+    .field-textarea { min-height: 70px; resize: vertical; }
+
+    .img-preview {
+      max-width: 80px;
+      max-height: 80px;
+      object-fit: cover;
+      border-radius: 6px;
+      border: 1px solid var(--border-color);
+      margin-top: 6px;
+    }
+
+    /* Toggle Switch */
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 46px;
+      height: 24px;
+    }
+    .switch input { opacity: 0; width: 0; height: 0; }
+    .slider {
+      position: absolute; cursor: pointer; inset: 0;
+      background-color: #ccc; transition: .3s; border-radius: 24px;
+    }
+    .slider:before {
+      position: absolute; content: ""; height: 18px; width: 18px;
+      left: 3px; bottom: 3px; background-color: white; transition: .3s; border-radius: 50%;
+    }
+    input:checked + .slider { background-color: var(--success); }
+    input:checked + .slider:before { transform: translateX(22px); }
+
+    /* Quick Time Buttons */
+    .quick-btns {
+      display: flex;
+      gap: 6px;
+      margin-top: 8px;
+      flex-wrap: wrap;
+    }
+    .quick-btn {
+      padding: 4px 10px;
+      font-size: 0.75rem;
+      background: #f3f4f6;
+      border: 1px solid var(--border-color);
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: 500;
+    }
+    .quick-btn:hover { background: var(--primary); color: #fff; }
+
+    /* Skeleton Loading */
+    .skeleton-row {
+      height: 48px;
+      background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+      background-size: 200% 100%;
+      animation: skeleton-loading 1.5s infinite;
+      margin-bottom: 8px;
+      border-radius: 4px;
+    }
+    @keyframes skeleton-loading {
+      0% { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
+    }
+
+    /* Toasts */
+    #toast-container {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .toast {
+      padding: 12px 20px;
+      border-radius: var(--radius);
+      color: #fff;
+      font-size: 0.9rem;
+      font-weight: 500;
+      box-shadow: var(--shadow);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      animation: slideIn 0.3s ease;
+    }
+    .toast-success { background: var(--success); }
+    .toast-error { background: var(--danger); }
+    .toast-info { background: var(--info); }
+    @keyframes slideIn {
+      from { transform: translateX(100%); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+
+    /* Mobile Responsive Header / Nav */
+    .mobile-nav-toggle {
+      display: none;
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+      color: var(--text-main);
+    }
+
+    @media (max-width: 900px) {
+      .sidebar { transform: translateX(-100%); }
+      .sidebar.open { transform: translateX(0); }
+      .main-wrapper { margin-left: 0; }
+      .mobile-nav-toggle { display: block; }
+    }
+
+    .warning-box {
+      background: #fffbeeb0;
+      border: 1px solid #fcd34d;
+      color: #92400e;
+      padding: 10px;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      margin-bottom: 12px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Fullscreen Auth Spinner -->
+  <div id="app-loader">
+    <div class="spinner"></div>
+    <div>Authenticating & Loading Panel...</div>
+  </div>
+
+  <div class="app-container">
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-brand">
+        🚀 GHOTI <span>BUILDER</span>
+      </div>
+      <ul class="sidebar-menu">
+        <li class="active"><a href="#">📊 Shop Management</a></li>
+      </ul>
+    </aside>
+
+    <!-- Main Dashboard Body -->
+    <main class="main-wrapper">
+      <!-- Header -->
+      <header class="dashboard-header">
+        <div style="display: flex; align-items: center; gap: 12px;">
+          <button class="mobile-nav-toggle" id="menuToggle">☰</button>
+          <div class="header-title">
+            <h2>Shop Management Admin</h2>
+          </div>
+        </div>
+        <div class="admin-profile">
+          <span class="admin-email" id="adminEmailDisplay">support@ghotimarket.com</span>
+          <button class="btn-logout" id="logoutBtn">Logout</button>
+        </div>
+      </header>
+
+      <!-- Content -->
+      <section class="content-body">
+        
+        <!-- Statistics Cards -->
+        <div class="stats-grid">
+          <div class="stat-card">
+            <p>Total Shops</p>
+            <h3 id="statTotal">--</h3>
+          </div>
+          <div class="stat-card verified">
+            <p>Verified Shops</p>
+            <h3 id="statVerified">--</h3>
+          </div>
+          <div class="stat-card unverified">
+            <p>Unverified Shops</p>
+            <h3 id="statUnverified">--</h3>
+          </div>
+          <div class="stat-card active">
+            <p>Active Profiles</p>
+            <h3 id="statActive">--</h3>
+          </div>
+        </div>
+
+        <!-- Search & Filter Bar -->
+        <div class="controls-card">
+          <div class="search-box">
+            <input type="text" id="searchInput" placeholder="Search UID, Business Number, Shop Name or Email...">
+          </div>
+          <div class="filter-box">
+            <label for="filterStatus" style="font-size: 0.85rem; font-weight: 600; color: var(--text-muted);">Status:</label>
+            <select id="filterStatus">
+              <option value="all">All Shops</option>
+              <option value="verified">Verified Only</option>
+              <option value="unverified">Unverified Only</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Shop Table -->
+        <div class="table-container">
+          <table id="shopsTable">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Shop Name</th>
+                <th>Business Number</th>
+                <th>Email</th>
+                <th>UID</th>
+                <th>Country</th>
+                <th>Verified</th>
+                <th>Profile Unlocked</th>
+                <th>Created</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="shopTableBody">
+              <!-- Rendered Dynamically -->
+            </tbody>
+          </table>
+          <div id="tableSkeleton" style="padding: 20px; display: none;">
+            <div class="skeleton-row"></div>
+            <div class="skeleton-row"></div>
+            <div class="skeleton-row"></div>
+            <div class="skeleton-row"></div>
+          </div>
+          <div id="emptyState" style="text-align: center; padding: 40px; color: var(--text-muted); display: none;">
+            No shops found matching your criteria.
+          </div>
+        </div>
+
+        <!-- Pagination -->
+        <div class="pagination-bar">
+          <span id="pageInfo" style="font-size: 0.85rem; color: var(--text-muted);">Showing 0-0 Shops</span>
+          <div style="display: flex; gap: 8px;">
+            <button class="page-btn" id="prevPageBtn" disabled>Previous</button>
+            <button class="page-btn" id="nextPageBtn" disabled>Next</button>
+          </div>
+        </div>
+
+      </section>
+    </main>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div id="toast-container"></div>
+
+  <!-- VIEW SHOP MODAL -->
+  <div class="modal-overlay" id="viewModal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>📄 Shop Details</h3>
+        <button class="close-modal" onclick="closeModal('viewModal')">&times;</button>
+      </div>
+      <div class="modal-body" id="viewModalContent">
+        <!-- Dynamic Fields Rendered Here -->
+      </div>
+      <div class="modal-footer">
+        <button class="page-btn" onclick="closeModal('viewModal')">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- EDIT SHOP MODAL -->
+  <div class="modal-overlay" id="editModal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>✏️ Dynamic Shop Data Editor</h3>
+        <button class="close-modal" onclick="requestCloseEditModal()">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="warning-box">
+          ⚠️ <strong>Admin Note:</strong> Editing fields directly alters live database documents. Please verify data types before saving.
+        </div>
+        <form id="editForm" onsubmit="event.preventDefault();">
+          <div id="dynamicFieldsContainer">
+            <!-- Dynamic Form Fields Rendered Here -->
+          </div>
+        </form>
+        <button type="button" class="page-btn" style="margin-top: 15px; background: #e0e7ff; color: var(--primary); width: 100%; text-align: center;" onclick="openAddFieldModal()">+ Add New Field</button>
+      </div>
+      <div class="modal-footer">
+        <button class="page-btn" onclick="requestCloseEditModal()">Cancel</button>
+        <button class="page-btn" style="background: var(--primary); color: #fff;" onclick="saveShopChanges()">Save Changes</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ADD FIELD MODAL -->
+  <div class="modal-overlay" id="addFieldModal">
+    <div class="modal-card" style="max-width: 450px;">
+      <div class="modal-header">
+        <h3>➕ Add Custom Field</h3>
+        <button class="close-modal" onclick="closeModal('addFieldModal')">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div style="margin-bottom: 12px;">
+          <label style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 4px;">Field Name</label>
+          <input type="text" id="newFieldName" class="field-input" placeholder="e.g. facebook, currency">
+        </div>
+        <div style="margin-bottom: 12px;">
+          <label style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 4px;">Field Type</label>
+          <select id="newFieldType" class="field-select">
+            <option value="string">String</option>
+            <option value="number">Number</option>
+            <option value="boolean">Boolean</option>
+            <option value="array">Array</option>
+          </select>
+        </div>
+        <div style="margin-bottom: 12px;">
+          <label style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 4px;">Initial Value</label>
+          <input type="text" id="newFieldValue" class="field-input" placeholder="Enter value">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="page-btn" onclick="closeModal('addFieldModal')">Cancel</button>
+        <button class="page-btn" style="background: var(--primary); color: #fff;" onclick="addNewFieldToEditor()">Add Field</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- CONFIRMATION DIALOG MODAL -->
+  <div class="modal-overlay" id="confirmModal">
+    <div class="modal-card" style="max-width: 420px;">
+      <div class="modal-header">
+        <h3 id="confirmModalTitle">Confirm Action</h3>
+        <button class="close-modal" onclick="closeModal('confirmModal')">&times;</button>
+      </div>
+      <div class="modal-body" id="confirmModalMessage">
+        Are you sure you want to proceed with this action?
+      </div>
+      <div class="modal-footer">
+        <button class="page-btn" id="confirmCancelBtn" onclick="closeModal('confirmModal')">Cancel</button>
+        <button class="page-btn" id="confirmOkBtn" style="background: var(--danger); color: #fff;">Confirm</button>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- FIREBASE SDK ENGINE (MODULE SCRIPT) -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { 
+      getAuth, 
+      onAuthStateChanged, 
+      signOut 
+    } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+    import { 
+      getFirestore, 
+      collection, 
+      doc, 
+      getDoc, 
+      getDocs, 
+      updateDoc, 
+      deleteDoc, 
+      deleteField, 
+      query, 
+      where, 
+      orderBy, 
+      limit, 
+      startAfter, 
+      getCountFromServer,
+      Timestamp 
+    } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+    // ========================================================
+    // 1. FIREBASE CONFIGURATION (REPLACE WITH YOUR CONFIG)
+    // ========================================================
+    const firebaseConfig = {
+  apiKey: "AIzaSyBUhNhYvuo_FTvZ5RZR6Gn-4hsUY21S0XE",
+  authDomain: "ghotimarket.firebaseapp.com",
+  databaseURL: "https://ghotimarket-default-rtdb.firebaseio.com",
+  projectId: "ghotimarket",
+  storageBucket: "ghotimarket.firebasestorage.app",
+  messagingSenderId: "481257644093",
+  appId: "1:481257644093:web:0dfc3699d6b3c86afeca54",
+  measurementId: "G-4SR8V2EKC1"
+};
+
+    // Initialize Firebase Services
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    // Global Constants
+    const ADMIN_EMAIL = "support@ghotimarket.com";
+    const PAGE_LIMIT = 20;
+
+    // Application State Variables
+    let currentShopsData = [];
+    let pageCursors = []; // Pagination cursor stack
+    let currentPage = 1;
+    let activeFilter = 'all';
+    let searchQuery = '';
+    let searchDebounceTimer = null;
+
+    let editingShopId = null;
+    let editingShopData = {}; // Working document draft
+    let originalShopData = {}; // Original reference for dirty checking
+    let deletedFields = new Set();
+
+    // ========================================================
+    // 2. SECURITY GUARD & AUTHENTICATION
+    // ========================================================
+    onAuthStateChanged(auth, async (user) => {
+      const loader = document.getElementById('app-loader');
+      
+      if (!user) {
+        window.location.href = "index.html";
+        return;
+      }
+
+      if (user.email !== ADMIN_EMAIL) {
+        alert("Access Denied: You do not have permission to access the admin dashboard.");
+        await signOut(auth);
+        window.location.href = "index.html";
+        return;
+      }
+
+      // Authorized Admin Confirmed
+      document.getElementById('adminEmailDisplay').innerText = user.email;
+      loader.style.display = 'none';
+
+      // Load Initial Dashboard
+      initDashboard();
+    });
+
+    // Logout Handler
+    document.getElementById('logoutBtn').addEventListener('click', async () => {
+      await signOut(auth);
+      window.location.href = "index.html";
+    });
+
+    // Mobile Sidebar Toggle
+    document.getElementById('menuToggle').addEventListener('click', () => {
+      document.getElementById('sidebar').classList.toggle('open');
+    });
+
+    // ========================================================
+    // 3. DASHBOARD INITIALIZATION & STATS
+    // ========================================================
+    async function initDashboard() {
+      loadStatistics();
+      fetchShopsPage(1);
+    }
+
+    async function loadStatistics() {
+      try {
+        const shopsRef = collection(db, "shops");
+
+        // Total Count
+        const totalSnap = await getCountFromServer(shopsRef);
+        document.getElementById('statTotal').innerText = totalSnap.data().count;
+
+        // Verified Count
+        const verifiedQuery = query(shopsRef, where("verified", "==", true));
+        const verifiedSnap = await getCountFromServer(verifiedQuery);
+        document.getElementById('statVerified').innerText = verifiedSnap.data().count;
+
+        // Unverified Count
+        const unverifiedQuery = query(shopsRef, where("verified", "==", false));
+        const unverifiedSnap = await getCountFromServer(unverifiedQuery);
+        document.getElementById('statUnverified').innerText = unverifiedSnap.data().count;
+
+        // Active Profile Unlock Count (profileUnlocked > now)
+        const now = Date.now();
+        const activeQuery = query(shopsRef, where("profileUnlocked", ">", now));
+        const activeSnap = await getCountFromServer(activeQuery);
+        document.getElementById('statActive').innerText = activeSnap.data().count;
+
+      } catch (err) {
+        console.error("Stats loading error:", err);
+        showToast("Failed to compute stats automatically.", "error");
+      }
+    }
+
+    // ========================================================
+    // 4. PAGINATED FIRESTORE FETCH ENGINE
+    // ========================================================
+    async function fetchShopsPage(pageIndex = 1) {
+      showSkeleton(true);
+      document.getElementById('emptyState').style.display = 'none';
+
+      try {
+        const shopsRef = collection(db, "shops");
+        let queryConstraints = [];
+
+        // Apply Status Filter
+        if (activeFilter === 'verified') {
+          queryConstraints.push(where("verified", "==", true));
+        } else if (activeFilter === 'unverified') {
+          queryConstraints.push(where("verified", "==", false));
+        }
+
+        // Apply Search Strategy
+        if (searchQuery.trim() !== '') {
+          const term = searchQuery.trim();
+          
+          // Exact Search logic for UID / Email / Business Number / Shop Name
+          if (term.includes('@')) {
+            queryConstraints.push(where("email", "==", term.toLowerCase()));
+          } else if (/^\d+$/.test(term)) {
+            queryConstraints.push(where("businessNumber", "==", term));
+          } else if (term.length >= 20) { // Typical Firebase UID length
+            // Direct Doc ID fetch attempt
+            const docRef = doc(db, "shops", term);
+            const docSnap = await getDoc(docRef);
+            if (docSnap.exists()) {
+              currentShopsData = [{ uid: docSnap.id, ...docSnap.data() }];
+              renderTableData(currentShopsData);
+              updatePaginationControls(1, true);
+              showSkeleton(false);
+              return;
+            }
+          } else {
+            // Shop Name Prefix Search
+            queryConstraints.push(where("shopName", ">=", term));
+            queryConstraints.push(where("shopName", "<=", term + "\uf8ff"));
+          }
+        } else {
+          // Standard Sorting
+          queryConstraints.push(orderBy("createTime", "desc"));
+        }
+
+        // Apply Limit
+        queryConstraints.push(limit(PAGE_LIMIT));
+
+        // Apply Cursor Pagination
+        if (pageIndex > 1 && pageCursors[pageIndex - 2]) {
+          queryConstraints.push(startAfter(pageCursors[pageIndex - 2]));
+        }
+
+        const q = query(shopsRef, ...queryConstraints);
+        const snapshot = await getDocs(q);
+
+        currentShopsData = [];
+        snapshot.forEach(docSnap => {
+          currentShopsData.push({ uid: docSnap.id, ...docSnap.data() });
+        });
+
+        // Store last document for pagination stack
+        if (snapshot.docs.length > 0) {
+          pageCursors[pageIndex - 1] = snapshot.docs[snapshot.docs.length - 1];
+        }
+
+        currentPage = pageIndex;
+        renderTableData(currentShopsData);
+        updatePaginationControls(snapshot.docs.length, snapshot.docs.length < PAGE_LIMIT);
+
+      } catch (error) {
+        console.error("Firestore Query Error:", error);
+        showToast("Error loading shops data: " + error.message, "error");
+      } finally {
+        showSkeleton(false);
+      }
+    }
+
+    // Skeleton Helper
+    function showSkeleton(show) {
+      document.getElementById('tableSkeleton').style.display = show ? 'block' : 'none';
+      document.getElementById('shopTableBody').style.display = show ? 'none' : 'table-row-group';
+    }
+
+    // ========================================================
+    // 5. TABLE & BADGE RENDERER
+    // ========================================================
+    function renderTableData(shops) {
+      const tbody = document.getElementById('shopTableBody');
+      tbody.innerHTML = '';
+
+      if (shops.length === 0) {
+        document.getElementById('emptyState').style.display = 'block';
+        return;
+      }
+
+      shops.forEach((shop, index) => {
+        const row = document.createElement('tr');
+        
+        const rowNum = (currentPage - 1) * PAGE_LIMIT + index + 1;
+        const shopName = shop.shopName || 'N/A';
+        const businessNo = shop.businessNumber || 'N/A';
+        const email = shop.email || 'N/A';
+        const uid = shop.uid || 'N/A';
+        const country = shop.country || 'N/A';
+        const isVerified = shop.verified === true;
+        
+        // Profile Unlocked Status Check
+        const unlockMs = shop.profileUnlocked || 0;
+        const isUnlockedActive = typeof unlockMs === 'number' && unlockMs > Date.now();
+        
+        // Format Timestamps
+        const createdDateStr = formatFormattedDate(shop.createTime);
+        const unlockedDateStr = unlockMs ? formatFormattedDate(unlockMs) : 'Not Set';
+
+        row.innerHTML = `
+          <td>${rowNum}</td>
+          <td><strong>${escapeHtml(shopName)}</strong></td>
+          <td>${escapeHtml(businessNo)}</td>
+          <td>${escapeHtml(email)}</td>
+          <td><code style="font-size:0.75rem;">${escapeHtml(uid.substring(0,8))}...</code></td>
+          <td>${escapeHtml(country)}</td>
+          <td>
+            ${isVerified 
+              ? '<span class="badge badge-success">✓ Verified</span>' 
+              : '<span class="badge badge-danger">Unverified</span>'}
+          </td>
+          <td>
+            ${isUnlockedActive 
+              ? `<span class="badge badge-success" title="${unlockedDateStr}">Active</span>` 
+              : `<span class="badge badge-warning" title="${unlockedDateStr}">Expired</span>`}
+          </td>
+          <td>${createdDateStr}</td>
+          <td style="white-space: nowrap;">
+            <button class="action-btn btn-view" data-id="${uid}">View</button>
+            <button class="action-btn btn-edit" data-id="${uid}">Edit</button>
+            <button class="action-btn btn-delete" data-id="${uid}">Delete</button>
+          </td>
+        `;
+
+        // Event Attachments
+        row.querySelector('.btn-view').addEventListener('click', () => openViewModal(shop));
+        row.querySelector('.btn-edit').addEventListener('click', () => openEditModal(shop));
+        row.querySelector('.btn-delete').addEventListener('click', () => confirmDeleteShop(shop));
+
+        tbody.appendChild(row);
+      });
+    }
+
+    function updatePaginationControls(countOnPage, isLastPage) {
+      const start = (currentPage - 1) * PAGE_LIMIT + (countOnPage > 0 ? 1 : 0);
+      const end = (currentPage - 1) * PAGE_LIMIT + countOnPage;
+      document.getElementById('pageInfo').innerText = `Showing ${start}-${end} Shops`;
+
+      document.getElementById('prevPageBtn').disabled = currentPage === 1;
+      document.getElementById('nextPageBtn').disabled = isLastPage || countOnPage < PAGE_LIMIT;
+    }
+
+    // Pagination Listeners
+    document.getElementById('prevPageBtn').addEventListener('click', () => {
+      if (currentPage > 1) fetchShopsPage(currentPage - 1);
+    });
+    document.getElementById('nextPageBtn').addEventListener('click', () => {
+      fetchShopsPage(currentPage + 1);
+    });
+
+    // Debounced Search Input
+    document.getElementById('searchInput').addEventListener('input', (e) => {
+      clearTimeout(searchDebounceTimer);
+      searchQuery = e.target.value;
+      searchDebounceTimer = setTimeout(() => {
+        pageCursors = [];
+        fetchShopsPage(1);
+      }, 400);
+    });
+
+    // Filter Change
+    document.getElementById('filterStatus').addEventListener('change', (e) => {
+      activeFilter = e.target.value;
+      pageCursors = [];
+      fetchShopsPage(1);
+    });
+
+    // ========================================================
+    // 6. DYNAMIC VIEW SHOP MODAL
+    // ========================================================
+    function openViewModal(shop) {
+      const container = document.getElementById('viewModalContent');
+      container.innerHTML = '';
+
+      const keys = Object.keys(shop);
+      keys.forEach(key => {
+        const value = shop[key];
+        const row = document.createElement('div');
+        row.className = 'field-row';
+
+        let displayValue = '';
+
+        if (key === 'shopLogo' || key === 'shopBanner' || (typeof value === 'string' && isImageUrl(value))) {
+          displayValue = `
+            <div>
+              <a href="${escapeHtml(value)}" target="_blank" style="color:var(--primary); font-size:0.85rem; word-break:break-all;">${escapeHtml(value)}</a><br>
+              <img src="${escapeHtml(value)}" class="img-preview" onerror="this.style.display='none'">
+            </div>`;
+        } else if (typeof value === 'object' && value !== null) {
+          if (value.seconds !== undefined) { // Firestore Timestamp
+            displayValue = formatFormattedDate(value);
+          } else {
+            displayValue = `<pre style="font-size:0.8rem; background:#f3f4f6; padding:8px; border-radius:4px;">${JSON.stringify(value, null, 2)}</pre>`;
+          }
+        } else if (key === 'profileUnlocked' && typeof value === 'number') {
+          const isExpired = value < Date.now();
+          displayValue = `${formatFormattedDate(value)} (${isExpired ? '❌ Expired' : '✅ Active'}) <br><small class="text-muted">MS: ${value}</small>`;
+        } else if (typeof value === 'boolean') {
+          displayValue = value ? '<span class="badge badge-success">TRUE</span>' : '<span class="badge badge-danger">FALSE</span>';
+        } else {
+          displayValue = escapeHtml(String(value ?? ''));
+        }
+
+        row.innerHTML = `
+          <div class="field-key">${escapeHtml(key)}</div>
+          <div class="field-val-container">${displayValue}</div>
+        `;
+        container.appendChild(row);
+      });
+
+      openModal('viewModal');
+    }
+
+    // ========================================================
+    // 7. DYNAMIC EDIT SHOP SYSTEM
+    // ========================================================
+    function openEditModal(shop) {
+      editingShopId = shop.uid;
+      // Deep Clone Original Data
+      originalShopData = JSON.parse(JSON.stringify(shop));
+      editingShopData = JSON.parse(JSON.stringify(shop));
+      deletedFields.clear();
+
+      renderDynamicEditFields();
+      openModal('editModal');
+    }
+
+    function renderDynamicEditFields() {
+      const container = document.getElementById('dynamicFieldsContainer');
+      container.innerHTML = '';
+
+      const keys = Object.keys(editingShopData);
+
+      keys.forEach(key => {
+        if (deletedFields.has(key)) return;
+
+        const val = editingShopData[key];
+        const row = document.createElement('div');
+        row.className = 'field-row';
+
+        let inputControlHTML = '';
+
+        // Dedicated Field Handler Rules
+        if (key === 'verified') {
+          inputControlHTML = `
+            <label class="switch">
+              <input type="checkbox" id="field_edit_verified" ${val ? 'checked' : ''} onchange="updateDraftField('verified', this.checked)">
+              <span class="slider"></span>
+            </label>
+            <span style="font-weight:600; font-size:0.85rem; margin-left:8px;">${val ? 'TRUE' : 'FALSE'}</span>
+          `;
+        } else if (key === 'profileUnlocked') {
+          const currentMs = typeof val === 'number' ? val : Date.now();
+          const dateObj = new Date(currentMs);
+          const dateStr = dateObj.toISOString().split('T')[0];
+          const timeStr = dateObj.toTimeString().split(' ')[0].substring(0, 5);
+
+          inputControlHTML = `
+            <div>
+              <div style="display:flex; gap:8px; align-items:center;">
+                <input type="date" id="unlockDateInput" class="field-input" value="${dateStr}" onchange="handleUnlockDateTimeChange()">
+                <input type="time" id="unlockTimeInput" class="field-input" value="${timeStr}" onchange="handleUnlockDateTimeChange()">
+              </div>
+              <div class="quick-btns">
+                <button type="button" class="quick-btn" onclick="addUnlockDays(1)">+1 Day</button>
+                <button type="button" class="quick-btn" onclick="addUnlockDays(3)">+3 Days</button>
+                <button type="button" class="quick-btn" onclick="addUnlockDays(7)">+7 Days</button>
+                <button type="button" class="quick-btn" onclick="addUnlockDays(30)">+30 Days</button>
+              </div>
+              <small style="color:var(--text-muted); margin-top:4px; display:block;">Readable: ${formatFormattedDate(currentMs)} | MS: ${currentMs}</small>
+            </div>
+          `;
+        } else if (key === 'shopDescription') {
+          inputControlHTML = `<textarea class="field-textarea" onchange="updateDraftField('${key}', this.value)">${escapeHtml(String(val ?? ''))}</textarea>`;
+        } else if (typeof val === 'boolean') {
+          inputControlHTML = `
+            <select class="field-select" onchange="updateDraftField('${key}', this.value === 'true')">
+              <option value="true" ${val === true ? 'selected' : ''}>TRUE</option>
+              <option value="false" ${val === false ? 'selected' : ''}>FALSE</option>
+            </select>
+          `;
+        } else if (typeof val === 'number') {
+          inputControlHTML = `<input type="number" class="field-input" value="${val}" onchange="updateDraftField('${key}', Number(this.value))">`;
+        } else if (Array.isArray(val)) {
+          inputControlHTML = `<input type="text" class="field-input" value="${escapeHtml(val.join(', '))}" placeholder="Comma separated values" onchange="updateDraftField('${key}', this.value.split(',').map(s=>s.trim()))">`;
+        } else if (typeof val === 'object' && val !== null) {
+          inputControlHTML = `<textarea class="field-textarea" onchange="tryParseJsonObject('${key}', this.value)">${JSON.stringify(val)}</textarea>`;
+        } else {
+          // Standard String
+          inputControlHTML = `<input type="text" class="field-input" value="${escapeHtml(String(val ?? ''))}" onchange="updateDraftField('${key}', this.value)">`;
+        }
+
+        // Image Preview if applicable
+        if (key === 'shopLogo' || key === 'shopBanner' || (typeof val === 'string' && isImageUrl(val))) {
+          inputControlHTML += `<img src="${escapeHtml(val)}" class="img-preview" onerror="this.style.display='none'">`;
+        }
+
+        row.innerHTML = `
+          <div class="field-key">
+            ${escapeHtml(key)}
+            ${['uid', 'verified', 'profileUnlocked'].includes(key) ? '<br><small style="color:var(--warning)">⚠️ Sensitive</small>' : ''}
+          </div>
+          <div class="field-val-container">${inputControlHTML}</div>
+          <div>
+            <button type="button" class="action-btn btn-delete" onclick="markFieldDeleted('${key}')">Delete</button>
+          </div>
+        `;
+
+        container.appendChild(row);
+      });
+    }
+
+    // Dynamic Draft Updaters
+    window.updateDraftField = (key, value) => {
+      editingShopData[key] = value;
+      if (key === 'verified') renderDynamicEditFields();
+    };
+
+    window.tryParseJsonObject = (key, valueStr) => {
+      try {
+        editingShopData[key] = JSON.parse(valueStr);
+      } catch (e) {
+        showToast("Invalid JSON syntax for object field", "error");
+      }
+    };
+
+    window.markFieldDeleted = (key) => {
+      openConfirmModal(
+        "Delete Field",
+        `Are you sure you want to delete the field "${key}" from this document?`,
+        () => {
+          deletedFields.add(key);
+          delete editingShopData[key];
+          renderDynamicEditFields();
+          showToast(`Field '${key}' marked for deletion.`, "info");
+        }
+      );
+    };
+
+    // Unlock Milliseconds Engine
+    window.handleUnlockDateTimeChange = () => {
+      const dateVal = document.getElementById('unlockDateInput').value;
+      const timeVal = document.getElementById('unlockTimeInput').value;
+      if (dateVal && timeVal) {
+        const ms = new Date(`${dateVal}T${timeVal}`).getTime();
+        editingShopData['profileUnlocked'] = ms;
+        renderDynamicEditFields();
+      }
+    };
+
+    window.addUnlockDays = (days) => {
+      const newMs = Date.now() + (days * 24 * 60 * 60 * 1000);
+      editingShopData['profileUnlocked'] = newMs;
+      renderDynamicEditFields();
+    };
+
+    // Add New Custom Field
+    window.openAddFieldModal = () => openModal('addFieldModal');
+
+    window.addNewFieldToEditor = () => {
+      const name = document.getElementById('newFieldName').value.trim();
+      const type = document.getElementById('newFieldType').value;
+      const rawVal = document.getElementById('newFieldValue').value.trim();
+
+      if (!name) {
+        showToast("Field name is required.", "error");
+        return;
+      }
+
+      let parsedVal = rawVal;
+      if (type === 'number') parsedVal = Number(rawVal) || 0;
+      if (type === 'boolean') parsedVal = rawVal.toLowerCase() === 'true';
+      if (type === 'array') parsedVal = rawVal ? rawVal.split(',').map(s=>s.trim()) : [];
+
+      editingShopData[name] = parsedVal;
+      deletedFields.delete(name);
+
+      closeModal('addFieldModal');
+      document.getElementById('newFieldName').value = '';
+      document.getElementById('newFieldValue').value = '';
+      renderDynamicEditFields();
+      showToast(`Field '${name}' added to draft.`, "success");
+    };
+
+    // SAVE FIRESTORE CHANGES
+    window.saveShopChanges = async () => {
+      if (!editingShopId) return;
+
+      try {
+        const docRef = doc(db, "shops", editingShopId);
+        const updatePayload = {};
+
+        // Track Updates
+        Object.keys(editingShopData).forEach(k => {
+          updatePayload[k] = editingShopData[k];
+        });
+
+        // Track Deleted Fields via deleteField()
+        deletedFields.forEach(k => {
+          updatePayload[k] = deleteField();
+        });
+
+        await updateDoc(docRef, updatePayload);
+
+        showToast("✓ Shop updated successfully!", "success");
+        closeModal('editModal');
+        fetchShopsPage(currentPage);
+        loadStatistics();
+      } catch (err) {
+        console.error("Save Shop Error:", err);
+        showToast("✕ Update failed: " + err.message, "error");
+      }
+    };
+
+    // Close Edit Modal with Dirty Check
+    window.requestCloseEditModal = () => {
+      const isDirty = JSON.stringify(editingShopData) !== JSON.stringify(originalShopData) || deletedFields.size > 0;
+      if (isDirty) {
+        openConfirmModal("Unsaved Changes", "You have unsaved changes. Discard changes?", () => {
+          closeModal('editModal');
+        });
+      } else {
+        closeModal('editModal');
+      }
+    };
+
+    // ========================================================
+    // 8. DELETE PERMANENT SHOP ACTION
+    // ========================================================
+    function confirmDeleteShop(shop) {
+      openConfirmModal(
+        "Delete Shop Permanently",
+        `⚠️ Are you sure you want to delete ${shop.shopName || shop.uid}? This action cannot be undone.`,
+        async () => {
+          try {
+            await deleteDoc(doc(db, "shops", shop.uid));
+            showToast("✓ Shop deleted successfully", "success");
+            fetchShopsPage(currentPage);
+            loadStatistics();
+          } catch (err) {
+            showToast("✕ Deletion failed: " + err.message, "error");
+          }
+        }
+      );
+    }
+
+    // ========================================================
+    // 9. UTILITY HELPER FUNCTIONS
+    // ========================================================
+    function formatFormattedDate(val) {
+      if (!val) return 'N/A';
+      let date;
+      if (val instanceof Timestamp) date = val.toDate();
+      else if (typeof val === 'number') date = new Date(val);
+      else if (typeof val === 'string') date = new Date(val);
+      else if (val.seconds) date = new Date(val.seconds * 1000);
+      else return 'Invalid Date';
+
+      return date.toLocaleString('en-GB', {
+        day: 'numeric',
+        month: 'short',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: true
+      });
+    }
+
+    function isImageUrl(url) {
+      return typeof url === 'string' && (url.match(/\.(jpeg|jpg|gif|png|webp|svg)/i) != null || url.startsWith('data:image/'));
+    }
+
+    function escapeHtml(str) {
+      return String(str)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+
+    // Toast System
+    window.showToast = function(message, type = 'info') {
+      const container = document.getElementById('toast-container');
+      const toast = document.createElement('div');
+      toast.className = `toast toast-${type}`;
+      toast.innerHTML = `<span>${message}</span>`;
+      container.appendChild(toast);
+
+      setTimeout(() => {
+        toast.style.opacity = '0';
+        setTimeout(() => toast.remove(), 300);
+      }, 3500);
+    };
+
+    // Generic Modal Control
+    window.openModal = function(id) {
+      document.getElementById(id).classList.add('active');
+    };
+    window.closeModal = function(id) {
+      document.getElementById(id).classList.remove('active');
+    };
+
+    // Generic Confirmation Modal
+    window.openConfirmModal = function(title, msg, onConfirm) {
+      document.getElementById('confirmModalTitle').innerText = title;
+      document.getElementById('confirmModalMessage').innerHTML = msg;
+      
+      const okBtn = document.getElementById('confirmOkBtn');
+      const newOkBtn = okBtn.cloneNode(true);
+      okBtn.parentNode.replaceChild(newOkBtn, okBtn);
+
+      newOkBtn.addEventListener('click', () => {
+        closeModal('confirmModal');
+        if (onConfirm) onConfirm();
+      });
+
+      openModal('confirmModal');
+    };
+  </script>
+</body>
+</html>
