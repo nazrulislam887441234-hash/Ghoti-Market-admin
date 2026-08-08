@@ -1,0 +1,1796 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GHOTI BUILDER - Subscription Package Management</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    /* ==========================================
+       1. CSS VARIABLES & RESET
+       ========================================== */
+    :root {
+      --navy-900: #0f172a;
+      --navy-800: #1e293b;
+      --navy-700: #334155;
+      --navy-100: #f1f5f9;
+      --orange-600: #ea580c;
+      --orange-500: #f97316;
+      --orange-100: #ffedd5;
+      --green-600: #16a34a;
+      --green-100: #dcfce7;
+      --red-600: #dc2626;
+      --red-100: #fee2e2;
+      --slate-500: #64748b;
+      --slate-200: #e2e8f0;
+      --slate-100: #f8fafc;
+      --white: #ffffff;
+      --radius-sm: 6px;
+      --radius-md: 10px;
+      --radius-lg: 16px;
+      --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+      --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+      --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+    }
+
+    body {
+      background-color: #f8fafc;
+      color: var(--navy-900);
+      line-height: 1.5;
+      min-height: 100vh;
+      padding-bottom: 50px;
+    }
+
+    a { text-decoration: none; color: inherit; }
+    button { cursor: pointer; border: none; outline: none; background: none; font-family: inherit; }
+    input, select, textarea { font-family: inherit; outline: none; }
+
+    /* Utility */
+    .hidden { display: none !important; }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 4px 10px;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .badge-active { background-color: var(--green-100); color: var(--green-600); }
+    .badge-inactive { background-color: var(--red-100); color: var(--red-600); }
+    .badge-custom { background-color: var(--orange-100); color: var(--orange-600); }
+
+    /* ==========================================
+       2. LAYOUT & CONTAINERS
+       ========================================== */
+    .container {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+
+    /* Auth Screen & Access Denied */
+    .full-screen-center {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      background: linear-gradient(135deg, var(--navy-900) 0%, var(--navy-800) 100%);
+    }
+
+    .auth-card {
+      background: var(--white);
+      padding: 40px;
+      border-radius: var(--radius-lg);
+      width: 100%;
+      max-width: 440px;
+      box-shadow: var(--shadow-lg);
+      text-align: center;
+    }
+
+    .auth-card h2 {
+      font-size: 1.5rem;
+      color: var(--navy-900);
+      margin-bottom: 8px;
+    }
+
+    .auth-card p {
+      color: var(--slate-500);
+      font-size: 0.9rem;
+      margin-bottom: 24px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 10px 20px;
+      border-radius: var(--radius-md);
+      font-weight: 600;
+      font-size: 0.9rem;
+      transition: all 0.2s ease;
+    }
+
+    .btn-primary {
+      background-color: var(--orange-500);
+      color: var(--white);
+    }
+    .btn-primary:hover { background-color: var(--orange-600); }
+
+    .btn-navy {
+      background-color: var(--navy-900);
+      color: var(--white);
+    }
+    .btn-navy:hover { background-color: var(--navy-800); }
+
+    .btn-secondary {
+      background-color: var(--navy-100);
+      color: var(--navy-800);
+    }
+    .btn-secondary:hover { background-color: #e2e8f0; }
+
+    .btn-danger {
+      background-color: var(--red-600);
+      color: var(--white);
+    }
+    .btn-danger:hover { background-color: #b91c1c; }
+
+    .btn-sm { padding: 6px 12px; font-size: 0.8rem; }
+    .btn-full { width: 100%; }
+
+    .form-group {
+      margin-bottom: 16px;
+      text-align: left;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--navy-800);
+      margin-bottom: 6px;
+    }
+
+    .form-control {
+      width: 100%;
+      padding: 10px 14px;
+      border: 1px solid var(--slate-200);
+      border-radius: var(--radius-sm);
+      font-size: 0.9rem;
+      transition: border-color 0.2s;
+    }
+
+    .form-control:focus {
+      border-color: var(--orange-500);
+    }
+
+    /* ==========================================
+       3. HEADER & STATS DASHBOARD
+       ========================================== */
+    .header {
+      background-color: var(--navy-900);
+      color: var(--white);
+      padding: 24px 0;
+      margin-bottom: 30px;
+      border-bottom: 4px solid var(--orange-500);
+    }
+
+    .header-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    .brand-title {
+      font-size: 0.75rem;
+      letter-spacing: 0.15em;
+      color: var(--orange-500);
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    .header-left h1 {
+      font-size: 1.6rem;
+      font-weight: 700;
+    }
+
+    .header-left p {
+      font-size: 0.85rem;
+      color: #94a3b8;
+    }
+
+    .user-pill {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: rgba(255, 255, 255, 0.08);
+      padding: 6px 16px;
+      border-radius: 9999px;
+      font-size: 0.85rem;
+    }
+
+    /* Stats Cards */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+      margin-bottom: 30px;
+    }
+
+    .stat-card {
+      background: var(--white);
+      padding: 20px;
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-sm);
+      border: 1px solid var(--slate-200);
+    }
+
+    .stat-card .stat-label {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--slate-500);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .stat-card .stat-value {
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: var(--navy-900);
+      margin-top: 4px;
+    }
+
+    /* ==========================================
+       4. CONTROLS & FILTER BAR
+       ========================================== */
+    .controls-bar {
+      background: var(--white);
+      padding: 16px 20px;
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-sm);
+      border: 1px solid var(--slate-200);
+      margin-bottom: 24px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .search-box {
+      flex: 1 1 250px;
+      position: relative;
+    }
+
+    .search-box input {
+      padding-left: 36px;
+    }
+
+    .search-box svg {
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--slate-500);
+    }
+
+    .filters-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      flex: 2 1 auto;
+    }
+
+    .filter-select {
+      padding: 10px 14px;
+      border: 1px solid var(--slate-200);
+      border-radius: var(--radius-sm);
+      background-color: var(--white);
+      font-size: 0.85rem;
+      color: var(--navy-800);
+      cursor: pointer;
+    }
+
+    /* ==========================================
+       5. PACKAGES GRID / CARDS
+       ========================================== */
+    .packages-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 20px;
+    }
+
+    .pkg-card {
+      background: var(--white);
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--slate-200);
+      box-shadow: var(--shadow-sm);
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .pkg-card:hover {
+      transform: translateY(-3px);
+      box-shadow: var(--shadow-md);
+    }
+
+    .pkg-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 12px;
+    }
+
+    .pkg-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--navy-900);
+    }
+
+    .pkg-duration {
+      font-size: 0.85rem;
+      color: var(--slate-500);
+      font-weight: 500;
+      margin-bottom: 16px;
+    }
+
+    .pkg-price {
+      font-size: 2rem;
+      font-weight: 800;
+      color: var(--orange-500);
+      margin-bottom: 20px;
+    }
+
+    .pkg-price span {
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: var(--slate-500);
+    }
+
+    .pkg-features {
+      list-style: none;
+      margin-bottom: 24px;
+      flex-grow: 1;
+    }
+
+    .pkg-features li {
+      font-size: 0.85rem;
+      color: var(--navy-700);
+      margin-bottom: 8px;
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+    }
+
+    .pkg-features li::before {
+      content: "✓";
+      color: var(--green-600);
+      font-weight: 700;
+    }
+
+    .pkg-extra-fields {
+      border-top: 1px dashed var(--slate-200);
+      padding-top: 12px;
+      margin-bottom: 16px;
+      font-size: 0.8rem;
+    }
+
+    .pkg-extra-item {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 4px;
+    }
+
+    .pkg-extra-key { color: var(--slate-500); font-weight: 500; }
+    .pkg-extra-val { font-weight: 600; color: var(--navy-900); }
+
+    .pkg-footer {
+      border-top: 1px solid var(--slate-200);
+      padding-top: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .pkg-quick-toggle {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+
+    .pkg-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    /* Modern Toggle Switch */
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 44px;
+      height: 24px;
+    }
+
+    .switch input { opacity: 0; width: 0; height: 0; }
+
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background-color: #cbd5e1;
+      transition: .3s;
+      border-radius: 24px;
+    }
+
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 18px;
+      width: 18px;
+      left: 3px;
+      bottom: 3px;
+      background-color: white;
+      transition: .3s;
+      border-radius: 50%;
+    }
+
+    input:checked + .slider { background-color: var(--green-600); }
+    input:checked + .slider:before { transform: translateX(20px); }
+
+    /* ==========================================
+       6. MODAL & DIALOGS
+       ========================================== */
+    .modal-overlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(15, 23, 42, 0.6);
+      backdrop-filter: blur(4px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      padding: 16px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s ease;
+    }
+
+    .modal-overlay.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .modal-container {
+      background: var(--white);
+      border-radius: var(--radius-lg);
+      width: 100%;
+      max-width: 600px;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: var(--shadow-lg);
+      padding: 24px;
+      transform: translateY(20px);
+      transition: transform 0.2s ease;
+    }
+
+    .modal-overlay.active .modal-container {
+      transform: translateY(0);
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--slate-200);
+      padding-bottom: 12px;
+      margin-bottom: 20px;
+    }
+
+    .modal-header h3 {
+      font-size: 1.2rem;
+      color: var(--navy-900);
+    }
+
+    .close-btn {
+      font-size: 1.5rem;
+      line-height: 1;
+      color: var(--slate-500);
+    }
+
+    /* Tag Editor for Features */
+    .tags-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      border: 1px solid var(--slate-200);
+      padding: 8px;
+      border-radius: var(--radius-sm);
+      min-height: 48px;
+      align-items: center;
+    }
+
+    .tag-item {
+      background-color: var(--navy-100);
+      color: var(--navy-800);
+      padding: 4px 10px;
+      border-radius: var(--radius-sm);
+      font-size: 0.85rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .tag-item button {
+      color: var(--slate-500);
+      font-weight: bold;
+    }
+
+    .tag-item button:hover { color: var(--red-600); }
+
+    .tag-input-group {
+      display: flex;
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    /* ==========================================
+       7. CUSTOM TOAST NOTIFICATION
+       ========================================== */
+    #toast-container {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .toast {
+      padding: 12px 20px;
+      border-radius: var(--radius-md);
+      background: var(--navy-900);
+      color: var(--white);
+      font-size: 0.85rem;
+      font-weight: 500;
+      box-shadow: var(--shadow-lg);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 280px;
+      animation: slideIn 0.3s ease;
+    }
+
+    .toast-success { border-left: 4px solid var(--green-600); }
+    .toast-error { border-left: 4px solid var(--red-600); }
+    .toast-warning { border-left: 4px solid var(--orange-500); }
+    .toast-info { border-left: 4px solid #3b82f6; }
+
+    @keyframes slideIn {
+      from { transform: translateX(100%); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+
+    /* Empty & Loading States */
+    .state-box {
+      text-align: center;
+      padding: 60px 20px;
+      background: var(--white);
+      border-radius: var(--radius-lg);
+      border: 1px dashed var(--slate-200);
+    }
+
+    .state-box p {
+      color: var(--slate-500);
+      font-size: 0.95rem;
+      margin-top: 8px;
+    }
+
+    .spinner {
+      border: 3px solid #f3f3f3;
+      border-top: 3px solid var(--orange-500);
+      border-radius: 50%;
+      width: 28px;
+      height: 28px;
+      animation: spin 1s linear infinite;
+      margin: 0 auto;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    /* Image Preview in Cards */
+    .image-preview-sm {
+      max-width: 100%;
+      height: 60px;
+      object-fit: contain;
+      border-radius: 4px;
+      margin-top: 4px;
+      background: #f8fafc;
+      border: 1px solid var(--slate-200);
+    }
+
+    /* Dynamic Form Field Controls */
+    .dynamic-field-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 8px;
+      background: #f8fafc;
+      padding: 8px;
+      border-radius: 6px;
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+      .header-content { flex-direction: column; align-items: flex-start; }
+      .controls-bar { flex-direction: column; align-items: stretch; }
+      .filters-group { width: 100%; }
+      .filter-select { flex: 1; }
+      .packages-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ==========================================
+       LOGIN / ACCESS DENIED SCREEN
+       ========================================== -->
+  <div id="auth-screen" class="full-screen-center">
+    <div class="auth-card">
+      <div class="brand-title" style="margin-bottom: 8px;">GHOTI BUILDER</div>
+      <h2 id="auth-title">Admin Login</h2>
+      <p id="auth-desc">Please log in with administrator credentials.</p>
+
+      <!-- Login Form -->
+      <form id="login-form">
+        <div class="form-group">
+          <label>Admin Email</label>
+          <input type="email" id="login-email" class="form-control" placeholder="support@ghotimarket.com" required>
+        </div>
+        <div class="form-group">
+          <label>Password</label>
+          <input type="password" id="login-password" class="form-control" placeholder="••••••••" required>
+        </div>
+        <button type="submit" class="btn btn-primary btn-full">Sign In to Dashboard</button>
+      </form>
+
+      <!-- Access Denied State (Hidden by default) -->
+      <div id="access-denied-view" class="hidden">
+        <div style="font-size: 3rem; margin-bottom: 12px;">🚫</div>
+        <h3 style="color: var(--red-600); margin-bottom: 8px;">Access Denied</h3>
+        <p>Your email (<strong id="current-user-email"></strong>) is not authorized to access this panel. Only <strong>support@ghotimarket.com</strong> is allowed.</p>
+        <button id="btn-logout-denied" class="btn btn-secondary btn-full">Sign Out & Switch Account</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==========================================
+       MAIN ADMIN APPLICATION
+       ========================================== -->
+  <div id="app" class="hidden">
+    
+    <!-- HEADER -->
+    <header class="header">
+      <div class="container header-content">
+        <div class="header-left">
+          <div class="brand-title">GHOTI BUILDER</div>
+          <h1>Subscription Package Management</h1>
+          <p>Create, manage, and dynamically customize system subscription plans</p>
+        </div>
+        <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
+          <div class="user-pill">
+            <span style="color: var(--green-600);">●</span>
+            <span id="admin-user-display">support@ghotimarket.com</span>
+            <button id="btn-logout" style="color: #94a3b8; font-size: 0.75rem; text-decoration: underline;">Logout</button>
+          </div>
+          <button id="btn-open-add-modal" class="btn btn-primary">
+            <span>+ Add New Package</span>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <div class="container">
+      
+      <!-- DASHBOARD STATS -->
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-label">Total Packages</div>
+          <div class="stat-value" id="stat-total">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Active Packages</div>
+          <div class="stat-value" id="stat-active" style="color: var(--green-600);">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Inactive Packages</div>
+          <div class="stat-value" id="stat-inactive" style="color: var(--red-600);">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Lowest Price</div>
+          <div class="stat-value" id="stat-lowest">৳0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Highest Price</div>
+          <div class="stat-value" id="stat-highest">৳0</div>
+        </div>
+      </div>
+
+      <!-- CONTROLS BAR (SEARCH, FILTERS, SORT) -->
+      <div class="controls-bar">
+        <div class="search-box">
+          <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+          <input type="text" id="search-input" class="form-control" placeholder="Search package name or feature...">
+        </div>
+
+        <div class="filters-group">
+          <select id="filter-status" class="filter-select">
+            <option value="all">All Status</option>
+            <option value="active">Active Only</option>
+            <option value="inactive">Inactive Only</option>
+          </select>
+
+          <select id="filter-duration" class="filter-select">
+            <option value="all">All Durations</option>
+            <option value="days">Days</option>
+            <option value="weeks">Weeks</option>
+            <option value="months">Months</option>
+            <option value="years">Years</option>
+          </select>
+
+          <select id="sort-by" class="filter-select">
+            <option value="newest">Newest First</option>
+            <option value="oldest">Oldest First</option>
+            <option value="price-low">Price: Low → High</option>
+            <option value="price-high">Price: High → Low</option>
+            <option value="name-asc">Name: A → Z</option>
+            <option value="name-desc">Name: Z → A</option>
+            <option value="custom-order" id="sort-opt-custom" class="hidden">Custom Order</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- PACKAGES CONTAINER -->
+      <div id="packages-loading" class="state-box">
+        <div class="spinner"></div>
+        <p>Loading subscription packages...</p>
+      </div>
+
+      <div id="packages-empty" class="state-box hidden">
+        <p style="font-size: 1.2rem; font-weight: 600; color: var(--navy-800);">No packages found</p>
+        <p id="empty-subtext">No subscription packages created yet. Click above to create one.</p>
+      </div>
+
+      <div id="packages-grid" class="packages-grid hidden"></div>
+
+    </div>
+  </div>
+
+  <!-- ==========================================
+       MODALS
+       ========================================== -->
+
+  <!-- ADD / EDIT PACKAGE MODAL -->
+  <div id="modal-package" class="modal-overlay">
+    <div class="modal-container">
+      <div class="modal-header">
+        <h3 id="modal-pkg-title">Add Subscription Package</h3>
+        <button class="close-btn" onclick="closeModal('modal-package')">&times;</button>
+      </div>
+
+      <form id="pkg-form">
+        <input type="hidden" id="pkg-edit-id">
+
+        <div class="form-group">
+          <label>Package Name *</label>
+          <input type="text" id="pkg-name" class="form-control" placeholder="e.g. Starter, Basic, Premium" required minlength="2" maxlength="100">
+          <div id="name-warning" style="font-size: 0.75rem; color: var(--orange-600); margin-top: 4px;" class="hidden">
+            ⚠️ A package with this name may already exist.
+          </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+          <div class="form-group">
+            <label>Duration *</label>
+            <input type="number" id="pkg-duration" class="form-control" placeholder="30" min="1" required>
+          </div>
+          <div class="form-group">
+            <label>Duration Unit *</label>
+            <select id="pkg-duration-unit" class="form-control">
+              <option value="days">Days</option>
+              <option value="weeks">Weeks</option>
+              <option value="months">Months</option>
+              <option value="years">Years</option>
+            </select>
+          </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+          <div class="form-group">
+            <label>Price *</label>
+            <input type="number" id="pkg-price" class="form-control" placeholder="499" min="0" step="0.01" required>
+          </div>
+          <div class="form-group">
+            <label>Currency *</label>
+            <select id="pkg-currency" class="form-control">
+              <option value="BDT">BDT (৳)</option>
+              <option value="USD">USD ($)</option>
+              <option value="INR">INR (₹)</option>
+              <option value="EUR">EUR (€)</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Features Editor -->
+        <div class="form-group">
+          <label>Package Features (Minimum 1) *</label>
+          <div id="tags-wrapper" class="tags-container"></div>
+          <div class="tag-input-group">
+            <input type="text" id="feature-input" class="form-control" placeholder="Enter feature e.g. Custom Domain">
+            <button type="button" id="btn-add-feature" class="btn btn-secondary btn-sm">+ Add</button>
+          </div>
+        </div>
+
+        <div class="form-group" style="display: flex; align-items: center; justify-content: space-between; margin-top: 20px;">
+          <label style="margin-bottom: 0;">Active Package</label>
+          <label class="switch">
+            <input type="checkbox" id="pkg-active" checked>
+            <span class="slider"></span>
+          </label>
+        </div>
+
+        <!-- DYNAMIC FIELDS SECTION -->
+        <div style="margin-top: 24px; border-top: 1px solid var(--slate-200); padding-top: 16px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+            <label style="font-size: 0.9rem; font-weight: 700; color: var(--navy-800);">Additional Custom Fields</label>
+            <button type="button" id="btn-open-field-modal" class="btn btn-secondary btn-sm">+ Add Custom Field</button>
+          </div>
+          <div id="dynamic-fields-container">
+            <p style="font-size: 0.8rem; color: var(--slate-500);">No custom fields added.</p>
+          </div>
+        </div>
+
+        <div style="display: flex; justify-content: flex-end; gap: 12px; margin-top: 24px;">
+          <button type="button" class="btn btn-secondary" onclick="closeModal('modal-package')">Cancel</button>
+          <button type="submit" class="btn btn-primary" id="btn-save-pkg">Save Package</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ADD CUSTOM FIELD MODAL -->
+  <div id="modal-add-field" class="modal-overlay">
+    <div class="modal-container" style="max-width: 420px;">
+      <div class="modal-header">
+        <h3>Add New Custom Field</h3>
+        <button class="close-btn" onclick="closeModal('modal-add-field')">&times;</button>
+      </div>
+      <form id="custom-field-form">
+        <div class="form-group">
+          <label>Field Name (e.g. discount, popular, icon)</label>
+          <input type="text" id="field-key" class="form-control" placeholder="fieldName" required pattern="[A-Za-z0-9_]+" title="Letters, numbers and underscores only">
+        </div>
+        <div class="form-group">
+          <label>Field Type</label>
+          <select id="field-type" class="form-control">
+            <option value="String">String (Text)</option>
+            <option value="Number">Number</option>
+            <option value="Boolean">Boolean (Toggle)</option>
+            <option value="Array">Array (Comma Separated)</option>
+            <option value="URL">URL / Image Link</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Field Initial Value</label>
+          <input type="text" id="field-val" class="form-control" placeholder="Enter value">
+        </div>
+        <div style="display: flex; justify-content: flex-end; gap: 12px; margin-top: 20px;">
+          <button type="button" class="btn btn-secondary" onclick="closeModal('modal-add-field')">Cancel</button>
+          <button type="submit" class="btn btn-navy">Add Field</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- CUSTOMER-FACING PREVIEW MODAL -->
+  <div id="modal-preview" class="modal-overlay">
+    <div class="modal-container" style="max-width: 400px; text-align: center;">
+      <div class="modal-header">
+        <h3>Customer Plan Preview</h3>
+        <button class="close-btn" onclick="closeModal('modal-preview')">&times;</button>
+      </div>
+
+      <div style="border: 2px solid var(--orange-500); border-radius: var(--radius-lg); padding: 24px; position: relative;">
+        <div id="prev-badge-container"></div>
+        <h2 id="prev-name" style="font-size: 1.5rem; color: var(--navy-900); margin-top: 8px;">Starter</h2>
+        <p id="prev-duration" style="font-size: 0.85rem; color: var(--slate-500);">30 Days Access</p>
+
+        <div id="prev-price" style="font-size: 2.2rem; font-weight: 800; color: var(--orange-500); margin: 16px 0;">৳499</div>
+
+        <ul id="prev-features" style="text-align: left; list-style: none; margin-bottom: 24px;"></ul>
+
+        <button class="btn btn-primary btn-full" onclick="alert('Visual Preview Only!')">Subscribe Now</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- RAW JSON DATA MODAL -->
+  <div id="modal-raw" class="modal-overlay">
+    <div class="modal-container" style="max-width: 550px;">
+      <div class="modal-header">
+        <h3>Raw Document JSON</h3>
+        <button class="close-btn" onclick="closeModal('modal-raw')">&times;</button>
+      </div>
+      <pre id="raw-json-content" style="background: var(--navy-900); color: #38bdf8; padding: 16px; border-radius: var(--radius-md); font-family: monospace; font-size: 0.85rem; overflow-x: auto; max-height: 350px;"></pre>
+      <div style="display: flex; justify-content: flex-end; gap: 12px; margin-top: 16px;">
+        <button id="btn-copy-json" class="btn btn-primary btn-sm">Copy JSON</button>
+        <button class="btn btn-secondary btn-sm" onclick="closeModal('modal-raw')">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- CONFIRM DELETE MODAL -->
+  <div id="modal-confirm" class="modal-overlay">
+    <div class="modal-container" style="max-width: 400px; text-align: center;">
+      <div style="font-size: 2.5rem; margin-bottom: 12px;">⚠️</div>
+      <h3 style="color: var(--navy-900); margin-bottom: 8px;">Delete Subscription Package?</h3>
+      <p style="color: var(--slate-500); font-size: 0.9rem; margin-bottom: 16px;">You are about to delete:</p>
+      
+      <div style="background: var(--slate-100); padding: 12px; border-radius: var(--radius-md); margin-bottom: 20px;">
+        <strong id="del-pkg-name" style="color: var(--navy-900); font-size: 1.1rem; display: block;">Premium</strong>
+        <span id="del-pkg-meta" style="color: var(--slate-500); font-size: 0.85rem;">৳999 / 30 Days</span>
+      </div>
+
+      <p style="color: var(--red-600); font-size: 0.8rem; font-weight: 600; margin-bottom: 20px;">This action cannot be undone.</p>
+
+      <div style="display: flex; gap: 12px;">
+        <button class="btn btn-secondary btn-full" onclick="closeModal('modal-confirm')">Cancel</button>
+        <button id="btn-confirm-delete" class="btn btn-danger btn-full">Delete Package</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOAST CONTAINER -->
+  <div id="toast-container"></div>
+
+  <!-- ==========================================
+       JAVASCRIPT (FIREBASE V9+ MODULAR SDK)
+       ========================================== -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { 
+      getAuth, 
+      onAuthStateChanged, 
+      signInWithEmailAndPassword, 
+      signOut 
+    } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+    import { 
+      getFirestore, 
+      collection, 
+      addDoc, 
+      updateDoc, 
+      deleteDoc, 
+      doc, 
+      onSnapshot, 
+      serverTimestamp, 
+      deleteField 
+    } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+    // ==========================================
+    // 45. FIREBASE CONFIGURATION
+    // ==========================================
+    const firebaseConfig = {
+  apiKey: "AIzaSyBUhNhYvuo_FTvZ5RZR6Gn-4hsUY21S0XE",
+  authDomain: "ghotimarket.firebaseapp.com",
+  databaseURL: "https://ghotimarket-default-rtdb.firebaseio.com",
+  projectId: "ghotimarket",
+  storageBucket: "ghotimarket.firebasestorage.app",
+  messagingSenderId: "481257644093",
+  appId: "1:481257644093:web:0dfc3699d6b3c86afeca54",
+  measurementId: "G-4SR8V2EKC1"
+};
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    const ADMIN_EMAIL = "support@ghotimarket.com";
+    const COLLECTION_NAME = "shops_packages";
+
+    // Application State
+    let rawPackagesList = [];
+    let processedPackages = [];
+    let currentFeatures = [];
+    let dynamicCustomFields = {}; // holds fieldName: { type, value }
+    let activeDeleteId = null;
+    let activeRawJson = null;
+
+    // Standard Document Schema Keys
+    const STANDARD_KEYS = ['id', 'packageName', 'duration', 'durationUnit', 'features', 'price', 'currency', 'active', 'createdAt', 'updatedAt'];
+
+    // ==========================================
+    // 2. ADMIN AUTHENTICATION SECURITY
+    // ==========================================
+    onAuthStateChanged(auth, (user) => {
+      const authScreen = document.getElementById("auth-screen");
+      const appScreen = document.getElementById("app");
+      const loginForm = document.getElementById("login-form");
+      const accessDenied = document.getElementById("access-denied-view");
+
+      if (user) {
+        if (user.email === ADMIN_EMAIL) {
+          // Authorized Admin
+          authScreen.classList.add("hidden");
+          appScreen.classList.remove("hidden");
+          document.getElementById("admin-user-display").innerText = user.email;
+          initRealtimeListener();
+        } else {
+          // Access Denied
+          authScreen.classList.remove("hidden");
+          appScreen.classList.add("hidden");
+          loginForm.classList.add("hidden");
+          accessDenied.classList.remove("hidden");
+          document.getElementById("current-user-email").innerText = user.email || "Unknown";
+        }
+      } else {
+        // Not logged in
+        authScreen.classList.remove("hidden");
+        appScreen.classList.add("hidden");
+        loginForm.classList.remove("hidden");
+        accessDenied.classList.add("hidden");
+      }
+    });
+
+    // Handle Login
+    document.getElementById("login-form").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const email = document.getElementById("login-email").value.trim();
+      const password = document.getElementById("login-password").value;
+
+      try {
+        await signInWithEmailAndPassword(auth, email, password);
+        showToast("Logged in successfully", "success");
+      } catch (err) {
+        showToast(err.message, "error");
+      }
+    });
+
+    // Handle Logout
+    document.getElementById("btn-logout").addEventListener("click", () => signOut(auth));
+    document.getElementById("btn-logout-denied").addEventListener("click", () => signOut(auth));
+
+    // ==========================================
+    // 27. REALTIME FIRESTORE LISTENER
+    // ==========================================
+    function initRealtimeListener() {
+      const colRef = collection(db, COLLECTION_NAME);
+      onSnapshot(colRef, (snapshot) => {
+        rawPackagesList = [];
+        snapshot.forEach((docSnap) => {
+          rawPackagesList.push({
+            id: docSnap.id,
+            ...docSnap.data()
+          });
+        });
+
+        calculateStats();
+        applyFilterAndSort();
+      }, (error) => {
+        showToast("Error loading packages: " + error.message, "error");
+      });
+    }
+
+    // ==========================================
+    // 5. DASHBOARD STATS CALCULATION
+    // ==========================================
+    function calculateStats() {
+      const total = rawPackagesList.length;
+      const active = rawPackagesList.filter(p => p.active === true).length;
+      const inactive = total - active;
+
+      let lowest = 0;
+      let highest = 0;
+
+      if (total > 0) {
+        const prices = rawPackagesList.map(p => Number(p.price) || 0);
+        lowest = Math.min(...prices);
+        highest = Math.max(...prices);
+      }
+
+      document.getElementById("stat-total").innerText = total;
+      document.getElementById("stat-active").innerText = active;
+      document.getElementById("stat-inactive").innerText = inactive;
+      document.getElementById("stat-lowest").innerText = formatCurrency(lowest, 'BDT');
+      document.getElementById("stat-highest").innerText = formatCurrency(highest, 'BDT');
+    }
+
+    // ==========================================
+    // 16-19, 50-51. SEARCH, FILTER & SORTING
+    // ==========================================
+    function applyFilterAndSort() {
+      const searchQuery = document.getElementById("search-input").value.toLowerCase().trim();
+      const statusFilter = document.getElementById("filter-status").value;
+      const durationFilter = document.getElementById("filter-duration").value;
+      const sortBy = document.getElementById("sort-by").value;
+
+      // Check if custom displayOrder field exists across docs
+      const hasDisplayOrder = rawPackagesList.some(p => p.displayOrder !== undefined);
+      const customSortOpt = document.getElementById("sort-opt-custom");
+      if (hasDisplayOrder) {
+        customSortOpt.classList.remove("hidden");
+      } else {
+        customSortOpt.classList.add("hidden");
+      }
+
+      // Filter Logic
+      processedPackages = rawPackagesList.filter(pkg => {
+        // Status Filter
+        if (statusFilter === 'active' && !pkg.active) return false;
+        if (statusFilter === 'inactive' && pkg.active) return false;
+
+        // Duration Filter
+        if (durationFilter !== 'all' && pkg.durationUnit !== durationFilter) return false;
+
+        // Search Filter (packageName, features, duration, price)
+        if (searchQuery) {
+          const nameMatch = (pkg.packageName || '').toLowerCase().includes(searchQuery);
+          const durationMatch = String(pkg.duration || '').includes(searchQuery);
+          const priceMatch = String(pkg.price || '').includes(searchQuery);
+          const featureMatch = Array.isArray(pkg.features) && pkg.features.some(f => f.toLowerCase().includes(searchQuery));
+          
+          if (!nameMatch && !durationMatch && !priceMatch && !featureMatch) {
+            return false;
+          }
+        }
+
+        return true;
+      });
+
+      // Sorting Logic
+      processedPackages.sort((a, b) => {
+        if (sortBy === 'newest') {
+          return (b.createdAt?.toMillis() || 0) - (a.createdAt?.toMillis() || 0);
+        } else if (sortBy === 'oldest') {
+          return (a.createdAt?.toMillis() || 0) - (b.createdAt?.toMillis() || 0);
+        } else if (sortBy === 'price-low') {
+          return (a.price || 0) - (b.price || 0);
+        } else if (sortBy === 'price-high') {
+          return (b.price || 0) - (a.price || 0);
+        } else if (sortBy === 'name-asc') {
+          return (a.packageName || '').localeCompare(b.packageName || '');
+        } else if (sortBy === 'name-desc') {
+          return (b.packageName || '').localeCompare(a.packageName || '');
+        } else if (sortBy === 'custom-order') {
+          return (a.displayOrder || 0) - (b.displayOrder || 0);
+        }
+        return 0;
+      });
+
+      renderPackagesList();
+    }
+
+    // Attach Event Listeners to Controls
+    document.getElementById("search-input").addEventListener("input", applyFilterAndSort);
+    document.getElementById("filter-status").addEventListener("change", applyFilterAndSort);
+    document.getElementById("filter-duration").addEventListener("change", applyFilterAndSort);
+    document.getElementById("sort-by").addEventListener("change", applyFilterAndSort);
+
+    // ==========================================
+    // 14-15, 31-32. RENDER PACKAGES GRID
+    // ==========================================
+    function renderPackagesList() {
+      const loader = document.getElementById("packages-loading");
+      const emptyState = document.getElementById("packages-empty");
+      const grid = document.getElementById("packages-grid");
+
+      loader.classList.add("hidden");
+
+      if (processedPackages.length === 0) {
+        grid.classList.add("hidden");
+        emptyState.classList.remove("hidden");
+        if (rawPackagesList.length > 0) {
+          document.getElementById("empty-subtext").innerText = "No matching packages found for applied search/filters.";
+        } else {
+          document.getElementById("empty-subtext").innerText = "No subscription packages created yet.";
+        }
+        return;
+      }
+
+      emptyState.classList.add("hidden");
+      grid.classList.remove("hidden");
+      grid.innerHTML = "";
+
+      processedPackages.forEach(pkg => {
+        const card = document.createElement("div");
+        card.className = "pkg-card";
+
+        // Badges Detection (popular, badge)
+        let badgeHtml = '';
+        if (pkg.popular === true) {
+          badgeHtml += `<span class="badge badge-custom" style="margin-right: 4px;">POPULAR</span>`;
+        }
+        if (pkg.badge) {
+          badgeHtml += `<span class="badge badge-custom">${escapeHtml(pkg.badge)}</span>`;
+        }
+
+        // Features List HTML
+        const featuresHtml = (pkg.features || []).map(f => `<li>${escapeHtml(f)}</li>`).join('');
+
+        // Dynamic Additional Fields HTML
+        let dynamicFieldsHtml = '';
+        Object.keys(pkg).forEach(key => {
+          if (!STANDARD_KEYS.includes(key)) {
+            const val = pkg[key];
+            
+            // Image Auto Preview Detection
+            const isImageKey = ['icon', 'image', 'banner', 'thumbnail', 'logo'].includes(key.toLowerCase());
+            const isImageUrl = typeof val === 'string' && (val.startsWith('http://') || val.startsWith('https://'));
+
+            if (isImageKey && isImageUrl) {
+              dynamicFieldsHtml += `
+                <div class="pkg-extra-item" style="flex-direction: column; align-items: flex-start;">
+                  <span class="pkg-extra-key">${escapeHtml(key)}:</span>
+                  <img src="${escapeHtml(val)}" class="image-preview-sm" onerror="this.src='https://via.placeholder.com/150?text=Image+Unavailable'" />
+                </div>`;
+            } else {
+              dynamicFieldsHtml += `
+                <div class="pkg-extra-item">
+                  <span class="pkg-extra-key">${escapeHtml(key)}:</span>
+                  <span class="pkg-extra-val">${escapeHtml(JSON.stringify(val))}</span>
+                </div>`;
+            }
+          }
+        });
+
+        card.innerHTML = `
+          <div class="pkg-header">
+            <div>
+              <div class="pkg-title">${escapeHtml(pkg.packageName || 'Untitled')}</div>
+              <div style="margin-top: 4px;">${badgeHtml}</div>
+            </div>
+            <span class="badge ${pkg.active ? 'badge-active' : 'badge-inactive'}">
+              ${pkg.active ? 'Active' : 'Inactive'}
+            </span>
+          </div>
+
+          <div class="pkg-duration">⏱️ ${formatDuration(pkg.duration, pkg.durationUnit)}</div>
+
+          <div class="pkg-price">
+            ${formatCurrency(pkg.price, pkg.currency)} <span>/ ${formatDuration(pkg.duration, pkg.durationUnit)}</span>
+          </div>
+
+          <ul class="pkg-features">
+            ${featuresHtml}
+          </ul>
+
+          ${dynamicFieldsHtml ? `<div class="pkg-extra-fields">${dynamicFieldsHtml}</div>` : ''}
+
+          <div class="pkg-footer">
+            <div class="pkg-quick-toggle">
+              <span>Status</span>
+              <label class="switch">
+                <input type="checkbox" ${pkg.active ? 'checked' : ''} data-toggle-id="${pkg.id}">
+                <span class="slider"></span>
+              </label>
+            </div>
+
+            <div class="pkg-actions">
+              <button class="btn btn-secondary btn-sm" data-action="edit" data-id="${pkg.id}">Edit</button>
+              <button class="btn btn-secondary btn-sm" data-action="duplicate" data-id="${pkg.id}">Duplicate</button>
+              <button class="btn btn-secondary btn-sm" data-action="preview" data-id="${pkg.id}">Preview</button>
+              <button class="btn btn-secondary btn-sm" data-action="raw" data-id="${pkg.id}">Raw JSON</button>
+              <button class="btn btn-danger btn-sm" data-action="delete" data-id="${pkg.id}">Delete</button>
+            </div>
+
+            <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.75rem; color: var(--slate-500); margin-top: 4px;">
+              <span>ID: ${pkg.id.substring(0, 8)}...</span>
+              <button style="color: var(--orange-500); font-weight: 600;" data-action="copy-id" data-id="${pkg.id}">Copy ID</button>
+            </div>
+          </div>
+        `;
+
+        grid.appendChild(card);
+      });
+
+      // Attach Card Actions Event Delegation
+      grid.querySelectorAll("button, input[type='checkbox']").forEach(elem => {
+        elem.addEventListener("click", handleCardAction);
+        if (elem.type === 'checkbox') {
+          elem.addEventListener("change", handleQuickToggle);
+        }
+      });
+    }
+
+    // Handle Quick Toggle Active Status
+    async function handleQuickToggle(e) {
+      const docId = e.target.getAttribute("data-toggle-id");
+      if (!docId) return;
+      const newActive = e.target.checked;
+
+      try {
+        const docRef = doc(db, COLLECTION_NAME, docId);
+        await updateDoc(docRef, {
+          active: newActive,
+          updatedAt: serverTimestamp()
+        });
+        showToast(newActive ? "Package activated" : "Package deactivated", "success");
+      } catch (err) {
+        showToast("Failed to update status: " + err.message, "error");
+        e.target.checked = !newActive; // revert
+      }
+    }
+
+    // Handle Card Button Clicks
+    function handleCardAction(e) {
+      const action = e.currentTarget.getAttribute("data-action");
+      const id = e.currentTarget.getAttribute("data-id");
+      if (!action || !id) return;
+
+      if (action === "edit") openEditModal(id);
+      else if (action === "duplicate") duplicatePackage(id);
+      else if (action === "preview") openPreviewModal(id);
+      else if (action === "raw") openRawDataModal(id);
+      else if (action === "delete") openDeleteModal(id);
+      else if (action === "copy-id") {
+        navigator.clipboard.writeText(id);
+        showToast("Package ID copied", "info");
+      }
+    }
+
+    // ==========================================
+    // 9, 23. FEATURES TAG EDITOR
+    // ==========================================
+    function renderFeatureTags() {
+      const wrapper = document.getElementById("tags-wrapper");
+      wrapper.innerHTML = "";
+
+      currentFeatures.forEach((feat, idx) => {
+        const tag = document.createElement("span");
+        tag.className = "tag-item";
+        tag.innerHTML = `
+          ${escapeHtml(feat)}
+          <button type="button" data-idx="${idx}">&times;</button>
+        `;
+        tag.querySelector("button").addEventListener("click", () => {
+          if (currentFeatures.length <= 1) {
+            showToast("At least 1 feature is required.", "warning");
+            return;
+          }
+          currentFeatures.splice(idx, 1);
+          renderFeatureTags();
+        });
+        wrapper.appendChild(tag);
+      });
+    }
+
+    document.getElementById("btn-add-feature").addEventListener("click", addFeatureFromInput);
+    document.getElementById("feature-input").addEventListener("keypress", (e) => {
+      if (e.key === "Enter") {
+        e.preventDefault();
+        addFeatureFromInput();
+      }
+    });
+
+    function addFeatureFromInput() {
+      const input = document.getElementById("feature-input");
+      const val = input.value.trim();
+      if (!val) return;
+
+      if (currentFeatures.some(f => f.toLowerCase() === val.toLowerCase())) {
+        showToast("Feature already exists in list", "warning");
+        return;
+      }
+
+      currentFeatures.push(val);
+      input.value = "";
+      renderFeatureTags();
+    }
+
+    // ==========================================
+    // 28-31. DYNAMIC CUSTOM FIELDS EDITOR
+    // ==========================================
+    function renderDynamicFieldsUI() {
+      const container = document.getElementById("dynamic-fields-container");
+      container.innerHTML = "";
+
+      const keys = Object.keys(dynamicCustomFields);
+      if (keys.length === 0) {
+        container.innerHTML = `<p style="font-size: 0.8rem; color: var(--slate-500);">No custom fields added.</p>`;
+        return;
+      }
+
+      keys.forEach(key => {
+        const item = dynamicCustomFields[key];
+        const row = document.createElement("div");
+        row.className = "dynamic-field-row";
+
+        let inputHtml = '';
+        if (item.type === 'Boolean') {
+          inputHtml = `<label class="switch"><input type="checkbox" ${item.value ? 'checked' : ''} data-df-key="${key}"><span class="slider"></span></label>`;
+        } else if (item.type === 'Number') {
+          inputHtml = `<input type="number" class="form-control" value="${item.value}" data-df-key="${key}" style="padding: 4px 8px;">`;
+        } else {
+          inputHtml = `<input type="text" class="form-control" value="${escapeHtml(String(item.value))}" data-df-key="${key}" style="padding: 4px 8px;">`;
+        }
+
+        row.innerHTML = `
+          <div style="flex: 1;">
+            <strong style="font-size: 0.8rem; color: var(--navy-900);">${escapeHtml(key)}</strong>
+            <span style="font-size: 0.7rem; color: var(--slate-500);">(${item.type})</span>
+          </div>
+          <div style="flex: 2;">${inputHtml}</div>
+          <button type="button" class="btn btn-danger btn-sm" data-remove-df="${key}">&times;</button>
+        `;
+
+        // Value Change Listener
+        const inputElem = row.querySelector(`[data-df-key="${key}"]`);
+        if (inputElem) {
+          inputElem.addEventListener("change", (e) => {
+            if (item.type === 'Boolean') {
+              dynamicCustomFields[key].value = e.target.checked;
+            } else if (item.type === 'Number') {
+              dynamicCustomFields[key].value = Number(e.target.value);
+            } else {
+              dynamicCustomFields[key].value = e.target.value;
+            }
+          });
+        }
+
+        // Remove Field Listener
+        row.querySelector(`[data-remove-df="${key}"]`).addEventListener("click", () => {
+          delete dynamicCustomFields[key];
+          renderDynamicFieldsUI();
+        });
+
+        container.appendChild(row);
+      });
+    }
+
+    // Modal to add a new custom field
+    document.getElementById("btn-open-field-modal").addEventListener("click", () => {
+      document.getElementById("custom-field-form").reset();
+      openModal("modal-add-field");
+    });
+
+    document.getElementById("custom-field-form").addEventListener("submit", (e) => {
+      e.preventDefault();
+      const key = document.getElementById("field-key").value.trim();
+      const type = document.getElementById("field-type").value;
+      const rawVal = document.getElementById("field-val").value.trim();
+
+      if (STANDARD_KEYS.includes(key)) {
+        showToast("Cannot overwrite standard field name", "error");
+        return;
+      }
+
+      let parsedVal = rawVal;
+      if (type === 'Number') parsedVal = Number(rawVal) || 0;
+      else if (type === 'Boolean') parsedVal = rawVal.toLowerCase() === 'true';
+      else if (type === 'Array') parsedVal = rawVal.split(',').map(s => s.trim());
+
+      dynamicCustomFields[key] = { type, value: parsedVal };
+      renderDynamicFieldsUI();
+      closeModal("modal-add-field");
+      showToast(`Field '${key}' added`, "success");
+    });
+
+    // ==========================================
+    // 6, 13, 20. ADD & EDIT PACKAGE MODALS
+    // ==========================================
+    document.getElementById("btn-open-add-modal").addEventListener("click", () => {
+      document.getElementById("pkg-form").reset();
+      document.getElementById("pkg-edit-id").value = "";
+      document.getElementById("modal-pkg-title").innerText = "Add Subscription Package";
+      document.getElementById("btn-save-pkg").innerText = "Create Package";
+      document.getElementById("name-warning").classList.add("hidden");
+
+      currentFeatures = ["Custom Shop", "Product Management", "WhatsApp Order"];
+      dynamicCustomFields = {};
+
+      renderFeatureTags();
+      renderDynamicFieldsUI();
+      openModal("modal-package");
+    });
+
+    function openEditModal(docId) {
+      const pkg = rawPackagesList.find(p => p.id === docId);
+      if (!pkg) return;
+
+      document.getElementById("pkg-edit-id").value = pkg.id;
+      document.getElementById("modal-pkg-title").innerText = "Edit Subscription Package";
+      document.getElementById("btn-save-pkg").innerText = "Save Changes";
+      document.getElementById("name-warning").classList.add("hidden");
+
+      document.getElementById("pkg-name").value = pkg.packageName || "";
+      document.getElementById("pkg-duration").value = pkg.duration || 30;
+      document.getElementById("pkg-duration-unit").value = pkg.durationUnit || "days";
+      document.getElementById("pkg-price").value = pkg.price || 0;
+      document.getElementById("pkg-currency").value = pkg.currency || "BDT";
+      document.getElementById("pkg-active").checked = pkg.active !== false;
+
+      currentFeatures = Array.isArray(pkg.features) ? [...pkg.features] : [];
+
+      // Extract custom dynamic fields
+      dynamicCustomFields = {};
+      Object.keys(pkg).forEach(key => {
+        if (!STANDARD_KEYS.includes(key)) {
+          const val = pkg[key];
+          let type = 'String';
+          if (typeof val === 'number') type = 'Number';
+          else if (typeof val === 'boolean') type = 'Boolean';
+          else if (Array.isArray(val)) type = 'Array';
+
+          dynamicCustomFields[key] = { type, value: val };
+        }
+      });
+
+      renderFeatureTags();
+      renderDynamicFieldsUI();
+      openModal("modal-package");
+    }
+
+    // Name Duplicate Warning Listener
+    document.getElementById("pkg-name").addEventListener("input", (e) => {
+      const name = e.target.value.trim().toLowerCase();
+      const currentId = document.getElementById("pkg-edit-id").value;
+
+      const exists = rawPackagesList.some(p => p.packageName.toLowerCase() === name && p.id !== currentId);
+      if (exists) {
+        document.getElementById("name-warning").classList.remove("hidden");
+      } else {
+        document.getElementById("name-warning").classList.add("hidden");
+      }
+    });
+
+    // Save Package Form Submission (Create / Update)
+    document.getElementById("pkg-form").addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const editId = document.getElementById("pkg-edit-id").value;
+      const packageName = document.getElementById("pkg-name").value.trim();
+      const duration = Number(document.getElementById("pkg-duration").value);
+      const durationUnit = document.getElementById("pkg-duration-unit").value;
+      const price = Number(document.getElementById("pkg-price").value);
+      const currency = document.getElementById("pkg-currency").value;
+      const active = document.getElementById("pkg-active").checked;
+
+      // Validation Checks
+      if (!packageName || packageName.length < 2 || packageName.length > 100) {
+        showToast("Package name must be between 2 and 100 characters.", "error");
+        return;
+      }
+      if (!duration || duration <= 0) {
+        showToast("Duration must be greater than 0.", "error");
+        return;
+      }
+      if (price < 0) {
+        showToast("Price cannot be negative.", "error");
+        return;
+      }
+      if (currentFeatures.length === 0) {
+        showToast("Please add at least 1 feature.", "error");
+        return;
+      }
+
+      // Build Document Data Payload
+      const payload = {
+        packageName,
+        duration,
+        durationUnit,
+        features: currentFeatures,
+        price,
+        currency,
+        active,
+        updatedAt: serverTimestamp()
+      };
+
+      // Merge dynamic custom fields
+      Object.keys(dynamicCustomFields).forEach(key => {
+        payload[key] = dynamicCustomFields[key].value;
+      });
+
+      try {
+        if (editId) {
+          // UPDATE
+          const docRef = doc(db, COLLECTION_NAME, editId);
+
+          // Check if any old dynamic fields were deleted in UI
+          const oldDoc = rawPackagesList.find(p => p.id === editId);
+          if (oldDoc) {
+            Object.keys(oldDoc).forEach(key => {
+              if (!STANDARD_KEYS.includes(key) && !dynamicCustomFields[key]) {
+                payload[key] = deleteField(); // Firestore deleteField()
+              }
+            });
+          }
+
+          await updateDoc(docRef, payload);
+          showToast("✓ Package updated successfully", "success");
+        } else {
+          // CREATE
+          payload.createdAt = serverTimestamp();
+          await addDoc(collection(db, COLLECTION_NAME), payload);
+          showToast("✓ Subscription package created successfully", "success");
+        }
+
+        closeModal("modal-package");
+      } catch (err) {
+        showToast("Error saving package: " + err.message, "error");
+      }
+    });
+
+    // ==========================================
+    // 24. DUPLICATE PACKAGE
+    // ==========================================
+    async function duplicatePackage(docId) {
+      const pkg = rawPackagesList.find(p => p.id === docId);
+      if (!pkg) return;
+
+      const dupData = { ...pkg };
+      delete dupData.id;
+      dupData.packageName = (pkg.packageName || "Package") + " Copy";
+      dupData.createdAt = serverTimestamp();
+      dupData.updatedAt = serverTimestamp();
+
+      try {
+        await addDoc(collection(db, COLLECTION_NAME), dupData);
+        showToast(`Duplicated into "${dupData.packageName}"`, "success");
+      } catch (err) {
+        showToast("Error duplicating package: " + err.message, "error");
+      }
+    }
+
+    // ==========================================
+    // 22, 49. DELETE PACKAGE
+    // ==========================================
+    function openDeleteModal(docId) {
+      const pkg = rawPackagesList.find(p => p.id === docId);
+      if (!pkg) return;
+
+      activeDeleteId = docId;
+      document.getElementById("del-pkg-name").innerText = pkg.packageName || "Untitled";
+      document.getElementById("del-pkg-meta").innerText = `${formatCurrency(pkg.price, pkg.currency)} / ${formatDuration(pkg.duration, pkg.durationUnit)}`;
+
+      openModal("modal-confirm");
+    }
+
+    document.getElementById("btn-confirm-delete").addEventListener("click", async () => {
+      if (!activeDeleteId) return;
+
+      try {
+        await deleteDoc(doc(db, COLLECTION_NAME, activeDeleteId));
+        showToast("✓ Package deleted successfully", "success");
+        closeModal("modal-confirm");
+      } catch (err) {
+        showToast("Error deleting package: " + err.message, "error");
+      }
+    });
+
+    // ==========================================
+    // 25. PACKAGE PREVIEW
+    // ==========================================
+    function openPreviewModal(docId) {
+      const pkg = rawPackagesList.find(p => p.id === docId);
+      if (!pkg) return;
+
+      document.getElementById("prev-name").innerText = pkg.packageName || "Package";
+      document.getElementById("prev-duration").innerText = formatDuration(pkg.duration, pkg.durationUnit) + " Plan";
+      document.getElementById("prev-price").innerText = formatCurrency(pkg.price, pkg.currency);
+
+      const featuresUl = document.getElementById("prev-features");
+      featuresUl.innerHTML = (pkg.features || []).map(f => `<li style="margin-bottom: 8px; font-size: 0.9rem; color: var(--navy-800);">✓ ${escapeHtml(f)}</li>`).join('');
+
+      const badgeWrap = document.getElementById("prev-badge-container");
+      badgeWrap.innerHTML = pkg.popular ? `<span class="badge badge-custom" style="position: absolute; top: -12px; right: 20px;">POPULAR</span>` : '';
+
+      openModal("modal-preview");
+    }
+
+    // ==========================================
+    // 33. RAW JSON VIEWER
+    // ==========================================
+    function openRawDataModal(docId) {
+      const pkg = rawPackagesList.find(p => p.id === docId);
+      if (!pkg) return;
+
+      activeRawJson = JSON.stringify(pkg, null, 2);
+      document.getElementById("raw-json-content").innerText = activeRawJson;
+      openModal("modal-raw");
+    }
+
+    document.getElementById("btn-copy-json").addEventListener("click", () => {
+      if (activeRawJson) {
+        navigator.clipboard.writeText(activeRawJson);
+        showToast("JSON copied to clipboard", "info");
+      }
+    });
+
+    // ==========================================
+    // 39-40. MODAL & TOAST HELPERS
+    // ==========================================
+    window.openModal = function(modalId) {
+      document.getElementById(modalId).classList.add("active");
+    };
+
+    window.closeModal = function(modalId) {
+      document.getElementById(modalId).classList.remove("active");
+    };
+
+    function showToast(message, type = "info") {
+      const container = document.getElementById("toast-container");
+      const toast = document.createElement("div");
+      toast.className = `toast toast-${type}`;
+      toast.innerText = message;
+
+      container.appendChild(toast);
+      setTimeout(() => {
+        toast.style.opacity = "0";
+        setTimeout(() => toast.remove(), 300);
+      }, 3500);
+    }
+
+    // ==========================================
+    // 53-54. FORMATTERS & UTILS
+    // ==========================================
+    function formatCurrency(amount, currency = 'BDT') {
+      const symbols = { BDT: '৳', USD: '$', INR: '₹', EUR: '€' };
+      const sym = symbols[currency] || '৳';
+      return `${sym}${Number(amount).toLocaleString()}`;
+    }
+
+    function formatDuration(count, unit) {
+      const num = Number(count) || 1;
+      let u = unit ? unit.toLowerCase() : 'days';
+
+      // Grammar Auto Correction
+      if (num === 1) {
+        if (u === 'days') u = 'Day';
+        else if (u === 'weeks') u = 'Week';
+        else if (u === 'months') u = 'Month';
+        else if (u === 'years') u = 'Year';
+      } else {
+        if (u === 'days') u = 'Days';
+        else if (u === 'weeks') u = 'Weeks';
+        else if (u === 'months') u = 'Months';
+        else if (u === 'years') u = 'Years';
+      }
+
+      return `${num} ${u}`;
+    }
+
+    function escapeHtml(str) {
+      return String(str)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+  </script>
+</body>
+</html>
