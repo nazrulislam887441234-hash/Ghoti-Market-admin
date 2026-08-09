@@ -1,53 +1,67 @@
-<!DOCTYPE html>          <html lang="bn">          
-<head>          
-<meta charset="UTF-8">          
-<meta name="viewport" content="width=device-width, initial-scale=1.0">          
-<title>Admin User Manager - GHOTI MARKET</title>          
-<link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;600;700&family=Poppins:wght@700&display=swap" rel="stylesheet">          
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">          
-<style>          
-:root{--primary:#FF6B00;--accent:#FF8C00;--success:#22c55e;--danger:#ef4444;--warning:#f59e0b;--info:#3b82f6;--muted:#6b7280;--bg1:#FFF7ED;--bg2:#FFEDD5;}          
-*{margin:0;padding:0;box-sizing:border-box;font-family:'Hind Siliguri',sans-serif;}          
-body{min-height:100vh;background:linear-gradient(135deg,var(--bg1) 0%,var(--bg2) 100%);padding:15px;color:#1f2937;}          
-.container{max-width:1400px;margin:0 auto;background:rgba(255,255,255,.95);backdrop-filter:blur(20px);padding:25px;border-radius:20px;border:1px solid rgba(255,107,0,.1);box-shadow:0 15px 50px rgba(255,107,0,.12);}          
-.header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;flex-wrap:wrap;gap:10px;}          
-.header h1{font-family:'Poppins';font-size:24px;background:linear-gradient(90deg,var(--primary),var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}          
-.header a,.logout{color:var(--primary);font-weight:700;text-decoration:none;cursor:pointer;}          
-.logout{color:var(--danger);}          
-.toolbar{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:15px;align-items:center;}          
-.toolbar input{flex:1;min-width:250px;padding:12px 14px;border:2px solid #fed7aa;border-radius:10px;font-size:15px;}          
-.btn{padding:11px 16px;border:none;border-radius:9px;font-weight:700;cursor:pointer;transition:.2s;font-size:14px;display:inline-flex;align-items:center;gap:6px;}          
-.btn-primary{background:linear-gradient(90deg,var(--primary),var(--accent));color:#fff;}          
-.btn-secondary{background:#f1f5f9;color:#334155;border:1px solid #e2e8f0;}          
-.btn-danger{background:var(--danger);color:#fff;}          
-.btn-warning{background:var(--warning);color:#fff;}          
-.btn:disabled{background:#d1d5db;cursor:not-allowed;}          
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(350px,1fr));gap:15px;max-height:70vh;overflow-y:auto;padding:4px;}          
-.card{background:#fff;border:2px solid #ffedd5;border-radius:14px;padding:15px;position:relative;transition:.2s;}          
-.card-header{display:flex;gap:12px;}          
-.card-header img{width:50px;height:50px;border-radius:10px;object-fit:cover;background:#eee;}          
-.card-header h3{font-size:15px;margin-bottom:2px;}          
-.card-body{margin-top:10px;font-size:12px;max-height:150px;overflow-y:auto;}          
-.card-body.field{display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px dashed #ffedd5;}          
-.card-body.field b{color:var(--muted);}          
-.card-actions{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;}          
-.badge{padding:3px 8px;border-radius:12px;font-size:10px;font-weight:700;}          
-.b-active{background:rgba(34,197,94,.15);color:var(--success);}          
-.b-inactive{background:rgba(239,68,68,.15);color:var(--danger);}          /* Modal */
-.modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.6);z-index:999;justify-content:center;align-items:center;overflow-y:auto;}
-.modal-box{background:#fff;padding:25px;border-radius:18px;max-width:600px;width:95%;max-height:90vh;overflow-y:auto;}
-.modal-box h3{margin-bottom:15px;}
-.modal-box label{font-weight:600;font-size:13px;display:block;margin-top:10px;}
-.modal-box input,.modal-box textarea,.modal-box select{width:100%;padding:10px;border:2px solid #fed7aa;border-radius:8px;font-size:14px;margin-top:4px;}
-.modal-actions{display:flex;gap:10px;justify-content:flex-end;margin-top:15px;}
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin User Manager - GHOTI MARKET</title>
+<link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;600;700&family=Poppins:wght@700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<style>
+:root{--primary:#FF6B00;--accent:#FF8C00;--success:#22c55e;--danger:#ef4444;--warning:#f59e0b;--info:#3b82f6;--muted:#6b7280;--bg1:#FFF7ED;--bg2:#FFEDD5;}
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Hind Siliguri',sans-serif;}
+body{min-height:100vh;background:linear-gradient(135deg,var(--bg1) 0%,var(--bg2) 100%);padding:15px;color:#1f2937;}
+.container{max-width:1400px;margin:0 auto;background:rgba(255,255,255,.95);backdrop-filter:blur(20px);padding:25px;border-radius:20px;border:1px solid rgba(255,107,0,.1);box-shadow:0 15px 50px rgba(255,107,0,.12);}
+.header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;flex-wrap:wrap;gap:10px;}
+.header h1{font-family:'Poppins';font-size:24px;background:linear-gradient(90deg,var(--primary),var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.header a,.logout{color:var(--primary);font-weight:700;text-decoration:none;cursor:pointer;}
+.logout{color:var(--danger);}
+.toolbar{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:15px;align-items:center;}
+.toolbar input{flex:1;min-width:250px;padding:12px 14px;border:2px solid #fed7aa;border-radius:10px;font-size:15px;}
+.btn{padding:11px 16px;border:none;border-radius:9px;font-weight:700;cursor:pointer;transition:.2s;font-size:14px;display:inline-flex;align-items:center;gap:6px;}
+.btn-sm{padding:6px 10px;font-size:12px;border-radius:6px;}
+.btn-primary{background:linear-gradient(90deg,var(--primary),var(--accent));color:#fff;}
+.btn-secondary{background:#f1f5f9;color:#334155;border:1px solid #e2e8f0;}
+.btn-danger{background:var(--danger);color:#fff;}
+.btn-warning{background:var(--warning);color:#fff;}
+.btn:disabled{background:#d1d5db;cursor:not-allowed;}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(350px,1fr));gap:15px;max-height:70vh;overflow-y:auto;padding:4px;}
+.card{background:#fff;border:2px solid #ffedd5;border-radius:14px;padding:15px;position:relative;transition:.2s;}
+.card-header{display:flex;gap:12px;}
+.card-header img{width:50px;height:50px;border-radius:10px;object-fit:cover;background:#eee;}
+.card-header h3{font-size:15px;margin-bottom:2px;}
+.card-body{margin-top:10px;font-size:12px;max-height:160px;overflow-y:auto;}
+.card-body .field{display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px dashed #ffedd5;}
+.card-body .field b{color:var(--muted);}
+.card-actions{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;}
+.badge{padding:3px 8px;border-radius:12px;font-size:10px;font-weight:700;}
+.b-active{background:rgba(34,197,94,.15);color:var(--success);}
+.b-inactive{background:rgba(239,68,68,.15);color:var(--danger);}
+
+/* Modal */
+.modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.6);z-index:999;justify-content:center;align-items:center;overflow-y:auto;padding:15px;}
+.modal-box{background:#fff;padding:25px;border-radius:18px;max-width:750px;width:100%;max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,0.3);}
+.modal-box h3{margin-bottom:15px;font-size:18px;color:var(--primary);}
+.modal-actions{display:flex;gap:10px;justify-content:flex-end;margin-top:20px;position:sticky;bottom:-10px;background:#fff;padding-top:10px;border-top:1px solid #fed7aa;}
+
 .toast{position:fixed;bottom:20px;right:20px;background:#333;color:#fff;padding:14px 20px;border-radius:10px;display:none;z-index:1000;}
 .toast.show{display:block;animation:slideUp.3s;}
 @keyframes slideUp{from{transform:translateY(20px);opacity:0;}to{transform:translateY(0);opacity:1;}}
 .load-more{text-align:center;margin:15px 0;}
-.loader{width:14px;height:14px;border:2px solid #ffedd5;border-top:2px solid var(--primary);border-radius:50%;animation:spin 1s linear infinite;display:inline-block;}
-@keyframes spin{to{transform:rotate(360deg);}}
-.confirm-box{background:#fff7ed;padding:12px;border-radius:8px;margin:10px 0;text-align:center;}
-/* New Styling Enhancements for Description Counter & Keywords Chips */
+
+/* Dynamic Field System Styling */
+.field-row{background:#fff7ed;border:1px solid #fed7aa;padding:12px;border-radius:12px;margin-bottom:12px;position:relative;}
+.field-row.highlight{border-color:var(--primary);box-shadow:0 0 0 2px rgba(255,107,0,0.15);}
+.field-row-header{display:flex;gap:10px;align-items:flex-end;margin-bottom:8px;flex-wrap:wrap;}
+.field-name-box{flex:2;min-width:140px;}
+.field-type-box{flex:1;min-width:110px;}
+.field-row-header label{font-size:11px;font-weight:700;color:var(--muted);display:block;margin-bottom:3px;}
+.field-row-header input, .field-row-header select{width:100%;padding:7px 10px;border:1px solid #fdba74;border-radius:6px;font-size:13px;background:#fff;}
+.field-row-body{margin-top:6px;}
+.field-row-body input, .field-row-body textarea, .field-row-body select{width:100%;padding:9px 12px;border:1px solid #cbd5e1;border-radius:8px;font-size:13px;background:#fff;}
+.json-editor{font-family:monospace;font-size:12px;background:#1e293b!important;color:#f8fafc!important;}
+.null-badge{display:inline-block;padding:6px 12px;background:#e2e8f0;color:#475569;border-radius:6px;font-weight:600;font-size:12px;}
+
+/* Enhancements */
 .char-counter{font-size:11px;text-align:right;margin-top:3px;font-weight:600;color:var(--muted);}
 .char-counter.error{color:var(--danger);}
 .textarea-error{border-color:var(--danger)!important;}
@@ -62,165 +76,216 @@ body{min-height:100vh;background:linear-gradient(135deg,var(--bg1) 0%,var(--bg2)
 .chip-sm{background:#ffedd5;color:#9a3412;padding:2px 6px;border-radius:10px;font-size:10px;font-weight:600;}
 .image-preview-container{margin-top:5px;display:flex;align-items:center;gap:10px;}
 .image-preview-container img{width:40px;height:40px;border-radius:6px;object-fit:cover;border:1px solid #fed7aa;background:#eee;}
-@media(max-width:768px){.grid{grid-template-columns:1fr;}}
+.special-doc-id{background:#eff6ff;border-color:#bfdbfe;}
+@media(max-width:768px){.grid{grid-template-columns:1fr;}.field-row-header{flex-direction:column;align-items:stretch;}}
 </style>
+</head>
+<body>
 
-</head>          
-<body>          <div class="container" id="app" style="display:none;">          
-    <div class="header">          
-        <h1><i class="fas fa-users-cog"></i> Admin User Manager</h1>          
-        <div class="nav">          
-            <a href="dashboard.html"><i class="fas fa-arrow-left"></i> Dashboard</a>          
-            <span class="logout" id="logout"><i class="fas fa-sign-out-alt"></i> Logout</span>          
-        </div>          
-    </div>          <div class="toolbar">          
-    <input type="text" id="search" placeholder="Search: UID / Name / Email / Username / Description / WhatsApp">          
-    <button class="btn btn-primary" id="addNew"><i class="fas fa-plus"></i> Add New User</button>          
-</div>          
-      
-<div class="grid" id="grid"></div>          
-<div class="load-more"><button class="btn btn-primary" id="loadMore"><i class="fas fa-plus"></i> Load More</button></div>
+<div class="container" id="app" style="display:none;">
+    <div class="header">
+        <h1><i class="fas fa-users-cog"></i> Admin User Manager</h1>
+        <div class="nav">
+            <a href="dashboard.html"><i class="fas fa-arrow-left"></i> Dashboard</a>
+            <span class="logout" id="logout"><i class="fas fa-sign-out-alt"></i> Logout</span>
+        </div>
+    </div>
 
-</div>          <!-- Edit/Add Modal -->          <div class="modal" id="editModal">          
-    <div class="modal-box">          
-        <h3 id="modalTitle">Edit User</h3>          
-        <div id="formFields"></div>          
-        <div class="modal-actions">          
-            <button class="btn btn-danger" id="deleteBtn" style="margin-right:auto;"><i class="fas fa-trash"></i> Delete</button>          
-            <button class="btn btn-secondary" id="cancelBtn">Cancel</button>          
-            <button class="btn btn-primary" id="saveBtn">Save</button>          
-        </div>          
-    </div>          
-</div>          <!-- Delete Confirm -->          <div class="modal" id="confirmModal">          
-    <div class="modal-box" style="max-width:400px;">          
-        <h3>Are you sure?</h3>          
-        <div class="confirm-box">This will permanently delete this user</div>          
-        <div class="modal-actions">          
-            <button class="btn btn-secondary" id="confirmCancel">Cancel</button>          
-            <button class="btn btn-danger" id="confirmDelete">Yes, Delete</button>          
-        </div>          
-    </div>          
-</div>          <div class="toast" id="toast"></div>          <script type="module">          
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";          
-import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";          
-import { getFirestore, collection, query, orderBy, limit, startAfter, getDocs, doc, updateDoc, deleteDoc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";          
-          
-const firebaseConfig = {apiKey:"AIzaSyBUhNhYvuo_FTvZ5RZR6Gn-4hsUY21S0XE",authDomain:"ghotimarket.firebaseapp.com",projectId:"ghotimarket"};          
-const app = initializeApp(firebaseConfig);          
-const auth = getAuth(app);          
-const db = getFirestore(app);          
-          
-// ========== SECURITY ==========          
-onAuthStateChanged(auth, user => {          
+    <div class="toolbar">
+        <input type="text" id="search" placeholder="Search across all fields: UID / Name / Email / Description / Custom Fields...">
+        <button class="btn btn-primary" id="addNew"><i class="fas fa-plus"></i> Add New User</button>
+    </div>
+
+    <div class="grid" id="grid"></div>
+    <div class="load-more"><button class="btn btn-primary" id="loadMore"><i class="fas fa-plus"></i> Load More</button></div>
+</div>
+
+<!-- Edit/Add Modal -->
+<div class="modal" id="editModal">
+    <div class="modal-box">
+        <h3 id="modalTitle">Edit User</h3>
+        
+        <div id="formFields"></div>
+
+        <div style="margin: 15px 0; text-align: center;">
+            <button type="button" class="btn btn-secondary" id="addFieldBtn" style="border: 2px dashed var(--accent); color: var(--primary); width: 100%; justify-content: center;">
+                <i class="fas fa-plus-circle"></i> + Add New Field
+            </button>
+        </div>
+
+        <div class="modal-actions">
+            <button class="btn btn-danger" id="deleteBtn" style="margin-right:auto;"><i class="fas fa-trash"></i> Delete User</button>
+            <button class="btn btn-secondary" id="cancelBtn">Cancel</button>
+            <button class="btn btn-primary" id="saveBtn">Save User</button>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Confirm Modal -->
+<div class="modal" id="confirmModal">
+    <div class="modal-box" style="max-width:400px;">
+        <h3>Are you sure?</h3>
+        <div style="background:#fff7ed;padding:12px;border-radius:8px;margin:10px 0;text-align:center;color:var(--danger);font-weight:600;">
+            This will permanently delete this user document!
+        </div>
+        <div class="modal-actions">
+            <button class="btn btn-secondary" id="confirmCancel">Cancel</button>
+            <button class="btn btn-danger" id="confirmDelete">Yes, Delete</button>
+        </div>
+    </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+import { 
+    getFirestore, collection, query, orderBy, limit, startAfter, 
+    getDocs, doc, updateDoc, deleteDoc, setDoc, serverTimestamp, 
+    deleteField, Timestamp 
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+const firebaseConfig = {apiKey:"AIzaSyBUhNhYvuo_FTvZ5RZR6Gn-4hsUY21S0XE",authDomain:"ghotimarket.firebaseapp.com",projectId:"ghotimarket"};
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+// SECURITY
+onAuthStateChanged(auth, user => {
     try {
-        if(user && user.email === "support@ghotimarket.com"){          
-            document.getElementById('app').style.display = 'block';          
-            loadUsers();          
-        }else{          
-            window.location.href = "index.html";          
-        }          
+        if(user && user.email === "support@ghotimarket.com"){
+            document.getElementById('app').style.display = 'block';
+            loadUsers();
+        }else{
+            window.location.href = "index.html";
+        }
     } catch(e) {
         showToast('Authentication error: ' + e.message, 'error');
     }
-});          
-document.getElementById('logout').onclick = () => signOut(auth);          
-          
-// ========== GLOBAL ==========          
-const BATCH = 20;          
-let lastDoc = null;          
-let allUsers = [];          
-let currentEditingId = null;          
-let isNewUser = false;          
-let dynamicEditorsState = {}; // Stores runtime state for arrays/complex editors
-          
-// ========== UTILS ==========          
-const showToast = (msg, type='success') => {          
+});
+document.getElementById('logout').onclick = () => signOut(auth);
+
+// GLOBAL STATE
+const BATCH = 20;
+let lastDoc = null;
+let allUsers = []; // Stores objects with `{ _docId: id, ...fields }`
+let currentEditingDocId = null;
+let isNewUser = false;
+let modalFields = []; // Dynamic array of `{ name, type, value, originalName }`
+let deletedFields = new Set();
+let customDocId = "";
+
+// UTILS
+const showToast = (msg, type='success') => {
     try {
-        const t = document.getElementById('toast');          
-        t.innerText = msg; t.style.background = type==='error'?'var(--danger)':'var(--success)';          
-        t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),3000);          
+        const t = document.getElementById('toast');
+        t.innerText = msg; 
+        t.style.background = type==='error'?'var(--danger)':'var(--success)';
+        t.classList.add('show'); 
+        setTimeout(()=>t.classList.remove('show'),3500);
     } catch(err) {
         console.error(msg);
     }
-}          
-          
-// ========== LOAD USERS ==========          
-async function loadUsers(){          
+}
+
+// LOAD USERS
+async function loadUsers(){
     try {
-        document.getElementById('loadMore').disabled = true;          
-        let q = query(collection(db,"users"), orderBy("createdAt","desc"), limit(BATCH));          
-        if(lastDoc) q = query(collection(db,"users"), orderBy("createdAt","desc"), startAfter(lastDoc), limit(BATCH));          
-              
-        const snap = await getDocs(q);          
-        if(!snap.empty){          
-            lastDoc = snap.docs[snap.docs.length-1];          
-            const batch = snap.docs.map(d => ({uid:d.id,...d.data()}));          
-            // Avoid duplicate pushes
+        document.getElementById('loadMore').disabled = true;
+        let q;
+        try {
+            q = query(collection(db,"users"), orderBy("createdAt","desc"), limit(BATCH));
+            if(lastDoc) q = query(collection(db,"users"), orderBy("createdAt","desc"), startAfter(lastDoc), limit(BATCH));
+        } catch(err) {
+            q = query(collection(db,"users"), limit(BATCH));
+        }
+
+        const snap = await getDocs(q);
+        if(!snap.empty){
+            lastDoc = snap.docs[snap.docs.length-1];
+            const batch = snap.docs.map(d => ({ _docId: d.id, ...d.data() }));
+            
             batch.forEach(newItem => {
-                if(!allUsers.some(u => u.uid === newItem.uid)){
+                if(!allUsers.some(u => u._docId === newItem._docId)){
                     allUsers.push(newItem);
                     renderCard(newItem);
                 }
-            });          
-        }          
-        if(snap.size < BATCH) document.getElementById('loadMore').style.display = 'none';          
-        document.getElementById('loadMore').disabled = false;          
+            });
+        }
+        if(snap.size < BATCH) document.getElementById('loadMore').style.display = 'none';
+        document.getElementById('loadMore').disabled = false;
     } catch(e) {
         showToast('Failed to load users: ' + e.message, 'error');
         document.getElementById('loadMore').disabled = false;
     }
-}          
-          
-// ========== RENDER CARD ==========          
-function renderCard(u){          
-    let card = document.getElementById('card-'+u.uid);          
-    if(!card){          
-        card = document.createElement('div');          
-        card.id = 'card-'+u.uid;          
-        card.className = 'card';          
-        document.getElementById('grid').appendChild(card);          
-    }          
-          
-    const name = u.shopName || u.fullName || 'No Name';          
-    const statusClass = u.active? 'b-active' : 'b-inactive';          
-    const statusText = u.active? 'Active' : 'Inactive';          
-          
-    let fieldsHtml = '';          
-    Object.keys(u).slice(0,6).forEach(key=>{          
-        if(key === 'uid' || key === 'shopDescription' || key === 'shopKeywords') return;          
-        fieldsHtml += `<div class="field"><b>${key}:</b> <span>${String(u[key]).substring(0,30)}</span></div>`;          
-    });          
-          
+}
+
+// RENDER CARD
+function renderCard(u){
+    let card = document.getElementById('card-' + u._docId);
+    if(!card){
+        card = document.createElement('div');
+        card.id = 'card-' + u._docId;
+        card.className = 'card';
+        document.getElementById('grid').appendChild(card);
+    }
+
+    const name = u.shopName || u.fullName || 'No Name';
+    const statusClass = u.active ? 'b-active' : 'b-inactive';
+    const statusText = u.active ? 'Active' : 'Inactive';
+
+    let fieldsHtml = `<div class="field"><b>Doc ID:</b> <span>${u._docId}</span></div>`;
+    if(u.uid) fieldsHtml += `<div class="field"><b>UID Field:</b> <span>${u.uid}</span></div>`;
+
+    Object.keys(u).forEach(key => {
+        if(['_docId', 'uid', 'shopName', 'fullName', 'shopLogo', 'shopDescription', 'shopKeywords', 'active'].includes(key)) return;
+        const val = u[key];
+        let displayVal = "";
+        if(val === null) displayVal = "null";
+        else if(typeof val === 'object' && val.seconds !== undefined) displayVal = new Date(val.seconds*1000).toLocaleDateString();
+        else if(typeof val === 'object') displayVal = JSON.stringify(val);
+        else displayVal = String(val);
+
+        fieldsHtml += `<div class="field"><b>${key}:</b> <span>${displayVal.substring(0,30)}</span></div>`;
+    });
+
     let customPreviewHtml = '';
     if(u.shopDescription) {
-        customPreviewHtml += `<div class="field"><b>Description:</b> <span>${String(u.shopDescription).substring(0, 60)}</span></div>`;
+        customPreviewHtml += `<div class="field"><b>Description:</b> <span>${String(u.shopDescription).substring(0, 60)}...</span></div>`;
     }
     if(u.shopKeywords && Array.isArray(u.shopKeywords) && u.shopKeywords.length > 0) {
         let chips = u.shopKeywords.map(k => `<span class="chip-sm">${k}</span>`).join('');
         customPreviewHtml += `<div class="field" style="flex-direction:column;align-items:flex-start;gap:4px;"><b>Keywords:</b> <div class="chips-grid">${chips}</div></div>`;
     }
-          
-    card.innerHTML = `          
-        <div class="card-header">          
-            <img src="${u.shopLogo || 'https://via.placeholder.com/50'}" onerror="this.src='https://via.placeholder.com/50'">          
-            <div>          
-                <h3>${name}</h3>          
-                <span class="badge ${statusClass}">${statusText}</span>          
-                <p style="font-size:11px;color:var(--muted)">${u.email || ''}</p>          
-            </div>          
-        </div>          
-        <div class="card-body">${customPreviewHtml}${fieldsHtml}</div>          
-        <div class="card-actions">          
-            <button class="btn btn-warning" onclick="openEdit('${u.uid}')"><i class="fas fa-edit"></i> Edit</button>          
-            <button class="btn btn-danger" onclick="openDelete('${u.uid}')"><i class="fas fa-trash"></i> Delete</button>          
-        </div>          
-    `;          
-}          
-          
-// ========== SEARCH ==========          
-document.getElementById('search').oninput = e => {          
-    const term = e.target.value.toLowerCase();          
-    document.getElementById('grid').innerHTML = '';          
+
+    card.innerHTML = `
+        <div class="card-header">
+            <img src="${u.shopLogo || 'https://via.placeholder.com/50'}" onerror="this.src='https://via.placeholder.com/50'">
+            <div>
+                <h3>${name}</h3>
+                <span class="badge ${statusClass}">${statusText}</span>
+                <p style="font-size:11px;color:var(--muted)">${u.email || ''}</p>
+            </div>
+        </div>
+        <div class="card-body">${customPreviewHtml}${fieldsHtml}</div>
+        <div class="card-actions">
+            <button class="btn btn-warning btn-sm" onclick="window.openEdit('${u._docId}')"><i class="fas fa-edit"></i> Edit</button>
+            <button class="btn btn-danger btn-sm" onclick="window.openDelete('${u._docId}')"><i class="fas fa-trash"></i> Delete</button>
+        </div>
+    `;
+}
+
+// SEARCH SYSTEM
+document.getElementById('search').oninput = e => {
+    const term = e.target.value.toLowerCase().trim();
+    document.getElementById('grid').innerHTML = '';
+    
+    if(!term) {
+        allUsers.forEach(renderCard);
+        return;
+    }
+
     const filtered = allUsers.filter(u => {
         return Object.keys(u).some(key => {
             const val = u[key];
@@ -228,93 +293,190 @@ document.getElementById('search').oninput = e => {
             if(Array.isArray(val)) {
                 return val.some(item => String(item).toLowerCase().includes(term));
             }
+            if(typeof val === 'object') {
+                return JSON.stringify(val).toLowerCase().includes(term);
+            }
             return String(val).toLowerCase().includes(term);
         });
-    });          
-    filtered.forEach(renderCard);          
-}          
-          
-// ========== EDIT MODAL ==========          
-window.openEdit = (uid) => {          
-    isNewUser = false;          
-    currentEditingId = uid;          
-    const user = allUsers.find(u=>u.uid===uid);          
-    document.getElementById('modalTitle').innerText = 'Edit User: ' + uid.substring(0,8);          
-    document.getElementById('deleteBtn').style.display = 'inline-flex';          
-    buildForm(user || {});          
-    document.getElementById('editModal').style.display = 'flex';          
-}          
-          
-document.getElementById('addNew').onclick = () => {          
-    isNewUser = true;          
-    currentEditingId = 'new_' + Date.now();          
-    document.getElementById('modalTitle').innerText = 'Add New User';          
-    document.getElementById('deleteBtn').style.display = 'none';          
-    buildForm({email: '', fullName: '', shopName: '', active: true, shopDescription: '', shopKeywords: []});          
-    document.getElementById('editModal').style.display = 'flex';          
-}          
-          
-// ========== DYNAMIC FORM GENERATOR ==========
-function buildForm(data){          
-    const container = document.getElementById('formFields');          
-    container.innerHTML = '';          
-    dynamicEditorsState = {}; // Reset state cache
+    });
+    filtered.forEach(renderCard);
+}
 
-    // Standard baseline fields to always present if missing in new/empty items
-    const defaultKeys = ['email','fullName','shopName','username','whatsapp','active','shopLogo','shopBanner','verified','shopDescription','shopKeywords'];
-    const combinedKeys = Array.from(new Set([...defaultKeys, ...Object.keys(data)]));
-    
-    // Filter out internal UID if present
-    const keysToRender = combinedKeys.filter(k => k !== 'uid');
-
-    keysToRender.forEach(key => {
-        const val = data[key] !== undefined ? data[key] : '';
-        let inputHtml = '';
-        
-        // Specific specialized handling
-        if(key === 'shopDescription') {
-            const descVal = val || '';
-            container.innerHTML += `
-                <label>${key}</label>
-                <textarea id="field-${key}" rows="3" placeholder="Enter shop description (Max 200 chars)">${descVal}</textarea>
-                <div id="descCounter" class="char-counter">${descVal.length} / 200</div>
-            `;
-            // Bind listener later or inline check
-            setTimeout(() => {
-                const descTextarea = document.getElementById('field-shopDescription');
-                const descCounter = document.getElementById('descCounter');
-                const saveBtn = document.getElementById('saveBtn');
-                if(descTextarea && descCounter) {
-                    descTextarea.oninput = (e) => {
-                        const len = e.target.value.length;
-                        descCounter.innerText = `${len} / 200`;
-                        if(len > 200) {
-                            descTextarea.classList.add('textarea-error');
-                            descCounter.classList.add('error');
-                            saveBtn.disabled = true;
-                        } else {
-                            descTextarea.classList.remove('textarea-error');
-                            descCounter.classList.remove('error');
-                            saveBtn.disabled = false;
-                        }
-                    };
-                }
-            }, 0);
-            return;
+// TYPE DETECTION
+function detectType(val) {
+    if (val === null || val === undefined) return 'null';
+    if (typeof val === 'boolean') return 'boolean';
+    if (typeof val === 'number') return 'number';
+    if (Array.isArray(val)) return 'array';
+    if (typeof val === 'object') {
+        if (val.seconds !== undefined || val instanceof Timestamp || val instanceof Date) {
+            return 'timestamp';
         }
+        return 'object';
+    }
+    return 'string';
+}
 
-        if(key === 'shopKeywords' || Array.isArray(val)) {
-            dynamicEditorsState[key] = Array.isArray(val) ? [...val] : [];
-            container.innerHTML += `
-                <label>${key}</label>
-                <div class="keyword-container" data-field-array="${key}">
+function getDefaultValueForType(type) {
+    switch(type) {
+        case 'number': return 0;
+        case 'boolean': return true;
+        case 'array': return [];
+        case 'object': return {};
+        case 'timestamp': return new Date();
+        case 'null': return null;
+        default: return '';
+    }
+}
+
+// OPEN EDIT MODAL
+window.openEdit = (docId) => {
+    isNewUser = false;
+    currentEditingDocId = docId;
+    deletedFields.clear();
+    customDocId = docId;
+
+    const user = allUsers.find(u => u._docId === docId);
+    document.getElementById('modalTitle').innerText = 'Edit User (Doc ID: ' + docId.substring(0,8) + '...)';
+    document.getElementById('deleteBtn').style.display = 'inline-flex';
+
+    modalFields = [];
+    if(user) {
+        Object.keys(user).forEach(key => {
+            if(key === '_docId') return;
+            const val = user[key];
+            const type = detectType(val);
+            modalFields.push({
+                name: key,
+                type: type,
+                value: val,
+                originalName: key
+            });
+        });
+    }
+
+    // Ensure 'uid' field is present in list if missing
+    if(!modalFields.some(f => f.name === 'uid')) {
+        modalFields.unshift({ name: 'uid', type: 'string', value: user?.uid || '', originalName: null });
+    }
+
+    renderModalFields();
+    document.getElementById('editModal').style.display = 'flex';
+}
+
+// OPEN ADD NEW USER MODAL
+document.getElementById('addNew').onclick = () => {
+    isNewUser = true;
+    currentEditingDocId = null;
+    deletedFields.clear();
+    customDocId = "";
+
+    document.getElementById('modalTitle').innerText = 'Add New User';
+    document.getElementById('deleteBtn').style.display = 'none';
+
+    modalFields = [
+        { name: 'uid', type: 'string', value: '', originalName: null },
+        { name: 'email', type: 'string', value: '', originalName: null },
+        { name: 'fullName', type: 'string', value: '', originalName: null },
+        { name: 'shopName', type: 'string', value: '', originalName: null },
+        { name: 'username', type: 'string', value: '', originalName: null },
+        { name: 'whatsapp', type: 'string', value: '', originalName: null },
+        { name: 'active', type: 'boolean', value: true, originalName: null },
+        { name: 'verified', type: 'boolean', value: false, originalName: null },
+        { name: 'shopLogo', type: 'string', value: '', originalName: null },
+        { name: 'shopBanner', type: 'string', value: '', originalName: null },
+        { name: 'shopDescription', type: 'string', value: '', originalName: null },
+        { name: 'shopKeywords', type: 'array', value: [], originalName: null }
+    ];
+
+    renderModalFields();
+    document.getElementById('editModal').style.display = 'flex';
+}
+
+// ADD NEW FIELD BUTTON
+document.getElementById('addFieldBtn').onclick = () => {
+    modalFields.push({
+        name: '',
+        type: 'string',
+        value: '',
+        originalName: null
+    });
+    renderModalFields();
+}
+
+// RENDER DYNAMIC FORM FIELDS
+function renderModalFields() {
+    const container = document.getElementById('formFields');
+    container.innerHTML = '';
+
+    if (isNewUser) {
+        const docIdWrapper = document.createElement('div');
+        docIdWrapper.className = 'field-row special-doc-id';
+        docIdWrapper.innerHTML = `
+            <div class="field-row-header">
+                <div class="field-name-box" style="flex:1;">
+                    <label style="color:var(--primary);font-weight:700;"><i class="fas fa-fingerprint"></i> Custom Firestore Document ID (Optional)</label>
+                    <input type="text" id="customDocIdInput" value="${customDocId}" placeholder="Leave empty to use UID or Auto-generate">
+                    <span style="font-size:11px;color:var(--muted)">Firestore Document Key (Separate from internal 'uid' field)</span>
+                </div>
+            </div>
+        `;
+        container.appendChild(docIdWrapper);
+        
+        setTimeout(() => {
+            const input = document.getElementById('customDocIdInput');
+            if(input) input.oninput = (e) => { customDocId = e.target.value.trim(); };
+        }, 0);
+    }
+
+    modalFields.forEach((field, index) => {
+        const row = document.createElement('div');
+        row.className = 'field-row' + (field.name === 'uid' ? ' highlight' : '');
+        row.id = `field-row-${index}`;
+
+        let headerHtml = `
+            <div class="field-row-header">
+                <div class="field-name-box">
+                    <label>Field Name ${field.name === 'uid' ? '<b style="color:var(--primary)">(System UID)</b>' : ''}</label>
+                    <input type="text" class="field-name-input" data-index="${index}" value="${field.name}" placeholder="e.g. subscriptionPlan">
+                </div>
+                <div class="field-type-box">
+                    <label>Data Type</label>
+                    <select class="field-type-select" data-index="${index}">
+                        <option value="string" ${field.type==='string'?'selected':''}>String</option>
+                        <option value="number" ${field.type==='number'?'selected':''}>Number</option>
+                        <option value="boolean" ${field.type==='boolean'?'selected':''}>Boolean</option>
+                        <option value="array" ${field.type==='array'?'selected':''}>Array</option>
+                        <option value="object" ${field.type==='object'?'selected':''}>Object / Map</option>
+                        <option value="timestamp" ${field.type==='timestamp'?'selected':''}>Timestamp</option>
+                        <option value="null" ${field.type==='null'?'selected':''}>Null</option>
+                    </select>
+                </div>
+                <button type="button" class="btn btn-danger btn-sm" onclick="window.removeDynamicField(${index})" title="Remove Field">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </div>
+        `;
+
+        let bodyHtml = `<div class="field-row-body">`;
+
+        if (field.name === 'shopDescription') {
+            const descVal = typeof field.value === 'string' ? field.value : '';
+            bodyHtml += `
+                <textarea class="field-val-input ${descVal.length > 200 ? 'textarea-error' : ''}" data-index="${index}" rows="3" placeholder="Enter shop description (Max 200 chars)" oninput="window.handleDescChange(this, ${index})">${descVal}</textarea>
+                <div id="descCounter-${index}" class="char-counter ${descVal.length > 200 ? 'error' : ''}">${descVal.length} / 200</div>
+            `;
+        } else if (field.name === 'shopKeywords' || field.type === 'array') {
+            const arrVal = Array.isArray(field.value) ? field.value : [];
+            bodyHtml += `
+                <div class="keyword-container">
                     <div class="keyword-input-group">
-                        <input type="text" id="arrayInput-${key}" placeholder="Add item and press enter">
-                        <button type="button" class="btn btn-primary" onclick="window.addArrayItem('${key}')" style="padding: 8px 12px;"><i class="fas fa-plus"></i></button>
+                        <input type="text" id="arrayInput-${index}" placeholder="Add item and click + button">
+                        <button type="button" class="btn btn-primary" onclick="window.addArrayItem(${index})" style="padding: 8px 12px;"><i class="fas fa-plus"></i></button>
                     </div>
-                    <div id="arrayLimitMsg-${key}" style="font-size:11px;color:var(--danger);margin-top:2px;display:none;">Maximum limit reached</div>
-                    <div class="keyword-list" id="arrayListContainer-${key}"></div>
-                    ${key === 'shopKeywords' ? `
+                    <div id="arrayLimitMsg-${index}" style="font-size:11px;color:var(--danger);margin-top:2px;display:${field.name==='shopKeywords' && arrVal.length>=10?'block':'none'};">Maximum limit (10) reached</div>
+                    <div class="keyword-list" id="arrayListContainer-${index}"></div>
+                    ${field.name === 'shopKeywords' ? `
                     <div class="keyword-example-box">
                         <b>কিভাবে Keyword লিখবেন?</b>
                         <ul><li>fashion, shirt, mens clothing, shoes, cosmetics</li></ul>
@@ -324,90 +486,185 @@ function buildForm(data){
                     </div>` : ''}
                 </div>
             `;
-            setTimeout(() => renderArrayChips(key), 0);
-            return;
-        }
-
-        // Automatic type detection rules
-        if(typeof val === 'boolean' || key === 'active' || key === 'verified') {
-            inputHtml = `<select id="field-${key}">
-                <option value="true" ${val===true?'selected':''}>True</option>
-                <option value="false" ${val===false?'selected':''}>False</option>
-            </select>`;
-        } else if(val && typeof val === 'object' && val.seconds !== undefined) {
-            // Firestore Timestamp detection
-            const dateStr = new Date(val.seconds * 1000).toLocaleString();
-            inputHtml = `<input type="text" id="field-${key}" value="${dateStr}" readonly style="background:#f1f5f9;cursor:not-allowed;">`;
-        } else if(val && typeof val === 'object') {
-            // General Object / Map
-            inputHtml = `<textarea id="field-${key}" rows="3">${JSON.stringify(val, null, 2)}</textarea>`;
-        } else if(typeof val === 'number') {
-            inputHtml = `<input type="number" id="field-${key}" value="${val}">`;
-        } else if(typeof val === 'string' && (key.toLowerCase().includes('logo') || key.toLowerCase().includes('banner') || val.startsWith('http'))) {
-            inputHtml = `
-                <input type="text" id="field-${key}" value="${val}" placeholder="Image URL">
-                <div class="image-preview-container">
-                    <img src="${val || 'https://via.placeholder.com/40'}" onerror="this.src='https://via.placeholder.com/40'">
-                    <span style="font-size:11px;color:var(--muted);">Image Preview</span>
+        } else if (field.type === 'boolean') {
+            bodyHtml += `
+                <select class="field-val-input" data-index="${index}" onchange="window.updateFieldValue(${index}, this.value === 'true')">
+                    <option value="true" ${field.value===true||field.value==='true'?'selected':''}>True</option>
+                    <option value="false" ${field.value===false||field.value==='false'?'selected':''}>False</option>
+                </select>
+            `;
+        } else if (field.type === 'number') {
+            bodyHtml += `<input type="number" class="field-val-input" data-index="${index}" value="${field.value !== undefined && field.value !== null ? field.value : 0}" oninput="window.updateFieldValue(${index}, Number(this.value))">`;
+        } else if (field.type === 'object') {
+            let jsonStr = '';
+            try {
+                jsonStr = typeof field.value === 'object' ? JSON.stringify(field.value, null, 2) : String(field.value);
+            } catch(e) { jsonStr = '{}'; }
+            bodyHtml += `
+                <textarea class="field-val-input json-editor" data-index="${index}" rows="4" placeholder="Enter valid JSON" oninput="window.handleJsonChange(this, ${index})">${jsonStr}</textarea>
+                <div id="jsonError-${index}" class="char-counter error" style="display:none;text-align:left;">Invalid JSON format</div>
+            `;
+        } else if (field.type === 'timestamp') {
+            let dateIso = '';
+            if (field.value && field.value.seconds) {
+                dateIso = new Date(field.value.seconds * 1000).toISOString().slice(0, 16);
+            } else if (field.value instanceof Date) {
+                dateIso = field.value.toISOString().slice(0, 16);
+            } else if (typeof field.value === 'string' && field.value) {
+                try { dateIso = new Date(field.value).toISOString().slice(0, 16); } catch(e){}
+            }
+            bodyHtml += `
+                <div style="display:flex;gap:10px;align-items:center;">
+                    <input type="datetime-local" class="field-val-input" data-index="${index}" value="${dateIso}" onchange="window.handleTimestampChange(this.value, ${index})">
+                    <button type="button" class="btn btn-secondary btn-sm" onclick="window.setTimestampNow(${index})">Set Now</button>
                 </div>
             `;
-        } else if(typeof val === 'string' && val.length > 100) {
-            inputHtml = `<textarea id="field-${key}" rows="4">${val}</textarea>`;
+        } else if (field.type === 'null') {
+            bodyHtml += `<div class="null-badge">Value is NULL</div>`;
         } else {
-            inputHtml = `<input type="text" id="field-${key}" value="${val !== null && val !== undefined ? val : ''}">`;
+            const strVal = field.value !== null && field.value !== undefined ? String(field.value) : '';
+            if (strVal.length > 80 || field.name.toLowerCase().includes('address')) {
+                bodyHtml += `<textarea class="field-val-input" data-index="${index}" rows="3" oninput="window.updateFieldValue(${index}, this.value)">${strVal}</textarea>`;
+            } else {
+                bodyHtml += `<input type="text" class="field-val-input" data-index="${index}" value="${strVal}" oninput="window.updateFieldValue(${index}, this.value)">`;
+            }
         }
 
-        container.innerHTML += `<label>${key}</label>${inputHtml}`;
-    });          
-}          
+        bodyHtml += `</div>`;
+        row.innerHTML = headerHtml + bodyHtml;
+        container.appendChild(row);
 
-// Helper for dynamic array/chip editors inside modals
-window.addArrayItem = (key) => {
-    const inputEl = document.getElementById(`arrayInput-${key}`);
+        if (field.name === 'shopKeywords' || field.type === 'array') {
+            setTimeout(() => renderArrayChipsForIndex(index), 0);
+        }
+    });
+
+    document.querySelectorAll('.field-name-input').forEach(inp => {
+        inp.oninput = (e) => {
+            const idx = parseInt(e.target.dataset.index);
+            modalFields[idx].name = e.target.value.trim();
+        };
+    });
+
+    document.querySelectorAll('.field-type-select').forEach(sel => {
+        sel.onchange = (e) => {
+            const idx = parseInt(e.target.dataset.index);
+            const newType = e.target.value;
+            modalFields[idx].type = newType;
+            modalFields[idx].value = getDefaultValueForType(newType);
+            renderModalFields();
+        };
+    });
+}
+
+// HELPERS FOR DYNAMIC FIELD HANDLERS
+window.updateFieldValue = (index, val) => {
+    modalFields[index].value = val;
+};
+
+window.removeDynamicField = (index) => {
+    const field = modalFields[index];
+    if(field.name === 'uid') {
+        if(!confirm("Warning: Are you sure you want to remove the 'uid' field from this document?")) return;
+    }
+    if (field.originalName) {
+        deletedFields.add(field.originalName);
+    }
+    modalFields.splice(index, 1);
+    renderModalFields();
+};
+
+window.handleDescChange = (elem, index) => {
+    const val = elem.value;
+    modalFields[index].value = val;
+    const counter = document.getElementById(`descCounter-${index}`);
+    if(counter) {
+        counter.innerText = `${val.length} / 200`;
+        if(val.length > 200) {
+            elem.classList.add('textarea-error');
+            counter.classList.add('error');
+        } else {
+            elem.classList.remove('textarea-error');
+            counter.classList.remove('error');
+        }
+    }
+};
+
+window.handleJsonChange = (elem, index) => {
+    const val = elem.value;
+    const errDiv = document.getElementById(`jsonError-${index}`);
+    try {
+        const parsed = JSON.parse(val);
+        modalFields[index].value = parsed;
+        if(errDiv) errDiv.style.display = 'none';
+    } catch(e) {
+        modalFields[index].value = val; // temporary raw string
+        if(errDiv) errDiv.style.display = 'block';
+    }
+};
+
+window.handleTimestampChange = (valStr, index) => {
+    if(valStr) {
+        modalFields[index].value = new Date(valStr);
+    }
+};
+
+window.setTimestampNow = (index) => {
+    modalFields[index].value = new Date();
+    renderModalFields();
+};
+
+window.addArrayItem = (index) => {
+    const inputEl = document.getElementById(`arrayInput-${index}`);
     if(!inputEl) return;
     const val = inputEl.value.trim();
     if(!val) return;
-    
-    if(!dynamicEditorsState[key]) dynamicEditorsState[key] = [];
-    
-    if(key === 'shopKeywords' && dynamicEditorsState[key].length >= 10) {
-        showToast('Maximum 10 keywords allowed', 'error');
+
+    if(!Array.isArray(modalFields[index].value)) {
+        modalFields[index].value = [];
+    }
+
+    const field = modalFields[index];
+    if(field.name === 'shopKeywords' && field.value.length >= 10) {
+        showToast('Maximum 10 keywords allowed for shopKeywords', 'error');
         return;
     }
-    if(dynamicEditorsState[key].includes(val)) {
-        showToast('Duplicate entry not allowed', 'error');
+
+    if(field.value.includes(val)) {
+        showToast('Duplicate item not allowed', 'error');
         return;
     }
-    
-    dynamicEditorsState[key].push(val);
+
+    field.value.push(val);
     inputEl.value = '';
-    renderArrayChips(key);
+    renderArrayChipsForIndex(index);
 };
 
-window.removeArrayItem = (key, index) => {
-    if(dynamicEditorsState[key]) {
-        dynamicEditorsState[key].splice(index, 1);
-        renderArrayChips(key);
+window.removeArrayItemForIndex = (fieldIdx, itemIdx) => {
+    if(Array.isArray(modalFields[fieldIdx].value)) {
+        modalFields[fieldIdx].value.splice(itemIdx, 1);
+        renderArrayChipsForIndex(fieldIdx);
     }
 };
 
-function renderArrayChips(key) {
-    const container = document.getElementById(`arrayListContainer-${key}`);
-    const inputEl = document.getElementById(`arrayInput-${key}`);
-    const limitMsg = document.getElementById(`arrayLimitMsg-${key}`);
+function renderArrayChipsForIndex(index) {
+    const container = document.getElementById(`arrayListContainer-${index}`);
+    const inputEl = document.getElementById(`arrayInput-${index}`);
+    const limitMsg = document.getElementById(`arrayLimitMsg-${index}`);
     if(!container) return;
 
     container.innerHTML = '';
-    const items = dynamicEditorsState[key] || [];
-    
-    items.forEach((item, index) => {
+    const field = modalFields[index];
+    const items = Array.isArray(field.value) ? field.value : [];
+
+    items.forEach((item, itemIdx) => {
         const chip = document.createElement('div');
         chip.className = 'keyword-chip';
-        chip.innerHTML = `${item} <span onclick="window.removeArrayItem('${key}', ${index})">&times;</span>`;
+        chip.innerHTML = `${item} <span onclick="window.removeArrayItemForIndex(${index}, ${itemIdx})">&times;</span>`;
         container.appendChild(chip);
     });
 
-    if(key === 'shopKeywords' && items.length >= 10) {
+    if(field.name === 'shopKeywords' && items.length >= 10) {
         if(inputEl) inputEl.disabled = true;
         if(limitMsg) limitMsg.style.display = 'block';
     } else {
@@ -415,77 +672,160 @@ function renderArrayChips(key) {
         if(limitMsg) limitMsg.style.display = 'none';
     }
 }
-          
-document.getElementById('cancelBtn').onclick = () => document.getElementById('editModal').style.display = 'none';          
-          
-// ========== SAVE ==========          
-document.getElementById('saveBtn').onclick = async () => {          
-    try {
-        const data = {};          
-        document.querySelectorAll('#formFields input, #formFields select, #formFields textarea').forEach(inp => {          
-            if(inp.id && inp.id.startsWith('field-')) {
-                const key = inp.id.replace('field-','');          
-                let val = inp.value;          
-                if(val === 'true') val = true;          
-                else if(val === 'false') val = false;          
-                else if(inp.type === 'number' && val !== '') val = Number(val);          
-                else {
-                    try {
-                        // Check if it's JSON object text
-                        if(val.startsWith('{') && val.endsWith('}')) {
-                            val = JSON.parse(val);
-                        }
-                    } catch(err) {}
-                }
-                data[key] = val;          
-            }
-        });          
 
-        // Merge runtime dynamic arrays state
-        Object.keys(dynamicEditorsState).forEach(arrayKey => {
-            data[arrayKey] = dynamicEditorsState[arrayKey];
+document.getElementById('cancelBtn').onclick = () => document.getElementById('editModal').style.display = 'none';
+
+// SAVE USER LOGIC
+document.getElementById('saveBtn').onclick = async () => {
+    try {
+        const saveBtn = document.getElementById('saveBtn');
+        const fieldNameRegex = /^[a-zA-Z0-9_]+$/;
+        const usedNames = new Set();
+
+        // 1. Validation
+        for(let i = 0; i < modalFields.length; i++) {
+            const f = modalFields[i];
+            if(!f.name) {
+                showToast(`Field row #${i+1} has an empty field name!`, 'error');
+                return;
+            }
+            if(!fieldNameRegex.test(f.name)) {
+                showToast(`Field name '${f.name}' is invalid! Use only letters, numbers, and underscores.`, 'error');
+                return;
+            }
+            if(usedNames.has(f.name)) {
+                showToast(`Duplicate field name '${f.name}' found!`, 'error');
+                return;
+            }
+            usedNames.add(f.name);
+
+            if(f.name === 'shopDescription' && typeof f.value === 'string' && f.value.length > 200) {
+                showToast('shopDescription exceeds 200 character limit!', 'error');
+                return;
+            }
+
+            if(f.name === 'shopKeywords' && Array.isArray(f.value) && f.value.length > 10) {
+                showToast('shopKeywords cannot have more than 10 items!', 'error');
+                return;
+            }
+
+            if(f.type === 'object' && typeof f.value === 'string') {
+                try {
+                    JSON.parse(f.value);
+                } catch(e) {
+                    showToast(`Invalid JSON in field '${f.name}'!`, 'error');
+                    return;
+                }
+            }
+        }
+
+        saveBtn.disabled = true;
+        saveBtn.innerText = 'Saving...';
+
+        // 2. Prepare payload
+        const payload = {};
+
+        // Handle deleted fields
+        deletedFields.forEach(fieldName => {
+            payload[fieldName] = deleteField();
         });
 
-        data.updatedAt = serverTimestamp();          
-              
-        if(isNewUser){          
-            await setDoc(doc(db,"users",currentEditingId), data);          
-            const newEntry = {uid: currentEditingId, ...data};
-            allUsers.unshift(newEntry);          
+        // Populate fields
+        modalFields.forEach(f => {
+            if(f.originalName && f.originalName !== f.name) {
+                payload[f.originalName] = deleteField(); // Renamed field
+            }
+
+            let finalVal = f.value;
+            if(f.type === 'number') finalVal = Number(f.value) || 0;
+            else if(f.type === 'boolean') finalVal = (f.value === true || f.value === 'true');
+            else if(f.type === 'array') finalVal = Array.isArray(f.value) ? f.value : [];
+            else if(f.type === 'object') {
+                finalVal = typeof f.value === 'object' ? f.value : JSON.parse(f.value);
+            }
+            else if(f.type === 'timestamp') {
+                if(f.value instanceof Date) finalVal = Timestamp.fromDate(f.value);
+                else if(f.value?.seconds) finalVal = Timestamp.fromMillis(f.value.seconds * 1000);
+                else finalVal = serverTimestamp();
+            }
+            else if(f.type === 'null') finalVal = null;
+            else finalVal = String(f.value !== undefined && f.value !== null ? f.value : '');
+
+            payload[f.name] = finalVal;
+        });
+
+        payload.updatedAt = serverTimestamp();
+
+        // 3. Firestore Execute
+        if(isNewUser) {
+            let targetDocId = customDocId;
+            if(!targetDocId && payload.uid && String(payload.uid).trim() !== "") {
+                targetDocId = String(payload.uid).trim();
+            }
+            if(!targetDocId) {
+                targetDocId = doc(collection(db, "users")).id;
+            }
+
+            await setDoc(doc(db, "users", targetDocId), payload);
+            
+            const newEntry = { _docId: targetDocId, ...payload };
+            allUsers.unshift(newEntry);
             renderCard(newEntry);
-        }else{          
-            await updateDoc(doc(db,"users",currentEditingId), data);          
-            const user = allUsers.find(u=>u.uid===currentEditingId);          
-            if(user) Object.assign(user, data);          
-            renderCard(allUsers.find(u=>u.uid===currentEditingId));          
-        }          
-        document.getElementById('editModal').style.display = 'none';          
-        showToast('Saved Successfully');          
-    } catch(e) { 
-        showToast('Error saving data: '+e.message, 'error'); 
-    }          
-}          
-          
-// ========== DELETE ==========          
-window.openDelete = (uid) => {          
-    currentEditingId = uid;          
-    document.getElementById('confirmModal').style.display = 'flex';          
-}          
-document.getElementById('confirmCancel').onclick = () => document.getElementById('confirmModal').style.display = 'none';          
-document.getElementById('confirmDelete').onclick = async () => {          
-    try {          
-        await deleteDoc(doc(db,"users",currentEditingId));          
-        allUsers = allUsers.filter(u => u.uid !== currentEditingId);          
-        const cardElem = document.getElementById('card-'+currentEditingId);
-        if(cardElem) cardElem.remove();          
-        document.getElementById('confirmModal').style.display = 'none';          
-        showToast('Deleted Successfully');          
-    } catch(e) { 
-        showToast('Delete Failed: ' + e.message, 'error'); 
+            showToast('User Created Successfully!');
+        } else {
+            await updateDoc(doc(db, "users", currentEditingDocId), payload);
+            
+            const idx = allUsers.findIndex(u => u._docId === currentEditingDocId);
+            if(idx !== -1) {
+                // Apply updates locally
+                Object.keys(payload).forEach(k => {
+                    if(payload[k] === deleteField()) {
+                        delete allUsers[idx][k];
+                    } else {
+                        allUsers[idx][k] = payload[k];
+                    }
+                });
+                renderCard(allUsers[idx]);
+            }
+            showToast('User Updated Successfully!');
+        }
+
+        document.getElementById('editModal').style.display = 'none';
+    } catch(e) {
+        showToast('Save Failed: ' + e.message, 'error');
+    } finally {
+        const saveBtn = document.getElementById('saveBtn');
+        saveBtn.disabled = false;
+        saveBtn.innerText = 'Save User';
+    }
+}
+
+// DELETE USER LOGIC
+window.openDelete = (docId) => {
+    currentEditingDocId = docId;
+    document.getElementById('confirmModal').style.display = 'flex';
+}
+document.getElementById('confirmCancel').onclick = () => document.getElementById('confirmModal').style.display = 'none';
+document.getElementById('deleteBtn').onclick = () => {
+    document.getElementById('editModal').style.display = 'none';
+    document.getElementById('confirmModal').style.display = 'flex';
+};
+
+document.getElementById('confirmDelete').onclick = async () => {
+    try {
+        await deleteDoc(doc(db, "users", currentEditingDocId));
+        allUsers = allUsers.filter(u => u._docId !== currentEditingDocId);
+        const cardElem = document.getElementById('card-' + currentEditingDocId);
+        if(cardElem) cardElem.remove();
         document.getElementById('confirmModal').style.display = 'none';
-    }          
-}          
-          
-document.getElementById('loadMore').onclick = loadUsers;          
-</script>          </body>          
+        showToast('User Deleted Successfully');
+    } catch(e) {
+        showToast('Delete Failed: ' + e.message, 'error');
+        document.getElementById('confirmModal').style.display = 'none';
+    }
+}
+
+document.getElementById('loadMore').onclick = loadUsers;
+</script>
+</body>
 </html>
