@@ -1,0 +1,1732 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Balance Management - GHOTI MARKET</title>
+  
+  <!-- Google Font: Hind Siliguri -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Font Awesome 6.5.1 -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+  <style>
+    :root {
+      --primary: #ff6a00;
+      --primary-dark: #e05d00;
+      --primary-light: #fff0eb;
+      --secondary: #ff8533;
+      --bg: #fff7f1;
+      --card-bg: #ffffff;
+      --text-main: #1f2937;
+      --text-muted: #6b7280;
+      --border: #fee2d5;
+      --success: #10b981;
+      --success-light: #ecfdf5;
+      --danger: #ef4444;
+      --danger-light: #fef2f2;
+      --warning: #f59e0b;
+      --warning-light: #fffbebf;
+      --radius: 16px;
+      --shadow-sm: 0 2px 8px rgba(255, 106, 0, 0.05);
+      --shadow-md: 0 10px 25px -5px rgba(255, 106, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.02);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Hind Siliguri', sans-serif;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      padding-bottom: 50px;
+    }
+
+    /* Background Ambient Blobs */
+    .bg-blob {
+      position: fixed;
+      width: 350px;
+      height: 350px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, rgba(255, 106, 0, 0.1), rgba(255, 133, 51, 0.04));
+      filter: blur(70px);
+      z-index: -1;
+      pointer-events: none;
+    }
+    .blob-1 { top: -60px; left: -60px; }
+    .blob-2 { bottom: 5%; right: -60px; }
+
+    /* Auth Verification Overlay */
+    .auth-overlay {
+      position: fixed;
+      inset: 0;
+      background: #ffffff;
+      z-index: 10000;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+    }
+    .auth-spinner {
+      font-size: 2.5rem;
+      color: var(--primary);
+    }
+    .auth-text {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: var(--text-main);
+    }
+
+    /* Toast Notification Container */
+    .toast-container {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .toast {
+      background: #ffffff;
+      color: var(--text-main);
+      padding: 12px 20px;
+      border-radius: 12px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      border-left: 4px solid var(--primary);
+      animation: slideIn 0.3s ease-out forwards;
+      max-width: 360px;
+      font-weight: 500;
+    }
+
+    .toast.error { border-left-color: var(--danger); }
+    .toast.success { border-left-color: var(--success); }
+    .toast.warning { border-left-color: var(--warning); }
+
+    @keyframes slideIn {
+      from { transform: translateX(100%); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+
+    /* Sticky Header */
+    .app-header {
+      position: sticky;
+      top: 0;
+      background: rgba(255, 255, 255, 0.88);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      z-index: 1000;
+      padding: 14px 20px;
+    }
+
+    .header-container {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .brand-title {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .brand-title .logo-text {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--primary);
+      line-height: 1.1;
+    }
+
+    .brand-title .page-subtitle {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+
+    .btn-dashboard {
+      background-color: var(--primary-light);
+      color: var(--primary);
+      border: 1px solid var(--border);
+      padding: 8px 16px;
+      border-radius: 20px;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 0.9rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.2s ease;
+    }
+
+    .btn-dashboard:hover {
+      background-color: var(--primary);
+      color: #ffffff;
+    }
+
+    /* Main Container Layout */
+    .container {
+      max-width: 1100px;
+      width: 100%;
+      margin: 20px auto 0;
+      padding: 0 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    /* Cards Common */
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    /* Top Summary Dashboard Grid */
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 12px;
+    }
+
+    .summary-card {
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .summary-title {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+
+    .summary-value {
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    .summary-value.add { color: var(--success); }
+    .summary-value.deduct { color: var(--danger); }
+
+    /* Admin Control Panel */
+    .admin-control-card {
+      background: linear-gradient(135deg, #ffffff 0%, #fff0eb 100%);
+      border: 1.5px solid var(--border);
+      box-shadow: var(--shadow-md);
+    }
+
+    .card-title-bar {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 16px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .card-title-bar h2 {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 14px;
+    }
+
+    @media (min-width: 768px) {
+      .form-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+      .form-full {
+        grid-column: span 2;
+      }
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .form-label {
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: var(--text-main);
+    }
+
+    .form-control {
+      width: 100%;
+      padding: 11px 14px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: #ffffff;
+      font-size: 0.95rem;
+      color: var(--text-main);
+      outline: none;
+      transition: border-color 0.2s ease;
+    }
+
+    .form-control:focus {
+      border-color: var(--primary);
+    }
+
+    /* Seller Match Card */
+    .seller-preview-card {
+      background: #ffffff;
+      border: 1px dashed var(--primary);
+      border-radius: 12px;
+      padding: 12px 16px;
+      margin-top: 6px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .seller-avatar {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      border: 2px solid var(--border);
+      object-fit: cover;
+      background: var(--primary-light);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--primary);
+      font-size: 1.3rem;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+
+    .seller-info-details {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      overflow: hidden;
+    }
+
+    .seller-name {
+      font-weight: 700;
+      font-size: 1rem;
+      color: var(--text-main);
+    }
+
+    .seller-sub-meta {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    .seller-badges {
+      display: flex;
+      gap: 10px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      margin-top: 4px;
+    }
+
+    .badge-dot {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .btn-submit-balance {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+      color: #ffffff;
+      border: none;
+      padding: 14px 20px;
+      border-radius: 12px;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      box-shadow: 0 4px 15px rgba(255, 106, 0, 0.25);
+      transition: all 0.2s ease;
+      width: 100%;
+    }
+
+    .btn-submit-balance:hover {
+      transform: translateY(-2px);
+    }
+
+    .btn-submit-balance:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    /* Controls Header: Search & Filter */
+    .controls-bar {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    @media (min-width: 768px) {
+      .controls-bar {
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+      }
+    }
+
+    .search-box {
+      position: relative;
+      flex: 1;
+    }
+
+    .search-box i {
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-muted);
+    }
+
+    .search-input {
+      padding-left: 40px;
+    }
+
+    .filter-group {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .filter-select {
+      padding: 10px 14px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: #ffffff;
+      font-size: 0.88rem;
+      color: var(--text-main);
+      outline: none;
+    }
+
+    .btn-action-primary {
+      background: var(--primary-light);
+      color: var(--primary);
+      border: 1px solid var(--border);
+      padding: 10px 16px;
+      border-radius: 10px;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.88rem;
+      transition: all 0.2s ease;
+    }
+
+    .btn-action-primary:hover {
+      background: var(--primary);
+      color: #ffffff;
+    }
+
+    /* Transaction List Items */
+    .transaction-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .tx-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .tx-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 10px;
+    }
+
+    .tx-type-tag {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .tx-icon-badge {
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+      flex-shrink: 0;
+    }
+
+    .tx-icon-badge.add { background: var(--success-light); color: var(--success); }
+    .tx-icon-badge.deduct { background: var(--danger-light); color: var(--danger); }
+    .tx-icon-badge.buy { background: var(--primary-light); color: var(--primary); }
+    .tx-icon-badge.default { background: #f3f4f6; color: #4b5563; }
+
+    .tx-main-info {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .tx-type-title {
+      font-weight: 700;
+      font-size: 0.95rem;
+      color: var(--text-main);
+    }
+
+    .tx-seller-id {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      font-family: monospace;
+    }
+
+    .tx-amount {
+      font-size: 1.15rem;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .tx-amount.add { color: var(--success); }
+    .tx-amount.deduct { color: var(--danger); }
+
+    .tx-grid-details {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+      gap: 8px 12px;
+      font-size: 0.82rem;
+      background: var(--bg);
+      padding: 10px 12px;
+      border-radius: 10px;
+    }
+
+    .tx-meta-item {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .tx-meta-label {
+      color: var(--text-muted);
+      font-size: 0.72rem;
+    }
+
+    .tx-meta-value {
+      color: var(--text-main);
+      font-weight: 600;
+    }
+
+    .tx-note-box {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .tx-footer-actions {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-top: 8px;
+      border-top: 1px solid var(--border);
+      font-size: 0.78rem;
+      color: var(--text-muted);
+    }
+
+    .tx-btn-group {
+      display: flex;
+      gap: 8px;
+    }
+
+    .btn-tx-opt {
+      border: 1px solid var(--border);
+      background: #ffffff;
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      transition: all 0.2s ease;
+    }
+
+    .btn-tx-opt.edit:hover { background: var(--primary-light); color: var(--primary); }
+    .btn-tx-opt.delete:hover { background: var(--danger-light); color: var(--danger); }
+
+    /* Custom Modals */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.4);
+      backdrop-filter: blur(4px);
+      z-index: 10000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+
+    .modal-box {
+      background: #ffffff;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      width: 100%;
+      max-width: 550px;
+      max-height: 90vh;
+      overflow-y: auto;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      box-shadow: var(--shadow-md);
+      animation: modalScale 0.2s ease-out;
+    }
+
+    @keyframes modalScale {
+      from { transform: scale(0.95); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 10px;
+    }
+
+    .modal-title {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    .btn-modal-close {
+      background: none;
+      border: none;
+      font-size: 1.2rem;
+      color: var(--text-muted);
+      cursor: pointer;
+    }
+
+    .custom-field-row {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .btn-remove-field {
+      background: var(--danger-light);
+      color: var(--danger);
+      border: 1px solid var(--danger);
+      padding: 10px;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    .modal-footer {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      border-top: 1px solid var(--border);
+      padding-top: 14px;
+    }
+
+    .btn-modal-cancel {
+      background: #f3f4f6;
+      color: var(--text-main);
+      border: none;
+      padding: 10px 18px;
+      border-radius: 10px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .btn-modal-confirm {
+      background: var(--primary);
+      color: #ffffff;
+      border: none;
+      padding: 10px 18px;
+      border-radius: 10px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .btn-modal-danger {
+      background: var(--danger);
+      color: #ffffff;
+      border: none;
+      padding: 10px 18px;
+      border-radius: 10px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    /* Skeleton Loading State */
+    .skeleton {
+      background: linear-gradient(90deg, #f0f0f0 25%, #f8f8f8 50%, #f0f0f0 75%);
+      background-size: 200% 100%;
+      animation: loading 1.5s infinite;
+      border-radius: 8px;
+    }
+
+    @keyframes loading {
+      0% { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
+    }
+
+    .hidden { display: none !important; }
+  </style>
+</head>
+<body>
+
+  <!-- Ambient Background Blobs -->
+  <div class="bg-blob blob-1"></div>
+  <div class="bg-blob blob-2"></div>
+
+  <!-- Admin Verification Screen -->
+  <div id="authOverlay" class="auth-overlay">
+    <i class="fa-solid fa-shield-halved fa-spin auth-spinner"></i>
+    <div class="auth-text">Admin Account যাচাই করা হচ্ছে...</div>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div id="toastContainer" class="toast-container"></div>
+
+  <!-- Main Content Wrapper (Shown after Admin Verify) -->
+  <div id="mainContainer" class="hidden">
+    
+    <!-- Sticky Header -->
+    <header class="app-header">
+      <div class="header-container">
+        <div class="brand-title">
+          <span class="logo-text">GHOTI MARKET</span>
+          <span class="page-subtitle">Admin Balance Management</span>
+        </div>
+        <a href="https://seller.ghotimarket.com/dashboard" class="btn-dashboard">
+          <i class="fa-solid fa-house"></i>
+          <span>Dashboard</span>
+        </a>
+      </div>
+    </header>
+
+    <main class="container">
+
+      <!-- 1. Top Realtime Summary Cards -->
+      <section class="summary-grid">
+        <div class="summary-card">
+          <span class="summary-title">Total Transactions</span>
+          <span class="summary-value" id="sumTotalTx">0</span>
+        </div>
+        <div class="summary-card">
+          <span class="summary-title">Total Added</span>
+          <span class="summary-value add" id="sumTotalAdd">৳0</span>
+        </div>
+        <div class="summary-card">
+          <span class="summary-title">Total Deducted</span>
+          <span class="summary-value deduct" id="sumTotalDeduct">৳0</span>
+        </div>
+        <div class="summary-card">
+          <span class="summary-title">Subscription Buys</span>
+          <span class="summary-value" id="sumTotalSub">0</span>
+        </div>
+      </section>
+
+      <!-- 2. Admin Balance Control Card -->
+      <section class="card admin-control-card">
+        <div class="card-title-bar">
+          <i class="fa-solid fa-scale-balanced" style="color: var(--primary); font-size: 1.2rem;"></i>
+          <h2>Seller Balance Management</h2>
+        </div>
+
+        <form id="balanceControlForm" onsubmit="handleBalanceSubmit(event)">
+          <div class="form-grid">
+            
+            <!-- Seller UID Input -->
+            <div class="form-group form-full">
+              <label class="form-label" for="sellerUidInput">Seller UID</label>
+              <input type="text" id="sellerUidInput" class="form-control" placeholder="Seller UID লিখুন..." required autocomplete="off">
+              
+              <!-- Live Seller Preview Card -->
+              <div id="sellerPreview" class="seller-preview-card hidden">
+                <div id="sellerAvatarBox"></div>
+                <div class="seller-info-details">
+                  <span id="sellerShopName" class="seller-name">--</span>
+                  <span id="sellerSubMeta" class="seller-sub-meta">--</span>
+                  <div class="seller-badges">
+                    <span id="sellerBalDisplay" style="color: var(--primary); font-weight:700;">Balance: ৳0</span>
+                    <span id="sellerStatusActive"></span>
+                    <span id="sellerStatusVerified"></span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Operation Selection -->
+            <div class="form-group">
+              <label class="form-label" for="operationSelect">Operation</label>
+              <select id="operationSelect" class="form-control">
+                <option value="ADD">+ Add Balance</option>
+                <option value="DEDUCT">- Deduct Balance</option>
+              </select>
+            </div>
+
+            <!-- Amount Input -->
+            <div class="form-group">
+              <label class="form-label" for="amountInput">Amount (৳)</label>
+              <input type="number" id="amountInput" class="form-control" placeholder="যেমন: 900" min="1" step="any" required>
+            </div>
+
+            <!-- Note Input -->
+            <div class="form-group form-full">
+              <label class="form-label" for="noteInput">Note (Optional)</label>
+              <input type="text" id="noteInput" class="form-control" placeholder="কারণ বা বিবরণ লিখুন...">
+            </div>
+
+            <!-- Submit Button -->
+            <div class="form-group form-full">
+              <button type="submit" id="btnSubmitBalance" class="btn-submit-balance">
+                <i class="fa-solid fa-arrows-rotate"></i>
+                <span>Balance Update করুন</span>
+              </button>
+            </div>
+
+          </div>
+        </form>
+      </section>
+
+      <!-- 3. Transaction History Controls -->
+      <section class="controls-bar">
+        <div class="search-box">
+          <i class="fa-solid fa-magnifying-glass"></i>
+          <input type="text" id="searchInput" class="form-control search-input" placeholder="UID / Email / Shop Name / Transaction ID দিয়ে খুঁজুন..." oninput="handleSearchFilter()">
+        </div>
+
+        <div class="filter-group">
+          <select id="typeFilter" class="filter-select" onchange="handleSearchFilter()">
+            <option value="ALL">All Types</option>
+            <option value="BALANCE_ADD">BALANCE_ADD</option>
+            <option value="BALANCE_DEDUCT">BALANCE_DEDUCT</option>
+            <option value="SUBSCRIPTION_BUY">SUBSCRIPTION_BUY</option>
+            <option value="REFUND">REFUND</option>
+            <option value="OTHER">OTHER</option>
+          </select>
+
+          <button class="btn-action-primary" onclick="openCreateModal()">
+            <i class="fa-solid fa-plus"></i>
+            <span>New Transaction</span>
+          </button>
+        </div>
+      </section>
+
+      <!-- 4. Transactions List -->
+      <section>
+        <div class="card-title-bar" style="margin-bottom: 12px;">
+          <h2>All Seller Transactions</h2>
+        </div>
+
+        <div id="transactionContainer" class="transaction-list">
+          <!-- Skeleton Loading -->
+          <div class="card skeleton" style="height: 120px;"></div>
+          <div class="card skeleton" style="height: 120px;"></div>
+        </div>
+
+        <!-- Load More Button -->
+        <button id="btnLoadMore" class="btn-action-primary hidden" style="width: 100%; margin-top: 15px; justify-content: center;" onclick="loadMoreTransactions()">
+          আরও দেখুন <i class="fa-solid fa-chevron-down"></i>
+        </button>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- Dynamic Modal Backdrop -->
+  <div id="modalBackdrop" class="modal-backdrop hidden">
+    <div id="modalBox" class="modal-box">
+      <!-- Modal Content Populated via JavaScript -->
+    </div>
+  </div>
+
+  <!-- Firebase v10 Modular SDK & Logic Execution -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    import { 
+      getFirestore, doc, getDoc, collection, onSnapshot, query, limit, 
+      runTransaction, serverTimestamp, updateDoc, deleteDoc, setDoc
+    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+    // Firebase Configuration
+    const firebaseConfig = {
+  apiKey: "AIzaSyBUhNhYvuo_FTvZ5RZR6Gn-4hsUY21S0XE",
+  authDomain: "ghotimarket.firebaseapp.com",
+  databaseURL: "https://ghotimarket-default-rtdb.firebaseio.com",
+  projectId: "ghotimarket",
+  storageBucket: "ghotimarket.firebasestorage.app",
+  messagingSenderId: "481257644093",
+  appId: "1:481257644093:web:0dfc3699d6b3c86afeca54",
+  measurementId: "G-4SR8V2EKC1"
+};
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    // Global App State
+    let currentAdminUser = null;
+    let selectedSellerUid = "";
+    let selectedSellerData = null;
+    let sellerUnsubscribe = null;
+    let txUnsubscribe = null;
+
+    let rawTransactions = [];
+    let sellerProfilesCache = {}; // Cache seller info for client side search
+    let fetchTxLimit = 50;
+
+    // Toast Alert Function
+    window.showToast = function(message, type = 'error') {
+      const container = document.getElementById('toastContainer');
+      const toast = document.createElement('div');
+      toast.className = `toast ${type}`;
+      
+      let icon = 'fa-circle-exclamation';
+      if (type === 'success') icon = 'fa-circle-check';
+      if (type === 'warning') icon = 'fa-triangle-exclamation';
+
+      toast.innerHTML = `<i class="fa-solid ${icon}"></i><span>${message}</span>`;
+      container.appendChild(toast);
+
+      setTimeout(() => { toast.remove(); }, 4000);
+    };
+
+    // Admin Flexible Verification
+    function isAdmin(userData) {
+      if (!userData) return false;
+      return userData.admin === true || userData.isAdmin === true || userData.role === "admin";
+    }
+
+    // Authenticated Admin Guard
+    onAuthStateChanged(auth, async (user) => {
+      if (!user) {
+        window.location.href = "index.html";
+        return;
+      }
+
+      try {
+        const userDocRef = doc(db, "users", user.uid);
+        const userSnap = await getDoc(userDocRef);
+
+        if (!userSnap.exists() || !isAdmin(userSnap.data())) {
+          showToast("আপনার Admin Access নেই!", "error");
+          setTimeout(() => { window.location.href = "index.html"; }, 1500);
+          return;
+        }
+
+        // Admin Auth Passed
+        currentAdminUser = user;
+        document.getElementById("authOverlay").classList.add("hidden");
+        document.getElementById("mainContainer").classList.remove("hidden");
+
+        initAdminDashboard();
+      } catch (err) {
+        console.error("Admin verification failed:", err);
+        window.location.href = "index.html";
+      }
+    });
+
+    // Initialize Page Core
+    function initAdminDashboard() {
+      setupSellerUidInputListener();
+      listenToTransactions();
+    }
+
+    // Live Seller UID Lookup
+    function setupSellerUidInputListener() {
+      const input = document.getElementById("sellerUidInput");
+      input.addEventListener("input", (e) => {
+        const uid = e.target.value.trim();
+        if (uid.length > 5) {
+          attachLiveSellerListener(uid);
+        } else {
+          detachSellerListener();
+        }
+      });
+    }
+
+    function detachSellerListener() {
+      if (sellerUnsubscribe) sellerUnsubscribe();
+      selectedSellerUid = "";
+      selectedSellerData = null;
+      document.getElementById("sellerPreview").classList.add("hidden");
+    }
+
+    function attachLiveSellerListener(uid) {
+      if (sellerUnsubscribe) sellerUnsubscribe();
+
+      const userDocRef = doc(db, "users", uid);
+      sellerUnsubscribe = onSnapshot(userDocRef, (docSnap) => {
+        const previewEl = document.getElementById("sellerPreview");
+        if (docSnap.exists()) {
+          selectedSellerUid = uid;
+          selectedSellerData = docSnap.data();
+          sellerProfilesCache[uid] = selectedSellerData;
+
+          renderSellerPreviewCard(selectedSellerData, uid);
+          previewEl.classList.remove("hidden");
+        } else {
+          selectedSellerUid = "";
+          selectedSellerData = null;
+          previewEl.classList.add("hidden");
+        }
+      }, (err) => {
+        console.error("Seller lookup error:", err);
+      });
+    }
+
+    function renderSellerPreviewCard(data, uid) {
+      const avatarBox = document.getElementById("sellerAvatarBox");
+      const shopNameEl = document.getElementById("sellerShopName");
+      const subMetaEl = document.getElementById("sellerSubMeta");
+      const balEl = document.getElementById("sellerBalDisplay");
+      const activeEl = document.getElementById("sellerStatusActive");
+      const verifiedEl = document.getElementById("sellerStatusVerified");
+
+      const shopName = data.shopName || data.name || "Unknown Shop";
+      const username = data.username ? `@${data.username}` : "";
+      const email = data.email || "";
+
+      shopNameEl.textContent = shopName;
+      subMetaEl.textContent = [username, email, `UID: ${uid}`].filter(Boolean).join(" • ");
+
+      const balance = Number(data.balance) || 0;
+      balEl.textContent = `Balance: ৳${balance.toLocaleString('bn-BD', {minimumFractionDigits: 2})}`;
+
+      activeEl.className = data.active ? "badge-dot" : "badge-dot";
+      activeEl.innerHTML = data.active ? `<span style="color:var(--success)">🟢 Active</span>` : `<span style="color:var(--danger)">🔴 Inactive</span>`;
+
+      verifiedEl.className = data.verified ? "badge-dot" : "badge-dot";
+      verifiedEl.innerHTML = data.verified ? `<span style="color:var(--success)">🟢 Verified</span>` : `<span style="color:var(--warning)">🟠 Unverified</span>`;
+
+      if (data.shopLogo) {
+        avatarBox.innerHTML = `<img src="${data.shopLogo}" class="seller-avatar" alt="Logo">`;
+      } else {
+        avatarBox.innerHTML = `<div class="seller-avatar">${shopName.charAt(0).toUpperCase()}</div>`;
+      }
+    }
+
+    // Atomic Balance Add / Deduct
+    window.handleBalanceSubmit = async function(e) {
+      e.preventDefault();
+
+      if (!selectedSellerUid || !selectedSellerData) {
+        showToast("দয়া করে সঠিক Seller UID দিন।", "error");
+        return;
+      }
+
+      const opType = document.getElementById("operationSelect").value;
+      const amountVal = parseFloat(document.getElementById("amountInput").value);
+      const noteInputVal = document.getElementById("noteInput").value.trim();
+
+      if (isNaN(amountVal) || amountVal <= 0) {
+        showToast("Amount ০ এর বেশি হতে হবে।", "error");
+        return;
+      }
+
+      const btnSubmit = document.getElementById("btnSubmitBalance");
+      btnSubmit.disabled = true;
+      btnSubmit.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Processing...`;
+
+      try {
+        const userRef = doc(db, "users", selectedSellerUid);
+        const newTxRef = doc(collection(db, "users_transection"));
+
+        const defaultNote = opType === "ADD" 
+          ? "Admin দ্বারা Balance যোগ করা হয়েছে" 
+          : "Admin দ্বারা Balance কাটা হয়েছে";
+
+        const finalNote = noteInputVal || defaultNote;
+
+        // Atomic Transaction Operation
+        await runTransaction(db, async (transaction) => {
+          const userSnap = await transaction.get(userRef);
+          if (!userSnap.exists()) {
+            throw new Error("Seller-এর প্রোফাইল খুঁজে পাওয়া যায়নি!");
+          }
+
+          const currentBalance = Number(userSnap.data().balance) || 0;
+          let signedAmount = amountVal;
+          let newBalance = currentBalance + amountVal;
+          let txType = "BALANCE_ADD";
+
+          if (opType === "DEDUCT") {
+            if (currentBalance < amountVal) {
+              throw new Error("INSUFFICIENT_BALANCE");
+            }
+            signedAmount = -amountVal;
+            newBalance = currentBalance - amountVal;
+            txType = "BALANCE_DEDUCT";
+          }
+
+          // 1. Update Seller Balance
+          transaction.update(userRef, { balance: newBalance });
+
+          // 2. Add Transaction Record
+          transaction.set(newTxRef, {
+            userId: selectedSellerUid,
+            amount: signedAmount,
+            type: txType,
+            packageName: "NO",
+            packageDays: 0,
+            packagePrice: 0,
+            prevBalance: currentBalance,
+            newBalance: newBalance,
+            note: finalNote,
+            createdAt: serverTimestamp(),
+            createdBy: currentAdminUser.uid
+          });
+        });
+
+        showToast("✅ Seller Balance সফলভাবে Update হয়েছে।", "success");
+        document.getElementById("amountInput").value = "";
+        document.getElementById("noteInput").value = "";
+      } catch (err) {
+        console.error("Balance transaction error:", err);
+        if (err.message === "INSUFFICIENT_BALANCE") {
+          showToast("Seller-এর পর্যাপ্ত Balance নেই।", "error");
+        } else {
+          showToast("Balance update করতে ব্যর্থ হয়েছে।", "error");
+        }
+      } finally {
+        btnSubmit.disabled = false;
+        btnSubmit.innerHTML = `<i class="fa-solid fa-arrows-rotate"></i> Balance Update করুন`;
+      }
+    };
+
+    // Listen Realtime All Transactions
+    function listenToTransactions() {
+      if (txUnsubscribe) txUnsubscribe();
+
+      const txColRef = collection(db, "users_transection");
+      const q = query(txColRef, limit(fetchTxLimit));
+
+      txUnsubscribe = onSnapshot(q, (snapshot) => {
+        let list = [];
+        snapshot.forEach((docSnap) => {
+          list.push({ id: docSnap.id, ...docSnap.data() });
+        });
+
+        // Safe Client-side Descending Sort
+        list.sort((a, b) => getSafeTime(b.createdAt) - getSafeTime(a.createdAt));
+
+        rawTransactions = list;
+        calculateTopSummary(list);
+        handleSearchFilter();
+      }, (err) => {
+        console.error("Transactions realtime error:", err);
+        showToast("Transaction history লোড করতে সমস্যা হয়েছে।", "error");
+      });
+    }
+
+    // Safe Timestamp Converter
+    function getSafeTime(createdAt) {
+      if (!createdAt) return 0;
+      if (typeof createdAt.toDate === 'function') return createdAt.toDate().getTime();
+      if (createdAt instanceof Date) return createdAt.getTime();
+      if (typeof createdAt === 'number') return createdAt;
+      if (typeof createdAt === 'string') {
+        const p = new Date(createdAt).getTime();
+        return isNaN(p) ? 0 : p;
+      }
+      return 0;
+    }
+
+    // Top Summary Calculation
+    function calculateTopSummary(transactions) {
+      let totalAdd = 0;
+      let totalDeduct = 0;
+      let subCount = 0;
+
+      transactions.forEach((tx) => {
+        const amt = Number(tx.amount) || 0;
+        if (amt > 0 || tx.type === 'BALANCE_ADD') {
+          totalAdd += Math.abs(amt);
+        } else if (amt < 0 || tx.type === 'BALANCE_DEDUCT') {
+          totalDeduct += Math.abs(amt);
+        }
+
+        if (tx.type === 'SUBSCRIPTION_BUY') {
+          subCount++;
+        }
+      });
+
+      document.getElementById("sumTotalTx").textContent = transactions.length;
+      document.getElementById("sumTotalAdd").textContent = `৳${totalAdd.toLocaleString('bn-BD')}`;
+      document.getElementById("sumTotalDeduct").textContent = `৳${totalDeduct.toLocaleString('bn-BD')}`;
+      document.getElementById("sumTotalSub").textContent = subCount;
+    }
+
+    // Client-side Fast Filtering without extra Firestore read cost
+    window.handleSearchFilter = function() {
+      const searchVal = document.getElementById("searchInput").value.trim().toLowerCase();
+      const typeVal = document.getElementById("typeFilter").value;
+
+      const filtered = rawTransactions.filter((tx) => {
+        // Filter by Type
+        if (typeVal !== "ALL") {
+          if (typeVal === "OTHER") {
+            if (["BALANCE_ADD", "BALANCE_DEDUCT", "SUBSCRIPTION_BUY", "REFUND"].includes(tx.type)) {
+              return false;
+            }
+          } else if (tx.type !== typeVal) {
+            return false;
+          }
+        }
+
+        // Filter by Search Query
+        if (searchVal) {
+          const sellerProfile = sellerProfilesCache[tx.userId] || {};
+          const shopName = (sellerProfile.shopName || "").toLowerCase();
+          const email = (sellerProfile.email || "").toLowerCase();
+          const username = (sellerProfile.username || "").toLowerCase();
+
+          const matchDocId = tx.id.toLowerCase().includes(searchVal);
+          const matchUid = (tx.userId || "").toLowerCase().includes(searchVal);
+          const matchType = (tx.type || "").toLowerCase().includes(searchVal);
+          const matchPkg = (tx.packageName || "").toLowerCase().includes(searchVal);
+          const matchNote = (tx.note || "").toLowerCase().includes(searchVal);
+          const matchCreatedBy = (tx.createdBy || "").toLowerCase().includes(searchVal);
+
+          return matchDocId || matchUid || matchType || matchPkg || matchNote || matchCreatedBy ||
+                 shopName.includes(searchVal) || email.includes(searchVal) || username.includes(searchVal);
+        }
+
+        return true;
+      });
+
+      renderTransactionList(filtered);
+    };
+
+    // Render Transactions Cards
+    function renderTransactionList(transactions) {
+      const container = document.getElementById("transactionContainer");
+      const btnLoadMore = document.getElementById("btnLoadMore");
+
+      container.innerHTML = "";
+
+      if (transactions.length === 0) {
+        container.innerHTML = `
+          <div class="card" style="text-align:center; padding:30px; color:var(--text-muted);">
+            <i class="fa-solid fa-receipt" style="font-size:2.5rem; margin-bottom:8px; color:var(--border);"></i>
+            <div>কোনো Transaction পাওয়া যায়নি।</div>
+          </div>`;
+        btnLoadMore.classList.add("hidden");
+        return;
+      }
+
+      transactions.forEach((tx) => {
+        const amt = Number(tx.amount) || 0;
+        const isNeg = amt < 0;
+
+        let iconStyle = "default";
+        let iconClass = "fa-money-bill-transfer";
+
+        if (tx.type === "BALANCE_ADD") { iconStyle = "add"; iconClass = "fa-plus"; }
+        else if (tx.type === "BALANCE_DEDUCT") { iconStyle = "deduct"; iconClass = "fa-minus"; }
+        else if (tx.type === "SUBSCRIPTION_BUY") { iconStyle = "buy"; iconClass = "fa-cart-shopping"; }
+        else if (tx.type === "REFUND") { iconStyle = "default"; iconClass = "fa-rotate-left"; }
+
+        const amountFormatted = Math.abs(amt).toLocaleString('bn-BD', {minimumFractionDigits: 2});
+        const amountDisplay = isNeg 
+          ? `<span class="tx-amount deduct">- ৳${amountFormatted}</span>`
+          : `<span class="tx-amount add">+ ৳${amountFormatted}</span>`;
+
+        const safeDate = formatBengaliDate(tx.createdAt);
+
+        const card = document.createElement("div");
+        card.className = "tx-card";
+
+        card.innerHTML = `
+          <div class="tx-card-header">
+            <div class="tx-type-tag">
+              <div class="tx-icon-badge ${iconStyle}">
+                <i class="fa-solid ${iconClass}"></i>
+              </div>
+              <div class="tx-main-info">
+                <span class="tx-type-title">${tx.type || 'TRANSACTION'}</span>
+                <span class="tx-seller-id">UID: ${tx.userId || 'N/A'}</span>
+              </div>
+            </div>
+            ${amountDisplay}
+          </div>
+
+          <div class="tx-grid-details">
+            <div class="tx-meta-item">
+              <span class="tx-meta-label">Package</span>
+              <span class="tx-meta-value">${tx.packageName || 'N/A'}</span>
+            </div>
+            <div class="tx-meta-item">
+              <span class="tx-meta-label">Prev Balance</span>
+              <span class="tx-meta-value">৳${tx.prevBalance !== undefined ? tx.prevBalance : 'N/A'}</span>
+            </div>
+            <div class="tx-meta-item">
+              <span class="tx-meta-label">New Balance</span>
+              <span class="tx-meta-value">৳${tx.newBalance !== undefined ? tx.newBalance : 'N/A'}</span>
+            </div>
+            <div class="tx-meta-item">
+              <span class="tx-meta-label">Doc ID</span>
+              <span class="tx-meta-value" style="font-family:monospace; font-size:0.75rem;">${tx.id}</span>
+            </div>
+          </div>
+
+          ${tx.note ? `<div class="tx-note-box"><i class="fa-regular fa-comment-dots"></i> <span>${tx.note}</span></div>` : ''}
+
+          <div class="tx-footer-actions">
+            <div>
+              <span>${safeDate}</span>
+              ${tx.createdBy ? `<span style="margin-left:6px; opacity:0.8;">• Admin: ${tx.createdBy.substring(0, 6)}...</span>` : ''}
+            </div>
+            <div class="tx-btn-group">
+              <button class="btn-tx-opt edit" onclick="openEditModal('${tx.id}')">
+                <i class="fa-solid fa-pen-to-square"></i> Edit
+              </button>
+              <button class="btn-tx-opt delete" onclick="openDeleteModal('${tx.id}')">
+                <i class="fa-solid fa-trash"></i> Delete
+              </button>
+            </div>
+          </div>
+        `;
+
+        container.appendChild(card);
+      });
+
+      if (rawTransactions.length >= fetchTxLimit) {
+        btnLoadMore.classList.remove("hidden");
+      } else {
+        btnLoadMore.classList.add("hidden");
+      }
+    }
+
+    // Date Format Helper
+    function formatBengaliDate(createdAt) {
+      const ms = getSafeTime(createdAt);
+      if (!ms) return "তারিখ N/A";
+      const d = new Date(ms);
+      const day = d.getDate();
+      const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+      const month = monthNames[d.getMonth()];
+      const year = d.getFullYear();
+      let hrs = d.getHours();
+      const mins = d.getMinutes().toString().padStart(2, '0');
+      const ampm = hrs >= 12 ? 'PM' : 'AM';
+      hrs = hrs % 12 || 12;
+      return `${day} ${month} ${year} • ${hrs}:${mins} ${ampm}`;
+    }
+
+    // Pagination Load More
+    window.loadMoreTransactions = function() {
+      fetchTxLimit += 50;
+      listenToTransactions();
+    };
+
+    // Dynamic Modal Handlers
+    const modalBackdrop = document.getElementById("modalBackdrop");
+    const modalBox = document.getElementById("modalBox");
+
+    window.closeModal = function() {
+      modalBackdrop.classList.add("hidden");
+      modalBox.innerHTML = "";
+    };
+
+    // 1. EDIT TRANSACTION MODAL
+    window.openEditModal = function(txId) {
+      const tx = rawTransactions.find(t => t.id === txId);
+      if (!tx) return;
+
+      // Filter standard keys to extract custom dynamic fields
+      const standardKeys = [
+        "id", "userId", "amount", "type", "packageName", "packageDays", 
+        "packagePrice", "prevBalance", "newBalance", "note", "createdAt", "createdBy"
+      ];
+
+      let customFields = [];
+      Object.keys(tx).forEach((key) => {
+        if (!standardKeys.includes(key)) {
+          customFields.push({ key: key, value: tx[key] });
+        }
+      });
+
+      modalBox.innerHTML = `
+        <div class="modal-header">
+          <span class="modal-title">Edit Transaction</span>
+          <button class="btn-modal-close" onclick="closeModal()">&times;</button>
+        </div>
+
+        <form id="editTxForm" onsubmit="saveTransactionEdit(event, '${tx.id}')">
+          <div class="form-grid" style="grid-template-columns: 1fr 1fr; gap:10px;">
+            <div class="form-group">
+              <label class="form-label">Seller UID</label>
+              <input type="text" id="editUserId" class="form-control" value="${tx.userId || ''}" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Amount</label>
+              <input type="number" id="editAmount" class="form-control" value="${tx.amount !== undefined ? tx.amount : 0}" step="any" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Type</label>
+              <input type="text" id="editType" class="form-control" value="${tx.type || ''}" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Package Name</label>
+              <input type="text" id="editPackageName" class="form-control" value="${tx.packageName || 'NO'}">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Prev Balance</label>
+              <input type="number" id="editPrevBalance" class="form-control" value="${tx.prevBalance !== undefined ? tx.prevBalance : 0}" step="any">
+            </div>
+            <div class="form-group">
+              <label class="form-label">New Balance</label>
+              <input type="number" id="editNewBalance" class="form-control" value="${tx.newBalance !== undefined ? tx.newBalance : 0}" step="any">
+            </div>
+            <div class="form-group form-full">
+              <label class="form-label">Note</label>
+              <input type="text" id="editNote" class="form-control" value="${tx.note || ''}">
+            </div>
+          </div>
+
+          <div style="margin-top:14px;">
+            <label class="form-label" style="display:flex; justify-content:space-between; align-items:center;">
+              <span>Custom Fields</span>
+              <button type="button" class="btn-action-primary" style="padding:4px 8px; font-size:0.75rem;" onclick="addCustomFieldRow()">+ Add Field</button>
+            </label>
+            <div id="customFieldsContainer" style="display:flex; flex-direction:column; gap:8px; margin-top:8px;"></div>
+          </div>
+
+          <div class="modal-footer">
+            <button type="button" class="btn-modal-cancel" onclick="closeModal()">Cancel</button>
+            <button type="submit" class="btn-modal-confirm">Save Changes</button>
+          </div>
+        </form>
+      `;
+
+      modalBackdrop.classList.remove("hidden");
+
+      // Render Existing Custom Fields
+      window.customFieldsState = customFields;
+      renderCustomFieldRows();
+    };
+
+    window.renderCustomFieldRows = function() {
+      const container = document.getElementById("customFieldsContainer");
+      if (!container) return;
+      container.innerHTML = "";
+
+      window.customFieldsState.forEach((item, index) => {
+        const row = document.createElement("div");
+        row.className = "custom-field-row";
+        row.innerHTML = `
+          <input type="text" class="form-control" placeholder="Field Key" value="${item.key}" oninput="window.customFieldsState[${index}].key = this.value">
+          <input type="text" class="form-control" placeholder="Field Value" value="${item.value}" oninput="window.customFieldsState[${index}].value = this.value">
+          <button type="button" class="btn-remove-field" onclick="removeCustomFieldRow(${index})"><i class="fa-solid fa-trash"></i></button>
+        `;
+        container.appendChild(row);
+      });
+    };
+
+    window.addCustomFieldRow = function() {
+      window.customFieldsState.push({ key: "", value: "" });
+      renderCustomFieldRows();
+    };
+
+    window.removeCustomFieldRow = function(index) {
+      window.customFieldsState.splice(index, 1);
+      renderCustomFieldRows();
+    };
+
+    // Save Edit with Financial Mismatch Warning
+    window.saveTransactionEdit = async function(e, txId) {
+      e.preventDefault();
+      const tx = rawTransactions.find(t => t.id === txId);
+      if (!tx) return;
+
+      const newUserId = document.getElementById("editUserId").value.trim();
+      const newAmount = parseFloat(document.getElementById("editAmount").value);
+      const newType = document.getElementById("editType").value.trim();
+      const newPkg = document.getElementById("editPackageName").value.trim();
+      const newPrevBal = parseFloat(document.getElementById("editPrevBalance").value);
+      const newNewBal = parseFloat(document.getElementById("editNewBalance").value);
+      const newNote = document.getElementById("editNote").value.trim();
+
+      // Check if financial fields are altered
+      const isFinancialChanged = 
+        newUserId !== tx.userId || 
+        newAmount !== tx.amount || 
+        newPrevBal !== tx.prevBalance || 
+        newNewBal !== tx.newBalance;
+
+      if (isFinancialChanged) {
+        const confirmEdit = confirm("⚠️ Financial transaction edit করলে Seller Wallet Balance-এর সাথে Transaction History mismatch হতে পারে। আপনি কি সত্যিই এটি পরিবর্তন করতে চান?");
+        if (!confirmEdit) return;
+      }
+
+      const updatedPayload = {
+        userId: newUserId,
+        amount: newAmount,
+        type: newType,
+        packageName: newPkg,
+        prevBalance: newPrevBal,
+        newBalance: newNewBal,
+        note: newNote
+      };
+
+      // Attach custom fields
+      window.customFieldsState.forEach((cf) => {
+        if (cf.key.trim() !== "") {
+          updatedPayload[cf.key.trim()] = cf.value;
+        }
+      });
+
+      try {
+        const txDocRef = doc(db, "users_transection", txId);
+        await updateDoc(txDocRef, updatedPayload);
+        showToast("✅ Transaction সফলভাবে Update হয়েছে।", "success");
+        closeModal();
+      } catch (err) {
+        console.error("Edit update error:", err);
+        showToast("Transaction update করা সম্ভব হয়নি।", "error");
+      }
+    };
+
+    // 2. DELETE TRANSACTION MODAL
+    window.openDeleteModal = function(txId) {
+      const tx = rawTransactions.find(t => t.id === txId);
+      if (!tx) return;
+
+      modalBox.innerHTML = `
+        <div class="modal-header">
+          <span class="modal-title">Delete Transaction</span>
+          <button class="btn-modal-close" onclick="closeModal()">&times;</button>
+        </div>
+
+        <div>
+          <p style="font-weight:600; color:var(--text-main); margin-bottom:8px;">আপনি কি এই Transaction Delete করতে চান?</p>
+          <div style="font-size:0.85rem; color:var(--text-muted); background:var(--bg); padding:10px; border-radius:8px;">
+            <div>Doc ID: ${tx.id}</div>
+            <div>Seller UID: ${tx.userId}</div>
+            <div>Amount: ৳${tx.amount}</div>
+          </div>
+        </div>
+
+        <div style="display:flex; flex-direction:column; gap:8px;">
+          <label style="font-weight:600; font-size:0.88rem;">Deletion Option:</label>
+          <button type="button" class="btn-modal-danger" onclick="executeDelete('${tx.id}', false)">
+            ১. শুধু History Delete করুন
+          </button>
+          <button type="button" class="btn-action-primary" style="justify-content:center; padding:10px; border-color:var(--danger); color:var(--danger);" onclick="executeDelete('${tx.id}', true)">
+            ২. Delete + Reverse Balance করুন
+          </button>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn-modal-cancel" onclick="closeModal()">Cancel</button>
+        </div>
+      `;
+
+      modalBackdrop.classList.remove("hidden");
+    };
+
+    window.executeDelete = async function(txId, reverseBalance) {
+      const tx = rawTransactions.find(t => t.id === txId);
+      if (!tx) return;
+
+      try {
+        if (reverseBalance) {
+          // Atomic Reversal
+          const sellerRef = doc(db, "users", tx.userId);
+          const txRef = doc(db, "users_transection", txId);
+          const reversalTxRef = doc(collection(db, "users_transection"));
+
+          await runTransaction(db, async (transaction) => {
+            const sellerSnap = await transaction.get(sellerRef);
+            if (!sellerSnap.exists()) {
+              throw new Error("Seller profile not found for reversal!");
+            }
+
+            const currentBal = Number(sellerSnap.data().balance) || 0;
+            const reversalAmount = -Number(tx.amount || 0); // Reverse effect
+            const newBal = currentBal + reversalAmount;
+
+            if (newBal < 0) {
+              throw new Error("REVERSAL_NEGATIVE_BALANCE");
+            }
+
+            // Update Balance
+            transaction.update(sellerRef, { balance: newBal });
+
+            // Create Reversal Record
+            transaction.set(reversalTxRef, {
+              userId: tx.userId,
+              amount: reversalAmount,
+              type: "REFUND",
+              packageName: "REVERSAL",
+              packageDays: 0,
+              packagePrice: 0,
+              prevBalance: currentBal,
+              newBalance: newBal,
+              note: `Reversal of deleted transaction (${txId})`,
+              createdAt: serverTimestamp(),
+              createdBy: currentAdminUser.uid
+            });
+
+            // Delete original transaction document
+            transaction.delete(txRef);
+          });
+
+          showToast("✅ Transaction deleted and balance reversed successfully.", "success");
+        } else {
+          // Direct History Delete
+          await deleteDoc(doc(db, "users_transection", txId));
+          showToast("✅ Transaction history deleted.", "success");
+        }
+
+        closeModal();
+      } catch (err) {
+        console.error("Delete transaction error:", err);
+        if (err.message === "REVERSAL_NEGATIVE_BALANCE") {
+          showToast("Reversal এর কারণে Seller balance negative হয়ে যাবে!", "error");
+        } else {
+          showToast("Delete করতে ব্যর্থ হয়েছে।", "error");
+        }
+      }
+    };
+
+    // 3. CREATE MANUAL TRANSACTION MODAL
+    window.openCreateModal = function() {
+      modalBox.innerHTML = `
+        <div class="modal-header">
+          <span class="modal-title">+ New Transaction</span>
+          <button class="btn-modal-close" onclick="closeModal()">&times;</button>
+        </div>
+
+        <form id="createTxForm" onsubmit="saveManualTransaction(event)">
+          <div class="form-grid" style="grid-template-columns: 1fr 1fr; gap:10px;">
+            <div class="form-group form-full">
+              <label class="form-label">Seller UID</label>
+              <input type="text" id="newUserId" class="form-control" placeholder="Seller UID..." required>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Amount</label>
+              <input type="number" id="newAmount" class="form-control" placeholder="যেমন: 500" step="any" required oninput="autoCalcNewBalance()">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Type</label>
+              <select id="newType" class="form-control">
+                <option value="BALANCE_ADD">BALANCE_ADD</option>
+                <option value="BALANCE_DEDUCT">BALANCE_DEDUCT</option>
+                <option value="SUBSCRIPTION_BUY">SUBSCRIPTION_BUY</option>
+                <option value="REFUND">REFUND</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Prev Balance</label>
+              <input type="number" id="newPrevBalance" class="form-control" value="0" step="any" oninput="autoCalcNewBalance()">
+            </div>
+            <div class="form-group">
+              <label class="form-label">New Balance</label>
+              <input type="number" id="newNewBalance" class="form-control" value="0" step="any">
+            </div>
+            <div class="form-group form-full">
+              <label class="form-label">Note</label>
+              <input type="text" id="newNote" class="form-control" placeholder="বিবরণ লিখুন...">
+            </div>
+          </div>
+
+          <div class="modal-footer">
+            <button type="button" class="btn-modal-cancel" onclick="closeModal()">Cancel</button>
+            <button type="submit" class="btn-modal-confirm">Create Document</button>
+          </div>
+        </form>
+      `;
+
+      modalBackdrop.classList.remove("hidden");
+    };
+
+    window.autoCalcNewBalance = function() {
+      const prev = parseFloat(document.getElementById("newPrevBalance").value) || 0;
+      const amt = parseFloat(document.getElementById("newAmount").value) || 0;
+      document.getElementById("newNewBalance").value = prev + amt;
+    };
+
+    window.saveManualTransaction = async function(e) {
+      e.preventDefault();
+      const uid = document.getElementById("newUserId").value.trim();
+      const amt = parseFloat(document.getElementById("newAmount").value);
+      const type = document.getElementById("newType").value;
+      const prevBal = parseFloat(document.getElementById("newPrevBalance").value);
+      const newBal = parseFloat(document.getElementById("newNewBalance").value);
+      const note = document.getElementById("newNote").value.trim();
+
+      try {
+        const newTxRef = doc(collection(db, "users_transection"));
+        await setDoc(newTxRef, {
+          userId: uid,
+          amount: amt,
+          type: type,
+          packageName: "MANUAL",
+          packageDays: 0,
+          packagePrice: 0,
+          prevBalance: prevBal,
+          newBalance: newBal,
+          note: note || "Manual Admin Entry",
+          createdAt: serverTimestamp(),
+          createdBy: currentAdminUser.uid
+        });
+
+        showToast("✅ Manual transaction তৈরি হয়েছে।", "success");
+        closeModal();
+      } catch (err) {
+        console.error("Manual tx create error:", err);
+        showToast("Transaction তৈরি করতে ব্যর্থ হয়েছে।", "error");
+      }
+    };
+  </script>
+</body>
+</html>
