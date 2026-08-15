@@ -1,0 +1,1300 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Balance Management | GHOTI MARKET</title>
+    
+    <!-- Google Fonts: Hind Siliguri -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* ==========================================
+           1. BASE STYLES & VARIABLES
+           ========================================== */
+        :root {
+            --primary: #FF6B35;
+            --primary-dark: #E85A24;
+            --secondary: #FFA500;
+            --bg-main: #FFF8F3;
+            --dark: #0f172a;
+            --dark-light: #1e293b;
+            --card-bg: #FFFFFF;
+            --text-main: #334155;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --radius-lg: 16px;
+            --radius-md: 12px;
+            --radius-sm: 8px;
+            --shadow-sm: 0 2px 4px rgba(0,0,0,0.02);
+            --shadow-md: 0 10px 25px -5px rgba(255, 107, 53, 0.08), 0 8px 10px -6px rgba(0, 0, 0, 0.04);
+            --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Hind Siliguri', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            line-height: 1.6;
+            min-height: 100vh;
+            padding-bottom: 50px;
+        }
+
+        .container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 20px 16px;
+        }
+
+        /* UI Cards */
+        .card {
+            background: var(--card-bg);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            border: 1px solid rgba(226, 232, 240, 0.8);
+            box-shadow: var(--shadow-md);
+            margin-bottom: 24px;
+        }
+
+        /* Buttons */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 10px 18px;
+            border-radius: var(--radius-md);
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s ease;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: #fff;
+            box-shadow: 0 4px 12px rgba(255, 107, 53, 0.3);
+        }
+        .btn-primary:hover { opacity: 0.95; transform: translateY(-1px); }
+        .btn-success { background: var(--success); color: #fff; }
+        .btn-danger { background: var(--danger); color: #fff; }
+        .btn-outline { background: #fff; border: 1.5px solid var(--border); color: var(--text-main); }
+        .btn-outline:hover { background: #f8fafc; }
+        .btn-sm { padding: 6px 12px; font-size: 13px; border-radius: var(--radius-sm); }
+        .btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none !important; }
+
+        /* Form Controls */
+        .form-group { margin-bottom: 16px; }
+        .form-group label { display: block; font-weight: 600; font-size: 14px; margin-bottom: 6px; color: var(--dark); }
+        .form-control {
+            width: 100%;
+            padding: 10px 14px;
+            font-size: 14px;
+            border: 1.5px solid var(--border);
+            border-radius: var(--radius-sm);
+            outline: none;
+            background: #fff;
+        }
+        .form-control:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(255, 107, 53, 0.12); }
+
+        /* Status Badges */
+        .badge {
+            font-size: 12px;
+            font-weight: 700;
+            padding: 4px 12px;
+            border-radius: 50px;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .badge-pending { background: #FEF3C7; color: #D97706; }
+        .badge-approved { background: #D1FAE5; color: #059669; }
+        .badge-rejected { background: #FEE2E2; color: #DC2626; }
+
+        /* ==========================================
+           2. HEADER & BRANDING
+           ========================================== */
+        .admin-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 16px;
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 2px solid #f1f5f9;
+        }
+        .brand-title {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .brand-logo {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: #fff;
+            font-weight: 800;
+            font-size: 18px;
+            padding: 8px 16px;
+            border-radius: var(--radius-md);
+            letter-spacing: 1px;
+        }
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        /* ==========================================
+           3. STATS DASHBOARD GRID
+           ========================================== */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+        .stat-card {
+            background: #fff;
+            border-radius: var(--radius-md);
+            padding: 16px;
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow-sm);
+            transition: transform 0.2s;
+        }
+        .stat-card:hover { transform: translateY(-2px); }
+        .stat-title { font-size: 13px; color: var(--text-muted); font-weight: 600; margin-bottom: 4px; }
+        .stat-val { font-size: 22px; font-weight: 700; color: var(--dark); }
+        .stat-sub { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+
+        /* ==========================================
+           4. FILTERS & SEARCH BAR
+           ========================================== */
+        .controls-card {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 12px;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        /* ==========================================
+           5. DATA TABLE & MOBILE CARD LIST
+           ========================================== */
+        .table-responsive {
+            width: 100%;
+            overflow-x: auto;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border);
+        }
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: #fff;
+            text-align: left;
+            font-size: 14px;
+        }
+        .data-table th {
+            background: #f8fafc;
+            color: var(--dark-light);
+            font-weight: 700;
+            padding: 12px 16px;
+            border-bottom: 1.5px solid var(--border);
+            white-space: nowrap;
+        }
+        .data-table td {
+            padding: 14px 16px;
+            border-bottom: 1px solid var(--border);
+            vertical-align: middle;
+        }
+        .data-table tr:hover { background: #fffdfb; }
+
+        /* Mobile View (Cards) */
+        .mobile-cards-list { display: none; flex-direction: column; gap: 12px; }
+        @media (max-width: 900px) {
+            .table-responsive { display: none; }
+            .mobile-cards-list { display: flex; }
+        }
+        .mobile-card {
+            background: #fff;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 16px;
+            box-shadow: var(--shadow-sm);
+        }
+        .mobile-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        /* ==========================================
+           6. MODALS SYSTEM
+           ========================================== */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(4px);
+            z-index: 1000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+        }
+        .modal-overlay.active { display: flex; }
+        .modal-box {
+            background: #fff;
+            border-radius: var(--radius-lg);
+            width: 100%;
+            max-width: 550px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: var(--shadow-lg);
+            animation: modalIn 0.25s ease-out;
+        }
+        @keyframes modalIn {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        .modal-header {
+            padding: 18px 24px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .modal-header h3 { font-size: 18px; color: var(--dark); font-weight: 700; }
+        .modal-close { background: none; border: none; font-size: 22px; cursor: pointer; color: var(--text-muted); }
+        .modal-body { padding: 24px; }
+        .modal-footer {
+            padding: 16px 24px;
+            border-top: 1px solid var(--border);
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+            background: #f8fafc;
+            border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+        }
+
+        /* ==========================================
+           7. TOAST & SPINNER & AUTH SCREENS
+           ========================================== */
+        #toast-container {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            pointer-events: none;
+        }
+        .toast {
+            background: var(--dark);
+            color: #fff;
+            padding: 12px 20px;
+            border-radius: var(--radius-md);
+            font-size: 14px;
+            font-weight: 500;
+            box-shadow: var(--shadow-lg);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            pointer-events: auto;
+            animation: toastIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+        .toast.error { background: var(--danger); }
+        .toast.success { background: #059669; }
+        @keyframes toastIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .spinner {
+            width: 18px;
+            height: 18px;
+            border: 2px solid #ffffff;
+            border-bottom-color: transparent;
+            border-radius: 50%;
+            display: inline-block;
+            box-sizing: border-box;
+            animation: rotation 1s linear infinite;
+        }
+        @keyframes rotation { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        #app-loader {
+            position: fixed;
+            inset: 0;
+            background: var(--bg-main);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+        }
+
+        .auth-screen {
+            max-width: 420px;
+            margin: 60px auto;
+            text-align: center;
+        }
+        .copy-btn-inline {
+            background: #f1f5f9;
+            border: 1px solid var(--border);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 11px;
+            cursor: pointer;
+            margin-left: 6px;
+        }
+        .copy-btn-inline:hover { background: #e2e8f0; }
+    </style>
+</head>
+<body>
+
+    <!-- Global App Loader -->
+    <div id="app-loader">
+        <div class="spinner" style="width: 36px; height: 36px; border-color: var(--primary); border-bottom-color: transparent;"></div>
+        <p style="margin-top: 12px; font-weight: 600; color: var(--dark);">Admin Panel লোড হচ্ছে...</p>
+    </div>
+
+    <!-- Toast Notifications -->
+    <div id="toast-container"></div>
+
+    <div class="container">
+
+        <!-- LOGIN SCREEN (If not authenticated) -->
+        <div id="section-login" class="card auth-screen" style="display: none;">
+            <div style="margin-bottom: 20px;">
+                <span class="brand-logo">GHOTI MARKET</span>
+            </div>
+            <h2 style="font-size: 22px; color: var(--dark); margin-bottom: 8px;">Admin Panel Sign In</h2>
+            <p style="color: var(--text-muted); font-size: 14px; margin-bottom: 24px;">শুধুমাত্র Authorized Admin Access করতে পারবেন।</p>
+            
+            <form id="form-admin-login" onsubmit="handleAdminLogin(event)">
+                <div class="form-group" style="text-align: left;">
+                    <label>Admin Email</label>
+                    <input type="email" class="form-control" id="login-email" value="support@ghotimarket.com" required readonly>
+                </div>
+                <div class="form-group" style="text-align: left;">
+                    <label>Password</label>
+                    <input type="password" class="form-control" id="login-password" placeholder="Admin Password" required>
+                </div>
+                <button type="submit" class="btn btn-primary" id="btn-login" style="width: 100%;">
+                    <span>Sign In to Admin</span>
+                </button>
+            </form>
+        </div>
+
+        <!-- ACCESS DENIED SCREEN (If logged in email != support@ghotimarket.com) -->
+        <div id="section-access-denied" class="card auth-screen" style="display: none;">
+            <div style="color: var(--danger); font-size: 48px; margin-bottom: 12px;">🚫</div>
+            <h2 style="font-size: 22px; color: var(--dark); margin-bottom: 8px;">Access Denied</h2>
+            <p style="color: var(--text-muted); font-size: 14px; margin-bottom: 20px;">
+                আপনার অ্যাকাউন্টে (<strong id="denied-user-email">...</strong>) Admin Panel ব্যবহারের অনুমতি নেই।
+            </p>
+            <button class="btn btn-outline" onclick="handleLogout()">
+                <span>Logout করুন</span>
+            </button>
+        </div>
+
+        <!-- MAIN ADMIN DASHBOARD PANEL -->
+        <div id="section-admin-dashboard" style="display: none;">
+            
+            <!-- HEADER -->
+            <header class="admin-header">
+                <div class="brand-title">
+                    <span class="brand-logo">GHOTI MARKET</span>
+                    <div>
+                        <h2 style="font-size: 20px; color: var(--dark); font-weight: 700;">Balance Management</h2>
+                        <span style="font-size: 12px; color: var(--text-muted);" id="admin-email-badge">Admin: support@ghotimarket.com</span>
+                    </div>
+                </div>
+
+                <div class="header-actions">
+                    <button class="btn btn-outline btn-sm" onclick="openExchangeRateModal()">
+                        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V6m0 12v-2m0 0c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        <span>USD Rate: ৳<span id="header-usd-rate">122.00</span></span>
+                    </button>
+                    <button class="btn btn-outline btn-sm" onclick="refreshData()">
+                        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+                        <span>Refresh</span>
+                    </button>
+                    <button class="btn btn-danger btn-sm" onclick="handleLogout()">
+                        <span>Logout</span>
+                    </button>
+                </div>
+            </header>
+
+            <!-- DASHBOARD STATS CARDS -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-title">Total Requests</div>
+                    <div class="stat-val" id="stat-total-req">0</div>
+                    <div class="stat-sub">সর্বমোট রিকোয়েস্ট</div>
+                </div>
+                <div class="stat-card" style="border-left: 4px solid var(--warning);">
+                    <div class="stat-title">Pending</div>
+                    <div class="stat-val" id="stat-pending-req" style="color: var(--warning);">0</div>
+                    <div class="stat-sub">যাচাইয়ের অপেক্ষায়</div>
+                </div>
+                <div class="stat-card" style="border-left: 4px solid var(--success);">
+                    <div class="stat-title">Approved</div>
+                    <div class="stat-val" id="stat-approved-req" style="color: var(--success);">0</div>
+                    <div class="stat-sub">সফল রিকোয়েস্ট</div>
+                </div>
+                <div class="stat-card" style="border-left: 4px solid var(--danger);">
+                    <div class="stat-title">Rejected</div>
+                    <div class="stat-val" id="stat-rejected-req" style="color: var(--danger);">0</div>
+                    <div class="stat-sub">বাতিল করা রিকোয়েস্ট</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-title">Total BDT Added</div>
+                    <div class="stat-val" style="color: var(--primary);" id="stat-total-bdt">৳0</div>
+                    <div class="stat-sub">অনুমোদিত BDT ব্যালেন্স</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-title">Total USD Requests</div>
+                    <div class="stat-val" style="color: #2563eb;" id="stat-total-usd">$0.00</div>
+                    <div class="stat-sub">মূল USD রিকোয়েস্ট</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-title">Today's Requests</div>
+                    <div class="stat-val" id="stat-today-req">0</div>
+                    <div class="stat-sub">আজকের মোট রিকোয়েস্ট</div>
+                </div>
+            </div>
+
+            <!-- CONTROLS BAR: SEARCH & FILTERS -->
+            <div class="card controls-card">
+                <div>
+                    <input type="text" class="form-control" id="filter-search" placeholder="Search Email, TrxID, Phone, UID..." oninput="applyFilters()">
+                </div>
+                <div>
+                    <select class="form-control" id="filter-status" onchange="applyFilters()">
+                        <option value="ALL">Status: All</option>
+                        <option value="pending">Pending</option>
+                        <option value="approved">Approved</option>
+                        <option value="rejected">Rejected</option>
+                    </select>
+                </div>
+                <div>
+                    <select class="form-control" id="filter-method" onchange="applyFilters()">
+                        <option value="ALL">Method: All</option>
+                        <option value="bKash">bKash</option>
+                        <option value="Nagad">Nagad</option>
+                        <option value="Redot Pay">Redot Pay</option>
+                    </select>
+                </div>
+                <div>
+                    <select class="form-control" id="filter-currency" onchange="applyFilters()">
+                        <option value="ALL">Currency: All</option>
+                        <option value="BDT">BDT (৳)</option>
+                        <option value="USD">USD ($)</option>
+                    </select>
+                </div>
+                <div>
+                    <select class="form-control" id="filter-date" onchange="applyFilters()">
+                        <option value="ALL">Date: All Time</option>
+                        <option value="TODAY">Today</option>
+                        <option value="YESTERDAY">Yesterday</option>
+                        <option value="LAST_7">Last 7 Days</option>
+                        <option value="LAST_30">Last 30 Days</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- REQUESTS TABLE & CARDS CONTAINER -->
+            <div class="card" style="padding: 0; overflow: hidden;">
+                <!-- Desktop Table View -->
+                <div class="table-responsive">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>User Email</th>
+                                <th>Method</th>
+                                <th>Original Amount</th>
+                                <th>Converted BDT</th>
+                                <th>Trx ID</th>
+                                <th>Sender / Redot UID</th>
+                                <th>Date</th>
+                                <th>Status</th>
+                                <th style="text-align: right;">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="requests-table-body">
+                            <!-- Dynamic Content -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Mobile Responsive Cards View -->
+                <div class="mobile-cards-list" id="requests-mobile-body" style="padding: 16px;">
+                    <!-- Dynamic Content -->
+                </div>
+
+                <!-- Empty State -->
+                <div id="empty-state" style="display: none; text-align: center; padding: 40px 20px; color: var(--text-muted);">
+                    কোনো Balance Request পাওয়া যায়নি।
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- ==========================================
+       MODALS SYSTEM
+       ========================================== -->
+
+    <!-- 1. DETAILS MODAL -->
+    <div class="modal-overlay" id="modal-details">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h3>Balance Add Request Details</h3>
+                <button class="modal-close" onclick="closeModal('modal-details')">&times;</button>
+            </div>
+            <div class="modal-body" id="modal-details-content">
+                <!-- Dynamic Content -->
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" onclick="closeModal('modal-details')">বন্ধ করুন</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. APPROVE CONFIRMATION MODAL -->
+    <div class="modal-overlay" id="modal-approve">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h3>Approve Balance Request</h3>
+                <button class="modal-close" onclick="closeModal('modal-approve')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div id="approve-modal-info" style="margin-bottom: 16px;"></div>
+
+                <div id="usd-conversion-box" style="display: none; background: #FFF8F3; border: 1px dashed var(--primary); padding: 14px; border-radius: 8px; margin-bottom: 16px;">
+                    <h4 style="font-size: 14px; color: var(--primary-dark); margin-bottom: 8px;">USD to BDT Conversion</h4>
+                    <div class="form-group">
+                        <label>Exchange Rate (1 USD = ? BDT)</label>
+                        <input type="number" step="0.01" class="form-control" id="approve-usd-rate" oninput="recalculateUSDConversion()">
+                    </div>
+                    <div style="font-size: 14px; font-weight: 700; color: var(--dark);">
+                        Final BDT Balance: <span style="color: var(--primary);" id="approve-calculated-bdt">৳0.00</span>
+                    </div>
+                </div>
+
+                <p style="font-size: 13.5px; color: var(--text-muted);">
+                    আপনি কি নিশ্চিত যে এই পেমেন্ট রিকোয়েস্টটি Approve করে ইউজার ব্যালেন্সে যোগ করতে চান?
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" onclick="closeModal('modal-approve')">Cancel</button>
+                <button class="btn btn-success" id="btn-confirm-approve" onclick="executeApprove()">
+                    <span>Confirm Approval</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 3. REJECT CONFIRMATION MODAL -->
+    <div class="modal-overlay" id="modal-reject">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h3 style="color: var(--danger);">Reject Balance Request</h3>
+                <button class="modal-close" onclick="closeModal('modal-reject')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Rejection Reason (ইউজার দেখতে পাবে)</label>
+                    <textarea class="form-control" id="reject-reason" rows="3" placeholder="পেমেন্ট বাতিল করার কারণ লিখুন..."></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" onclick="closeModal('modal-reject')">Cancel</button>
+                <button class="btn btn-danger" id="btn-confirm-reject" onclick="executeReject()">
+                    <span>Reject Request</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 4. EXCHANGE RATE SETTINGS MODAL -->
+    <div class="modal-overlay" id="modal-exchange-rate">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h3>Exchange Rate Settings</h3>
+                <button class="modal-close" onclick="closeModal('modal-exchange-rate')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Default USD to BDT Rate (1 USD = ? BDT)</label>
+                    <input type="number" step="0.01" class="form-control" id="settings-usd-rate">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" onclick="closeModal('modal-exchange-rate')">Cancel</button>
+                <button class="btn btn-primary" onclick="saveExchangeRateSettings()">Save Exchange Rate</button>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- ==========================================
+       JAVASCRIPT LOGIC & FIREBASE MODULES
+       ========================================== -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
+        import { 
+            getAuth, 
+            signInWithEmailAndPassword, 
+            signOut, 
+            onAuthStateChanged 
+        } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-auth.js";
+        import { 
+            getFirestore, 
+            collection, 
+            doc, 
+            getDoc, 
+            getDocs, 
+            setDoc, 
+            updateDoc, 
+            query, 
+            where, 
+            orderBy, 
+            limit, 
+            onSnapshot, 
+            writeBatch, 
+            increment, 
+            serverTimestamp 
+        } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
+
+        // ------------------------------------------
+        // 1. CONFIGURATION & CONSTANTS
+        // ------------------------------------------
+        const firebaseConfig = {
+            apiKey: "AIzaSyBUhNhYvuo_FTvZ5RZR6Gn-4hsUY21S0XE",
+            authDomain: "ghotimarket.firebaseapp.com",
+            databaseURL: "https://ghotimarket-default-rtdb.firebaseio.com",
+            projectId: "ghotimarket",
+            storageBucket: "ghotimarket.firebasestorage.app",
+            messagingSenderId: "481257644093",
+            appId: "1:481257644093:web:0dfc3699d6b3c86afeca54",
+            measurementId: "G-4SR8V2EKC1"
+        };
+
+        const ADMIN_EMAIL = "support@ghotimarket.com";
+        const NAGAD_NUMBER = "01727003670";
+        const BKASH_NUMBER = "01727003670";
+        const REDOT_PAY_UID = "1820194386";
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        // Global State
+        let currentAdmin = null;
+        let globalExchangeRate = 122.00;
+        let rawRequests = [];
+        let filteredRequestsList = [];
+        let activeTargetDoc = null;
+        let requestsUnsubscribe = null;
+        let rateUnsubscribe = null;
+
+        // ------------------------------------------
+        // 2. AUTHENTICATION CONTROLLER
+        // ------------------------------------------
+        onAuthStateChanged(auth, (user) => {
+            const loader = document.getElementById('app-loader');
+            const loginSec = document.getElementById('section-login');
+            const accessDeniedSec = document.getElementById('section-access-denied');
+            const dashboardSec = document.getElementById('section-admin-dashboard');
+
+            if (user) {
+                if (user.email === ADMIN_EMAIL) {
+                    currentAdmin = user;
+                    loginSec.style.display = 'none';
+                    accessDeniedSec.style.display = 'none';
+                    dashboardSec.style.display = 'block';
+
+                    // Start Listening to Data
+                    listenExchangeRate();
+                    listenRealtimeRequests();
+
+                } else {
+                    currentAdmin = null;
+                    document.getElementById('denied-user-email').innerText = user.email || user.uid;
+                    loginSec.style.display = 'none';
+                    dashboardSec.style.display = 'none';
+                    accessDeniedSec.style.display = 'block';
+                    detachListeners();
+                }
+            } else {
+                currentAdmin = null;
+                dashboardSec.style.display = 'none';
+                accessDeniedSec.style.display = 'none';
+                loginSec.style.display = 'block';
+                detachListeners();
+            }
+
+            loader.style.display = 'none';
+        });
+
+        window.handleAdminLogin = async function(e) {
+            e.preventDefault();
+            const email = document.getElementById('login-email').value.trim();
+            const pass = document.getElementById('login-password').value;
+            const btn = document.getElementById('btn-login');
+
+            btn.disabled = true;
+            btn.innerHTML = `<span class="spinner"></span> <span>Logging in...</span>`;
+
+            try {
+                await signInWithEmailAndPassword(auth, email, pass);
+                showToast("Admin Login Successful!", "success");
+            } catch (err) {
+                showToast("Login Failed: " + err.message, "error");
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = `<span>Sign In to Admin</span>`;
+            }
+        };
+
+        window.handleLogout = function() {
+            signOut(auth).then(() => {
+                showToast("Logged out successfully", "success");
+            });
+        };
+
+        function detachListeners() {
+            if (requestsUnsubscribe) requestsUnsubscribe();
+            if (rateUnsubscribe) rateUnsubscribe();
+        }
+
+        // ------------------------------------------
+        // 3. EXCHANGE RATE SETTINGS LOGIC
+        // ------------------------------------------
+        function listenExchangeRate() {
+            const rateRef = doc(db, "settings", "currency");
+            rateUnsubscribe = onSnapshot(rateRef, (snap) => {
+                if (snap.exists() && snap.data().usdToBdt) {
+                    globalExchangeRate = parseFloat(snap.data().usdToBdt);
+                } else {
+                    globalExchangeRate = 122.00;
+                }
+                document.getElementById('header-usd-rate').innerText = globalExchangeRate.toFixed(2);
+                document.getElementById('settings-usd-rate').value = globalExchangeRate;
+            });
+        }
+
+        window.openExchangeRateModal = function() {
+            document.getElementById('settings-usd-rate').value = globalExchangeRate;
+            openModal('modal-exchange-rate');
+        };
+
+        window.saveExchangeRateSettings = async function() {
+            const val = parseFloat(document.getElementById('settings-usd-rate').value);
+            if (isNaN(val) || val <= 0) {
+                showToast("সঠিক USD exchange rate প্রদান করুন", "error");
+                return;
+            }
+
+            try {
+                await setDoc(doc(db, "settings", "currency"), {
+                    usdToBdt: val,
+                    currency: "USD",
+                    targetCurrency: "BDT",
+                    updatedAt: serverTimestamp()
+                }, { merge: true });
+
+                showToast("Exchange rate সফলভাবে আপডেট হয়েছে", "success");
+                closeModal('modal-exchange-rate');
+            } catch (err) {
+                showToast("Error updating rate: " + err.message, "error");
+            }
+        };
+
+        // ------------------------------------------
+        // 4. REALTIME FIRESTORE REQUEST LISTENER
+        // ------------------------------------------
+        function listenRealtimeRequests() {
+            const reqRef = collection(db, "add_balance");
+            const q = query(reqRef, orderBy("createdAt", "desc"), limit(200));
+
+            requestsUnsubscribe = onSnapshot(q, (snapshot) => {
+                rawRequests = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+                calculateDashboardStats(rawRequests);
+                applyFilters();
+            }, (error) => {
+                console.warn("Firestore OrderBy Index Warning. Falling back without index...", error);
+                const fallbackQ = query(reqRef, limit(200));
+                onSnapshot(fallbackQ, (snapshot) => {
+                    rawRequests = snapshot.docs.map(d => ({ id: d.id, ...d.data() }))
+                        .sort((a,b) => (b.createdAt?.toMillis() || 0) - (a.createdAt?.toMillis() || 0));
+                    calculateDashboardStats(rawRequests);
+                    applyFilters();
+                });
+            });
+        }
+
+        window.refreshData = function() {
+            showToast("ডেটা রিফ্রেশ করা হচ্ছে...", "success");
+            listenRealtimeRequests();
+        };
+
+        // ------------------------------------------
+        // 5. CALCULATE STATS
+        // ------------------------------------------
+        function calculateDashboardStats(data) {
+            let total = data.length;
+            let pending = 0;
+            let approved = 0;
+            let rejected = 0;
+            let totalBdtAdded = 0;
+            let totalUsdReceived = 0;
+            let todayCount = 0;
+
+            const now = new Date();
+            const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+
+            data.forEach(item => {
+                if (item.status === 'pending') pending++;
+                if (item.status === 'approved') {
+                    approved++;
+                    totalBdtAdded += (item.convertedAmount || (item.currency === 'BDT' ? item.amount : 0));
+                }
+                if (item.status === 'rejected') rejected++;
+
+                if (item.currency === 'USD') {
+                    totalUsdReceived += (item.amount || 0);
+                }
+
+                const createdTime = item.createdAt?.toMillis() || 0;
+                if (createdTime >= startOfToday) {
+                    todayCount++;
+                }
+            });
+
+            document.getElementById('stat-total-req').innerText = total;
+            document.getElementById('stat-pending-req').innerText = pending;
+            document.getElementById('stat-approved-req').innerText = approved;
+            document.getElementById('stat-rejected-req').innerText = rejected;
+            document.getElementById('stat-total-bdt').innerText = `৳${totalBdtAdded.toLocaleString('bn-BD')}`;
+            document.getElementById('stat-total-usd').innerText = `$${totalUsdReceived.toFixed(2)}`;
+            document.getElementById('stat-today-req').innerText = todayCount;
+        }
+
+        // ------------------------------------------
+        // 6. SEARCH & FILTER ENGINE
+        // ------------------------------------------
+        window.applyFilters = function() {
+            const searchTerm = document.getElementById('filter-search').value.toLowerCase().trim();
+            const statusFilter = document.getElementById('filter-status').value;
+            const methodFilter = document.getElementById('filter-method').value;
+            const currencyFilter = document.getElementById('filter-currency').value;
+            const dateFilter = document.getElementById('filter-date').value;
+
+            const now = new Date();
+            const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+            const startOfYesterday = startOfToday - 86400000;
+            const startOf7Days = startOfToday - (86400000 * 6);
+            const startOf30Days = startOfToday - (86400000 * 29);
+
+            filteredRequestsList = rawRequests.filter(item => {
+                // Search filter
+                if (searchTerm) {
+                    const matchEmail = (item.email || '').toLowerCase().includes(searchTerm);
+                    const matchUid = (item.uid || '').toLowerCase().includes(searchTerm);
+                    const matchTrx = (item.transactionId || '').toLowerCase().includes(searchTerm);
+                    const matchPhone = (item.senderNumber || '').toLowerCase().includes(searchTerm);
+                    const matchRedot = (item.redotPayUid || '').toLowerCase().includes(searchTerm);
+                    const matchPayUid = (item.paymentUid || '').toLowerCase().includes(searchTerm);
+                    if (!matchEmail && !matchUid && !matchTrx && !matchPhone && !matchRedot && !matchPayUid) return false;
+                }
+
+                // Status filter
+                if (statusFilter !== 'ALL' && item.status !== statusFilter) return false;
+
+                // Method filter
+                if (methodFilter !== 'ALL' && item.paymentMethod !== methodFilter) return false;
+
+                // Currency filter
+                if (currencyFilter !== 'ALL' && item.currency !== currencyFilter) return false;
+
+                // Date filter
+                const createdTime = item.createdAt?.toMillis() || 0;
+                if (dateFilter === 'TODAY' && createdTime < startOfToday) return false;
+                if (dateFilter === 'YESTERDAY' && (createdTime < startOfYesterday || createdTime >= startOfToday)) return false;
+                if (dateFilter === 'LAST_7' && createdTime < startOf7Days) return false;
+                if (dateFilter === 'LAST_30' && createdTime < startOf30Days) return false;
+
+                return true;
+            });
+
+            renderRequestsUI(filteredRequestsList);
+        };
+
+        // ------------------------------------------
+        // 7. RENDER TABLE & CARDS
+        // ------------------------------------------
+        function renderRequestsUI(items) {
+            const tbody = document.getElementById('requests-table-body');
+            const mobileContainer = document.getElementById('requests-mobile-body');
+            const emptyState = document.getElementById('empty-state');
+
+            if (items.length === 0) {
+                tbody.innerHTML = '';
+                mobileContainer.innerHTML = '';
+                emptyState.style.display = 'block';
+                return;
+            }
+            emptyState.style.display = 'none';
+
+            let tableHtml = '';
+            let mobileHtml = '';
+
+            items.forEach(item => {
+                const dateStr = formatDateBn(item.createdAt);
+                const statusBadge = getStatusBadge(item.status);
+
+                const origAmount = `${item.currencySymbol || ''}${item.amount} ${item.currency || ''}`;
+                const convAmount = item.status === 'approved' 
+                    ? `৳${(item.convertedAmount || (item.currency === 'BDT' ? item.amount : 0)).toLocaleString('bn-BD')}`
+                    : (item.currency === 'USD' ? `~৳${(item.amount * globalExchangeRate).toFixed(0)}` : origAmount);
+
+                const senderInfo = item.paymentMethod === 'Redot Pay' 
+                    ? `UID: ${item.redotPayUid || 'N/A'}` 
+                    : (item.senderNumber || 'N/A');
+
+                // Actions Buttons
+                let actionsBtn = `<button class="btn btn-outline btn-sm" onclick="openDetailsModal('${item.id}')">Details</button>`;
+                if (item.status === 'pending') {
+                    actionsBtn = `
+                        <button class="btn btn-success btn-sm" onclick="promptApproveModal('${item.id}')">Approve</button>
+                        <button class="btn btn-danger btn-sm" onclick="promptRejectModal('${item.id}')">Reject</button>
+                        <button class="btn btn-outline btn-sm" onclick="openDetailsModal('${item.id}')">Details</button>
+                    `;
+                }
+
+                // Table Row
+                tableHtml += `
+                    <tr>
+                        <td>
+                            <strong>${item.email || 'No Email'}</strong><br>
+                            <small style="color:var(--text-muted); font-size:11px;">${item.uid}</small>
+                        </td>
+                        <td><strong>${item.paymentMethod}</strong></td>
+                        <td>${origAmount}</td>
+                        <td style="color:var(--primary); font-weight:700;">${convAmount}</td>
+                        <td>
+                            <code>${item.transactionId}</code>
+                            <button class="copy-btn-inline" onclick="copyText('${item.transactionId}')">Copy</button>
+                        </td>
+                        <td>${senderInfo}</td>
+                        <td><small>${dateStr}</small></td>
+                        <td>${statusBadge}</td>
+                        <td style="text-align: right; white-space: nowrap;">${actionsBtn}</td>
+                    </tr>
+                `;
+
+                // Mobile Card
+                mobileHtml += `
+                    <div class="mobile-card">
+                        <div class="mobile-card-header">
+                            <div>
+                                <strong style="font-size:15px;">${item.paymentMethod}</strong>
+                                <div style="font-size:12px; color:var(--text-muted);">${item.email}</div>
+                            </div>
+                            ${statusBadge}
+                        </div>
+                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; font-size:13px; margin-bottom:12px;">
+                            <div><span>Amount:</span> <strong>${origAmount}</strong></div>
+                            <div><span>Converted:</span> <strong style="color:var(--primary);">${convAmount}</strong></div>
+                            <div><span>Trx ID:</span> <code>${item.transactionId}</code></div>
+                            <div><span>Date:</span> <small>${dateStr}</small></div>
+                        </div>
+                        <div style="display:flex; justify-content:flex-end; gap:6px;">
+                            ${actionsBtn}
+                        </div>
+                    </div>
+                `;
+            });
+
+            tbody.innerHTML = tableHtml;
+            mobileContainer.innerHTML = mobileHtml;
+        }
+
+        // ------------------------------------------
+        // 8. ACTION MODALS LOGIC (Approve / Reject / Details)
+        // ------------------------------------------
+        window.openDetailsModal = function(docId) {
+            const item = rawRequests.find(r => r.id === docId);
+            if (!item) return;
+
+            const content = document.getElementById('modal-details-content');
+            content.innerHTML = `
+                <table style="width:100%; border-collapse:collapse; font-size:14px;">
+                    <tr><td style="padding:6px 0; color:var(--text-muted);">User Email:</td><td><strong>${item.email}</strong> <button class="copy-btn-inline" onclick="copyText('${item.email}')">Copy</button></td></tr>
+                    <tr><td style="padding:6px 0; color:var(--text-muted);">Firebase UID:</td><td><code>${item.uid}</code> <button class="copy-btn-inline" onclick="copyText('${item.uid}')">Copy</button></td></tr>
+                    <tr><td style="padding:6px 0; color:var(--text-muted);">Payment Method:</td><td><strong>${item.paymentMethod} (${item.paymentType || 'N/A'})</strong></td></tr>
+                    <tr><td style="padding:6px 0; color:var(--text-muted);">Original Amount:</td><td><strong>${item.currencySymbol || ''}${item.amount} ${item.currency}</strong></td></tr>
+                    ${item.exchangeRate ? `<tr><td style="padding:6px 0; color:var(--text-muted);">Exchange Rate:</td><td>1 USD = ৳${item.exchangeRate}</td></tr>` : ''}
+                    ${item.convertedAmount ? `<tr><td style="padding:6px 0; color:var(--text-muted);">Converted Amount:</td><td><strong>৳${item.convertedAmount} BDT</strong></td></tr>` : ''}
+                    <tr><td style="padding:6px 0; color:var(--text-muted);">Transaction ID:</td><td><code>${item.transactionId}</code> <button class="copy-btn-inline" onclick="copyText('${item.transactionId}')">Copy</button></td></tr>
+                    ${item.senderNumber ? `<tr><td style="padding:6px 0; color:var(--text-muted);">Sender Phone:</td><td>${item.senderNumber} <button class="copy-btn-inline" onclick="copyText('${item.senderNumber}')">Copy</button></td></tr>` : ''}
+                    ${item.redotPayUid ? `<tr><td style="padding:6px 0; color:var(--text-muted);">Sender Redot UID:</td><td>${item.redotPayUid} <button class="copy-btn-inline" onclick="copyText('${item.redotPayUid}')">Copy</button></td></tr>` : ''}
+                    ${item.paymentNumber ? `<tr><td style="padding:6px 0; color:var(--text-muted);">Payment Number:</td><td>${item.paymentNumber}</td></tr>` : ''}
+                    ${item.paymentUid ? `<tr><td style="padding:6px 0; color:var(--text-muted);">Receiver Payment UID:</td><td>${item.paymentUid}</td></tr>` : ''}
+                    <tr><td style="padding:6px 0; color:var(--text-muted);">Status:</td><td>${getStatusBadge(item.status)}</td></tr>
+                    <tr><td style="padding:6px 0; color:var(--text-muted);">Note:</td><td>${item.note || 'None'}</td></tr>
+                    <tr><td style="padding:6px 0; color:var(--text-muted);">Created Date:</td><td>${formatDateBn(item.createdAt)}</td></tr>
+                    ${item.approvedAt ? `<tr><td style="padding:6px 0; color:var(--text-muted);">Approved Date:</td><td>${formatDateBn(item.approvedAt)} by ${item.approvedByEmail}</td></tr>` : ''}
+                    ${item.rejectedAt ? `<tr><td style="padding:6px 0; color:var(--text-muted);">Rejected Date:</td><td>${formatDateBn(item.rejectedAt)} by ${item.rejectedByEmail}</td></tr>` : ''}
+                    ${item.rejectionReason ? `<tr><td style="padding:6px 0; color:var(--text-muted);">Rejection Reason:</td><td style="color:var(--danger);">${item.rejectionReason}</td></tr>` : ''}
+                </table>
+            `;
+            openModal('modal-details');
+        };
+
+        window.promptApproveModal = function(docId) {
+            const item = rawRequests.find(r => r.id === docId);
+            if (!item || item.status !== 'pending') {
+                showToast("শুধুমাত্র Pending request approve করা সম্ভব", "error");
+                return;
+            }
+            activeTargetDoc = item;
+
+            const infoBox = document.getElementById('approve-modal-info');
+            const usdBox = document.getElementById('usd-conversion-box');
+
+            infoBox.innerHTML = `
+                <div style="font-size:14px; background:#f8fafc; padding:12px; border-radius:8px;">
+                    <div>User: <strong>${item.email}</strong></div>
+                    <div>Method: <strong>${item.paymentMethod}</strong> | TrxID: <code>${item.transactionId}</code></div>
+                    <div>Original Amount: <strong>${item.currencySymbol || ''}${item.amount} ${item.currency}</strong></div>
+                </div>
+            `;
+
+            if (item.currency === 'USD') {
+                usdBox.style.display = 'block';
+                document.getElementById('approve-usd-rate').value = globalExchangeRate;
+                recalculateUSDConversion();
+            } else {
+                usdBox.style.display = 'none';
+            }
+
+            openModal('modal-approve');
+        };
+
+        window.recalculateUSDConversion = function() {
+            if (!activeTargetDoc) return;
+            const rate = parseFloat(document.getElementById('approve-usd-rate').value) || 0;
+            const bdt = activeTargetDoc.amount * rate;
+            document.getElementById('approve-calculated-bdt').innerText = `৳${bdt.toFixed(2)}`;
+        };
+
+        window.executeApprove = async function() {
+            if (!activeTargetDoc) return;
+
+            // 1. DUPLICATE TRANSACTION CHECK
+            const isDuplicate = rawRequests.some(r => 
+                r.id !== activeTargetDoc.id && 
+                r.status === 'approved' && 
+                r.paymentMethod === activeTargetDoc.paymentMethod && 
+                r.transactionId === activeTargetDoc.transactionId
+            );
+
+            if (isDuplicate) {
+                showToast("এই Transaction ID ইতিমধ্যে ব্যবহার করা হয়েছে। Duplicate payment approve করা যাবে না।", "error");
+                closeModal('modal-approve');
+                return;
+            }
+
+            const btn = document.getElementById('btn-confirm-approve');
+            btn.disabled = true;
+            btn.innerHTML = `<span class="spinner"></span> <span>Approving...</span>`;
+
+            let finalExchangeRate = 1;
+            let convertedAmount = activeTargetDoc.amount;
+
+            if (activeTargetDoc.currency === 'USD') {
+                finalExchangeRate = parseFloat(document.getElementById('approve-usd-rate').value);
+                if (isNaN(finalExchangeRate) || finalExchangeRate <= 0) {
+                    showToast("সঠিক USD exchange rate প্রদান করুন", "error");
+                    btn.disabled = false;
+                    btn.innerHTML = `<span>Confirm Approval</span>`;
+                    return;
+                }
+                convertedAmount = parseFloat((activeTargetDoc.amount * finalExchangeRate).toFixed(2));
+            }
+
+            try {
+                // ATOMIC WRITE BATCH
+                const batch = writeBatch(db);
+
+                // Update Request Doc
+                const reqRef = doc(db, "add_balance", activeTargetDoc.id);
+                const reqUpdateData = {
+                    status: "approved",
+                    exchangeRate: finalExchangeRate,
+                    convertedAmount: convertedAmount,
+                    convertedCurrency: "BDT",
+                    convertedCurrencySymbol: "৳",
+                    approvedAt: serverTimestamp(),
+                    approvedBy: currentAdmin.uid,
+                    approvedByEmail: currentAdmin.email,
+                    updatedAt: serverTimestamp()
+                };
+                batch.update(reqRef, reqUpdateData);
+
+                // Add to user transaction ledger
+                const tranRef = doc(collection(db, "users_transection"));
+                batch.set(tranRef, {
+                    userId: activeTargetDoc.uid,
+                    email: activeTargetDoc.email,
+                    type: "balance_add",
+                    paymentMethod: activeTargetDoc.paymentMethod,
+                    amount: convertedAmount,
+                    currency: "BDT",
+                    originalAmount: activeTargetDoc.amount,
+                    originalCurrency: activeTargetDoc.currency,
+                    exchangeRate: finalExchangeRate,
+                    transactionId: activeTargetDoc.transactionId,
+                    sourceRequestId: activeTargetDoc.id,
+                    status: "completed",
+                    createdAt: serverTimestamp()
+                });
+
+                // Update User Balance in users/{uid} collection
+                const userRef = doc(db, "users", activeTargetDoc.uid);
+                batch.set(userRef, {
+                    balance: increment(convertedAmount),
+                    updatedAt: serverTimestamp()
+                }, { merge: true });
+
+                await batch.commit();
+
+                showToast("Payment Request সফলভাবে Approve হয়েছে!", "success");
+                closeModal('modal-approve');
+
+            } catch (err) {
+                console.error(err);
+                showToast("Approval error: " + err.message, "error");
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = `<span>Confirm Approval</span>`;
+            }
+        };
+
+        window.promptRejectModal = function(docId) {
+            const item = rawRequests.find(r => r.id === docId);
+            if (!item || item.status !== 'pending') {
+                showToast("শুধুমাত্র Pending request reject করা সম্ভব", "error");
+                return;
+            }
+            activeTargetDoc = item;
+            document.getElementById('reject-reason').value = '';
+            openModal('modal-reject');
+        };
+
+        window.executeReject = async function() {
+            if (!activeTargetDoc) return;
+
+            const reason = document.getElementById('reject-reason').value.trim();
+            if (!reason) {
+                showToast("Rejection-এর কারণ লিখুন", "error");
+                return;
+            }
+
+            const btn = document.getElementById('btn-confirm-reject');
+            btn.disabled = true;
+            btn.innerHTML = `<span class="spinner"></span> <span>Rejecting...</span>`;
+
+            try {
+                const reqRef = doc(db, "add_balance", activeTargetDoc.id);
+                await updateDoc(reqRef, {
+                    status: "rejected",
+                    rejectionReason: reason,
+                    rejectedAt: serverTimestamp(),
+                    rejectedBy: currentAdmin.uid,
+                    rejectedByEmail: currentAdmin.email,
+                    updatedAt: serverTimestamp()
+                });
+
+                showToast("Payment Request সফলভাবে Reject করা হয়েছে", "success");
+                closeModal('modal-reject');
+
+            } catch (err) {
+                showToast("Rejection error: " + err.message, "error");
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = `<span>Reject Request</span>`;
+            }
+        };
+
+        // ------------------------------------------
+        // 9. UTILITY FUNCTIONS
+        // ------------------------------------------
+        window.openModal = function(id) {
+            document.getElementById(id).classList.add('active');
+        };
+        window.closeModal = function(id) {
+            document.getElementById(id).classList.remove('active');
+        };
+
+        window.copyText = function(text) {
+            if (navigator.clipboard) {
+                navigator.clipboard.writeText(text).then(() => showToast("কপি হয়েছে ✓", "success"));
+            } else {
+                showToast("কপি করতে অক্ষম", "error");
+            }
+        };
+
+        function showToast(message, type = 'default') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.innerText = message;
+            container.appendChild(toast);
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        function getStatusBadge(status) {
+            if (status === 'approved') return `<span class="badge badge-approved">✓ Approved</span>`;
+            if (status === 'rejected') return `<span class="badge badge-rejected">✕ Rejected</span>`;
+            return `<span class="badge badge-pending">🕒 Pending</span>`;
+        }
+
+        function formatDateBn(timestamp) {
+            if (!timestamp || !timestamp.toDate) return 'প্রসেসিং...';
+            const date = timestamp.toDate();
+            return date.toLocaleDateString('bn-BD', {
+                day: 'numeric',
+                month: 'short',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        }
+    </script>
+</body>
+</html>
