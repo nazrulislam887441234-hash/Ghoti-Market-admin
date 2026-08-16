@@ -3,986 +3,1306 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Smart Redirect - Admin Panel</title>
-    
-    <!-- Google Font: Hind Siliguri -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet">
-
+    <meta name="referrer" content="no-referrer-when-downgrade">
+    <title>Smart Redirect Admin Panel - Highly Optimized</title>
     <style>
+        /* ==========================================
+           1. BASE & RESET CSS
+           ========================================== */
         :root {
-            --bg-primary: #0f172a;
-            --bg-card: #1e293b;
-            --bg-card-hover: #334155;
+            --bg-color: #0f172a;
+            --card-bg: #1e293b;
+            --card-border: #334155;
             --text-main: #f8fafc;
             --text-muted: #94a3b8;
-            --accent-blue: #3b82f6;
-            --accent-green: #10b981;
-            --accent-red: #ef4444;
-            --accent-amber: #f59e0b;
-            --border-color: rgba(255, 255, 255, 0.1);
+            --primary: #3b82f6;
+            --primary-hover: #2563eb;
+            --danger: #ef4444;
+            --danger-hover: #dc2626;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --radius: 8px;
         }
 
         * {
+            box-sizing: border-box;
             margin: 0;
             padding: 0;
-            box-sizing: border-box;
-            font-family: 'Hind Siliguri', sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
         }
 
         body {
-            background-color: var(--bg-primary);
+            background-color: var(--bg-color);
             color: var(--text-main);
             min-height: 100vh;
             display: flex;
             flex-direction: column;
         }
 
-        /* Utility Classes */
-        .hidden { display: none !important; }
-        .badge {
-            padding: 4px 10px;
-            border-radius: 20px;
-            font-size: 0.8rem;
-            font-weight: 600;
-            display: inline-block;
-        }
-        .badge-active { background: rgba(16, 185, 129, 0.2); color: var(--accent-green); border: 1px solid var(--accent-green); }
-        .badge-inactive { background: rgba(239, 68, 68, 0.2); color: var(--accent-red); border: 1px solid var(--accent-red); }
-        .badge-default { background: rgba(245, 158, 11, 0.2); color: var(--accent-amber); border: 1px solid var(--accent-amber); }
-
-        /* Toast Notification */
-        #toast-container {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            z-index: 9999;
-        }
-        .toast {
-            background: var(--bg-card);
-            color: var(--text-main);
-            padding: 14px 20px;
-            border-radius: 12px;
-            border-left: 5px solid var(--accent-blue);
-            margin-bottom: 10px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
-            animation: slideIn 0.3s ease-out;
-            max-width: 350px;
-        }
-        .toast-error { border-left-color: var(--accent-red); }
-        .toast-success { border-left-color: var(--accent-green); }
-
-        @keyframes slideIn {
-            from { transform: translateX(100%); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
+        .hidden {
+            display: none !important;
         }
 
-        /* Auth Screen */
-        .auth-container {
-            min-height: 100vh;
+        /* ==========================================
+           2. AUTH / LOGIN CONTAINER
+           ========================================== */
+        #auth-container {
             display: flex;
             justify-content: center;
             align-items: center;
+            min-height: 100vh;
             padding: 20px;
         }
+
         .auth-card {
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            padding: 40px 30px;
-            border-radius: 24px;
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            padding: 30px;
+            border-radius: 12px;
             width: 100%;
             max-width: 400px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            text-align: center;
         }
-        .auth-card h2 { text-align: center; margin-bottom: 24px; color: var(--accent-blue); }
 
-        /* Form Controls */
-        .form-group {
-            margin-bottom: 18px;
+        .auth-card h2 {
+            margin-bottom: 20px;
+            color: var(--text-main);
         }
+
+        .form-group {
+            margin-bottom: 15px;
+            text-align: left;
+        }
+
         .form-group label {
             display: block;
             margin-bottom: 6px;
             color: var(--text-muted);
-            font-size: 0.9rem;
+            font-size: 14px;
         }
+
         .form-control {
             width: 100%;
-            padding: 12px 16px;
-            background: rgba(15, 23, 42, 0.6);
-            border: 1px solid var(--border-color);
-            border-radius: 10px;
+            padding: 10px 14px;
+            background: #0f172a;
+            border: 1px solid var(--card-border);
+            border-radius: var(--radius);
             color: var(--text-main);
-            font-size: 0.95rem;
+            font-size: 14px;
             outline: none;
-            transition: border-color 0.3s;
         }
-        .form-control:focus {
-            border-color: var(--accent-blue);
-        }
-        .checkbox-group {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-top: 10px;
-            cursor: pointer;
-        }
-        .checkbox-group input { width: 18px; height: 18px; cursor: pointer; }
 
-        /* Buttons */
+        .form-control:focus {
+            border-color: var(--primary);
+        }
+
         .btn {
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            gap: 8px;
-            padding: 10px 20px;
-            border-radius: 10px;
-            border: none;
+            padding: 10px 18px;
+            border-radius: var(--radius);
             font-weight: 600;
+            font-size: 14px;
             cursor: pointer;
-            transition: all 0.2s;
-            font-size: 0.95rem;
+            border: none;
+            transition: all 0.2s ease;
+            gap: 6px;
         }
-        .btn-primary { background: var(--accent-blue); color: white; }
-        .btn-primary:hover { background: #2563eb; }
-        .btn-danger { background: var(--accent-red); color: white; }
-        .btn-danger:hover { background: #dc2626; }
-        .btn-secondary { background: var(--bg-card-hover); color: var(--text-main); }
-        .btn-sm { padding: 6px 12px; font-size: 0.85rem; }
-        .btn-block { width: 100%; }
 
-        /* Header & Nav */
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-primary:hover { background: var(--primary-hover); }
+        .btn-danger { background: var(--danger); color: white; }
+        .btn-danger:hover { background: var(--danger-hover); }
+        .btn-secondary { background: #475569; color: white; }
+        .btn-secondary:hover { background: #334155; }
+        .btn-sm { padding: 6px 12px; font-size: 12px; }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        /* ==========================================
+           3. DASHBOARD LAYOUT
+           ========================================== */
+        #dashboard-container {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
         header {
-            background: var(--bg-card);
-            border-bottom: 1px solid var(--border-color);
-            padding: 16px 24px;
+            background: var(--card-bg);
+            border-bottom: 1px solid var(--card-border);
+            padding: 15px 30px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            flex-wrap: wrap;
-            gap: 16px;
         }
-        .logo { font-size: 1.4rem; font-weight: 700; color: var(--accent-blue); }
-        .nav-tabs {
+
+        header h1 {
+            font-size: 20px;
+            color: var(--text-main);
+        }
+
+        .user-nav {
             display: flex;
-            gap: 8px;
-            background: var(--bg-primary);
-            padding: 4px;
-            border-radius: 12px;
-            border: 1px solid var(--border-color);
-        }
-        .tab-btn {
-            background: transparent;
-            border: none;
-            color: var(--text-muted);
-            padding: 8px 16px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 500;
-            transition: all 0.2s;
-        }
-        .tab-btn.active {
-            background: var(--accent-blue);
-            color: white;
+            align-items: center;
+            gap: 15px;
         }
 
-        /* Layout Container */
-        .container {
-            padding: 24px;
+        main {
+            padding: 30px;
+            flex: 1;
             max-width: 1400px;
-            margin: 0 auto;
             width: 100%;
+            margin: 0 auto;
         }
 
-        /* Stats Grid */
+        /* STATS CARDS */
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 16px;
-            margin-bottom: 24px;
+            gap: 20px;
+            margin-bottom: 30px;
         }
-        .stat-card {
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: 16px;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-        }
-        .stat-card .title { font-size: 0.9rem; color: var(--text-muted); margin-bottom: 8px; }
-        .stat-card .value { font-size: 1.8rem; font-weight: 700; color: var(--text-main); }
 
-        /* Controls Section */
-        .toolbar {
+        .stat-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            padding: 20px;
+            border-radius: var(--radius);
+        }
+
+        .stat-card h3 {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+            text-transform: uppercase;
+        }
+
+        .stat-card .value {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        /* TABS NAV */
+        .tabs {
+            display: flex;
+            gap: 10px;
+            border-bottom: 1px solid var(--card-border);
+            margin-bottom: 25px;
+        }
+
+        .tab-btn {
+            padding: 10px 20px;
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            font-weight: 600;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+        }
+
+        .tab-btn.active {
+            color: var(--primary);
+            border-bottom-color: var(--primary);
+        }
+
+        /* TABLES & CARDS */
+        .content-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: var(--radius);
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+
+        .card-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            flex-wrap: wrap;
-            gap: 16px;
             margin-bottom: 20px;
-        }
-        .search-filter {
-            display: flex;
-            gap: 12px;
             flex-wrap: wrap;
-            flex: 1;
-            max-width: 600px;
+            gap: 15px;
         }
 
-        /* Tables */
-        .table-container {
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: 16px;
+        .table-responsive {
+            width: 100%;
             overflow-x: auto;
         }
+
         table {
             width: 100%;
             border-collapse: collapse;
             text-align: left;
         }
+
         th, td {
-            padding: 16px;
-            border-bottom: 1px solid var(--border-color);
-            font-size: 0.95rem;
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--card-border);
+            font-size: 14px;
         }
+
         th {
-            background: rgba(15, 23, 42, 0.4);
+            background: #0f172a;
             color: var(--text-muted);
             font-weight: 600;
         }
-        tr:hover { background: rgba(255, 255, 255, 0.02); }
-        .actions-cell { display: flex; gap: 8px; flex-wrap: wrap; }
 
-        /* Modal */
+        tr:hover {
+            background: rgba(255,255,255,0.02);
+        }
+
+        .badge {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+        .badge-success { background: rgba(16, 185, 129, 0.2); color: var(--success); }
+        .badge-danger { background: rgba(239, 68, 68, 0.2); color: var(--danger); }
+        .badge-warning { background: rgba(245, 158, 11, 0.2); color: var(--warning); }
+
+        .actions-cell {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+
+        .search-box {
+            width: 280px;
+        }
+
+        .pagination-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px solid var(--card-border);
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        /* ==========================================
+           4. MODAL & TOAST
+           ========================================== */
         .modal-overlay {
             position: fixed;
             top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0, 0, 0, 0.75);
-            backdrop-filter: blur(4px);
+            background: rgba(0,0,0,0.7);
             display: flex;
             justify-content: center;
             align-items: center;
             z-index: 1000;
             padding: 20px;
         }
+
         .modal {
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: 20px;
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            padding: 25px;
             width: 100%;
-            max-width: 500px;
-            padding: 28px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.5);
-        }
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-        .modal-footer {
-            display: flex;
-            justify-content: flex-end;
-            gap: 12px;
-            margin-top: 24px;
+            max-width: 480px;
+            box-shadow: 0 15px 30px rgba(0,0,0,0.6);
         }
 
-        /* Responsive */
+        .modal h3 {
+            margin-bottom: 15px;
+        }
+
+        .modal-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        #toast-container {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .toast {
+            padding: 12px 20px;
+            border-radius: var(--radius);
+            background: var(--card-bg);
+            color: var(--text-main);
+            border: 1px solid var(--card-border);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            font-size: 14px;
+            animation: slideIn 0.3s ease;
+        }
+
+        .toast.success { border-left: 4px solid var(--success); }
+        .toast.error { border-left: 4px solid var(--danger); }
+
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
         @media (max-width: 768px) {
-            header { flex-direction: column; align-items: stretch; }
-            .nav-tabs { overflow-x: auto; }
-            .toolbar { flex-direction: column; align-items: stretch; }
-            .search-filter { max-width: 100%; }
+            header { flex-direction: column; gap: 15px; align-items: flex-start; }
+            main { padding: 15px; }
+            .search-box { width: 100%; }
         }
     </style>
 </head>
 <body>
 
+    <!-- TOAST CONTAINER -->
     <div id="toast-container"></div>
 
     <!-- AUTHENTICATION VIEW -->
-    <div id="auth-screen" class="auth-container">
+    <div id="auth-container">
         <div class="auth-card">
             <h2>এডমিন লগইন</h2>
             <form id="login-form">
                 <div class="form-group">
-                    <label>ইমেইল অ্যাড্রেস</label>
-                    <input type="email" id="login-email" class="form-control" value="support@ghotimarket.com" required>
+                    <label for="login-email">ইমেইল</label>
+                    <input type="email" id="login-email" class="form-control" placeholder="support@ghotimarket.com" required>
                 </div>
                 <div class="form-group">
-                    <label>পাসওয়ার্ড</label>
+                    <label for="login-password">পাসওয়ার্ড</label>
                     <input type="password" id="login-password" class="form-control" placeholder="••••••••" required>
                 </div>
-                <button type="submit" class="btn btn-primary btn-block" style="margin-top: 10px;">লগইন করুন</button>
+                <button type="submit" id="login-btn" class="btn btn-primary" style="width: 100%;">লগইন করুন</button>
             </form>
-            <div style="text-align: center; margin-top: 16px;">
-                <button type="button" id="btn-forgot-pw" style="background:none; border:none; color:var(--accent-blue); cursor:pointer;">পাসওয়ার্ড ভুলে গেছেন?</button>
-            </div>
         </div>
     </div>
 
-    <!-- MAIN ADMIN DASHBOARD -->
-    <div id="app-screen" class="hidden">
+    <!-- DASHBOARD VIEW -->
+    <div id="dashboard-container" class="hidden">
         <header>
-            <div class="logo">Smart Redirect Admin</div>
-            <div class="nav-tabs">
-                <button class="tab-btn active" data-tab="dashboard">ড্যাশবোর্ড</button>
-                <button class="tab-btn" data-tab="links">লিংক ম্যানেজমেন্ট</button>
-                <button class="tab-btn" data-tab="analytics">অ্যানালিটিক্স</button>
-                <button class="tab-btn" data-tab="views">ভিউ হিস্ট্রি</button>
-            </div>
-            <div style="display: flex; align-items: center; gap: 12px;">
-                <span id="user-email-display" style="font-size: 0.85rem; color: var(--text-muted);"></span>
-                <button id="btn-logout" class="btn btn-secondary btn-sm">লগআউট</button>
+            <h1>Smart Redirect Dashboard</h1>
+            <div class="user-nav">
+                <span id="user-email-display" style="font-size: 14px; color: var(--text-muted);"></span>
+                <button id="logout-btn" class="btn btn-secondary btn-sm">লগআউট</button>
             </div>
         </header>
 
-        <main class="container">
-            <!-- STATS CARDS (Always visible top summary) -->
+        <main>
+            <!-- STATS COUNTERS -->
             <div class="stats-grid">
                 <div class="stat-card">
-                    <span class="title">মোট লিংক</span>
-                    <span class="value" id="stat-total-links">0</span>
+                    <h3>মোট লিংক</h3>
+                    <div class="value" id="stat-total-links">0</div>
                 </div>
                 <div class="stat-card">
-                    <span class="title">সক্রিয় লিংক</span>
-                    <span class="value" id="stat-active-links" style="color: var(--accent-green);">0</span>
+                    <h3>সক্রিয় লিংক</h3>
+                    <div class="value" id="stat-active-links">0</div>
                 </div>
                 <div class="stat-card">
-                    <span class="title">সর্বমোট ভিউ</span>
-                    <span class="value" id="stat-total-views" style="color: var(--accent-blue);">0</span>
+                    <h3>সর্বমোট ভিউ</h3>
+                    <div class="value" id="stat-total-views">0</div>
                 </div>
                 <div class="stat-card">
-                    <span class="title">আজকের ভিউ (BD Time)</span>
-                    <span class="value" id="stat-today-views" style="color: var(--accent-amber);">0</span>
+                    <h3>আজকের ভিউ</h3>
+                    <div class="value" id="stat-today-views">0</div>
                 </div>
                 <div class="stat-card">
-                    <span class="title">গত ৭ দিনের ভিউ</span>
-                    <span class="value" id="stat-7days-views">0</span>
+                    <h3>গত ৭ দিনের ভিউ</h3>
+                    <div class="value" id="stat-7days-views">0</div>
                 </div>
             </div>
 
-            <!-- TAB 1: DASHBOARD OVERVIEW -->
-            <div id="tab-dashboard" class="tab-content">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
-                    <h3>সর্বশেষ ১৫টি ভিউ হিস্ট্রি</h3>
-                    <button class="btn btn-primary btn-sm" onclick="openLinkModal()">+ নতুন লিংক তৈরি করুন</button>
-                </div>
-                <div class="table-container">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>লিংকের নাম</th>
-                                <th>সময় (BD Local Time)</th>
-                                <th>রেফারার (Referrer)</th>
-                                <th>ইউজার এজেন্ট</th>
-                            </tr>
-                        </thead>
-                        <tbody id="dashboard-views-tbody">
-                            <tr><td colspan="4" style="text-align:center;">ডাটা লোড হচ্ছে...</td></tr>
-                        </tbody>
-                    </table>
-                </div>
+            <!-- TABS NAVIGATION -->
+            <div class="tabs">
+                <button class="tab-btn active" data-tab="tab-links">লিংক ম্যানেজমেন্ট</button>
+                <button class="tab-btn" data-tab="tab-views">ভিউ হিস্ট্রি</button>
             </div>
 
-            <!-- TAB 2: LINKS MANAGEMENT -->
-            <div id="tab-links" class="tab-content hidden">
-                <div class="toolbar">
-                    <div class="search-filter">
-                        <input type="text" id="link-search" class="form-control" placeholder="লিংকের নাম বা URL দিয়ে খুঁজুন...">
-                        <select id="link-filter" class="form-control" style="width: 140px;">
-                            <option value="all">সকল লিংক</option>
-                            <option value="active">সক্রিয়</option>
-                            <option value="inactive">নিষ্ক্রিয়</option>
-                        </select>
+            <!-- TAB 1: LINKS MANAGEMENT -->
+            <div id="tab-links" class="tab-content">
+                <div class="content-card">
+                    <div class="card-header">
+                        <h3>নতুন লিংক যোগ করুন</h3>
                     </div>
-                    <button class="btn btn-primary" onclick="openLinkModal()">+ নতুন লিংক যোগ করুন</button>
+                    <form id="add-link-form">
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 15px; margin-bottom: 15px;">
+                            <div class="form-group">
+                                <label for="new-link-title">টাইটেল / বিবরণ</label>
+                                <input type="text" id="new-link-title" class="form-control" placeholder="যেমন: FB Campaign Link" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="new-link-url">টার্গেট URL</label>
+                                <input type="url" id="new-link-url" class="form-control" placeholder="https://example.com" required>
+                            </div>
+                        </div>
+                        <div style="display: flex; gap: 20px; align-items: center; margin-bottom: 15px;">
+                            <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; color: var(--text-main);">
+                                <input type="checkbox" id="new-link-active" checked> সক্রিয় (Active)
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; color: var(--text-main);">
+                                <input type="checkbox" id="new-link-default"> ডিফল্ট (Default)
+                            </label>
+                        </div>
+                        <button type="submit" id="add-link-btn" class="btn btn-primary">➕ লিংক তৈরি করুন</button>
+                    </form>
                 </div>
 
-                <div class="table-container">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>শিরোনাম (Title)</th>
-                                <th>ডেসটিনেশন URL</th>
-                                <th>স্ট্যাটাস</th>
-                                <th>ডিফল্ট</th>
-                                <th>মোট ভিউ</th>
-                                <th>অ্যাকশন</th>
-                            </tr>
-                        </thead>
-                        <tbody id="links-tbody">
-                            <tr><td colspan="6" style="text-align:center;">ডাটা লোড হচ্ছে...</td></tr>
-                        </tbody>
-                    </table>
+                <div class="content-card">
+                    <div class="card-header">
+                        <h3>সব লিংক সমুহ</h3>
+                    </div>
+                    <div class="table-responsive">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>টাইটেল</th>
+                                    <th>URL</th>
+                                    <th>স্ট্যাটাস</th>
+                                    <th>ডিফল্ট</th>
+                                    <th>মোট ভিউ</th>
+                                    <th>অ্যাকশন</th>
+                                </tr>
+                            </thead>
+                            <tbody id="links-table-body">
+                                <tr><td colspan="6" style="text-align: center; color: var(--text-muted);">লিংক লোড হচ্ছে...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
 
-            <!-- TAB 3: ANALYTICS -->
-            <div id="tab-analytics" class="tab-content hidden">
-                <h3 style="margin-bottom: 16px;">লিংক ভিত্তিক ভিউ রিপোর্ট</h3>
-                <div class="table-container">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>লিংক টাইটেল</th>
-                                <th>ডেসটিনেশন URL</th>
-                                <th>মোট ভিউ</th>
-                                <th>আজকের ভিউ</th>
-                                <th>গত ৭ দিনের ভিউ</th>
-                                <th>স্ট্যাটাস</th>
-                            </tr>
-                        </thead>
-                        <tbody id="analytics-tbody">
-                            <tr><td colspan="6" style="text-align:center;">ডাটা হিসাব করা হচ্ছে...</td></tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-            <!-- TAB 4: FULL VIEW HISTORY -->
+            <!-- TAB 2: VIEW HISTORY -->
             <div id="tab-views" class="tab-content hidden">
-                <h3 style="margin-bottom: 16px;">বিস্তারিত রিসেন্ট ভিউ লগ (সর্বশেষ ৫০টি)</h3>
-                <div class="table-container">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>লিংক টাইটেল</th>
-                                <th>সময় (BD Time)</th>
-                                <th>রেফারার</th>
-                                <th>ইউজার এজেন্ট</th>
-                            </tr>
-                        </thead>
-                        <tbody id="full-views-tbody">
-                            <tr><td colspan="4" style="text-align:center;">ডাটা লোড হচ্ছে...</td></tr>
-                        </tbody>
-                    </table>
+                <div class="content-card">
+                    <div class="card-header">
+                        <div style="display: flex; align-items: center; gap: 15px; flex-wrap: wrap;">
+                            <h3>ভিউ লগ রেকর্ডস</h3>
+                            <input type="text" id="view-search-input" class="form-control search-box" placeholder="বর্তমান পেজে খুঁজুন...">
+                        </div>
+                        <button id="delete-all-views-btn" class="btn btn-danger">🗑️ সব ভিউ মুছুন</button>
+                    </div>
+                    <div class="table-responsive">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>লিংকের নাম</th>
+                                    <th>সময় (BD)</th>
+                                    <th>Referrer</th>
+                                    <th>User Agent</th>
+                                    <th>অ্যাকশন</th>
+                                </tr>
+                            </thead>
+                            <tbody id="views-table-body">
+                                <tr><td colspan="5" style="text-align: center; color: var(--text-muted);">ভিউ লোড করতে "ভিউ হিস্ট্রি" পেজ স্ক্রোল করুন...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <!-- PAGINATION BAR -->
+                    <div class="pagination-bar">
+                        <div style="color: var(--text-muted); font-size: 14px;">
+                            পৃষ্ঠা <span id="current-page-display">1</span> (<span id="showing-count-display">0</span>টি রেকর্ড দেখানো হচ্ছে)
+                        </div>
+                        <div style="display: flex; gap: 10px;">
+                            <button id="btn-prev-page" class="btn btn-secondary btn-sm" disabled>← আগের পৃষ্ঠা</button>
+                            <button id="btn-next-page" class="btn btn-secondary btn-sm" disabled>পরের পৃষ্ঠা →</button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </main>
     </div>
 
-    <!-- ADD / EDIT LINK MODAL -->
-    <div id="link-modal" class="modal-overlay hidden">
+    <!-- EDIT LINK MODAL -->
+    <div id="edit-modal" class="modal-overlay hidden">
         <div class="modal">
-            <div class="modal-header">
-                <h3 id="modal-title">নতুন লিংক তৈরি করুন</h3>
-                <button onclick="closeLinkModal()" style="background:none; border:none; color:white; font-size:1.2rem; cursor:pointer;">✕</button>
-            </div>
-            <form id="link-form">
-                <input type="hidden" id="modal-link-id">
+            <h3>লিংক এডিট করুন</h3>
+            <form id="edit-link-form">
+                <input type="hidden" id="edit-link-id">
                 <div class="form-group">
-                    <label>লিংক টাইটেল</label>
-                    <input type="text" id="modal-link-title" class="form-control" placeholder="যেমন: Main Website" required>
+                    <label for="edit-link-title">টাইটেল</label>
+                    <input type="text" id="edit-link-title" class="form-control" required>
                 </div>
                 <div class="form-group">
-                    <label>ডেসটিনেশন URL (http:// বা https:// আবশ্যক)</label>
-                    <input type="url" id="modal-link-url" class="form-control" placeholder="https://example.com" required>
+                    <label for="edit-link-url">টার্গেট URL</label>
+                    <input type="url" id="edit-link-url" class="form-control" required>
                 </div>
-                <label class="checkbox-group">
-                    <input type="checkbox" id="modal-link-active" checked>
-                    <span>সক্রিয় (Active) রাখবেন</span>
-                </label>
-                <label class="checkbox-group">
-                    <input type="checkbox" id="modal-link-default">
-                    <span>ডিফল্ট রিডাইরেক্ট লিংক হিসেবে সেট করুন</span>
-                </label>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" onclick="closeLinkModal()">বাতিল</button>
-                    <button type="submit" class="btn btn-primary">সংরক্ষণ করুন</button>
+                <div style="display: flex; gap: 20px; align-items: center; margin-bottom: 20px;">
+                    <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                        <input type="checkbox" id="edit-link-active"> সক্রিয় (Active)
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                        <input type="checkbox" id="edit-link-default"> ডিফল্ট (Default)
+                    </label>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-secondary modal-cancel">বাতিল</button>
+                    <button type="submit" id="save-edit-btn" class="btn btn-primary">সংরক্ষণ করুন</button>
                 </div>
             </form>
         </div>
     </div>
 
-    <!-- FIREBASE SDK & APPLICATION LOGIC -->
+    <!-- CONFIRMATION MODAL -->
+    <div id="confirm-modal" class="modal-overlay hidden">
+        <div class="modal">
+            <h3 id="confirm-title">আপনি কি নিশ্চিত?</h3>
+            <p id="confirm-message" style="color: var(--text-muted); font-size: 14px; margin-bottom: 20px;"></p>
+            <div class="modal-actions">
+                <button type="button" id="confirm-cancel-btn" class="btn btn-secondary">বাতিল</button>
+                <button type="button" id="confirm-proceed-btn" class="btn btn-danger">নিশ্চিত করুন</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- FIREBASE MODULE SCRIPT -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
         import { 
             getAuth, 
             signInWithEmailAndPassword, 
-            signOut, 
-            sendPasswordResetEmail, 
-            onAuthStateChanged 
+            onAuthStateChanged, 
+            signOut 
         } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
         import { 
             getFirestore, 
             collection, 
             doc, 
+            getDoc,
             getDocs, 
             addDoc, 
             updateDoc, 
             deleteDoc, 
+            onSnapshot, 
             query, 
             where, 
             orderBy, 
-            limit, 
+            limit,
+            startAfter,
             writeBatch, 
+            runTransaction, 
             serverTimestamp,
-            onSnapshot 
+            increment,
+            documentId
         } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-        // Firebase Configuration
+        // Firebase Config
         const firebaseConfig = {
-  apiKey: "AIzaSyBUhNhYvuo_FTvZ5RZR6Gn-4hsUY21S0XE",
-  authDomain: "ghotimarket.firebaseapp.com",
-  databaseURL: "https://ghotimarket-default-rtdb.firebaseio.com",
-  projectId: "ghotimarket",
-  storageBucket: "ghotimarket.firebasestorage.app",
-  messagingSenderId: "481257644093",
-  appId: "1:481257644093:web:0dfc3699d6b3c86afeca54",
-  measurementId: "G-4SR8V2EKC1"
-};
-        const ADMIN_EMAIL = "support@ghotimarket.com";
+            apiKey: "AIzaSyBUhNhYvuo_FTvZ5RZR6Gn-4hsUY21S0XE",
+            authDomain: "ghotimarket.firebaseapp.com",
+            databaseURL: "https://ghotimarket-default-rtdb.firebaseio.com",
+            projectId: "ghotimarket",
+            storageBucket: "ghotimarket.firebasestorage.app",
+            messagingSenderId: "481257644093",
+            appId: "1:481257644093:web:0dfc3699d6b3c86afeca54",
+            measurementId: "G-4SR8V2EKC1"
+        };
 
-        // Initialize Firebase
+        const ALLOWED_ADMIN = "support@ghotimarket.com";
+        const PAGE_SIZE = 50;
+
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
 
-        // Global State Variables
-        let linksList = [];
-        let viewsList = [];
-        let unsubscribeLinks = null;
-        let unsubscribeViews = null;
-
-        // Security Utility: XSS Prevention
-        function escapeHTML(str) {
-            if (!str) return '';
-            return String(str)
-                .replace(/&/g, '&amp;')
-                .replace(/</g, '&lt;')
-                .replace(/>/g, '&gt;')
-                .replace(/"/g, '&quot;')
-                .replace(/'/g, '&#039;');
-        }
-
-        // Toast Notification System
-        window.showToast = function(message, type = 'success') {
-            const container = document.getElementById('toast-container');
-            const toast = document.createElement('div');
-            toast.className = `toast toast-${type}`;
-            toast.innerText = message;
-            container.appendChild(toast);
-            setTimeout(() => toast.remove(), 4000);
+        /* ==========================================
+           STATE MANAGEMENT
+           ========================================== */
+        let state = {
+            links: [],
+            views: [],
+            filteredViews: [],
+            viewsTabLoaded: false,
+            viewsPageStack: [null], // Cursors stack for pagination
+            currentPage: 1,
+            hasNextPage: false
         };
 
-        // Date Helpers for Asia/Dhaka Timezone
-        function getBDTimestamps() {
-            const now = new Date();
-            // Create date object adjusted for Asia/Dhaka timezone
-            const bdDateString = now.toLocaleString("en-US", { timeZone: "Asia/Dhaka" });
-            const bdNow = new Date(bdDateString);
-            
-            // Start of Today in BD
-            const todayStart = new Date(bdNow.getFullYear(), bdNow.getMonth(), bdNow.getDate()).getTime();
-            // Start of 7 Days Ago in BD
-            const sevenDaysAgoStart = todayStart - (6 * 24 * 60 * 60 * 1000);
+        let unsubscribeLinks = null;
+        let confirmResolver = null;
 
-            return { todayStart, sevenDaysAgoStart };
+        /* ==========================================
+           HELPERS & UTILITIES
+           ========================================== */
+        function escapeHTML(str) {
+            if (typeof str !== 'string') return '';
+            return str
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
         }
 
-        function formatBDTime(timestamp) {
-            if (!timestamp) return 'N/A';
-            const dateMillis = timestamp.toMillis ? timestamp.toMillis() : timestamp;
-            if (!dateMillis) return 'N/A';
-            return new Date(dateMillis).toLocaleString('bn-BD', {
-                timeZone: 'Asia/Dhaka',
-                year: 'numeric',
-                month: 'short',
-                day: 'numeric',
-                hour: '2-digit',
-                minute: '2-digit',
-                second: '2-digit'
+        function sanitizeURL(urlStr) {
+            if (!urlStr || typeof urlStr !== 'string') return '#';
+            const clean = urlStr.trim();
+            if (clean.startsWith('http://') || clean.startsWith('https://')) {
+                return escapeHTML(clean);
+            }
+            return '#';
+        }
+
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.innerText = message;
+            container.appendChild(toast);
+            setTimeout(() => toast.remove(), 3500);
+        }
+
+        function showConfirm(title, message) {
+            return new Promise((resolve) => {
+                document.getElementById('confirm-title').innerText = title;
+                document.getElementById('confirm-message').innerText = message;
+                document.getElementById('confirm-modal').classList.remove('hidden');
+                confirmResolver = resolve;
             });
         }
 
-        // --- AUTHENTICATION FLOW ---
+        document.getElementById('confirm-cancel-btn').addEventListener('click', () => {
+            document.getElementById('confirm-modal').classList.add('hidden');
+            if (confirmResolver) confirmResolver(false);
+        });
+
+        document.getElementById('confirm-proceed-btn').addEventListener('click', () => {
+            document.getElementById('confirm-modal').classList.add('hidden');
+            if (confirmResolver) confirmResolver(true);
+        });
+
+        function formatBDDate(timestamp) {
+            if (!timestamp) return 'N/A';
+            const date = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
+            return new Intl.DateTimeFormat('bn-BD', {
+                timeZone: 'Asia/Dhaka',
+                year: 'numeric', month: 'short', day: 'numeric',
+                hour: '2-digit', minute: '2-digit', second: '2-digit'
+            }).format(date);
+        }
+
+        // Get BD date formatted key (YYYY-MM-DD)
+        function getBDDateKey(d = new Date()) {
+            const formatter = new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Dhaka', year: 'numeric', month: '2-digit', day: '2-digit' });
+            return formatter.format(d);
+        }
+
+        function getLast7DaysBDKeys() {
+            const keys = [];
+            const now = new Date();
+            for (let i = 0; i < 7; i++) {
+                const d = new Date(now);
+                d.setDate(d.getDate() - i);
+                keys.push(getBDDateKey(d));
+            }
+            return keys;
+        }
+
+        /* ==========================================
+           AUTHENTICATION
+           ========================================== */
+        const authContainer = document.getElementById('auth-container');
+        const dashboardContainer = document.getElementById('dashboard-container');
+        const loginForm = document.getElementById('login-form');
+        const loginBtn = document.getElementById('login-btn');
 
         onAuthStateChanged(auth, (user) => {
-            if (user && user.email === ADMIN_EMAIL) {
-                document.getElementById('auth-screen').classList.add('hidden');
-                document.getElementById('app-screen').classList.remove('hidden');
+            if (user && user.email === ALLOWED_ADMIN) {
                 document.getElementById('user-email-display').innerText = user.email;
-                initDashboardData();
+                authContainer.classList.add('hidden');
+                dashboardContainer.classList.remove('hidden');
+                initDashboard();
             } else {
-                if (user && user.email !== ADMIN_EMAIL) {
-                    showToast("আপনার এই এডমিন প্যানেলে অ্যাক্সেস নেই!", "error");
+                if (user) {
                     signOut(auth);
+                    showToast('আপনার প্রশাসনিক অ্যাক্সেস নেই', 'error');
                 }
-                document.getElementById('auth-screen').classList.remove('hidden');
-                document.getElementById('app-screen').classList.add('hidden');
-                cleanupSubscriptions();
+                cleanupListeners();
+                authContainer.classList.remove('hidden');
+                dashboardContainer.classList.add('hidden');
             }
         });
 
-        // Login Submit
-        document.getElementById('login-form').addEventListener('submit', async (e) => {
+        loginForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             const email = document.getElementById('login-email').value.trim();
-            const password = document.getElementById('login-password').value;
+            const password = document.getElementById('login-password').value.trim();
 
-            if (email !== ADMIN_EMAIL) {
-                showToast("অনুমোদিত এডমিন ইমেইল ব্যবহার করুন!", "error");
+            if (email !== ALLOWED_ADMIN) {
+                showToast('শুধুমাত্র অনুমোদনপ্রাপ্ত এডমিন অ্যাক্সেস করতে পারবেন', 'error');
                 return;
             }
+
+            loginBtn.disabled = true;
+            loginBtn.innerText = 'লগইন হচ্ছে...';
 
             try {
                 await signInWithEmailAndPassword(auth, email, password);
-                showToast("সফলভাবে লগইন হয়েছে");
+                showToast('লগইন সফল হয়েছে');
             } catch (err) {
-                showToast("লগইন ব্যর্থ: " + err.message, "error");
+                console.error(err);
+                showToast('লগইন ব্যর্থ: ইমেইল বা পাসওয়ার্ড ভুল', 'error');
+            } finally {
+                loginBtn.disabled = false;
+                loginBtn.innerText = 'লগইন করুন';
             }
         });
 
-        // Forgot Password
-        document.getElementById('btn-forgot-pw').addEventListener('click', async () => {
-            const email = document.getElementById('login-email').value.trim();
-            if (!email) {
-                showToast("অনুগ্রহ করে আপনার ইমেইল এড্রেস প্রদান করুন", "error");
-                return;
-            }
-            try {
-                await sendPasswordResetEmail(auth, email);
-                showToast("পাসওয়ার্ড রিসেট ইমেইল পাঠানো হয়েছে!");
-            } catch (err) {
-                showToast("রিসেট লিংক পাঠাতে ব্যর্থ: " + err.message, "error");
-            }
-        });
-
-        // Logout Button
-        document.getElementById('btn-logout').addEventListener('click', () => {
+        document.getElementById('logout-btn').addEventListener('click', () => {
             signOut(auth);
+            showToast('লগআউট করা হয়েছে');
         });
 
-        // --- REALTIME DATA LISTENERS & STATS ---
-
-        function cleanupSubscriptions() {
-            if (unsubscribeLinks) unsubscribeLinks();
-            if (unsubscribeViews) unsubscribeViews();
+        function cleanupListeners() {
+            if (unsubscribeLinks) { unsubscribeLinks(); unsubscribeLinks = null; }
+            state.links = [];
+            state.views = [];
+            state.viewsTabLoaded = false;
+            state.viewsPageStack = [null];
+            state.currentPage = 1;
         }
 
-        function initDashboardData() {
-            // Realtime Listener for Links
-            const linksQuery = query(collection(db, "links"), orderBy("createdAt", "desc"));
-            unsubscribeLinks = onSnapshot(linksQuery, (snapshot) => {
-                linksList = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        /* ==========================================
+           INITIALIZATION & STATS (LIGHTWEIGHT READS)
+           ========================================== */
+        function initDashboard() {
+            cleanupListeners();
+
+            // 1. Realtime listener for Links collection ONLY
+            const qLinks = query(collection(db, "links"), orderBy("createdAt", "desc"));
+            unsubscribeLinks = onSnapshot(qLinks, (snapshot) => {
+                state.links = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
                 renderLinksTable();
-                calculateStats();
-                renderAnalyticsTable();
-            }, (err) => {
-                showToast("লিংক ডাটা লোড করতে সমস্যা: " + err.message, "error");
+                updateDashboardStats();
+            }, (error) => {
+                console.error(error);
+                showToast('লিংক ডাটা লোড করতে সমস্যা হয়েছে', 'error');
             });
 
-            // Realtime Listener for Recent Views (Limit 50 for analytics and logs)
-            const viewsQuery = query(collection(db, "views"), orderBy("timestamp", "desc"), limit(50));
-            unsubscribeViews = onSnapshot(viewsQuery, (snapshot) => {
-                viewsList = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                renderViewsTables();
-                calculateStats();
-                renderAnalyticsTable();
-            }, (err) => {
-                showToast("ভিউ ডাটা লোড করতে সমস্যা: " + err.message, "error");
-            });
+            // 2. Aggregate Stats Document Reads
+            loadAggregatedStats();
         }
 
-        function calculateStats() {
-            const { todayStart, sevenDaysAgoStart } = getBDTimestamps();
+        async function updateDashboardStats() {
+            document.getElementById('stat-total-links').innerText = state.links.length;
+            document.getElementById('stat-active-links').innerText = state.links.filter(l => l.active).length;
 
-            // Total Links Count
-            document.getElementById('stat-total-links').innerText = linksList.length;
-
-            // Active Links Count
-            const activeCount = linksList.filter(l => l.active).length;
-            document.getElementById('stat-active-links').innerText = activeCount;
-
-            // Total Views Sum
-            const totalViewsSum = linksList.reduce((acc, l) => acc + (l.totalViews || 0), 0);
-            document.getElementById('stat-total-views').innerText = totalViewsSum;
-
-            // Filter views using BD timezone calculations
-            let todayCount = 0;
-            let sevenDaysCount = 0;
-
-            viewsList.forEach(v => {
-                const ts = v.timestamp?.toMillis ? v.timestamp.toMillis() : 0;
-                if (ts >= todayStart) todayCount++;
-                if (ts >= sevenDaysAgoStart) sevenDaysCount++;
-            });
-
-            document.getElementById('stat-today-views').innerText = todayCount;
-            document.getElementById('stat-7days-views').innerText = sevenDaysCount;
+            // Total views calculated from sum of links.totalViews (0 Extra Firestore Reads)
+            const grandTotal = state.links.reduce((sum, link) => sum + (Number(link.totalViews) || 0), 0);
+            document.getElementById('stat-total-views').innerText = grandTotal;
         }
 
-        // --- RENDER TABLES ---
+        async function loadAggregatedStats() {
+            try {
+                // Read Today's view from daily_stats/YYYY-MM-DD
+                const todayKey = getBDDateKey();
+                const todayRef = doc(db, "daily_stats", todayKey);
+                const todaySnap = await getDoc(todayRef);
+                document.getElementById('stat-today-views').innerText = todaySnap.exists() ? (todaySnap.data().views || 0) : 0;
 
-        function renderLinksTable() {
-            const tbody = document.getElementById('links-tbody');
-            const searchVal = document.getElementById('link-search').value.toLowerCase();
-            const filterVal = document.getElementById('link-filter').value;
+                // Read Last 7 Days views from daily_stats using single 'in' query
+                const last7Keys = getLast7DaysBDKeys();
+                const q7Days = query(collection(db, "daily_stats"), where(documentId(), "in", last7Keys));
+                const snap7Days = await getDocs(q7Days);
+                
+                let sum7Days = 0;
+                snap7Days.forEach(d => {
+                    sum7Days += (d.data().views || 0);
+                });
+                document.getElementById('stat-7days-views').innerText = sum7Days;
 
-            const filtered = linksList.filter(item => {
-                const matchesSearch = (item.title || '').toLowerCase().includes(searchVal) || 
-                                      (item.url || '').toLowerCase().includes(searchVal);
-                const matchesFilter = filterVal === 'all' ? true : 
-                                     filterVal === 'active' ? item.active : !item.active;
-                return matchesSearch && matchesFilter;
-            });
-
-            if (filtered.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;">কোনো লিংক পাওয়া যায়নি।</td></tr>`;
-                return;
+            } catch (err) {
+                console.error("Stats load error:", err);
             }
-
-            tbody.innerHTML = filtered.map(item => `
-                <tr>
-                    <td><strong>${escapeHTML(item.title)}</strong></td>
-                    <td><a href="${escapeHTML(item.url)}" target="_blank" style="color:var(--accent-blue); text-decoration:none;">${escapeHTML(item.url)}</a></td>
-                    <td><span class="badge ${item.active ? 'badge-active' : 'badge-inactive'}">${item.active ? 'সক্রিয়' : 'নিষ্ক্রিয়'}</span></td>
-                    <td>${item.isDefault ? '<span class="badge badge-default">ডিফল্ট</span>' : '-'}</td>
-                    <td>${item.totalViews || 0}</td>
-                    <td class="actions-cell">
-                        <button class="btn btn-secondary btn-sm" onclick="openLinkModal('${item.id}')">এডিট</button>
-                        <button class="btn btn-secondary btn-sm" onclick="toggleLinkActive('${item.id}', ${!item.active})">${item.active ? 'নিষ্ক্রিয় করুন' : 'সক্রিয় করুন'}</button>
-                        ${!item.isDefault ? `<button class="btn btn-primary btn-sm" onclick="setAsDefault('${item.id}')">Make Default</button>` : ''}
-                        <button class="btn btn-danger btn-sm" onclick="deleteLink('${item.id}', ${item.isDefault})">মুছুন</button>
-                    </td>
-                </tr>
-            `).join('');
         }
 
-        function renderViewsTables() {
-            const dashTbody = document.getElementById('dashboard-views-tbody');
-            const fullTbody = document.getElementById('full-views-tbody');
-
-            if (viewsList.length === 0) {
-                const emptyRow = `<tr><td colspan="4" style="text-align:center;">কোনো ভিউ রেকর্ড পাওয়া যায়নি।</td></tr>`;
-                dashTbody.innerHTML = emptyRow;
-                fullTbody.innerHTML = emptyRow;
-                return;
-            }
-
-            const rowsHtml = viewsList.map(v => `
-                <tr>
-                    <td><strong>${escapeHTML(v.linkTitle || 'N/A')}</strong></td>
-                    <td>${formatBDTime(v.timestamp)}</td>
-                    <td>${escapeHTML(v.referrer || 'Direct / None')}</td>
-                    <td style="font-size:0.8rem; color:var(--text-muted); max-width:250px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="${escapeHTML(v.userAgent)}">${escapeHTML(v.userAgent || 'N/A')}</td>
-                </tr>
-            `).join('');
-
-            dashTbody.innerHTML = viewsList.slice(0, 15).map(v => `
-                <tr>
-                    <td><strong>${escapeHTML(v.linkTitle || 'N/A')}</strong></td>
-                    <td>${formatBDTime(v.timestamp)}</td>
-                    <td>${escapeHTML(v.referrer || 'Direct / None')}</td>
-                    <td style="font-size:0.8rem; color:var(--text-muted); max-width:200px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${escapeHTML(v.userAgent || 'N/A')}</td>
-                </tr>
-            `).join('');
-
-            fullTbody.innerHTML = rowsHtml;
-        }
-
-        function renderAnalyticsTable() {
-            const tbody = document.getElementById('analytics-tbody');
-            const { todayStart, sevenDaysAgoStart } = getBDTimestamps();
-
-            if (linksList.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;">কোনো ডাটা পাওয়া যায়নি।</td></tr>`;
-                return;
-            }
-
-            tbody.innerHTML = linksList.map(link => {
-                let todayViews = 0;
-                let last7DaysViews = 0;
-
-                viewsList.forEach(v => {
-                    if (v.linkId === link.id) {
-                        const ts = v.timestamp?.toMillis ? v.timestamp.toMillis() : 0;
-                        if (ts >= todayStart) todayViews++;
-                        if (ts >= sevenDaysAgoStart) last7DaysViews++;
-                    }
+        /* ==========================================
+           REDIRECT VIEW RECORDING ARCHITECTURE (UTIL)
+           ========================================== */
+        // Call this helper function when a URL redirect occurs
+        window.recordViewEvent = async function(linkId, linkTitle, referrer, userAgent) {
+            try {
+                const batch = writeBatch(db);
+                
+                // 1. Create View Document
+                const viewRef = doc(collection(db, "views"));
+                batch.set(viewRef, {
+                    linkId: linkId,
+                    linkTitle: linkTitle || '',
+                    referrer: referrer || '',
+                    userAgent: userAgent || '',
+                    timestamp: serverTimestamp()
                 });
 
-                return `
-                    <tr>
-                        <td><strong>${escapeHTML(link.title)}</strong> ${link.isDefault ? '<span class="badge badge-default">Default</span>' : ''}</td>
-                        <td><a href="${escapeHTML(link.url)}" target="_blank" style="color:var(--accent-blue);">${escapeHTML(link.url)}</a></td>
-                        <td><strong>${link.totalViews || 0}</strong></td>
-                        <td style="color:var(--accent-amber);">${todayViews}</td>
-                        <td>${last7DaysViews}</td>
-                        <td><span class="badge ${link.active ? 'badge-active' : 'badge-inactive'}">${link.active ? 'Active' : 'Inactive'}</span></td>
-                    </tr>
-                `;
-            }).join('');
-        }
+                // 2. Increment Link totalViews atomic increment(1)
+                const linkRef = doc(db, "links", linkId);
+                batch.update(linkRef, {
+                    totalViews: increment(1),
+                    updatedAt: serverTimestamp()
+                });
 
-        // --- LINK ACTIONS (CRUD & DEFAULT MANAGEMENT) ---
+                // 3. Increment Daily Stats atomic increment(1)
+                const todayKey = getBDDateKey();
+                const dailyRef = doc(db, "daily_stats", todayKey);
+                batch.set(dailyRef, {
+                    views: increment(1)
+                }, { merge: true });
 
-        // Modal Open/Close
-        window.openLinkModal = function(id = null) {
-            const modal = document.getElementById('link-modal');
-            const titleEl = document.getElementById('modal-title');
-            const form = document.getElementById('link-form');
-            form.reset();
-
-            if (id) {
-                const link = linksList.find(l => l.id === id);
-                if (link) {
-                    titleEl.innerText = "লিংক সম্পাদনা করুন";
-                    document.getElementById('modal-link-id').value = link.id;
-                    document.getElementById('modal-link-title').value = link.title;
-                    document.getElementById('modal-link-url').value = link.url;
-                    document.getElementById('modal-link-active').checked = link.active;
-                    document.getElementById('modal-link-default').checked = link.isDefault;
-                }
-            } else {
-                titleEl.innerText = "নতুন লিংক তৈরি করুন";
-                document.getElementById('modal-link-id').value = '';
-                document.getElementById('modal-link-active').checked = true;
-                document.getElementById('modal-link-default').checked = false;
+                await batch.commit();
+            } catch (err) {
+                console.error("Failed to record view event:", err);
             }
-
-            modal.classList.remove('hidden');
         };
 
-        window.closeLinkModal = function() {
-            document.getElementById('link-modal').classList.add('hidden');
-        };
+        /* ==========================================
+           LINK MANAGEMENT (ADD, EDIT, DELETE)
+           ========================================== */
+        const addLinkForm = document.getElementById('add-link-form');
+        const addLinkBtn = document.getElementById('add-link-btn');
 
-        // Form Submit Create / Update
-        document.getElementById('link-form').addEventListener('submit', async (e) => {
+        addLinkForm.addEventListener('submit', async (e) => {
             e.preventDefault();
-            const id = document.getElementById('modal-link-id').value;
-            const title = document.getElementById('modal-link-title').value.trim();
-            const url = document.getElementById('modal-link-url').value.trim();
-            const active = document.getElementById('modal-link-active').checked;
-            const isDefault = document.getElementById('modal-link-default').checked;
+            const title = document.getElementById('new-link-title').value.trim();
+            const url = document.getElementById('new-link-url').value.trim();
+            const active = document.getElementById('new-link-active').checked;
+            const isDefault = document.getElementById('new-link-default').checked;
 
-            if (!url.startsWith('http://') && !url.startsWith('https://')) {
-                showToast("URL অবশ্যই http:// অথবা https:// দিয়ে শুরু হতে হবে!", "error");
-                return;
-            }
+            if (!title || !url) return;
+
+            addLinkBtn.disabled = true;
+            addLinkBtn.innerText = 'সংরক্ষণ হচ্ছে...';
 
             try {
                 const batch = writeBatch(db);
 
-                // If setting as default, set all other default links to false
                 if (isDefault) {
-                    linksList.forEach(l => {
-                        if (l.isDefault && l.id !== id) {
-                            batch.update(doc(db, "links", l.id), { isDefault: false });
+                    state.links.forEach(l => {
+                        if (l.isDefault) {
+                            batch.update(doc(db, "links", l.id), { isDefault: false, updatedAt: serverTimestamp() });
                         }
                     });
                 }
 
-                if (id) {
-                    // Update Existing
-                    const linkRef = doc(db, "links", id);
-                    batch.update(linkRef, {
-                        title: title,
-                        url: url,
-                        active: active,
-                        isDefault: isDefault,
-                        updatedAt: serverTimestamp()
-                    });
-                } else {
-                    // Create New
-                    const newRef = doc(collection(db, "links"));
-                    batch.set(newRef, {
-                        title: title,
-                        url: url,
-                        active: active,
-                        isDefault: isDefault,
-                        totalViews: 0,
-                        createdAt: serverTimestamp(),
-                        updatedAt: serverTimestamp()
-                    });
-                }
+                const newLinkRef = doc(collection(db, "links"));
+                batch.set(newLinkRef, {
+                    title: title,
+                    url: url,
+                    active: isDefault ? true : active,
+                    isDefault: isDefault,
+                    totalViews: 0,
+                    createdAt: serverTimestamp(),
+                    updatedAt: serverTimestamp()
+                });
 
                 await batch.commit();
-                showToast(id ? "লিংক আপডেট হয়েছে" : "নতুন লিংক তৈরি হয়েছে");
-                closeLinkModal();
-
+                showToast('লিংক সফলভাবে যোগ করা হয়েছে');
+                addLinkForm.reset();
+                document.getElementById('new-link-active').checked = true;
             } catch (err) {
-                showToast("অপারেশন ব্যর্থ: " + err.message, "error");
+                console.error(err);
+                showToast('লিংক যোগ করতে সমস্যা হয়েছে', 'error');
+            } finally {
+                addLinkBtn.disabled = false;
+                addLinkBtn.innerText = '➕ লিংক তৈরি করুন';
             }
         });
 
-        // Toggle Active/Inactive
-        window.toggleLinkActive = async function(id, newActiveState) {
-            try {
-                await updateDoc(doc(db, "links", id), {
-                    active: newActiveState,
-                    updatedAt: serverTimestamp()
-                });
-                showToast("লিংক স্ট্যাটাস আপডেট হয়েছে");
-            } catch (err) {
-                showToast("আ্যপডেট ব্যর্থ: " + err.message, "error");
-            }
+        const editModal = document.getElementById('edit-modal');
+        const editLinkForm = document.getElementById('edit-link-form');
+        const saveEditBtn = document.getElementById('save-edit-btn');
+
+        window.openEditModal = function(id) {
+            const link = state.links.find(l => l.id === id);
+            if (!link) return;
+
+            document.getElementById('edit-link-id').value = link.id;
+            document.getElementById('edit-link-title').value = link.title || '';
+            document.getElementById('edit-link-url').value = link.url || '';
+            document.getElementById('edit-link-active').checked = !!link.active;
+            document.getElementById('edit-link-default').checked = !!link.isDefault;
+
+            editModal.classList.remove('hidden');
         };
 
-        // Set Default Link via WriteBatch
-        window.setAsDefault = async function(id) {
+        document.querySelectorAll('.modal-cancel').forEach(btn => {
+            btn.addEventListener('click', () => editModal.classList.add('hidden'));
+        });
+
+        editLinkForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const id = document.getElementById('edit-link-id').value;
+            const title = document.getElementById('edit-link-title').value.trim();
+            const url = document.getElementById('edit-link-url').value.trim();
+            const active = document.getElementById('edit-link-active').checked;
+            const isDefault = document.getElementById('edit-link-default').checked;
+
+            saveEditBtn.disabled = true;
+            saveEditBtn.innerText = 'সংরক্ষণ হচ্ছে...';
+
             try {
                 const batch = writeBatch(db);
 
-                // Clear existing defaults
-                linksList.forEach(l => {
-                    if (l.isDefault) {
-                        batch.update(doc(db, "links", l.id), { isDefault: false });
-                    }
+                if (isDefault) {
+                    state.links.forEach(l => {
+                        if (l.id !== id && l.isDefault) {
+                            batch.update(doc(db, "links", l.id), { isDefault: false, updatedAt: serverTimestamp() });
+                        }
+                    });
+                }
+
+                const targetRef = doc(db, "links", id);
+                batch.update(targetRef, {
+                    title: title,
+                    url: url,
+                    active: isDefault ? true : active,
+                    isDefault: isDefault,
+                    updatedAt: serverTimestamp()
                 });
 
-                // Set selected link as active and default
+                await batch.commit();
+                showToast('লিংক সফলভাবে আপডেট হয়েছে');
+                editModal.classList.add('hidden');
+            } catch (err) {
+                console.error(err);
+                showToast('আপডেট করতে সমস্যা হয়েছে', 'error');
+            } finally {
+                saveEditBtn.disabled = false;
+                saveEditBtn.innerText = 'সংরক্ষণ করুন';
+            }
+        });
+
+        window.toggleLinkStatus = async function(id, currentStatus) {
+            try {
+                const link = state.links.find(l => l.id === id);
+                if (link && link.isDefault && currentStatus) {
+                    showToast('ডিফল্ট লিংক নিষ্ক্রিয় করা যাবে না', 'error');
+                    return;
+                }
+                await updateDoc(doc(db, "links", id), {
+                    active: !currentStatus,
+                    updatedAt: serverTimestamp()
+                });
+                showToast('স্ট্যাটাস পরিবর্তন করা হয়েছে');
+            } catch (err) {
+                console.error(err);
+                showToast('স্ট্যাটাস পরিবর্তনে ব্যর্থ', 'error');
+            }
+        };
+
+        window.setDefaultLink = async function(id) {
+            try {
+                const batch = writeBatch(db);
+                state.links.forEach(l => {
+                    if (l.isDefault) {
+                        batch.update(doc(db, "links", l.id), { isDefault: false, updatedAt: serverTimestamp() });
+                    }
+                });
                 batch.update(doc(db, "links", id), {
                     isDefault: true,
                     active: true,
                     updatedAt: serverTimestamp()
                 });
-
                 await batch.commit();
-                showToast("ডিফল্ট লিংক আপডেট হয়েছে");
+                showToast('ডিফল্ট লিংক সেট করা হয়েছে');
             } catch (err) {
-                showToast("ডিফল্ট লিংক সেটিং ব্যর্থ: " + err.message, "error");
+                console.error(err);
+                showToast('ডিফল্ট সেট করতে সমস্যা হয়েছে', 'error');
             }
         };
 
-        // Delete Link (Prevents deleting default link)
-        window.deleteLink = async function(id, isDefault) {
-            if (isDefault) {
-                showToast("ডিফল্ট লিংক সরাসরি ডিলেট করা যাবে না! প্রথমে অন্য লিংক ডিফল্ট করুন।", "error");
+        window.deleteLink = async function(id) {
+            const link = state.links.find(l => l.id === id);
+            if (!link) return;
+
+            if (link.isDefault) {
+                showToast('ডিফল্ট লিংক মুছে ফেলা সম্ভব নয়', 'error');
                 return;
             }
 
-            if (!confirm("আপনি কি নিশ্চিত এই লিংকটি মুছে ফেলতে চান?")) return;
+            const confirmed = await showConfirm(
+                "লিংক মুছে ফেলবেন?",
+                `"${escapeHTML(link.title)}" লিংকটি স্থায়ীভাবে মুছে ফেলা হবে।`
+            );
+
+            if (!confirmed) return;
 
             try {
                 await deleteDoc(doc(db, "links", id));
-                showToast("লিংক সফলভাবে মুছে ফেলা হয়েছে");
+                showToast('লিংক সফলভাবে মুছে ফেলা হয়েছে');
             } catch (err) {
-                showToast("ডিলেট করতে সমস্যা হয়েছে: " + err.message, "error");
+                console.error(err);
+                showToast('লিংক মুছতে সমস্যা হয়েছে', 'error');
             }
         };
 
-        // Tab Navigation Event Listeners
+        function renderLinksTable() {
+            const tbody = document.getElementById('links-table-body');
+            if (state.links.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: var(--text-muted);">কোনো লিংক পাওয়া যায়নি</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = state.links.map(l => {
+                const safeTitle = escapeHTML(l.title);
+                const safeUrl = sanitizeURL(l.url);
+                const activeBadge = l.active ? 
+                    `<span class="badge badge-success">সক্রিয়</span>` : 
+                    `<span class="badge badge-danger">নিষ্ক্রিয়</span>`;
+                const defaultBadge = l.isDefault ? 
+                    `<span class="badge badge-warning">DEFAULT</span>` : `-`;
+
+                return `
+                    <tr>
+                        <td><strong>${safeTitle}</strong></td>
+                        <td><a href="${safeUrl}" target="_blank" rel="noopener noreferrer" style="color: var(--primary); text-decoration: none;">${safeUrl}</a></td>
+                        <td>${activeBadge}</td>
+                        <td>${defaultBadge}</td>
+                        <td><strong>${Number(l.totalViews) || 0}</strong></td>
+                        <td>
+                            <div class="actions-cell">
+                                <button class="btn btn-secondary btn-sm" onclick="openEditModal('${l.id}')">✏️ এডিট</button>
+                                <button class="btn btn-secondary btn-sm" onclick="toggleLinkStatus('${l.id}', ${l.active})">🔄 অবস্থা</button>
+                                ${!l.isDefault ? `<button class="btn btn-secondary btn-sm" onclick="setDefaultLink('${l.id}')">⭐ ডিফল্ট</button>` : ''}
+                                ${!l.isDefault ? `<button class="btn btn-danger btn-sm" onclick="deleteLink('${l.id}')">🗑️ মুছুন</button>` : ''}
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        /* ==========================================
+           LAZY LOADING & CURSOR PAGINATED VIEWS TAB
+           ========================================== */
+        async function loadViewsPage(page = 1) {
+            const tbody = document.getElementById('views-table-body');
+            tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: var(--text-muted);">ভিউ পৃষ্ঠা ${page} লোড হচ্ছে...</td></tr>`;
+
+            try {
+                let q;
+                const cursorDoc = state.viewsPageStack[page - 1];
+
+                if (page > 1 && cursorDoc) {
+                    q = query(
+                        collection(db, "views"),
+                        orderBy("timestamp", "desc"),
+                        startAfter(cursorDoc),
+                        limit(PAGE_SIZE)
+                    );
+                } else {
+                    q = query(
+                        collection(db, "views"),
+                        orderBy("timestamp", "desc"),
+                        limit(PAGE_SIZE)
+                    );
+                }
+
+                const snap = await getDocs(q);
+                state.views = snap.docs.map(doc => ({ id: doc.id, ...doc.data(), _snapshot: doc }));
+
+                // Manage cursor stack
+                if (snap.docs.length > 0) {
+                    state.viewsPageStack[page] = snap.docs[snap.docs.length - 1];
+                }
+                
+                state.currentPage = page;
+                state.hasNextPage = snap.docs.length === PAGE_SIZE;
+
+                applyViewSearch();
+                updatePaginationControls();
+
+            } catch (err) {
+                console.error(err);
+                showToast('ভিউ লোড করতে ব্যর্থ', 'error');
+                tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: var(--danger);">ত্রুটি: ডাটা লোড করা যায়নি</td></tr>`;
+            }
+        }
+
+        const btnPrevPage = document.getElementById('btn-prev-page');
+        const btnNextPage = document.getElementById('btn-next-page');
+
+        btnPrevPage.addEventListener('click', () => {
+            if (state.currentPage > 1) {
+                loadViewsPage(state.currentPage - 1);
+            }
+        });
+
+        btnNextPage.addEventListener('click', () => {
+            if (state.hasNextPage) {
+                loadViewsPage(state.currentPage + 1);
+            }
+        });
+
+        function updatePaginationControls() {
+            document.getElementById('current-page-display').innerText = state.currentPage;
+            document.getElementById('showing-count-display').innerText = state.filteredViews.length;
+
+            btnPrevPage.disabled = state.currentPage <= 1;
+            btnNextPage.disabled = !state.hasNextPage;
+        }
+
+        /* ==========================================
+           SEARCH & DELETION IN VIEWS
+           ========================================== */
+        const searchInput = document.getElementById('view-search-input');
+        searchInput.addEventListener('input', () => {
+            applyViewSearch();
+        });
+
+        function applyViewSearch() {
+            const queryStr = searchInput.value.trim().toLowerCase();
+            if (!queryStr) {
+                state.filteredViews = [...state.views];
+            } else {
+                state.filteredViews = state.views.filter(v => {
+                    const titleMatch = (v.linkTitle || '').toLowerCase().includes(queryStr);
+                    const refMatch = (v.referrer || '').toLowerCase().includes(queryStr);
+                    const uaMatch = (v.userAgent || '').toLowerCase().includes(queryStr);
+                    return titleMatch || refMatch || uaMatch;
+                });
+            }
+            renderViewsTable();
+            updatePaginationControls();
+        }
+
+        function renderViewsTable() {
+            const tbody = document.getElementById('views-table-body');
+            if (state.filteredViews.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: var(--text-muted);">কোনো ভিউ রেকর্ড পাওয়া যায়নি</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = state.filteredViews.map(v => {
+                const safeLinkTitle = escapeHTML(v.linkTitle || 'অজানা লিংক');
+                const safeReferrer = escapeHTML(v.referrer || 'Direct / None');
+                const safeUA = escapeHTML(v.userAgent || 'Unknown');
+                const dateBD = formatBDDate(v.timestamp);
+
+                return `
+                    <tr>
+                        <td><strong>${safeLinkTitle}</strong></td>
+                        <td>${dateBD}</td>
+                        <td style="max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${safeReferrer}">${safeReferrer}</td>
+                        <td style="max-width: 250px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${safeUA}">${safeUA}</td>
+                        <td>
+                            <button class="btn btn-danger btn-sm" onclick="deleteSingleView('${v.id}', '${v.linkId || ''}', this)">🗑️ মুছুন</button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        // DELETE SINGLE VIEW WITH ATOMIC INCREMENT(-1)
+        window.deleteSingleView = async function(viewId, linkId, btnElem) {
+            const confirmed = await showConfirm(
+                "এই ভিউ রেকর্ড মুছে ফেলবেন?",
+                "ভিউ হিস্ট্রি ডিলিট করলে লিঙ্কটির মোট ভিউ এবং আজকের ভিউ সংখ্যা ১ কমবে।"
+            );
+
+            if (!confirmed) return;
+
+            if (btnElem) {
+                btnElem.disabled = true;
+                btnElem.innerText = "মুছে ফেলা হচ্ছে...";
+            }
+
+            try {
+                const batch = writeBatch(db);
+                batch.delete(doc(db, "views", viewId));
+
+                if (linkId) {
+                    batch.update(doc(db, "links", linkId), {
+                        totalViews: increment(-1),
+                        updatedAt: serverTimestamp()
+                    });
+                }
+
+                const todayKey = getBDDateKey();
+                batch.set(doc(db, "daily_stats", todayKey), {
+                    views: increment(-1)
+                }, { merge: true });
+
+                await batch.commit();
+                showToast('ভিউ রেকর্ড মুছে ফেলা হয়েছে');
+                
+                // Refresh current paginated view and stats
+                loadViewsPage(state.currentPage);
+                loadAggregatedStats();
+            } catch (err) {
+                console.error(err);
+                showToast('ভিউ মুছতে সমস্যা হয়েছে', 'error');
+            }
+        };
+
+        // CHUNKED BULK VIEWS DELETE (NO MASSIVE CLIENT-SIDE FETCH)
+        document.getElementById('delete-all-views-btn').addEventListener('click', async () => {
+            const confirmed = await showConfirm(
+                "আপনি কি নিশ্চিত?",
+                "সমস্ত ভিউ রেকর্ড পর্যায়ক্রমে মুছে দেওয়া হবে এবং সব লিংকের ভিউ রিসেট হবে।"
+            );
+
+            if (!confirmed) return;
+
+            const bulkBtn = document.getElementById('delete-all-views-btn');
+            bulkBtn.disabled = true;
+
+            try {
+                let deletedTotal = 0;
+                while (true) {
+                    bulkBtn.innerText = `মুছে ফেলা হচ্ছে (${deletedTotal})...`;
+                    const qChunk = query(collection(db, "views"), limit(400));
+                    const snapChunk = await getDocs(qChunk);
+
+                    if (snapChunk.empty) break;
+
+                    const batch = writeBatch(db);
+                    snapChunk.docs.forEach(d => batch.delete(d.ref));
+                    await batch.commit();
+
+                    deletedTotal += snapChunk.docs.length;
+                }
+
+                // Reset all links totalViews
+                const linkBatch = writeBatch(db);
+                state.links.forEach(l => {
+                    linkBatch.update(doc(db, "links", l.id), { totalViews: 0, updatedAt: serverTimestamp() });
+                });
+                await linkBatch.commit();
+
+                showToast('সব ভিউ রেকর্ড মুছে ফেলা হয়েছে');
+                state.viewsPageStack = [null];
+                loadViewsPage(1);
+                loadAggregatedStats();
+            } catch (err) {
+                console.error(err);
+                showToast('সব ভিউ মুছতে সমস্যা হয়েছে', 'error');
+            } finally {
+                bulkBtn.disabled = false;
+                bulkBtn.innerText = "🗑️ সব ভিউ মুছুন";
+            }
+        });
+
+        /* ==========================================
+           TABS SWITCHING SYSTEM (WITH LAZY LOADING)
+           ========================================== */
         document.querySelectorAll('.tab-btn').forEach(btn => {
             btn.addEventListener('click', (e) => {
-                const targetTab = e.target.getAttribute('data-tab');
-
                 document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
                 document.querySelectorAll('.tab-content').forEach(c => c.classList.add('hidden'));
 
+                const targetTabId = e.target.getAttribute('data-tab');
                 e.target.classList.add('active');
-                document.getElementById(`tab-${targetTab}`).classList.remove('hidden');
+                document.getElementById(targetTabId).classList.remove('hidden');
+
+                // Lazy load views tab on first click
+                if (targetTabId === 'tab-views' && !state.viewsTabLoaded) {
+                    state.viewsTabLoaded = true;
+                    loadViewsPage(1);
+                }
             });
         });
-
-        // Search and Filter Listeners
-        document.getElementById('link-search').addEventListener('input', renderLinksTable);
-        document.getElementById('link-filter').addEventListener('change', renderLinksTable);
     </script>
 </body>
 </html>
