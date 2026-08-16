@@ -1,0 +1,988 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Redirect - Admin Panel</title>
+    
+    <!-- Google Font: Hind Siliguri -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --bg-primary: #0f172a;
+            --bg-card: #1e293b;
+            --bg-card-hover: #334155;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --accent-blue: #3b82f6;
+            --accent-green: #10b981;
+            --accent-red: #ef4444;
+            --accent-amber: #f59e0b;
+            --border-color: rgba(255, 255, 255, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Hind Siliguri', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-primary);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Utility Classes */
+        .hidden { display: none !important; }
+        .badge {
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            display: inline-block;
+        }
+        .badge-active { background: rgba(16, 185, 129, 0.2); color: var(--accent-green); border: 1px solid var(--accent-green); }
+        .badge-inactive { background: rgba(239, 68, 68, 0.2); color: var(--accent-red); border: 1px solid var(--accent-red); }
+        .badge-default { background: rgba(245, 158, 11, 0.2); color: var(--accent-amber); border: 1px solid var(--accent-amber); }
+
+        /* Toast Notification */
+        #toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+        }
+        .toast {
+            background: var(--bg-card);
+            color: var(--text-main);
+            padding: 14px 20px;
+            border-radius: 12px;
+            border-left: 5px solid var(--accent-blue);
+            margin-bottom: 10px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            animation: slideIn 0.3s ease-out;
+            max-width: 350px;
+        }
+        .toast-error { border-left-color: var(--accent-red); }
+        .toast-success { border-left-color: var(--accent-green); }
+
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        /* Auth Screen */
+        .auth-container {
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .auth-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            padding: 40px 30px;
+            border-radius: 24px;
+            width: 100%;
+            max-width: 400px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+        }
+        .auth-card h2 { text-align: center; margin-bottom: 24px; color: var(--accent-blue); }
+
+        /* Form Controls */
+        .form-group {
+            margin-bottom: 18px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 6px;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+        .form-control {
+            width: 100%;
+            padding: 12px 16px;
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            color: var(--text-main);
+            font-size: 0.95rem;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+        .form-control:focus {
+            border-color: var(--accent-blue);
+        }
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 10px;
+            cursor: pointer;
+        }
+        .checkbox-group input { width: 18px; height: 18px; cursor: pointer; }
+
+        /* Buttons */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 10px 20px;
+            border-radius: 10px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 0.95rem;
+        }
+        .btn-primary { background: var(--accent-blue); color: white; }
+        .btn-primary:hover { background: #2563eb; }
+        .btn-danger { background: var(--accent-red); color: white; }
+        .btn-danger:hover { background: #dc2626; }
+        .btn-secondary { background: var(--bg-card-hover); color: var(--text-main); }
+        .btn-sm { padding: 6px 12px; font-size: 0.85rem; }
+        .btn-block { width: 100%; }
+
+        /* Header & Nav */
+        header {
+            background: var(--bg-card);
+            border-bottom: 1px solid var(--border-color);
+            padding: 16px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+        .logo { font-size: 1.4rem; font-weight: 700; color: var(--accent-blue); }
+        .nav-tabs {
+            display: flex;
+            gap: 8px;
+            background: var(--bg-primary);
+            padding: 4px;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+        }
+        .tab-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+        .tab-btn.active {
+            background: var(--accent-blue);
+            color: white;
+        }
+
+        /* Layout Container */
+        .container {
+            padding: 24px;
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+        .stat-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+        .stat-card .title { font-size: 0.9rem; color: var(--text-muted); margin-bottom: 8px; }
+        .stat-card .value { font-size: 1.8rem; font-weight: 700; color: var(--text-main); }
+
+        /* Controls Section */
+        .toolbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+        .search-filter {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            flex: 1;
+            max-width: 600px;
+        }
+
+        /* Tables */
+        .table-container {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            overflow-x: auto;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+        th, td {
+            padding: 16px;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 0.95rem;
+        }
+        th {
+            background: rgba(15, 23, 42, 0.4);
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+        tr:hover { background: rgba(255, 255, 255, 0.02); }
+        .actions-cell { display: flex; gap: 8px; flex-wrap: wrap; }
+
+        /* Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0, 0, 0, 0.75);
+            backdrop-filter: blur(4px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            padding: 20px;
+        }
+        .modal {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            width: 100%;
+            max-width: 500px;
+            padding: 28px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+        }
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+            margin-top: 24px;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            header { flex-direction: column; align-items: stretch; }
+            .nav-tabs { overflow-x: auto; }
+            .toolbar { flex-direction: column; align-items: stretch; }
+            .search-filter { max-width: 100%; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="toast-container"></div>
+
+    <!-- AUTHENTICATION VIEW -->
+    <div id="auth-screen" class="auth-container">
+        <div class="auth-card">
+            <h2>এডমিন লগইন</h2>
+            <form id="login-form">
+                <div class="form-group">
+                    <label>ইমেইল অ্যাড্রেস</label>
+                    <input type="email" id="login-email" class="form-control" value="support@ghotimarket.com" required>
+                </div>
+                <div class="form-group">
+                    <label>পাসওয়ার্ড</label>
+                    <input type="password" id="login-password" class="form-control" placeholder="••••••••" required>
+                </div>
+                <button type="submit" class="btn btn-primary btn-block" style="margin-top: 10px;">লগইন করুন</button>
+            </form>
+            <div style="text-align: center; margin-top: 16px;">
+                <button type="button" id="btn-forgot-pw" style="background:none; border:none; color:var(--accent-blue); cursor:pointer;">পাসওয়ার্ড ভুলে গেছেন?</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MAIN ADMIN DASHBOARD -->
+    <div id="app-screen" class="hidden">
+        <header>
+            <div class="logo">Smart Redirect Admin</div>
+            <div class="nav-tabs">
+                <button class="tab-btn active" data-tab="dashboard">ড্যাশবোর্ড</button>
+                <button class="tab-btn" data-tab="links">লিংক ম্যানেজমেন্ট</button>
+                <button class="tab-btn" data-tab="analytics">অ্যানালিটিক্স</button>
+                <button class="tab-btn" data-tab="views">ভিউ হিস্ট্রি</button>
+            </div>
+            <div style="display: flex; align-items: center; gap: 12px;">
+                <span id="user-email-display" style="font-size: 0.85rem; color: var(--text-muted);"></span>
+                <button id="btn-logout" class="btn btn-secondary btn-sm">লগআউট</button>
+            </div>
+        </header>
+
+        <main class="container">
+            <!-- STATS CARDS (Always visible top summary) -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <span class="title">মোট লিংক</span>
+                    <span class="value" id="stat-total-links">0</span>
+                </div>
+                <div class="stat-card">
+                    <span class="title">সক্রিয় লিংক</span>
+                    <span class="value" id="stat-active-links" style="color: var(--accent-green);">0</span>
+                </div>
+                <div class="stat-card">
+                    <span class="title">সর্বমোট ভিউ</span>
+                    <span class="value" id="stat-total-views" style="color: var(--accent-blue);">0</span>
+                </div>
+                <div class="stat-card">
+                    <span class="title">আজকের ভিউ (BD Time)</span>
+                    <span class="value" id="stat-today-views" style="color: var(--accent-amber);">0</span>
+                </div>
+                <div class="stat-card">
+                    <span class="title">গত ৭ দিনের ভিউ</span>
+                    <span class="value" id="stat-7days-views">0</span>
+                </div>
+            </div>
+
+            <!-- TAB 1: DASHBOARD OVERVIEW -->
+            <div id="tab-dashboard" class="tab-content">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                    <h3>সর্বশেষ ১৫টি ভিউ হিস্ট্রি</h3>
+                    <button class="btn btn-primary btn-sm" onclick="openLinkModal()">+ নতুন লিংক তৈরি করুন</button>
+                </div>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>লিংকের নাম</th>
+                                <th>সময় (BD Local Time)</th>
+                                <th>রেফারার (Referrer)</th>
+                                <th>ইউজার এজেন্ট</th>
+                            </tr>
+                        </thead>
+                        <tbody id="dashboard-views-tbody">
+                            <tr><td colspan="4" style="text-align:center;">ডাটা লোড হচ্ছে...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- TAB 2: LINKS MANAGEMENT -->
+            <div id="tab-links" class="tab-content hidden">
+                <div class="toolbar">
+                    <div class="search-filter">
+                        <input type="text" id="link-search" class="form-control" placeholder="লিংকের নাম বা URL দিয়ে খুঁজুন...">
+                        <select id="link-filter" class="form-control" style="width: 140px;">
+                            <option value="all">সকল লিংক</option>
+                            <option value="active">সক্রিয়</option>
+                            <option value="inactive">নিষ্ক্রিয়</option>
+                        </select>
+                    </div>
+                    <button class="btn btn-primary" onclick="openLinkModal()">+ নতুন লিংক যোগ করুন</button>
+                </div>
+
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>শিরোনাম (Title)</th>
+                                <th>ডেসটিনেশন URL</th>
+                                <th>স্ট্যাটাস</th>
+                                <th>ডিফল্ট</th>
+                                <th>মোট ভিউ</th>
+                                <th>অ্যাকশন</th>
+                            </tr>
+                        </thead>
+                        <tbody id="links-tbody">
+                            <tr><td colspan="6" style="text-align:center;">ডাটা লোড হচ্ছে...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- TAB 3: ANALYTICS -->
+            <div id="tab-analytics" class="tab-content hidden">
+                <h3 style="margin-bottom: 16px;">লিংক ভিত্তিক ভিউ রিপোর্ট</h3>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>লিংক টাইটেল</th>
+                                <th>ডেসটিনেশন URL</th>
+                                <th>মোট ভিউ</th>
+                                <th>আজকের ভিউ</th>
+                                <th>গত ৭ দিনের ভিউ</th>
+                                <th>স্ট্যাটাস</th>
+                            </tr>
+                        </thead>
+                        <tbody id="analytics-tbody">
+                            <tr><td colspan="6" style="text-align:center;">ডাটা হিসাব করা হচ্ছে...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- TAB 4: FULL VIEW HISTORY -->
+            <div id="tab-views" class="tab-content hidden">
+                <h3 style="margin-bottom: 16px;">বিস্তারিত রিসেন্ট ভিউ লগ (সর্বশেষ ৫০টি)</h3>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>লিংক টাইটেল</th>
+                                <th>সময় (BD Time)</th>
+                                <th>রেফারার</th>
+                                <th>ইউজার এজেন্ট</th>
+                            </tr>
+                        </thead>
+                        <tbody id="full-views-tbody">
+                            <tr><td colspan="4" style="text-align:center;">ডাটা লোড হচ্ছে...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- ADD / EDIT LINK MODAL -->
+    <div id="link-modal" class="modal-overlay hidden">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 id="modal-title">নতুন লিংক তৈরি করুন</h3>
+                <button onclick="closeLinkModal()" style="background:none; border:none; color:white; font-size:1.2rem; cursor:pointer;">✕</button>
+            </div>
+            <form id="link-form">
+                <input type="hidden" id="modal-link-id">
+                <div class="form-group">
+                    <label>লিংক টাইটেল</label>
+                    <input type="text" id="modal-link-title" class="form-control" placeholder="যেমন: Main Website" required>
+                </div>
+                <div class="form-group">
+                    <label>ডেসটিনেশন URL (http:// বা https:// আবশ্যক)</label>
+                    <input type="url" id="modal-link-url" class="form-control" placeholder="https://example.com" required>
+                </div>
+                <label class="checkbox-group">
+                    <input type="checkbox" id="modal-link-active" checked>
+                    <span>সক্রিয় (Active) রাখবেন</span>
+                </label>
+                <label class="checkbox-group">
+                    <input type="checkbox" id="modal-link-default">
+                    <span>ডিফল্ট রিডাইরেক্ট লিংক হিসেবে সেট করুন</span>
+                </label>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closeLinkModal()">বাতিল</button>
+                    <button type="submit" class="btn btn-primary">সংরক্ষণ করুন</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- FIREBASE SDK & APPLICATION LOGIC -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+        import { 
+            getAuth, 
+            signInWithEmailAndPassword, 
+            signOut, 
+            sendPasswordResetEmail, 
+            onAuthStateChanged 
+        } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+        import { 
+            getFirestore, 
+            collection, 
+            doc, 
+            getDocs, 
+            addDoc, 
+            updateDoc, 
+            deleteDoc, 
+            query, 
+            where, 
+            orderBy, 
+            limit, 
+            writeBatch, 
+            serverTimestamp,
+            onSnapshot 
+        } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+        // Firebase Configuration
+        const firebaseConfig = {
+  apiKey: "AIzaSyBUhNhYvuo_FTvZ5RZR6Gn-4hsUY21S0XE",
+  authDomain: "ghotimarket.firebaseapp.com",
+  databaseURL: "https://ghotimarket-default-rtdb.firebaseio.com",
+  projectId: "ghotimarket",
+  storageBucket: "ghotimarket.firebasestorage.app",
+  messagingSenderId: "481257644093",
+  appId: "1:481257644093:web:0dfc3699d6b3c86afeca54",
+  measurementId: "G-4SR8V2EKC1"
+};
+        const ADMIN_EMAIL = "support@ghotimarket.com";
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        // Global State Variables
+        let linksList = [];
+        let viewsList = [];
+        let unsubscribeLinks = null;
+        let unsubscribeViews = null;
+
+        // Security Utility: XSS Prevention
+        function escapeHTML(str) {
+            if (!str) return '';
+            return String(str)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
+
+        // Toast Notification System
+        window.showToast = function(message, type = 'success') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = `toast toast-${type}`;
+            toast.innerText = message;
+            container.appendChild(toast);
+            setTimeout(() => toast.remove(), 4000);
+        };
+
+        // Date Helpers for Asia/Dhaka Timezone
+        function getBDTimestamps() {
+            const now = new Date();
+            // Create date object adjusted for Asia/Dhaka timezone
+            const bdDateString = now.toLocaleString("en-US", { timeZone: "Asia/Dhaka" });
+            const bdNow = new Date(bdDateString);
+            
+            // Start of Today in BD
+            const todayStart = new Date(bdNow.getFullYear(), bdNow.getMonth(), bdNow.getDate()).getTime();
+            // Start of 7 Days Ago in BD
+            const sevenDaysAgoStart = todayStart - (6 * 24 * 60 * 60 * 1000);
+
+            return { todayStart, sevenDaysAgoStart };
+        }
+
+        function formatBDTime(timestamp) {
+            if (!timestamp) return 'N/A';
+            const dateMillis = timestamp.toMillis ? timestamp.toMillis() : timestamp;
+            if (!dateMillis) return 'N/A';
+            return new Date(dateMillis).toLocaleString('bn-BD', {
+                timeZone: 'Asia/Dhaka',
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
+            });
+        }
+
+        // --- AUTHENTICATION FLOW ---
+
+        onAuthStateChanged(auth, (user) => {
+            if (user && user.email === ADMIN_EMAIL) {
+                document.getElementById('auth-screen').classList.add('hidden');
+                document.getElementById('app-screen').classList.remove('hidden');
+                document.getElementById('user-email-display').innerText = user.email;
+                initDashboardData();
+            } else {
+                if (user && user.email !== ADMIN_EMAIL) {
+                    showToast("আপনার এই এডমিন প্যানেলে অ্যাক্সেস নেই!", "error");
+                    signOut(auth);
+                }
+                document.getElementById('auth-screen').classList.remove('hidden');
+                document.getElementById('app-screen').classList.add('hidden');
+                cleanupSubscriptions();
+            }
+        });
+
+        // Login Submit
+        document.getElementById('login-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('login-email').value.trim();
+            const password = document.getElementById('login-password').value;
+
+            if (email !== ADMIN_EMAIL) {
+                showToast("অনুমোদিত এডমিন ইমেইল ব্যবহার করুন!", "error");
+                return;
+            }
+
+            try {
+                await signInWithEmailAndPassword(auth, email, password);
+                showToast("সফলভাবে লগইন হয়েছে");
+            } catch (err) {
+                showToast("লগইন ব্যর্থ: " + err.message, "error");
+            }
+        });
+
+        // Forgot Password
+        document.getElementById('btn-forgot-pw').addEventListener('click', async () => {
+            const email = document.getElementById('login-email').value.trim();
+            if (!email) {
+                showToast("অনুগ্রহ করে আপনার ইমেইল এড্রেস প্রদান করুন", "error");
+                return;
+            }
+            try {
+                await sendPasswordResetEmail(auth, email);
+                showToast("পাসওয়ার্ড রিসেট ইমেইল পাঠানো হয়েছে!");
+            } catch (err) {
+                showToast("রিসেট লিংক পাঠাতে ব্যর্থ: " + err.message, "error");
+            }
+        });
+
+        // Logout Button
+        document.getElementById('btn-logout').addEventListener('click', () => {
+            signOut(auth);
+        });
+
+        // --- REALTIME DATA LISTENERS & STATS ---
+
+        function cleanupSubscriptions() {
+            if (unsubscribeLinks) unsubscribeLinks();
+            if (unsubscribeViews) unsubscribeViews();
+        }
+
+        function initDashboardData() {
+            // Realtime Listener for Links
+            const linksQuery = query(collection(db, "links"), orderBy("createdAt", "desc"));
+            unsubscribeLinks = onSnapshot(linksQuery, (snapshot) => {
+                linksList = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                renderLinksTable();
+                calculateStats();
+                renderAnalyticsTable();
+            }, (err) => {
+                showToast("লিংক ডাটা লোড করতে সমস্যা: " + err.message, "error");
+            });
+
+            // Realtime Listener for Recent Views (Limit 50 for analytics and logs)
+            const viewsQuery = query(collection(db, "views"), orderBy("timestamp", "desc"), limit(50));
+            unsubscribeViews = onSnapshot(viewsQuery, (snapshot) => {
+                viewsList = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                renderViewsTables();
+                calculateStats();
+                renderAnalyticsTable();
+            }, (err) => {
+                showToast("ভিউ ডাটা লোড করতে সমস্যা: " + err.message, "error");
+            });
+        }
+
+        function calculateStats() {
+            const { todayStart, sevenDaysAgoStart } = getBDTimestamps();
+
+            // Total Links Count
+            document.getElementById('stat-total-links').innerText = linksList.length;
+
+            // Active Links Count
+            const activeCount = linksList.filter(l => l.active).length;
+            document.getElementById('stat-active-links').innerText = activeCount;
+
+            // Total Views Sum
+            const totalViewsSum = linksList.reduce((acc, l) => acc + (l.totalViews || 0), 0);
+            document.getElementById('stat-total-views').innerText = totalViewsSum;
+
+            // Filter views using BD timezone calculations
+            let todayCount = 0;
+            let sevenDaysCount = 0;
+
+            viewsList.forEach(v => {
+                const ts = v.timestamp?.toMillis ? v.timestamp.toMillis() : 0;
+                if (ts >= todayStart) todayCount++;
+                if (ts >= sevenDaysAgoStart) sevenDaysCount++;
+            });
+
+            document.getElementById('stat-today-views').innerText = todayCount;
+            document.getElementById('stat-7days-views').innerText = sevenDaysCount;
+        }
+
+        // --- RENDER TABLES ---
+
+        function renderLinksTable() {
+            const tbody = document.getElementById('links-tbody');
+            const searchVal = document.getElementById('link-search').value.toLowerCase();
+            const filterVal = document.getElementById('link-filter').value;
+
+            const filtered = linksList.filter(item => {
+                const matchesSearch = (item.title || '').toLowerCase().includes(searchVal) || 
+                                      (item.url || '').toLowerCase().includes(searchVal);
+                const matchesFilter = filterVal === 'all' ? true : 
+                                     filterVal === 'active' ? item.active : !item.active;
+                return matchesSearch && matchesFilter;
+            });
+
+            if (filtered.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;">কোনো লিংক পাওয়া যায়নি।</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = filtered.map(item => `
+                <tr>
+                    <td><strong>${escapeHTML(item.title)}</strong></td>
+                    <td><a href="${escapeHTML(item.url)}" target="_blank" style="color:var(--accent-blue); text-decoration:none;">${escapeHTML(item.url)}</a></td>
+                    <td><span class="badge ${item.active ? 'badge-active' : 'badge-inactive'}">${item.active ? 'সক্রিয়' : 'নিষ্ক্রিয়'}</span></td>
+                    <td>${item.isDefault ? '<span class="badge badge-default">ডিফল্ট</span>' : '-'}</td>
+                    <td>${item.totalViews || 0}</td>
+                    <td class="actions-cell">
+                        <button class="btn btn-secondary btn-sm" onclick="openLinkModal('${item.id}')">এডিট</button>
+                        <button class="btn btn-secondary btn-sm" onclick="toggleLinkActive('${item.id}', ${!item.active})">${item.active ? 'নিষ্ক্রিয় করুন' : 'সক্রিয় করুন'}</button>
+                        ${!item.isDefault ? `<button class="btn btn-primary btn-sm" onclick="setAsDefault('${item.id}')">Make Default</button>` : ''}
+                        <button class="btn btn-danger btn-sm" onclick="deleteLink('${item.id}', ${item.isDefault})">মুছুন</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function renderViewsTables() {
+            const dashTbody = document.getElementById('dashboard-views-tbody');
+            const fullTbody = document.getElementById('full-views-tbody');
+
+            if (viewsList.length === 0) {
+                const emptyRow = `<tr><td colspan="4" style="text-align:center;">কোনো ভিউ রেকর্ড পাওয়া যায়নি।</td></tr>`;
+                dashTbody.innerHTML = emptyRow;
+                fullTbody.innerHTML = emptyRow;
+                return;
+            }
+
+            const rowsHtml = viewsList.map(v => `
+                <tr>
+                    <td><strong>${escapeHTML(v.linkTitle || 'N/A')}</strong></td>
+                    <td>${formatBDTime(v.timestamp)}</td>
+                    <td>${escapeHTML(v.referrer || 'Direct / None')}</td>
+                    <td style="font-size:0.8rem; color:var(--text-muted); max-width:250px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="${escapeHTML(v.userAgent)}">${escapeHTML(v.userAgent || 'N/A')}</td>
+                </tr>
+            `).join('');
+
+            dashTbody.innerHTML = viewsList.slice(0, 15).map(v => `
+                <tr>
+                    <td><strong>${escapeHTML(v.linkTitle || 'N/A')}</strong></td>
+                    <td>${formatBDTime(v.timestamp)}</td>
+                    <td>${escapeHTML(v.referrer || 'Direct / None')}</td>
+                    <td style="font-size:0.8rem; color:var(--text-muted); max-width:200px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${escapeHTML(v.userAgent || 'N/A')}</td>
+                </tr>
+            `).join('');
+
+            fullTbody.innerHTML = rowsHtml;
+        }
+
+        function renderAnalyticsTable() {
+            const tbody = document.getElementById('analytics-tbody');
+            const { todayStart, sevenDaysAgoStart } = getBDTimestamps();
+
+            if (linksList.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;">কোনো ডাটা পাওয়া যায়নি।</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = linksList.map(link => {
+                let todayViews = 0;
+                let last7DaysViews = 0;
+
+                viewsList.forEach(v => {
+                    if (v.linkId === link.id) {
+                        const ts = v.timestamp?.toMillis ? v.timestamp.toMillis() : 0;
+                        if (ts >= todayStart) todayViews++;
+                        if (ts >= sevenDaysAgoStart) last7DaysViews++;
+                    }
+                });
+
+                return `
+                    <tr>
+                        <td><strong>${escapeHTML(link.title)}</strong> ${link.isDefault ? '<span class="badge badge-default">Default</span>' : ''}</td>
+                        <td><a href="${escapeHTML(link.url)}" target="_blank" style="color:var(--accent-blue);">${escapeHTML(link.url)}</a></td>
+                        <td><strong>${link.totalViews || 0}</strong></td>
+                        <td style="color:var(--accent-amber);">${todayViews}</td>
+                        <td>${last7DaysViews}</td>
+                        <td><span class="badge ${link.active ? 'badge-active' : 'badge-inactive'}">${link.active ? 'Active' : 'Inactive'}</span></td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        // --- LINK ACTIONS (CRUD & DEFAULT MANAGEMENT) ---
+
+        // Modal Open/Close
+        window.openLinkModal = function(id = null) {
+            const modal = document.getElementById('link-modal');
+            const titleEl = document.getElementById('modal-title');
+            const form = document.getElementById('link-form');
+            form.reset();
+
+            if (id) {
+                const link = linksList.find(l => l.id === id);
+                if (link) {
+                    titleEl.innerText = "লিংক সম্পাদনা করুন";
+                    document.getElementById('modal-link-id').value = link.id;
+                    document.getElementById('modal-link-title').value = link.title;
+                    document.getElementById('modal-link-url').value = link.url;
+                    document.getElementById('modal-link-active').checked = link.active;
+                    document.getElementById('modal-link-default').checked = link.isDefault;
+                }
+            } else {
+                titleEl.innerText = "নতুন লিংক তৈরি করুন";
+                document.getElementById('modal-link-id').value = '';
+                document.getElementById('modal-link-active').checked = true;
+                document.getElementById('modal-link-default').checked = false;
+            }
+
+            modal.classList.remove('hidden');
+        };
+
+        window.closeLinkModal = function() {
+            document.getElementById('link-modal').classList.add('hidden');
+        };
+
+        // Form Submit Create / Update
+        document.getElementById('link-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const id = document.getElementById('modal-link-id').value;
+            const title = document.getElementById('modal-link-title').value.trim();
+            const url = document.getElementById('modal-link-url').value.trim();
+            const active = document.getElementById('modal-link-active').checked;
+            const isDefault = document.getElementById('modal-link-default').checked;
+
+            if (!url.startsWith('http://') && !url.startsWith('https://')) {
+                showToast("URL অবশ্যই http:// অথবা https:// দিয়ে শুরু হতে হবে!", "error");
+                return;
+            }
+
+            try {
+                const batch = writeBatch(db);
+
+                // If setting as default, set all other default links to false
+                if (isDefault) {
+                    linksList.forEach(l => {
+                        if (l.isDefault && l.id !== id) {
+                            batch.update(doc(db, "links", l.id), { isDefault: false });
+                        }
+                    });
+                }
+
+                if (id) {
+                    // Update Existing
+                    const linkRef = doc(db, "links", id);
+                    batch.update(linkRef, {
+                        title: title,
+                        url: url,
+                        active: active,
+                        isDefault: isDefault,
+                        updatedAt: serverTimestamp()
+                    });
+                } else {
+                    // Create New
+                    const newRef = doc(collection(db, "links"));
+                    batch.set(newRef, {
+                        title: title,
+                        url: url,
+                        active: active,
+                        isDefault: isDefault,
+                        totalViews: 0,
+                        createdAt: serverTimestamp(),
+                        updatedAt: serverTimestamp()
+                    });
+                }
+
+                await batch.commit();
+                showToast(id ? "লিংক আপডেট হয়েছে" : "নতুন লিংক তৈরি হয়েছে");
+                closeLinkModal();
+
+            } catch (err) {
+                showToast("অপারেশন ব্যর্থ: " + err.message, "error");
+            }
+        });
+
+        // Toggle Active/Inactive
+        window.toggleLinkActive = async function(id, newActiveState) {
+            try {
+                await updateDoc(doc(db, "links", id), {
+                    active: newActiveState,
+                    updatedAt: serverTimestamp()
+                });
+                showToast("লিংক স্ট্যাটাস আপডেট হয়েছে");
+            } catch (err) {
+                showToast("আ্যপডেট ব্যর্থ: " + err.message, "error");
+            }
+        };
+
+        // Set Default Link via WriteBatch
+        window.setAsDefault = async function(id) {
+            try {
+                const batch = writeBatch(db);
+
+                // Clear existing defaults
+                linksList.forEach(l => {
+                    if (l.isDefault) {
+                        batch.update(doc(db, "links", l.id), { isDefault: false });
+                    }
+                });
+
+                // Set selected link as active and default
+                batch.update(doc(db, "links", id), {
+                    isDefault: true,
+                    active: true,
+                    updatedAt: serverTimestamp()
+                });
+
+                await batch.commit();
+                showToast("ডিফল্ট লিংক আপডেট হয়েছে");
+            } catch (err) {
+                showToast("ডিফল্ট লিংক সেটিং ব্যর্থ: " + err.message, "error");
+            }
+        };
+
+        // Delete Link (Prevents deleting default link)
+        window.deleteLink = async function(id, isDefault) {
+            if (isDefault) {
+                showToast("ডিফল্ট লিংক সরাসরি ডিলেট করা যাবে না! প্রথমে অন্য লিংক ডিফল্ট করুন।", "error");
+                return;
+            }
+
+            if (!confirm("আপনি কি নিশ্চিত এই লিংকটি মুছে ফেলতে চান?")) return;
+
+            try {
+                await deleteDoc(doc(db, "links", id));
+                showToast("লিংক সফলভাবে মুছে ফেলা হয়েছে");
+            } catch (err) {
+                showToast("ডিলেট করতে সমস্যা হয়েছে: " + err.message, "error");
+            }
+        };
+
+        // Tab Navigation Event Listeners
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const targetTab = e.target.getAttribute('data-tab');
+
+                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(c => c.classList.add('hidden'));
+
+                e.target.classList.add('active');
+                document.getElementById(`tab-${targetTab}`).classList.remove('hidden');
+            });
+        });
+
+        // Search and Filter Listeners
+        document.getElementById('link-search').addEventListener('input', renderLinksTable);
+        document.getElementById('link-filter').addEventListener('change', renderLinksTable);
+    </script>
+</body>
+</html>
