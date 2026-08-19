@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Product Management - Popular Collection</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Firebase SDKs (Compat Version) -->
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+</head>
+<body class="bg-slate-900 text-slate-100 min-h-screen font-sans antialiased">
+
+  <!-- ১. অ্যাডমিন লগইন সেকশন -->
+  <div id="loginSection" class="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900">
+    <div class="w-full max-w-md bg-slate-800/80 backdrop-blur-md p-8 rounded-2xl border border-slate-700/50 shadow-2xl">
+      <div class="text-center mb-6">
+        <div class="w-14 h-14 bg-indigo-600/20 text-indigo-400 rounded-2xl flex items-center justify-center mx-auto mb-3 border border-indigo-500/30">
+          <i class="fa-solid fa-lock text-2xl"></i>
+        </div>
+        <h2 class="text-2xl font-bold text-white">অ্যাডমিন লগইন</h2>
+        <p class="text-xs text-slate-400 mt-1">Popular Collection ড্যাশবোর্ডে প্রবেশ করতে লগইন করুন</p>
+      </div>
+      <form id="loginForm" class="space-y-4">
+        <div>
+          <label class="block text-xs font-semibold uppercase text-slate-400 mb-1">ইমেইল এড্রেস</label>
+          <div class="relative">
+            <i class="fa-solid fa-envelope absolute left-3 top-3 text-slate-500"></i>
+            <input type="email" id="loginEmail" required placeholder="admin@example.com" class="w-full pl-10 pr-4 py-2.5 bg-slate-900/60 border border-slate-700 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm outline-none transition">
+          </div>
+        </div>
+        <div>
+          <label class="block text-xs font-semibold uppercase text-slate-400 mb-1">পাসওয়ার্ড</label>
+          <div class="relative">
+            <i class="fa-solid fa-key absolute left-3 top-3 text-slate-500"></i>
+            <input type="password" id="loginPassword" required placeholder="••••••••" class="w-full pl-10 pr-4 py-2.5 bg-slate-900/60 border border-slate-700 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm outline-none transition">
+          </div>
+        </div>
+        <button type="submit" id="loginBtn" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-semibold py-2.5 rounded-xl shadow-lg shadow-indigo-600/30 transition duration-200">
+          লগইন করুন
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- ২. অ্যাডমিন ড্যাশবোর্ড সেকশন -->
+  <div id="adminSection" class="hidden min-h-screen flex flex-col">
+    <!-- নেভিগেশন বার -->
+    <header class="bg-slate-800/90 border-b border-slate-700/80 sticky top-0 z-30 backdrop-blur-md">
+      <div class="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
+        <div class="flex items-center space-x-3">
+          <div class="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center font-bold text-white shadow-md">
+            <i class="fa-solid fa-store"></i>
+          </div>
+          <div>
+            <h1 class="font-bold text-lg text-white">Popular Collection</h1>
+            <p class="text-xs text-slate-400">প্রোডাক্ট ম্যানেজমেন্ট প্যানেল</p>
+          </div>
+        </div>
+        <div class="flex items-center gap-4">
+          <span id="userBadge" class="text-xs bg-slate-700/60 border border-slate-600 px-3 py-1.5 rounded-full text-slate-300 hidden sm:inline-block"></span>
+          <button id="logoutBtn" class="bg-rose-600/20 hover:bg-rose-600 border border-rose-500/30 text-rose-300 hover:text-white px-4 py-1.5 rounded-xl text-xs font-semibold transition flex items-center gap-2">
+            <i class="fa-solid fa-right-from-bracket"></i> লগআউট
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- মূল কন্টেন্ট গ্রিড -->
+    <main class="max-w-7xl mx-auto w-full px-4 py-6 flex-1 grid grid-cols-1 lg:grid-cols-12 gap-6">
+      
+      <!-- বাম পাশ: ফর্ম (Create / Update) -->
+      <section class="lg:col-span-5">
+        <div class="bg-slate-800/60 border border-slate-700/60 rounded-2xl p-5 shadow-xl sticky top-20">
+          <div class="flex justify-between items-center mb-4 pb-3 border-b border-slate-700/50">
+            <h2 id="formTitle" class="text-lg font-bold text-white flex items-center gap-2">
+              <i class="fa-solid fa-plus-circle text-indigo-400"></i> নতুন পণ্য যুক্ত করুন
+            </h2>
+            <button id="cancelEditBtn" class="hidden text-xs text-amber-400 hover:text-amber-300 underline font-medium">
+              বাতিল করুন
+            </button>
+          </div>
+
+          <form id="productForm" class="space-y-4">
+            <div>
+              <label class="block text-xs font-semibold text-slate-300 mb-1">পণ্যের নাম (Name) *</label>
+              <input type="text" id="pName" placeholder="যেমন: Mens Premium T Shirt" required class="w-full bg-slate-900/80 border border-slate-700 rounded-xl px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 outline-none text-white">
+            </div>
+
+            <div class="grid grid-cols-2 gap-3">
+              <div>
+                <label class="block text-xs font-semibold text-slate-300 mb-1">বর্তমান দাম (Price) *</label>
+                <input type="number" id="pPrice" placeholder="450" required class="w-full bg-slate-900/80 border border-slate-700 rounded-xl px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 outline-none text-white">
+              </div>
+              <div>
+                <label class="block text-xs font-semibold text-slate-300 mb-1">আগের দাম (Old Price)</label>
+                <input type="number" id="pOldPrice" placeholder="600" class="w-full bg-slate-900/80 border border-slate-700 rounded-xl px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 outline-none text-white">
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-xs font-semibold text-slate-300 mb-1">ইউআরএল স্ল্যাগ (Slug) *</label>
+              <input type="text" id="pSlug" placeholder="mens-premium-t-shirt" required class="w-full bg-slate-900/80 border border-slate-700 rounded-xl px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 outline-none text-white font-mono">
+              <span class="text-[10px] text-slate-500">পণ্যের নাম লিখলে এটি নিজে থেকেই তৈরি হবে বা ম্যানুয়ালি পরিবর্তন করতে পারবেন।</span>
+            </div>
+
+            <div>
+              <label class="block text-xs font-semibold text-slate-300 mb-1">ছবির লিংক (Images - কমা দিয়ে একাধিক দিন) *</label>
+              <textarea id="pImages" rows="3" placeholder="https://i.ibb.co/image1.webp, https://i.ibb.co/image2.webp" required class="w-full bg-slate-900/80 border border-slate-700 rounded-xl p-2.5 text-xs font-mono focus:ring-2 focus:ring-indigo-500 outline-none text-white resize-none"></textarea>
+            </div>
+
+            <div>
+              <label class="block text-xs font-semibold text-slate-300 mb-1">কিওয়ার্ডস (Keywords - কমা দিয়ে আলাদা করুন)</label>
+              <input type="text" id="pKeywords" placeholder="গেঞ্জি, tshirt, mens wear" class="w-full bg-slate-900/80 border border-slate-700 rounded-xl px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 outline-none text-white">
+            </div>
+
+            <div class="flex items-center justify-between p-3 bg-slate-900/40 rounded-xl border border-slate-700/50">
+              <span class="text-xs font-medium text-slate-300">স্ট্যাটাস (Active)</span>
+              <label class="relative inline-flex items-center cursor-pointer">
+                <input type="checkbox" id="pActive" checked class="sr-only peer">
+                <div class="w-9 h-5 bg-slate-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-emerald-500"></div>
+              </label>
+            </div>
+
+            <button type="submit" id="submitBtn" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-semibold py-2.5 rounded-xl shadow-lg transition duration-200 text-sm flex items-center justify-center gap-2">
+              <i class="fa-solid fa-cloud-arrow-up"></i> <span id="btnText">প্রোডাক্ট সেভ করুন</span>
+            </button>
+          </form>
+        </div>
+      </section>
+
+      <!-- ডান পাশ: প্রোডাক্ট লিস্ট টেবিল -->
+      <section class="lg:col-span-7">
+        <div class="bg-slate-800/60 border border-slate-700/60 rounded-2xl p-5 shadow-xl">
+          <div class="flex justify-between items-center mb-4 pb-3 border-b border-slate-700/50">
+            <h2 class="text-lg font-bold text-white flex items-center gap-2">
+              <i class="fa-solid fa-boxes-stacked text-indigo-400"></i> সকল প্রোডাক্টস (<span id="totalProducts">0</span>)
+            </h2>
+            <div class="relative w-40 sm:w-52">
+              <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-xs text-slate-500"></i>
+              <input type="text" id="searchBox" placeholder="খুঁজুন..." class="w-full bg-slate-900/80 border border-slate-700 rounded-xl pl-8 pr-3 py-1.5 text-xs focus:ring-1 focus:ring-indigo-500 outline-none text-white">
+            </div>
+          </div>
+
+          <!-- প্রোডাক্টস লোডার -->
+          <div id="loadingState" class="py-12 text-center text-slate-400">
+            <i class="fa-solid fa-circle-notch fa-spin text-2xl text-indigo-400 mb-2"></i>
+            <p class="text-xs">ডেটা লোড হচ্ছে...</p>
+          </div>
+
+          <!-- খালি অবস্থা -->
+          <div id="emptyState" class="hidden py-12 text-center text-slate-500">
+            <i class="fa-solid fa-box-open text-4xl mb-3 opacity-40"></i>
+            <p class="text-sm">কোনো পণ্য পাওয়া যায়নি!</p>
+          </div>
+
+          <!-- প্রোডাক্টস টেবিল -->
+          <div id="tableContainer" class="hidden overflow-x-auto">
+            <table class="w-full text-left text-xs text-slate-300">
+              <thead class="bg-slate-900/60 text-slate-400 uppercase font-semibold border-b border-slate-700/60">
+                <tr>
+                  <th class="p-3">ছবি</th>
+                  <th class="p-3">পণ্যের বিবরণ</th>
+                  <th class="p-3">মূল্য</th>
+                  <th class="p-3">স্ট্যাটাস</th>
+                  <th class="p-3 text-right">অ্যাকশন</th>
+                </tr>
+              </thead>
+              <tbody id="productsTableBody" class="divide-y divide-slate-700/40">
+                <!-- ডায়নামিক সারি যুক্ত হবে -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- নোটিফিকেশন টোস্ট -->
+  <div id="toast" class="fixed bottom-5 right-5 transform translate-y-20 opacity-0 transition-all duration-300 bg-slate-800 text-white border border-slate-700 px-4 py-3 rounded-xl shadow-2xl flex items-center gap-3 z-50">
+    <i id="toastIcon" class="fa-solid fa-check-circle text-emerald-400 text-lg"></i>
+    <span id="toastMsg" class="text-xs font-medium">বার্তা</span>
+  </div>
+
+  <script>
+    // ফায়ারবেস কনফিগারেশন
+    const firebaseConfig = {
+      apiKey: "AIzaSyBUhNhYvuo_FTvZ5RZR6Gn-4hsUY21S0XE",
+      authDomain: "ghotimarket.firebaseapp.com",
+      databaseURL: "https://ghotimarket-default-rtdb.firebaseio.com",
+      projectId: "ghotimarket",
+      storageBucket: "ghotimarket.firebasestorage.app",
+      messagingSenderId: "481257644093",
+      appId: "1:481257644093:web:0dfc3699d6b3c86afeca54",
+      measurementId: "G-4SR8V2EKC1"
+    };
+
+    // ফায়ারবেস সার্ভিস ইনিশিয়ালাইজেশন
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+
+    // স্টেট ভ্যারিয়েবল
+    let allProducts = [];
+    let isEditMode = false;
+    let currentEditSlug = null;
+
+    // স্ল্যাগ (Slug) জেনারেটর হেলপার ফাংশন
+    function createSlug(text) {
+      return text
+        .toString()
+        .toLowerCase()
+        .trim()
+        .replace(/\s+/g, '-')           // স্পেসগুলোকে হাইফেন (-) এ রূপান্তর
+        .replace(/[^\w\u0980-\u09FF-]+/g, '') // স্পেশাল ক্যারেক্টার বাদ দিয়ে বাংলা ও ইংরেজি অক্ষ রাখা
+        .replace(/--+/g, '-');          // একাধিক হাইফেন একসাথে থাকলে একটি করা
+    }
+
+    // পণ্যের নাম টাইপ করার সাথে সাথে অটো স্ল্যাগ তৈরি হবে
+    document.getElementById('pName').addEventListener('input', (e) => {
+      if (!isEditMode) {
+        document.getElementById('pSlug').value = createSlug(e.target.value);
+      }
+    });
+
+    // স্ল্যাগ ফিল্ডে টাইপ করার সময়ও ক্লিন ফরম্যাটিং নিশ্চিত করা
+    document.getElementById('pSlug').addEventListener('blur', (e) => {
+      e.target.value = createSlug(e.target.value);
+    });
+
+    // ১. অথেন্টিকেশন স্টেট ফিল্টার
+    auth.onAuthStateChanged((user) => {
+      if (user) {
+        document.getElementById('loginSection').classList.add('hidden');
+        document.getElementById('adminSection').classList.remove('hidden');
+        document.getElementById('userBadge').innerText = user.email;
+        loadProductsRealtime();
+      } else {
+        document.getElementById('loginSection').classList.remove('hidden');
+        document.getElementById('adminSection').classList.add('hidden');
+      }
+    });
+
+    // ২. লগইন প্রসেস
+    document.getElementById('loginForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const email = document.getElementById('loginEmail').value;
+      const password = document.getElementById('loginPassword').value;
+      const btn = document.getElementById('loginBtn');
+
+      btn.disabled = true;
+      btn.innerText = 'যাচাই করা হচ্ছে...';
+
+      try {
+        await auth.signInWithEmailAndPassword(email, password);
+        showToast('সফলভাবে লগইন হয়েছে!', 'success');
+      } catch (error) {
+        showToast('লগইন ত্রুটি: ' + error.message, 'error');
+      } finally {
+        btn.disabled = false;
+        btn.innerText = 'লগইন করুন';
+      }
+    });
+
+    // ৩. লগআউট
+    document.getElementById('logoutBtn').addEventListener('click', () => {
+      auth.signOut();
+      showToast('লগআউট করা হয়েছে', 'info');
+    });
+
+    // ৪. রিয়েল-টাইম প্রোডাক্ট লিস্ট লোড
+    function loadProductsRealtime() {
+      db.collection('popular').onSnapshot((snapshot) => {
+        allProducts = [];
+        snapshot.forEach((doc) => {
+          allProducts.push({ id: doc.id, ...doc.data() });
+        });
+        
+        document.getElementById('loadingState').classList.add('hidden');
+        renderProductsTable(allProducts);
+      }, (error) => {
+        showToast('ডেটা লোড করতে সমস্যা: ' + error.message, 'error');
+      });
+    }
+
+    // ৫. টেবিল রেন্ডারিং
+    function renderProductsTable(products) {
+      const tbody = document.getElementById('productsTableBody');
+      const totalCount = document.getElementById('totalProducts');
+      const tableContainer = document.getElementById('tableContainer');
+      const emptyState = document.getElementById('emptyState');
+
+      tbody.innerHTML = '';
+      totalCount.innerText = products.length;
+
+      if (products.length === 0) {
+        tableContainer.classList.add('hidden');
+        emptyState.classList.remove('hidden');
+        return;
+      }
+
+      emptyState.classList.add('hidden');
+      tableContainer.classList.remove('hidden');
+
+      products.forEach((p) => {
+        const firstImg = (p.images && p.images.length > 0) ? p.images[0] : 'https://via.placeholder.com/50';
+        
+        const row = document.createElement('tr');
+        row.className = "hover:bg-slate-800/40 transition duration-150";
+        row.innerHTML = `
+          <td class="p-3">
+            <img src="${firstImg}" alt="${p.Name}" class="w-10 h-10 object-cover rounded-lg border border-slate-700" onerror="this.src='https://via.placeholder.com/50'">
+          </td>
+          <td class="p-3">
+            <div class="font-bold text-white text-sm">${p.Name || 'নামহীন পণ্য'}</div>
+            <div class="font-mono text-[10px] text-slate-400">Slug: ${p.slug || p.id}</div>
+          </td>
+          <td class="p-3">
+            <div class="font-semibold text-emerald-400">৳${p.price || 0}</div>
+            ${p.oldPrice ? `<div class="line-through text-[10px] text-slate-500">৳${p.oldPrice}</div>` : ''}
+          </td>
+          <td class="p-3">
+            <span class="px-2 py-0.5 rounded-full text-[10px] font-semibold ${p.active ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30' : 'bg-rose-500/20 text-rose-300 border border-rose-500/30'}">
+              ${p.active ? 'অ্যাক্টিভ' : 'ইনঅ্যাক্টিভ'}
+            </span>
+          </td>
+          <td class="p-3 text-right space-x-1">
+            <button onclick="editProduct('${p.id}')" class="p-1.5 bg-indigo-600/20 hover:bg-indigo-600 border border-indigo-500/30 text-indigo-300 hover:text-white rounded-lg transition" title="এডিট করুন">
+              <i class="fa-solid fa-pen-to-square"></i>
+            </button>
+            <button onclick="deleteProduct('${p.id}')" class="p-1.5 bg-rose-600/20 hover:bg-rose-600 border border-rose-500/30 text-rose-300 hover:text-white rounded-lg transition" title="ডিলিট করুন">
+              <i class="fa-solid fa-trash"></i>
+            </button>
+          </td>
+        `;
+        tbody.appendChild(row);
+      });
+    }
+
+    // ৬. সার্চ ফিল্টারিং
+    document.getElementById('searchBox').addEventListener('input', (e) => {
+      const term = e.target.value.toLowerCase();
+      const filtered = allProducts.filter(p => 
+        (p.Name && p.Name.toLowerCase().includes(term)) ||
+        (p.slug && p.slug.toLowerCase().includes(term)) ||
+        (p.keywords && p.keywords.some(k => k.toLowerCase().includes(term)))
+      );
+      renderProductsTable(filtered);
+    });
+
+    // ৭. প্রোডাক্ট ক্রিয়েট বা আপডেট সাবমিট
+    document.getElementById('productForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const submitBtn = document.getElementById('submitBtn');
+      const btnText = document.getElementById('btnText');
+      submitBtn.disabled = true;
+      btnText.innerText = 'প্রসেস হচ্ছে...';
+
+      try {
+        // স্ল্যাগ ইনপুট ফিল্ড থেকে নেওয়া এবং ফরমেট করা
+        let rawSlug = document.getElementById('pSlug').value.trim();
+        if (!rawSlug) {
+          rawSlug = createSlug(document.getElementById('pName').value);
+        } else {
+          rawSlug = createSlug(rawSlug);
+        }
+
+        const imagesArr = document.getElementById('pImages').value.split(',').map(i => i.trim()).filter(i => i !== "");
+        const keywordsArr = document.getElementById('pKeywords').value.split(',').map(k => k.trim()).filter(k => k !== "");
+
+        // ফায়ারস্টোরে সেভ করার পে-লোড
+        const productPayload = {
+          Name: document.getElementById('pName').value.trim(),
+          price: Number(document.getElementById('pPrice').value),
+          oldPrice: Number(document.getElementById('pOldPrice').value) || 0,
+          images: imagesArr,
+          slug: rawSlug, // ডাটার মধ্যে slug সেভ হচ্ছে
+          active: document.getElementById('pActive').checked,
+          keywords: keywordsArr
+        };
+
+        if (isEditMode && currentEditSlug) {
+          // আপডেট অপারেশন (বর্তমান ডকুমেন্ট আইডিতে মার্জ করা)
+          await db.collection('popular').doc(currentEditSlug).set(productPayload, { merge: true });
+          showToast('প্রোডাক্ট সফলভাবে আপডেট হয়েছে!', 'success');
+        } else {
+          // নতুন ক্রিয়েট (স্ল্যাগকে ফায়ারস্টোর ডকুমেন্ট আইডি বানিয়ে সেভ করা)
+          await db.collection('popular').doc(rawSlug).set(productPayload);
+          showToast('নতুন প্রোডাক্ট যুক্ত হয়েছে!', 'success');
+        }
+
+        resetForm();
+
+      } catch (error) {
+        showToast('ত্রুটি: ' + error.message, 'error');
+      } finally {
+        submitBtn.disabled = false;
+        btnText.innerText = isEditMode ? 'আপডেট করুন' : 'প্রোডাক্ট সেভ করুন';
+      }
+    });
+
+    // ৮. এডিট মোডে রূপান্তর
+    window.editProduct = function(docId) {
+      const product = allProducts.find(p => p.id === docId);
+      if (!product) return;
+
+      isEditMode = true;
+      currentEditSlug = docId;
+
+      document.getElementById('pName').value = product.Name || '';
+      document.getElementById('pPrice').value = product.price || '';
+      document.getElementById('pOldPrice').value = product.oldPrice || '';
+      document.getElementById('pSlug').value = product.slug || docId;
+      document.getElementById('pSlug').disabled = true; // এডিট করার সময় আইডি পরিবর্তন রোধ করা হলো
+      document.getElementById('pImages').value = (product.images || []).join(', ');
+      document.getElementById('pKeywords').value = (product.keywords || []).join(', ');
+      document.getElementById('pActive').checked = product.active !== false;
+
+      // UI পরিবর্তন
+      document.getElementById('formTitle').innerHTML = `<i class="fa-solid fa-pen-to-square text-amber-400"></i> প্রোডাক্ট আপডেট করুন`;
+      document.getElementById('btnText').innerText = 'আপডেট করুন';
+      document.getElementById('cancelEditBtn').classList.remove('hidden');
+
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
+
+    // ৯. এডিট বাতিলকরণ
+    document.getElementById('cancelEditBtn').addEventListener('click', resetForm);
+
+    function resetForm() {
+      isEditMode = false;
+      currentEditSlug = null;
+      document.getElementById('productForm').reset();
+      document.getElementById('pSlug').disabled = false;
+      document.getElementById('pActive').checked = true;
+
+      document.getElementById('formTitle').innerHTML = `<i class="fa-solid fa-plus-circle text-indigo-400"></i> নতুন পণ্য যুক্ত করুন`;
+      document.getElementById('btnText').innerText = 'প্রোডাক্ট সেভ করুন';
+      document.getElementById('cancelEditBtn').classList.add('hidden');
+    }
+
+    // ১০. প্রোডাক্ট ডিলিটকরণ
+    window.deleteProduct = async function(docId) {
+      if (!confirm('আপনি কি নিশ্চিত যে এই প্রোডাক্টটি ডিলিট করতে চান?')) return;
+
+      try {
+        await db.collection('popular').doc(docId).delete();
+        showToast('প্রোডাক্ট সফলভাবে ডিলিট করা হয়েছে!', 'info');
+        if (isEditMode && currentEditSlug === docId) resetForm();
+      } catch (error) {
+        showToast('ডিলিট করতে সমস্যা: ' + error.message, 'error');
+      }
+    };
+
+    // ১১. টোস্ট নোটিফিকেশন প্রদর্শন
+    function showToast(msg, type = 'success') {
+      const toast = document.getElementById('toast');
+      const toastMsg = document.getElementById('toastMsg');
+      const toastIcon = document.getElementById('toastIcon');
+
+      toastMsg.innerText = msg;
+
+      if (type === 'success') {
+        toastIcon.className = "fa-solid fa-circle-check text-emerald-400 text-lg";
+      } else if (type === 'error') {
+        toastIcon.className = "fa-solid fa-triangle-exclamation text-rose-400 text-lg";
+      } else {
+        toastIcon.className = "fa-solid fa-circle-info text-sky-400 text-lg";
+      }
+
+      toast.classList.remove('translate-y-20', 'opacity-0');
+      toast.classList.add('translate-y-0', 'opacity-100');
+
+      setTimeout(() => {
+        toast.classList.remove('translate-y-0', 'opacity-100');
+        toast.classList.add('translate-y-20', 'opacity-0');
+      }, 3500);
+    }
+  </script>
+</body>
+</html>
