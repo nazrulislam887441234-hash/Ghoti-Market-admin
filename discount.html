@@ -1,0 +1,785 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ghoti Market Admin - Old Price Manager</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Hind Siliguri', 'Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 9999px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans min-h-screen antialiased selection:bg-indigo-500 selection:text-white">
+
+    <!-- TOP HEADER -->
+    <header class="bg-slate-900/95 backdrop-blur-md text-white shadow-lg sticky top-0 z-30 border-b border-slate-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 py-3.5 flex justify-between items-center">
+            <div class="flex items-center space-x-3">
+                <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-indigo-500 via-indigo-600 to-violet-500 flex items-center justify-center shadow-md shadow-indigo-500/20">
+                    <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 11h14l1 12H4L5 11z"/>
+                    </svg>
+                </div>
+                <div>
+                    <h1 class="text-lg font-bold tracking-tight text-white flex items-center gap-2">
+                        ঘটি মার্কেট অ্যাডমিন
+                        <span class="bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 text-[11px] font-semibold px-2 py-0.5 rounded-full">v2.0 Pro</span>
+                    </h1>
+                </div>
+            </div>
+            <div id="userInfo" class="hidden flex items-center space-x-4">
+                <div class="hidden sm:flex items-center gap-2 bg-slate-800/80 px-3 py-1.5 rounded-lg border border-slate-700/60">
+                    <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                    <span id="userEmail" class="text-xs text-slate-200 font-medium font-mono"></span>
+                </div>
+                <button id="logoutBtn" class="bg-rose-600/90 hover:bg-rose-600 text-white text-xs px-3.5 py-1.5 rounded-lg transition-all font-medium shadow-sm hover:shadow flex items-center gap-1.5">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+                    </svg>
+                    লগআউট
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- MAIN CONTAINER -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 py-8">
+
+        <!-- AUTH / LOGIN SECTION -->
+        <section id="authSection" class="max-w-md mx-auto my-16 bg-white p-8 sm:p-10 rounded-2xl shadow-xl border border-slate-100 relative overflow-hidden">
+            <div class="absolute -top-12 -right-12 w-32 h-32 bg-indigo-50 rounded-full blur-2xl"></div>
+            
+            <div class="text-center mb-8 relative">
+                <div class="w-14 h-14 bg-indigo-50 rounded-2xl flex items-center justify-center mx-auto mb-4 border border-indigo-100 shadow-inner">
+                    <svg class="w-7 h-7 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+                    </svg>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-900 tracking-tight">অ্যাডমিন প্রবেশদ্বার</h2>
+                <p class="text-xs text-slate-500 mt-1">অ্যাক্সেস পেতে আপনার অ্যাডমিন ক্রেডেনশিয়াল দিন</p>
+            </div>
+
+            <form id="loginForm" class="space-y-4 relative">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">ইমেইল ঠিকানা</label>
+                    <input type="email" id="loginEmail" required placeholder="support@ghotimarket.com"
+                        class="w-full px-4 py-2.5 text-sm border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 focus:outline-none transition bg-slate-50/50">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">পাসওয়ার্ড</label>
+                    <input type="password" id="loginPassword" required placeholder="••••••••"
+                        class="w-full px-4 py-2.5 text-sm border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 focus:outline-none transition bg-slate-50/50">
+                </div>
+                
+                <div id="loginError" class="hidden text-rose-600 text-xs font-medium p-3 bg-rose-50 rounded-xl border border-rose-100"></div>
+
+                <button type="submit" id="loginSubmitBtn"
+                    class="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-3 rounded-xl font-semibold text-sm transition-all duration-200 shadow-md shadow-indigo-500/20 hover:shadow-lg active:scale-[0.99]">
+                    প্রবেশ করুন
+                </button>
+            </form>
+        </section>
+
+        <!-- DASHBOARD SECTION -->
+        <section id="dashboardSection" class="hidden space-y-6">
+
+            <!-- CONTROLS BAR -->
+            <div class="glass-panel p-4 sm:p-5 rounded-2xl shadow-sm border border-slate-200/80 space-y-4 lg:space-y-0 lg:flex lg:items-center lg:justify-between">
+                
+                <!-- Seller Search -->
+                <div class="flex items-center space-x-2">
+                    <div class="relative flex-1 sm:w-72">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <svg class="h-4 w-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                            </svg>
+                        </div>
+                        <input type="text" id="sellerSearchInput" placeholder="Seller ID দিয়ে খুঁজুন..."
+                            class="w-full pl-9 pr-3 py-2 text-sm border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 focus:outline-none bg-white shadow-sm">
+                    </div>
+                    <button id="searchBtn" class="bg-indigo-600 hover:bg-indigo-700 text-white text-sm px-4 py-2 rounded-xl transition-all font-medium shadow-sm active:scale-95">
+                        সার্চ
+                    </button>
+                    <button id="clearSearchBtn" class="bg-slate-100 hover:bg-slate-200 text-slate-700 text-sm px-3.5 py-2 rounded-xl transition-all font-medium active:scale-95">
+                        ক্লিয়ার
+                    </button>
+                </div>
+
+                <!-- Selection & Bulk Actions -->
+                <div class="flex flex-wrap items-center gap-3 sm:gap-4 justify-between lg:justify-end border-t lg:border-t-0 pt-3 lg:pt-0 border-slate-100">
+                    <label class="flex items-center space-x-2 cursor-pointer select-none text-sm font-semibold text-slate-700 bg-white px-3 py-2 rounded-xl border border-slate-200 shadow-sm">
+                        <input type="checkbox" id="selectAllCheckbox" class="w-4 h-4 text-indigo-600 rounded border-slate-300 focus:ring-indigo-500 cursor-pointer">
+                        <span>সব সিলেক্ট (<span id="loadedCount" class="text-indigo-600">0</span>)</span>
+                    </label>
+
+                    <div class="text-xs font-semibold text-slate-600 bg-slate-100 px-3 py-2 rounded-xl border border-slate-200/60">
+                        সিলেক্টেড: <span id="selectedCount" class="bg-indigo-600 text-white px-2 py-0.5 rounded-md font-bold text-xs">0</span>
+                    </div>
+
+                    <button id="openUpdateModalBtn" disabled
+                        class="bg-emerald-600 hover:bg-emerald-700 disabled:opacity-40 disabled:cursor-not-allowed text-white text-sm px-4 py-2 rounded-xl transition-all font-semibold shadow-sm shadow-emerald-600/20 active:scale-95 flex items-center gap-1.5">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                        </svg>
+                        Old Price পরিবর্তন
+                    </button>
+                </div>
+            </div>
+
+            <!-- PRODUCT GRID -->
+            <div id="productGrid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
+                <!-- Cards dynamically injected here -->
+            </div>
+
+            <!-- EMPTY STATE MESSAGE -->
+            <div id="emptyState" class="hidden text-center py-16 bg-white rounded-2xl border border-slate-200/80 shadow-sm p-6">
+                <div class="w-16 h-16 bg-slate-50 text-slate-400 rounded-full flex items-center justify-center mx-auto mb-4 border border-slate-100">
+                    <svg class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
+                    </svg>
+                </div>
+                <h3 class="text-base font-bold text-slate-800">কোনো প্রোডাক্ট পাওয়া যায়নি</h3>
+                <p class="mt-1 text-xs text-slate-500">অন্য কোনো Seller ID দিয়ে সার্চ করুন অথবা ক্লিয়ার বাটনে ক্লিক করুন।</p>
+            </div>
+
+            <!-- LOAD MORE BUTTON CONTAINER -->
+            <div class="text-center py-6">
+                <button id="loadMoreBtn" class="bg-white border border-slate-300 hover:border-indigo-400 hover:bg-slate-50 text-indigo-600 font-bold text-sm px-8 py-3 rounded-xl shadow-sm transition-all duration-200 disabled:opacity-50 active:scale-95 inline-flex items-center gap-2">
+                    <span>আরো দেখুন</span>
+                </button>
+                <p id="noMoreProductsText" class="hidden text-xs text-slate-400 font-semibold uppercase tracking-wider py-2">
+                    — আর কোনো product নেই —
+                </p>
+            </div>
+
+        </section>
+    </main>
+
+    <!-- MODAL 1: RANGE CONFIGURATION -->
+    <div id="rangeModal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 transition-opacity">
+        <div class="bg-white rounded-2xl max-w-md w-full p-6 sm:p-7 space-y-5 shadow-2xl border border-slate-100 transform transition-all">
+            <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+                <h3 class="text-lg font-bold text-slate-900">Old Price Percentage সেট করুন</h3>
+                <button id="closeRangeModalBtn" class="text-slate-400 hover:text-slate-600 p-1 rounded-lg">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+            </div>
+
+            <p class="text-xs text-slate-600 leading-relaxed">
+                নির্বাচিত <span id="modalSelectedCount" class="font-bold text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded">0</span> টি প্রোডাক্টের জন্য মূল দামের (Price) ওপর ভিত্তি করে র‍্যান্ডম Old Price তৈরি হবে।
+            </p>
+            
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">সর্বনিম্ন শতকরা (%)</label>
+                    <input type="number" id="minPercentageInput" value="10" min="1" max="100"
+                        class="w-full px-3.5 py-2 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 text-sm font-semibold bg-slate-50/50">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">সর্বোচ্চ শতকরা (%)</label>
+                    <input type="number" id="maxPercentageInput" value="70" min="1" max="100"
+                        class="w-full px-3.5 py-2 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 text-sm font-semibold bg-slate-50/50">
+                </div>
+            </div>
+
+            <div class="bg-amber-50 border border-amber-200/70 rounded-xl p-3 text-xs text-amber-800 flex items-start gap-2">
+                <svg class="w-4 h-4 text-amber-600 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                <span>উদাহরণ: মূল দাম ৳১০০ এবং শতকরা ২০% হলে ক্যালকুলেট করা Old Price হবে ৳২০।</span>
+            </div>
+
+            <div class="flex justify-end space-x-3 pt-2">
+                <button id="confirmUpdateBtn" class="w-full py-2.5 text-sm font-bold bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl shadow-md shadow-emerald-600/20 active:scale-95 transition-all">
+                    কনফার্ম ও আপডেট করুন
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL 2: PROGRESS / STATUS -->
+    <div id="progressModal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-sm w-full p-7 text-center space-y-5 shadow-2xl border border-slate-100">
+            <h3 id="progressTitle" class="text-lg font-bold text-slate-900">আপডেট করা হচ্ছে...</h3>
+            
+            <div id="progressSpinner" class="py-2">
+                <div class="w-12 h-12 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin mx-auto"></div>
+            </div>
+
+            <p id="progressMessage" class="text-xs text-slate-600 font-medium leading-relaxed">
+                অনুগ্রহ করে অপেক্ষা করুন। Firestore ডাটাবেজ আপডেট হচ্ছে।
+            </p>
+
+            <button id="closeProgressModalBtn" class="hidden w-full py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold rounded-xl shadow-md active:scale-95 transition">
+                ঠিক আছে
+            </button>
+        </div>
+    </div>
+
+
+    <!-- FIREBASE MODULE & APPLICATION LOGIC -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { 
+            getAuth, 
+            signInWithEmailAndPassword, 
+            signOut, 
+            onAuthStateChanged 
+        } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { 
+            getFirestore, 
+            collection, 
+            query, 
+            where, 
+            limit, 
+            startAfter, 
+            getDocs, 
+            doc, 
+            writeBatch 
+        } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        // =========================================================================
+        // 1. FIREBASE CONFIGURATION (Exact Provided Config)
+        // =========================================================================
+        const firebaseConfig = {
+            apiKey: "AIzaSyBUhNhYvuo_FTvZ5RZR6Gn-4hsUY21S0XE",
+            authDomain: "ghotimarket.firebaseapp.com",
+            databaseURL: "https://ghotimarket-default-rtdb.firebaseio.com",
+            projectId: "ghotimarket",
+            storageBucket: "ghotimarket.firebasestorage.app",
+            messagingSenderId: "481257644093",
+            appId: "1:481257644093:web:0dfc3699d6b3c86afeca54",
+            measurementId: "G-4SR8V2EKC1"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        // =========================================================================
+        // 2. GLOBAL APP STATE
+        // =========================================================================
+        const ADMIN_EMAIL = "support@ghotimarket.com";
+        const PAGE_LIMIT = 20;
+
+        let lastVisibleDoc = null;
+        let isLoading = false;
+        let hasMore = true;
+        let currentSellerId = "";
+
+        // Map for fast memory reference
+        const loadedProducts = new Map();
+        const selectedProductsMap = new Map();
+
+        // SVG Fallback for Lazy Images
+        const SVG_IMAGE_FALLBACK = `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 24 24" fill="none" stroke="%2394a3b8" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>`;
+
+        // DOM Elements
+        const authSection = document.getElementById("authSection");
+        const dashboardSection = document.getElementById("dashboardSection");
+        const userInfo = document.getElementById("userInfo");
+        const userEmail = document.getElementById("userEmail");
+        const loginForm = document.getElementById("loginForm");
+        const loginError = document.getElementById("loginError");
+        const loginSubmitBtn = document.getElementById("loginSubmitBtn");
+        const logoutBtn = document.getElementById("logoutBtn");
+
+        const productGrid = document.getElementById("productGrid");
+        const loadMoreBtn = document.getElementById("loadMoreBtn");
+        const noMoreProductsText = document.getElementById("noMoreProductsText");
+        const emptyState = document.getElementById("emptyState");
+
+        const sellerSearchInput = document.getElementById("sellerSearchInput");
+        const searchBtn = document.getElementById("searchBtn");
+        const clearSearchBtn = document.getElementById("clearSearchBtn");
+
+        const selectAllCheckbox = document.getElementById("selectAllCheckbox");
+        const loadedCount = document.getElementById("loadedCount");
+        const selectedCount = document.getElementById("selectedCount");
+        const openUpdateModalBtn = document.getElementById("openUpdateModalBtn");
+
+        const rangeModal = document.getElementById("rangeModal");
+        const modalSelectedCount = document.getElementById("modalSelectedCount");
+        const minPercentageInput = document.getElementById("minPercentageInput");
+        const maxPercentageInput = document.getElementById("maxPercentageInput");
+        const closeRangeModalBtn = document.getElementById("closeRangeModalBtn");
+        const confirmUpdateBtn = document.getElementById("confirmUpdateBtn");
+
+        const progressModal = document.getElementById("progressModal");
+        const progressTitle = document.getElementById("progressTitle");
+        const progressSpinner = document.getElementById("progressSpinner");
+        const progressMessage = document.getElementById("progressMessage");
+        const closeProgressModalBtn = document.getElementById("closeProgressModalBtn");
+
+        // =========================================================================
+        // 3. AUTHENTICATION OBSERVER
+        // =========================================================================
+        onAuthStateChanged(auth, (user) => {
+            if (user && user.email === ADMIN_EMAIL) {
+                authSection.classList.add("hidden");
+                dashboardSection.classList.remove("hidden");
+                userInfo.classList.remove("hidden");
+                userEmail.textContent = user.email;
+                
+                resetAndFetchData();
+            } else {
+                if (user && user.email !== ADMIN_EMAIL) {
+                    alert("অননুমোদিত অ্যাক্সেস! শুধুমাত্র support@ghotimarket.com ব্যবহার করতে পারবেন।");
+                    signOut(auth);
+                }
+                authSection.classList.remove("hidden");
+                dashboardSection.classList.add("hidden");
+                userInfo.classList.add("hidden");
+            }
+        });
+
+        // Login Handler
+        loginForm.addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const email = document.getElementById("loginEmail").value.trim();
+            const password = document.getElementById("loginPassword").value.trim();
+
+            if (email !== ADMIN_EMAIL) {
+                showLoginError("শুধুমাত্র অ্যাডমিন ইমেইল ব্যবহার সম্ভব।");
+                return;
+            }
+
+            try {
+                loginError.classList.add("hidden");
+                loginSubmitBtn.disabled = true;
+                loginSubmitBtn.textContent = "যাচাই করা হচ্ছে...";
+                await signInWithEmailAndPassword(auth, email, password);
+            } catch (error) {
+                console.error("Login Error:", error);
+                showLoginError("ইমেইল বা পাসওয়ার্ড ভুল হয়েছে। আবার চেষ্টা করুন।");
+            } finally {
+                loginSubmitBtn.disabled = false;
+                loginSubmitBtn.textContent = "প্রবেশ করুন";
+            }
+        });
+
+        function showLoginError(msg) {
+            loginError.textContent = msg;
+            loginError.classList.remove("hidden");
+        }
+
+        // Logout Handler
+        logoutBtn.addEventListener("click", () => {
+            signOut(auth);
+        });
+
+        // =========================================================================
+        // 4. FIRESTORE CURSOR PAGINATION & FETCHING LOGIC
+        // =========================================================================
+        async function fetchProducts() {
+            if (isLoading || !hasMore) return;
+            isLoading = true;
+
+            updateButtonStates();
+
+            try {
+                let constraints = [];
+
+                if (currentSellerId !== "") {
+                    constraints.push(where("sellerId", "==", currentSellerId));
+                }
+
+                if (lastVisibleDoc) {
+                    constraints.push(startAfter(lastVisibleDoc));
+                }
+
+                constraints.push(limit(PAGE_LIMIT));
+
+                const q = query(collection(db, "products"), ...constraints);
+                const querySnapshot = await getDocs(q);
+
+                const docsCount = querySnapshot.docs.length;
+
+                if (docsCount > 0) {
+                    lastVisibleDoc = querySnapshot.docs[docsCount - 1];
+
+                    const newProducts = [];
+                    querySnapshot.docs.forEach(docSnap => {
+                        const data = docSnap.data();
+                        const productObj = {
+                            id: docSnap.id,
+                            name: data.name || "নাম পাওয়া যায়নি",
+                            price: Number(data.price) || 0,
+                            oldPrice: Number(data.oldPrice) || 0,
+                            images: Array.isArray(data.images) ? data.images : [],
+                            sellerId: data.sellerId || "N/A",
+                            active: data.active !== false,
+                        };
+                        loadedProducts.set(docSnap.id, productObj);
+                        newProducts.push(productObj);
+                    });
+
+                    renderProductCards(newProducts);
+                }
+
+                if (docsCount < PAGE_LIMIT) {
+                    hasMore = false;
+                }
+
+                if (loadedProducts.size === 0) {
+                    emptyState.classList.remove("hidden");
+                } else {
+                    emptyState.classList.add("hidden");
+                }
+
+            } catch (error) {
+                console.error("Firestore Fetch Error:", error);
+                alert("ডাটা লোড করতে সমস্যা হয়েছে। আপনার ইন্টারনেট বা ফায়ারবেস কানেকশন পরীক্ষা করে আবার চেষ্টা করুন।");
+            } finally {
+                isLoading = false;
+                updateButtonStates();
+                updateSelectionCounters();
+            }
+        }
+
+        function resetAndFetchData() {
+            loadedProducts.clear();
+            selectedProductsMap.clear();
+            lastVisibleDoc = null;
+            hasMore = true;
+            isLoading = false;
+            
+            productGrid.innerHTML = "";
+            selectAllCheckbox.checked = false;
+            emptyState.classList.add("hidden");
+
+            fetchProducts();
+        }
+
+        // =========================================================================
+        // 5. DOM RENDERING OPTIMIZATION & PREMIUM CARD DESIGN
+        // =========================================================================
+        function renderProductCards(productsArray) {
+            const fragment = document.createDocumentFragment();
+
+            productsArray.forEach(product => {
+                const card = document.createElement("div");
+                card.className = "group relative bg-white rounded-2xl p-4 border border-slate-200/80 shadow-sm hover:shadow-xl hover:border-indigo-300 transition-all duration-300 flex flex-col justify-between hover:-translate-y-1";
+                card.setAttribute("data-id", product.id);
+
+                const imageUrl = (product.images.length > 0 && product.images[0]) ? product.images[0] : SVG_IMAGE_FALLBACK;
+                const isSelected = selectedProductsMap.has(product.id);
+
+                card.innerHTML = `
+                    <div>
+                        <div class="relative mb-3 bg-gradient-to-b from-slate-100/80 to-slate-50 rounded-xl overflow-hidden h-44 flex items-center justify-center p-2 border border-slate-100">
+                            <img src="${imageUrl}" 
+                                 alt="${escapeHtml(product.name)}" 
+                                 loading="lazy" 
+                                 decoding="async"
+                                 onerror="this.onerror=null; this.src='${SVG_IMAGE_FALLBACK}';"
+                                 class="object-contain h-full w-full group-hover:scale-105 transition-transform duration-300">
+                            
+                            <span class="absolute top-2 left-2 flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-bold tracking-wider uppercase ${product.active ? 'bg-emerald-50 text-emerald-700 border border-emerald-200/80' : 'bg-rose-50 text-rose-700 border border-rose-200/80'}">
+                                <span class="w-1.5 h-1.5 rounded-full ${product.active ? 'bg-emerald-500 animate-pulse' : 'bg-rose-500'}"></span>
+                                ${product.active ? 'Active' : 'Inactive'}
+                            </span>
+
+                            <input type="checkbox" 
+                                   data-action="select-item" 
+                                   data-id="${product.id}"
+                                   ${isSelected ? 'checked' : ''}
+                                   class="absolute top-2.5 right-2.5 w-5 h-5 text-indigo-600 rounded-md border-slate-300 focus:ring-indigo-500 cursor-pointer shadow-sm">
+                        </div>
+
+                        <h4 class="text-xs font-bold text-slate-800 line-clamp-2 mb-1.5 group-hover:text-indigo-600 transition-colors" title="${escapeHtml(product.name)}">
+                            ${escapeHtml(product.name)}
+                        </h4>
+                        
+                        <p class="text-[11px] text-slate-500 mb-3 flex items-center gap-1">
+                            <span>Seller:</span> 
+                            <span class="font-mono bg-slate-100 text-slate-700 px-1.5 py-0.5 rounded text-[10px] font-medium">${escapeHtml(product.sellerId)}</span>
+                        </p>
+                    </div>
+
+                    <div class="pt-3 border-t border-slate-100 flex justify-between items-center bg-slate-50/50 -mx-4 -mb-4 p-3.5 rounded-b-2xl">
+                        <div>
+                            <span class="text-slate-400 block text-[9px] uppercase font-bold tracking-wider">Price</span>
+                            <span class="font-bold text-slate-900 text-sm">৳${product.price}</span>
+                        </div>
+                        <div class="text-right">
+                            <span class="text-slate-400 block text-[9px] uppercase font-bold tracking-wider">Old Price</span>
+                            <span class="font-bold text-indigo-600 text-sm old-price-display">৳${product.oldPrice}</span>
+                        </div>
+                    </div>
+                `;
+
+                fragment.appendChild(card);
+            });
+
+            productGrid.appendChild(fragment);
+        }
+
+        function escapeHtml(str) {
+            if (!str) return '';
+            return String(str)
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
+
+        function updateButtonStates() {
+            if (isLoading) {
+                loadMoreBtn.disabled = true;
+                loadMoreBtn.innerHTML = `
+                    <svg class="w-4 h-4 animate-spin text-indigo-600" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    <span>লোড হচ্ছে...</span>
+                `;
+            } else {
+                loadMoreBtn.disabled = false;
+                loadMoreBtn.innerHTML = `<span>আরো দেখুন</span>`;
+            }
+
+            if (!hasMore && loadedProducts.size > 0) {
+                loadMoreBtn.classList.add("hidden");
+                noMoreProductsText.classList.remove("hidden");
+            } else if (loadedProducts.size === 0) {
+                loadMoreBtn.classList.add("hidden");
+                noMoreProductsText.classList.add("hidden");
+            } else {
+                loadMoreBtn.classList.remove("hidden");
+                noMoreProductsText.classList.add("hidden");
+            }
+
+            searchBtn.disabled = isLoading;
+            searchBtn.textContent = isLoading ? "খোঁজা হচ্ছে..." : "সার্চ";
+        }
+
+        // =========================================================================
+        // 6. EVENT DELEGATION
+        // =========================================================================
+        productGrid.addEventListener("change", (e) => {
+            const target = e.target;
+            if (target && target.matches('input[data-action="select-item"]')) {
+                const pId = target.getAttribute("data-id");
+                if (target.checked) {
+                    if (loadedProducts.has(pId)) {
+                        selectedProductsMap.set(pId, loadedProducts.get(pId));
+                    }
+                } else {
+                    selectedProductsMap.delete(pId);
+                    selectAllCheckbox.checked = false;
+                }
+                updateSelectionCounters();
+            }
+        });
+
+        // =========================================================================
+        // 7. SELECTION CONTROL SYSTEM
+        // =========================================================================
+        selectAllCheckbox.addEventListener("change", (e) => {
+            const isChecked = e.target.checked;
+            const itemCheckboxes = productGrid.querySelectorAll('input[data-action="select-item"]');
+
+            itemCheckboxes.forEach(cb => {
+                cb.checked = isChecked;
+                const pId = cb.getAttribute("data-id");
+                if (isChecked) {
+                    if (loadedProducts.has(pId)) {
+                        selectedProductsMap.set(pId, loadedProducts.get(pId));
+                    }
+                } else {
+                    selectedProductsMap.delete(pId);
+                }
+            });
+
+            updateSelectionCounters();
+        });
+
+        function updateSelectionCounters() {
+            loadedCount.textContent = loadedProducts.size;
+            selectedCount.textContent = selectedProductsMap.size;
+            openUpdateModalBtn.disabled = selectedProductsMap.size === 0;
+        }
+
+        // =========================================================================
+        // 8. SEARCH & CLEAR FUNCTIONALITY
+        // =========================================================================
+        searchBtn.addEventListener("click", performSearch);
+
+        sellerSearchInput.addEventListener("keypress", (e) => {
+            if (e.key === "Enter") {
+                e.preventDefault();
+                performSearch();
+            }
+        });
+
+        function performSearch() {
+            if (isLoading) return;
+            const val = sellerSearchInput.value.trim();
+            currentSellerId = val;
+            resetAndFetchData();
+        }
+
+        clearSearchBtn.addEventListener("click", () => {
+            if (isLoading) return;
+            sellerSearchInput.value = "";
+            currentSellerId = "";
+            resetAndFetchData();
+        });
+
+        loadMoreBtn.addEventListener("click", () => {
+            fetchProducts();
+        });
+
+        // =========================================================================
+        // 9. MODAL & FIRESTORE BATCH WRITE OPTIMIZATION
+        // =========================================================================
+        openUpdateModalBtn.addEventListener("click", () => {
+            if (selectedProductsMap.size === 0) return;
+            modalSelectedCount.textContent = selectedProductsMap.size;
+            rangeModal.classList.remove("hidden");
+        });
+
+        closeRangeModalBtn.addEventListener("click", () => {
+            rangeModal.classList.add("hidden");
+        });
+
+        confirmUpdateBtn.addEventListener("click", async () => {
+            const minPct = parseFloat(minPercentageInput.value);
+            const maxPct = parseFloat(maxPercentageInput.value);
+
+            if (isNaN(minPct) || isNaN(maxPct) || minPct < 0 || maxPct > 100 || minPct > maxPct) {
+                alert("অনুগ্রহ করে সঠিক শতকরা (%) রেঞ্জ দিন। (সর্বনিম্ন % অবশ্যই সর্বোচ্চ % এর চেয়ে কম হতে হবে)");
+                return;
+            }
+
+            rangeModal.classList.add("hidden");
+            openProgressModal("আপডেট শুরু হচ্ছে...", "অপেক্ষা করুন, Firestore ব্যাচ তৈরি করা হচ্ছে।");
+
+            await executeBatchUpdate(minPct, maxPct);
+        });
+
+        // BATCH WRITE IMPLEMENTATION
+        async function executeBatchUpdate(minPct, maxPct) {
+            const selectedItems = Array.from(selectedProductsMap.values());
+            const totalItems = selectedItems.length;
+            const CHUNK_SIZE = 250;
+
+            let updatedCount = 0;
+
+            try {
+                for (let i = 0; i < totalItems; i += CHUNK_SIZE) {
+                    const chunk = selectedItems.slice(i, i + CHUNK_SIZE);
+                    const batch = writeBatch(db);
+
+                    chunk.forEach(product => {
+                        const randomPct = (Math.random() * (maxPct - minPct) + minPct);
+                        const calculatedOldPrice = Math.round((product.price * (randomPct / 100)) * 100) / 100;
+
+                        product.newCalculatedOldPrice = calculatedOldPrice;
+
+                        const docRef = doc(db, "products", product.id);
+                        batch.update(docRef, { oldPrice: calculatedOldPrice });
+                    });
+
+                    await batch.commit();
+
+                    chunk.forEach(product => {
+                        const newOldPrice = product.newCalculatedOldPrice;
+                        delete product.newCalculatedOldPrice;
+
+                        if (loadedProducts.has(product.id)) {
+                            loadedProducts.get(product.id).oldPrice = newOldPrice;
+                        }
+
+                        const cardElem = productGrid.querySelector(`[data-id="${product.id}"]`);
+                        if (cardElem) {
+                            const oldPriceDisplay = cardElem.querySelector('.old-price-display');
+                            if (oldPriceDisplay) {
+                                oldPriceDisplay.textContent = `৳${newOldPrice}`;
+                            }
+                        }
+                    });
+
+                    updatedCount += chunk.length;
+                    progressMessage.textContent = `${totalItems} টির মধ্যে ${updatedCount} টি প্রোডাক্ট সফলভাবে আপডেট হয়েছে...`;
+                }
+
+                showProgressSuccess(`ধন্যবাদ! মোট ${updatedCount} টি প্রোডাক্টের Old Price সফলভাবে আপডেট হয়েছে।`);
+
+                selectedProductsMap.clear();
+                selectAllCheckbox.checked = false;
+                
+                const itemCheckboxes = productGrid.querySelectorAll('input[data-action="select-item"]');
+                itemCheckboxes.forEach(cb => cb.checked = false);
+
+                updateSelectionCounters();
+
+            } catch (error) {
+                console.error("Batch Write Error:", error);
+                showProgressError("আপডেট করার সময় একটি সমস্যা হয়েছে। কিছু প্রোডাক্ট আপডেট নাও হয়ে থাকতে পারে।");
+            }
+        }
+
+        function openProgressModal(title, message) {
+            progressTitle.textContent = title;
+            progressMessage.textContent = message;
+            progressSpinner.classList.remove("hidden");
+            closeProgressModalBtn.classList.add("hidden");
+            progressModal.classList.remove("hidden");
+        }
+
+        function showProgressSuccess(message) {
+            progressTitle.textContent = "আপডেট সম্পন্ন!";
+            progressMessage.textContent = message;
+            progressSpinner.classList.add("hidden");
+            closeProgressModalBtn.classList.remove("hidden");
+        }
+
+        function showProgressError(message) {
+            progressTitle.textContent = "সমস্যা হয়েছে!";
+            progressMessage.textContent = message;
+            progressSpinner.classList.add("hidden");
+            closeProgressModalBtn.classList.remove("hidden");
+        }
+
+        closeProgressModalBtn.addEventListener("click", () => {
+            progressModal.classList.add("hidden");
+        });
+
+    </script>
+</body>
+</html>
