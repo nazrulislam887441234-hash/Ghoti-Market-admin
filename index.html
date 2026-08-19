@@ -1090,154 +1090,439 @@
 
         // --- Static Categories Data with Search Keywords ---
         const CATEGORIES = [
-            {
-                name: "Sharee-শাড়ি",
-                slug: "sharee",
-                link: "https://www.ghotimarket.com/category.html?slug=sharee",
-                image: "https://i.ibb.co/848tWxY4/blob.webp",
-                keywords: ["sharee", "শাড়ি", "সাড়ি", "saree", "jamdani", "silk"]
-            },
-            {
-                name: "Three piece-ত্রি পিস",
-                slug: "three-piece",
-                link: "https://www.ghotimarket.com/category.html?slug=three-piece",
-                image: "https://i.ibb.co/ycq3cQzW/blob.webp",
-                keywords: ["three piece", "ত্রি পিস", "থ্রি পিস", "dress", "salwar kameez", "kamiz"]
-            },
-            {
-                name: "T-shirts-গেঞ্জি",
-                slug: "t-shirts",
-                link: "https://www.ghotimarket.com/category.html?slug=t-shirts",
-                image: "https://i.ibb.co/wFV3Vzjx/blob.webp",
-                keywords: ["t-shirt", "tshirts", "গেঞ্জি", "টি শার্ট", "tshirt", "polo"]
-            },
-            {
-                name: "Bad sheets-বিছানা চাদর",
-                slug: "bad-sheets",
-                link: "https://www.ghotimarket.com/category.html?slug=bad-sheets",
-                image: "https://i.ibb.co/fd1YdkcM/blob.webp",
-                keywords: ["bad sheets", "bedsheet", "বিছানা চাদর", "চাদর", "bed cover", "bedding"]
-            },
-            {
-                name: "gadgets-গ্যাজেটস",
-                slug: "gadgets",
-                link: "https://www.ghotimarket.com/category.html?slug=gadgets",
-                image: "https://i.ibb.co/dJzHppxZ/blob.webp",
-                keywords: ["gadgets", "গ্যাজেটস", "গ্যাজেট", "tech items", "electronics", "accessories"]
-            },
-            {
-                name: "Phone-মোবাইল",
-                slug: "phone",
-                link: "https://www.ghotimarket.com/category.html?slug=phone",
-                image: "https://i.ibb.co/Txsxf2JN/blob.webp",
-                keywords: ["phone", "মোবাইল", "স্মার্টফোন", "smartphone", "mobile", "android"]
-            },
-            {
-                name: "shoes-জুতা",
-                slug: "shoes",
-                link: "https://www.ghotimarket.com/category.html?slug=shoes",
-                image: "https://i.ibb.co/8n8X1Ntz/blob.webp",
-                keywords: ["shoes", "জুতা", "কেডস", "sneakers", "juta", "footwear"]
-            },
-            {
-                name: "Beauty & personal care-...",
-                slug: "beauty-personal-care",
-                link: "https://www.ghotimarket.com/category.html?slug=beauty-personal-care",
-                image: "https://beauty-personal.edgeone.dev/file.png",
-                keywords: ["beauty", "personal care", "বিউটি", "প্রসাধন", "makeup", "skincare"]
-            },
-            {
-                name: "Bags-ব্যাগ",
-                slug: "bags",
-                link: "https://www.ghotimarket.com/category.html?slug=bags",
-                image: "https://i.ibb.co/BH6P92YC/blob.webp",
-                keywords: ["bags", "ব্যাগ", "bag", "backpack", "handbag", "school bag"]
-            },
-            {
-                name: "Kids Fashion-ছোটদের ফ্যাশন",
-                slug: "kids-fashion",
-                link: "https://www.ghotimarket.com/category.html?slug=kids-fashion",
-                image: "https://i.ibb.co/m5yhyCyK/blob.webp",
-                keywords: ["kids fashion", "ছোটদের ফ্যাশন", "বাচ্চাদের কাপড়", "baby dress", "kids", "children wear"]
-            },
-            {
-                name: "Jersy-জার্সি",
-                slug: "jersey",
-                link: "https://www.ghotimarket.com/category.html?slug=jersey",
-                image: "https://i.ibb.co/GQcTFBBC/blob.webp",
-                keywords: ["jersy", "jersey", "জার্সি", "football jersey", "cricket jersey", "sports tshirt"]
-            },
-            {
-                name: "Borka-বোরকা",
-                slug: "borka",
-                link: "https://www.ghotimarket.com/category.html?slug=borka",
-                image: "https://i.ibb.co/6RwCMNGt/blob.webp",
-                keywords: ["borka", "বোরকা", "hijab", "burqa", "abaya", "হিযাব"]
-            },
-            {
-                name: "Smart watch-ঘড়ি",
-                slug: "smart-watch",
-                link: "https://www.ghotimarket.com/category.html?slug=smart-watch",
-                image: "https://i.ibb.co/ch4Q9Sn3/blob.webp",
-                keywords: ["smart watch", "ghori", "ঘড়ি", "স্মার্ট ওয়াচ", "watch", "hand watch"]
-            },
-            {
-                name: "Electronics-ইলেকট্রনিক্স",
-                slug: "electronics",
-                link: "https://www.ghotimarket.com/category.html?slug=electronics",
-                image: "https://i.ibb.co/zTLF1DB2/blob.webp",
-                keywords: ["electronics", "ইলেকট্রনিক্স", "home appliances", "charger", "electric"]
-            },
-            {
-                name: "Fans-ফ্যান",
-                slug: "fans",
-                link: "https://www.ghotimarket.com/category.html?slug=fans",
-                image: "https://i.ibb.co/DjmqHQ4/blob.webp",
-                keywords: ["fans", "ফ্যান", "পাখা", "ceiling fan", "rechargeable fan", "table fan"]
-            },
-            {
-                name: "Drone-ড্রোন",
-                slug: "drone",
-                link: "https://www.ghotimarket.com/category.html?slug=drone",
-                image: "https://i.ibb.co/VcyjNXsq/blob.webp",
-                keywords: ["drone", "ড্রোন", "camera drone", "mini drone", "flying camera"]
-            },
-            {
-                name: "umbrella-ছাতা",
-                slug: "umbrella",
-                link: "https://www.ghotimarket.com/category.html?slug=umbrella",
-                image: "https://i.ibb.co/PZqszX2y/blob.webp",
-                keywords: ["umbrella", "ছাতা", "chata", "rain umbrella", "sun umbrella"]
-            },
-            {
-                name: "Health And Wellness-স্বাস্থ্য ও সুস্থ",
-                slug: "health-and-wellness",
-                link: "https://www.ghotimarket.com/category.html?slug=health-and-wellness",
-                image: "https://i.ibb.co/B2y3wd5h/blob.webp",
-                keywords: ["health", "wellness", "স্বাস্থ্য", "চিকিৎসা", "fitness", "medicine"]
-            },
-            {
-                name: "Book-বই",
-                slug: "book",
-                link: "https://www.ghotimarket.com/category.html?slug=book",
-                image: "https://i.ibb.co/W4TnGwcN/blob.webp",
-                keywords: ["book", "বই", "boi", "novel", "story book", "books"]
-            },
-            {
-                name: "Islamic",
-                slug: "islamic",
-                link: "https://www.ghotimarket.com/category.html?slug=islamic",
-                image: "https://i.ibb.co/8n8X1Ntz/blob.webp",
-                keywords: ["islamic", "ইসলামিক", "quran", "jaynamaz", "tasbih", "attar", "ইসলামিক পণ্য"]
-            },
-            {
-                name: "Others/অন্যান্য",
-                slug: "others",
-                link: "https://www.ghotimarket.com/category.html?slug=others",
-                image: "https://i.ibb.co/LXLpT7dP/blob.webp",
-                keywords: ["others", "অন্যান্য", "miscellaneous", "general", "onnanno"]
-            }
-        ];
+    {
+        name: "Sharee-শাড়ি",
+        slug: "sharee",
+        link: "https://www.ghotimarket.com/category.html?slug=sharee",
+        image: "https://i.ibb.co/848tWxY4/blob.webp",
+        keywords: [
+            "sharee", "saree", "sari", "sharee", "shari",
+            "শাড়ি", "শাড়ি", "সাড়ি", "সারি", "শারি", "শারি কাপড়",
+            "শাড়ীর", "শাড়ীর", "শাড়ি ড্রেস", "শাড়ি ড্রেস",
+            "sare", "share", "shari",
+            "জামদানি", "jamdani", "silk saree", "সিল্ক শাড়ি",
+            "cotton saree", "কটন শাড়ি", "কাতান", "katan",
+            "বেনারসি", "benarasi", "বনারসি", "banarasi",
+            "তাঁতের শাড়ি", "তাতের শাড়ি", "তাঁত শাড়ি",
+            "সুতি শাড়ি", "মেয়েদের শাড়ি", "মহিলাদের শাড়ি",
+            "নতুন শাড়ি", "সুন্দর শাড়ি", "শাড়ি কালেকশন",
+            "saree collection", "women saree", "ladies saree"
+        ]
+    },
+
+    {
+        name: "Three piece-ত্রি পিস",
+        slug: "three-piece",
+        link: "https://www.ghotimarket.com/category.html?slug=three-piece",
+        image: "https://i.ibb.co/ycq3cQzW/blob.webp",
+        keywords: [
+            "three piece", "three-piece", "threepiece",
+            "3 piece", "3-piece", "3piece",
+            "three pcs", "3 pcs", "three pieces",
+            "three pice", "three peice", "three pees",
+            "thre piece", "thre pice", "tree piece",
+            "thri piece", "thre-pice",
+
+            "থ্রি পিস", "থ্রিপিস", "থ্রি-পিস",
+            "থ্রি পিচ", "থ্রিপিচ", "থ্রি পিছ",
+            "ত্রি পিস", "ত্রিপিস", "ত্রি-পিস",
+            "তিরি পিস", "তিরি-পিস", "ত্রী পিস",
+            "ত্রীপিস", "ত্রী-পিস",
+            "ত্রি পিচ", "ত্রিপিচ", "ত্রি পিছ",
+            "মেয়েদের ত্রি পিস", "মেয়েদের ত্রি পিস",
+            "মেয়েদের থ্রি পিস", "মেয়েদের থ্রি পিস",
+            "মহিলাদের ত্রি পিস", "মহিলাদের থ্রি পিস",
+            "নতুন ত্রি পিস", "নতুন থ্রি পিস",
+            "সুন্দর ত্রি পিস", "সুন্দর থ্রি পিস",
+            "ত্রি পিস ড্রেস", "থ্রি পিস ড্রেস",
+            "ত্রিপিস ড্রেস", "থ্রিপিস ড্রেস",
+            "থ্রি পিস জামা", "ত্রি পিস জামা",
+            "three piece dress", "3 piece dress",
+            "three piece salwar kameez",
+            "3 piece salwar kameez",
+            "salwar kameez", "salwar kamiz",
+            "salwar kamij", "shalwar kameez",
+            "সালোয়ার কামিজ", "সালোয়ার কামিজ",
+            "সালোয়ার কামিজ", "সালওয়ার কামিজ",
+            "কামিজ", "কামিজ সেট",
+            "dress", "ladies dress", "women dress",
+            "girls dress", "women three piece",
+            "ladies three piece", "three piece collection",
+            "3 piece collection", "থ্রি পিস কালেকশন"
+        ]
+    },
+
+    {
+        name: "T-shirts-গেঞ্জি",
+        slug: "t-shirts",
+        link: "https://www.ghotimarket.com/category.html?slug=t-shirts",
+        image: "https://i.ibb.co/wFV3Vzjx/blob.webp",
+        keywords: [
+            "t-shirt", "t shirt", "tshirt", "tshirts",
+            "t shirts", "tee shirt", "tee",
+            "tshart", "tshart", "t-sirt", "t sart",
+            "টি শার্ট", "টি-শার্ট", "টিশার্ট",
+            "টি সার্ট", "টি সার্ট", "টিশাট",
+            "গেঞ্জি", "গেঞ্জী", "গেঞ্জি জামা",
+            "জার্সি গেঞ্জি", "polo", "polo shirt",
+            "polo tshirt", "পোলো", "পোলো শার্ট",
+            "men t shirt", "boys t shirt",
+            "mens tshirt", "t shirt for men",
+            "t shirt for boys", "half sleeve",
+            "full sleeve t shirt"
+        ]
+    },
+
+    {
+        name: "Bad sheets-বিছানা চাদর",
+        slug: "bad-sheets",
+        link: "https://www.ghotimarket.com/category.html?slug=bad-sheets",
+        image: "https://i.ibb.co/fd1YdkcM/blob.webp",
+        keywords: [
+            "bad sheets", "bed sheets", "bedsheet", "bed sheet",
+            "bedsheets", "bed cover", "bedcover",
+            "bed shits", "bedshet", "bedsit",
+            "বেডশিট", "বেড শিট", "বেডসিট",
+            "বেডসীট", "বিছানা চাদর", "বিছানার চাদর",
+            "বিছানার চাদর", "বিছানা চাদর",
+            "চাদর", "চাদর সেট", "বেড কভার",
+            "bed cover", "double bedsheet", "single bedsheet",
+            "king size bedsheet", "queen size bedsheet",
+            "কিং সাইজ চাদর", "কুইন সাইজ চাদর"
+        ]
+    },
+
+    {
+        name: "gadgets-গ্যাজেটস",
+        slug: "gadgets",
+        link: "https://www.ghotimarket.com/category.html?slug=gadgets",
+        image: "https://i.ibb.co/dJzHppxZ/blob.webp",
+        keywords: [
+            "gadget", "gadgets", "gajet", "gajets",
+            "gadget's", "gadgets items",
+            "গ্যাজেট", "গ্যাজেটস", "গেজেট", "গেজেটস",
+            "গ্যাজেট আইটেম", "গ্যাজেট পণ্য",
+            "টেক গ্যাজেট", "টেক আইটেম",
+            "tech gadget", "tech gadgets", "tech items",
+            "electronics accessories", "smart gadgets",
+            "useful gadgets", "new gadgets", "mobile gadgets",
+            "মোবাইল গ্যাজেট", "ইলেকট্রনিক গ্যাজেট",
+            "accessories", "এক্সেসরিজ", "অ্যাক্সেসরিজ"
+        ]
+    },
+
+    {
+        name: "Phone-মোবাইল",
+        slug: "phone",
+        link: "https://www.ghotimarket.com/category.html?slug=phone",
+        image: "https://i.ibb.co/Txsxf2JN/blob.webp",
+        keywords: [
+            "phone", "phones", "mobile", "mobail", "moblie",
+            "mobil", "mobaile", "smartphone", "smart phone",
+            "smartfon", "android", "android phone",
+            "মোবাইল", "মোবাইল ফোন", "মোবাইলফোন",
+            "মোবাইল সেট", "ফোন", "ফোন সেট",
+            "স্মার্টফোন", "স্মার্ট ফোন", "স্মার্টফন",
+            "মোবাইল মোবাইল", "হ্যান্ডসেট",
+            "হ্যান্ড সেট", "এন্ড্রয়েড", "অ্যান্ড্রয়েড",
+            "android mobile", "mobile phone",
+            "cell phone", "cellphone",
+            "মোবাইল কিনবো", "নতুন মোবাইল"
+        ]
+    },
+
+    {
+        name: "shoes-জুতা",
+        slug: "shoes",
+        link: "https://www.ghotimarket.com/category.html?slug=shoes",
+        image: "https://i.ibb.co/8n8X1Ntz/blob.webp",
+        keywords: [
+            "shoe", "shoes", "shooes", "shoose",
+            "shose", "show", "footwear",
+            "juta", "juta", "joota", "jutaa",
+            "জুতা", "জুতো", "জুতা জুতো",
+            "কেডস", "কেডস জুতা", "কেডস্",
+            "sneaker", "sneakers", "snickers",
+            "স্নিকার", "স্নিকার্স",
+            "sports shoes", "sport shoe",
+            "running shoes", "formal shoes",
+            "men shoes", "women shoes", "kids shoes",
+            "পুরুষের জুতা", "মেয়েদের জুতা",
+            "ছেলেদের জুতা", "বাচ্চাদের জুতা"
+        ]
+    },
+
+    {
+        name: "Beauty & personal care-...",
+        slug: "beauty-personal-care",
+        link: "https://www.ghotimarket.com/category.html?slug=beauty-personal-care",
+        image: "https://beauty-personal.edgeone.dev/file.png",
+        keywords: [
+            "beauty", "beauty products", "personal care",
+            "beauty care", "cosmetics", "cosmetic",
+            "cosmatic", "cosmetics items",
+            "makeup", "make up", "mekup",
+            "skincare", "skin care", "skin products",
+            "hair care", "haircare",
+            "বিউটি", "বিউটি প্রোডাক্ট", "বিউটি পণ্য",
+            "ব্যক্তিগত যত্ন", "পার্সোনাল কেয়ার",
+            "প্রসাধন", "প্রসাধনী", "প্রসাধনী পণ্য",
+            "মেকআপ", "মেক আপ", "মেকাপ",
+            "স্কিন কেয়ার", "স্কিনকেয়ার",
+            "ত্বকের যত্ন", "চুলের যত্ন",
+            "হেয়ার কেয়ার", "কসমেটিক", "কসমেটিকস"
+        ]
+    },
+
+    {
+        name: "Bags-ব্যাগ",
+        slug: "bags",
+        link: "https://www.ghotimarket.com/category.html?slug=bags",
+        image: "https://i.ibb.co/BH6P92YC/blob.webp",
+        keywords: [
+            "bag", "bags", "bagg", "bags",
+            "ব্যাগ", "ব্যাগস", "ব্যাগ্",
+            "ব্যাগপ্যাক", "backpack", "back pack",
+            "school bag", "schoolbag", "স্কুল ব্যাগ",
+            "handbag", "hand bag", "হ্যান্ডব্যাগ",
+            "হ্যান্ড ব্যাগ", "ladies bag",
+            "women bag", "men bag", "travel bag",
+            "ট্রাভেল ব্যাগ", "লাগেজ ব্যাগ",
+            "luggage bag", "college bag",
+            "কলেজ ব্যাগ", "ল্যাপটপ ব্যাগ",
+            "laptop bag", "shoulder bag"
+        ]
+    },
+
+    {
+        name: "Kids Fashion-ছোটদের ফ্যাশন",
+        slug: "kids-fashion",
+        link: "https://www.ghotimarket.com/category.html?slug=kids-fashion",
+        image: "https://i.ibb.co/m5yhyCyK/blob.webp",
+        keywords: [
+            "kids", "kid", "children", "child",
+            "baby", "babies", "baby dress",
+            "kids fashion", "kids wear", "childrens wear",
+            "children wear", "kids clothes",
+            "kids clothing", "baby clothes",
+            "বাচ্চা", "বাচ্চাদের", "বাচ্চাদের কাপড়",
+            "বাচ্চাদের পোশাক", "শিশু", "শিশুদের পোশাক",
+            "ছোটদের ফ্যাশন", "ছোটদের কাপড়",
+            "ছোট বাচ্চাদের জামা", "বেবি ড্রেস",
+            "বেবি জামা", "শিশুদের জামা",
+            "মেয়েশিশুর পোশাক", "ছেলেশিশুর পোশাক"
+        ]
+    },
+
+    {
+        name: "Jersy-জার্সি",
+        slug: "jersey",
+        link: "https://www.ghotimarket.com/category.html?slug=jersey",
+        image: "https://i.ibb.co/GQcTFBBC/blob.webp",
+        keywords: [
+            "jersey", "jersy", "jerci", "jersy",
+            "জার্সি", "জারসি", "জার্সী", "জার্জি",
+            "football jersey", "football jersy",
+            "ফুটবল জার্সি", "ফুটবল জামা",
+            "cricket jersey", "cricket jersy",
+            "ক্রিকেট জার্সি", "ক্রিকেট জামা",
+            "sports jersey", "sports tshirt",
+            "স্পোর্টস জার্সি", "খেলার জার্সি",
+            "player jersey", "team jersey",
+            "ফুটবল টিম জার্সি", "ক্রিকেট টিম জার্সি"
+        ]
+    },
+
+    {
+        name: "Borka-বোরকা",
+        slug: "borka",
+        link: "https://www.ghotimarket.com/category.html?slug=borka",
+        image: "https://i.ibb.co/6RwCMNGt/blob.webp",
+        keywords: [
+            "borka", "burqa", "burka", "borkha",
+            "borkha", "borqa", "abaya", "abaya",
+            "বোরকা", "বোরখা", "বোরকা ড্রেস",
+            "বোরখা ড্রেস", "আবায়া", "আবায়া",
+            "হিজাব", "হিযাব", "হিজাব", "hijab",
+            "hejab", "niqab", "নিকাব",
+            "মেয়েদের বোরকা", "মহিলাদের বোরকা",
+            "নতুন বোরকা", "বোরকা কালেকশন",
+            "abaya dress", "islamic dress"
+        ]
+    },
+
+    {
+        name: "Smart watch-ঘড়ি",
+        slug: "smart-watch",
+        link: "https://www.ghotimarket.com/category.html?slug=smart-watch",
+        image: "https://i.ibb.co/ch4Q9Sn3/blob.webp",
+        keywords: [
+            "smart watch", "smartwatch", "smart watchs",
+            "smart wacth", "smartwacth", "smart whatch",
+            "smart band", "smartband",
+            "watch", "watches", "hand watch",
+            "wrist watch", "digital watch",
+            "ঘড়ি", "ঘড়ি", "ঘড়ী", "ঘড়ী",
+            "হাত ঘড়ি", "হাতঘড়ি", "হাত ঘড়ি",
+            "স্মার্ট ওয়াচ", "স্মার্ট ওয়াচ",
+            "স্মার্টওয়াচ", "স্মার্ট ঘড়ি",
+            "ডিজিটাল ঘড়ি", "হাতের ঘড়ি",
+            "watch", "ghori", "ghori"
+        ]
+    },
+
+    {
+        name: "Electronics-ইলেকট্রনিক্স",
+        slug: "electronics",
+        link: "https://www.ghotimarket.com/category.html?slug=electronics",
+        image: "https://i.ibb.co/zTLF1DB2/blob.webp",
+        keywords: [
+            "electronics", "electronic", "electonic",
+            "electrics", "eletronics",
+            "ইলেকট্রনিক্স", "ইলেকট্রনিক", "ইলেকট্রনিকস",
+            "ইলেকট্রনিক পণ্য", "ইলেকট্রনিক্স পণ্য",
+            "electronic items", "electronics items",
+            "home appliances", "home appliance",
+            "হোম অ্যাপ্লায়েন্স", "ঘরের ইলেকট্রনিক্স",
+            "charger", "চার্জার", "চার্জার",
+            "electric", "ইলেকট্রিক",
+            "electric items", "electrical items",
+            "cable", "কেবল", "ইয়ারফোন", "earphone"
+        ]
+    },
+
+    {
+        name: "Fans-ফ্যান",
+        slug: "fans",
+        link: "https://www.ghotimarket.com/category.html?slug=fans",
+        image: "https://i.ibb.co/DjmqHQ4/blob.webp",
+        keywords: [
+            "fan", "fans", "faan", "fann",
+            "ফ্যান", "পাখা", "পাখা", "বাতাসের পাখা",
+            "ceiling fan", "সিলিং ফ্যান",
+            "table fan", "টেবিল ফ্যান",
+            "rechargeable fan", "চার্জার ফ্যান",
+            "চার্জিং ফ্যান", "চার্জেবল ফ্যান",
+            "stand fan", "স্ট্যান্ড ফ্যান",
+            "wall fan", "ওয়াল ফ্যান",
+            "mini fan", "মিনি ফ্যান",
+            "portable fan", "portable"
+        ]
+    },
+
+    {
+        name: "Drone-ড্রোন",
+        slug: "drone",
+        link: "https://www.ghotimarket.com/category.html?slug=drone",
+        image: "https://i.ibb.co/VcyjNXsq/blob.webp",
+        keywords: [
+            "drone", "dron", "drone", "droan",
+            "ড্রোন", "ড্রন", "ড্রোন ক্যামেরা",
+            "camera drone", "camera dron",
+            "ক্যামেরা ড্রোন", "মিনি ড্রোন",
+            "mini drone", "mini dron",
+            "flying camera", "ফ্লাইং ক্যামেরা",
+            "quadcopter", "quad copter",
+            "aerial drone", "rc drone",
+            "রিমোট ড্রোন", "remote drone"
+        ]
+    },
+
+    {
+        name: "umbrella-ছাতা",
+        slug: "umbrella",
+        link: "https://www.ghotimarket.com/category.html?slug=umbrella",
+        image: "https://i.ibb.co/PZqszX2y/blob.webp",
+        keywords: [
+            "umbrella", "umbella", "umberella", "umbra",
+            "ছাতা", "ছাতা", "ছাতি", "ছাত্তা",
+            "chata", "chhata", "chatta",
+            "rain umbrella", "বৃষ্টির ছাতা",
+            "বৃষ্টি ছাতা", "sun umbrella",
+            "রোদ ছাতা", "রোদ বৃষ্টির ছাতা",
+            "folding umbrella", "foldable umbrella",
+            "ভাঁজ করা ছাতা", "ফোল্ডিং ছাতা",
+            "automatic umbrella", "অটোমেটিক ছাতা"
+        ]
+    },
+
+    {
+        name: "Health And Wellness-স্বাস্থ্য ও সুস্থ",
+        slug: "health-and-wellness",
+        link: "https://www.ghotimarket.com/category.html?slug=health-and-wellness",
+        image: "https://i.ibb.co/B2y3wd5h/blob.webp",
+        keywords: [
+            "health", "healthy", "wellness", "healthcare",
+            "health care", "fitness", "fitnes",
+            "medicine", "medicin", "medecine",
+            "স্বাস্থ্য", "সুস্থ", "স্বাস্থ্যসেবা",
+            "স্বাস্থ্য ও সুস্থ", "স্বাস্থ্য পণ্য",
+            "স্বাস্থ্যকর", "চিকিৎসা",
+            "ফিটনেস", "ফিটনেস পণ্য",
+            "health products", "wellness products",
+            "fitness products", "medical items",
+            "personal health", "health care products"
+        ]
+    },
+
+    {
+        name: "Book-বই",
+        slug: "book",
+        link: "https://www.ghotimarket.com/category.html?slug=book",
+        image: "https://i.ibb.co/W4TnGwcN/blob.webp",
+        keywords: [
+            "book", "books", "bok", "boook",
+            "বই", "বইপত্র", "বই পত্র", "বইয়ের বই",
+            "boi", "boie", "boii",
+            "novel", "novel book", "নভেল", "উপন্যাস",
+            "story book", "storybook", "গল্পের বই",
+            "গল্প বই", "শিক্ষার বই", "education book",
+            "school book", "স্কুল বই", "college book",
+            "ইসলামিক বই", "islamic book",
+            "বাংলা বই", "english book", "ইংরেজি বই"
+        ]
+    },
+
+    {
+        name: "Islamic",
+        slug: "islamic",
+        link: "https://www.ghotimarket.com/category.html?slug=islamic",
+        image: "https://i.ibb.co/8n8X1Ntz/blob.webp",
+        keywords: [
+            "islamic", "islamic products", "islam",
+            "muslim", "ইসলামিক", "ইসলামী", "ইসলামি",
+            "ইসলামিক পণ্য", "ইসলামী পণ্য",
+            "কুরআন", "কোরআন", "কোরান", "কুরান",
+            "quran", "quran sharif", "quran majeed",
+            "কুরআন শরীফ", "কোরআন শরীফ",
+            "জায়নামাজ", "জায়নামাজ", "জায়নামাজ",
+            "jaynamaz", "janamaz", "janamaaz",
+            "তসবিহ", "তাসবিহ", "tasbih", "tasbeeh",
+            "আতর", "attar", "ittar", "ইত্তর",
+            "টুপি", "topi", "islamic cap",
+            "ইসলামিক বই", "islamic book",
+            "হাদিস", "hadith", "হাদীস",
+            "দোয়া", "দোয়া", "dua"
+        ]
+    },
+
+    {
+        name: "Others/অন্যান্য",
+        slug: "others",
+        link: "https://www.ghotimarket.com/category.html?slug=others",
+        image: "https://i.ibb.co/LXLpT7dP/blob.webp",
+        keywords: [
+            "other", "others", "others items",
+            "অন্যান্য", "অনান্য", "অন্যান্য পণ্য",
+            "অনান্য পণ্য", "অন্য", "অন্যান্য জিনিস",
+            "miscellaneous", "misc", "general",
+            "সাধারণ", "জেনারেল", "onnanno",
+            "onanno", "onnano", "onany",
+            "other products", "other items",
+            "misc items", "miscellaneous items"
+        ]
+    }
+];
 
         // Global State
         let swiperInstance = null;
