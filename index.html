@@ -1,189 +1,1538 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="bn">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Admin Login | Ghoti Market</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Ghoti Market | শ্রেষ্ঠ অনলাইন মার্কেটপ্লেস</title>
+    
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="Ghoti Market - বাংলাদেশের বিশ্বস্ত অনলাইন মার্কেটপ্লেস। মোবাইল, ল্যাপটপ, স্মার্টওয়াচ, জুতা, টি-শার্ট, গ্যাজেট ও নিত্যপ্রয়োজনীয় পণ্য সেরা দামে কিনুন। ক্যাশ অন ডেলিভারি, ৭ দিনের রিটার্ন। Daraz, AjkerDeal এর বিকল্প।">
+    <meta name="keywords" content="ghoti market, ঘোটি মার্কেট, online shopping bangladesh, daraz alternative, ajkerdeal, online shop bd, মোবাইল কেনা, স্মার্টওয়াচ দাম, জুতা অনলাইন, টি-শার্ট কিনুন, ইলেকট্রনিক্স দোকান, ক্যাশ অন ডেলিভারি, বাংলাদেশের ই-কমার্স, best online marketplace bangladesh, ghotimarket.com">
+    <meta name="author" content="Ghoti Market">
+    <meta name="robots" content="index, follow, max-image-preview:large">
+    <meta name="theme-color" content="#FF6B35">
+    <link rel="canonical" href="https://ghotimarket.com">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="https://i.ibb.co.com/RG2hrf3y/background-remove-ghoti-market.png">
 
-  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+    <!-- JSON-LD Schema for Google -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "name": "Ghoti Market",
+      "url": "https://ghotimarket.com",
+      "logo": "https://i.ibb.co.com/RG2hrf3y/background-remove-ghoti-market.png",
+      "sameAs": [
+        "https://facebook.com/ghotimarketbd",
+        "https://youtube.com/@ghotimarket",
+        "https://app.ghotimarket.com",
+        "https://ghotimarket.com/categories",
+        "https://about.ghotimarket.com"
+      ],
+      "contactPoint": {
+        "@type": "ContactPoint",
+        "telephone": "+8801727003670",
+        "contactType": "Customer Service"
+      }
+    }
+    </script>
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "Ghoti Market",
+      "url": "https://ghotimarket.com",
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": "https://ghotimarket.com/search?q={search_term_string}",
+        "query-input": "required name=search_term_string"
+      }
+    }
+    </script>
 
-  <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: #0f172a;
-      display: flex; justify-content: center; align-items: center;
-      height: 100vh; overflow: hidden;
-    }
-    .box {
-      background: #1e293b; padding: 40px; border-radius: 12px;
-      width: 100%; max-width: 350px;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.3); text-align: center;
-    }
-    .logo {
-      width: 80px; height: 80px; margin: 0 auto 20px;
-      background: #22c55e; border-radius: 16px;
-      display: flex; align-items: center; justify-content: center;
-      font-weight: bold; font-size: 24px; color: #0f172a;
-    }
-    .logo img { width: 100%; height: 100%; object-fit: contain; border-radius: 16px; }
-    h2 { color: white; margin-bottom: 25px; }
-    input {
-      width: 100%; padding: 12px; margin-bottom: 15px;
-      border: 1px solid #334155; border-radius: 6px;
-      background: #0f172a; color: white; outline: none;
-    }
-    input:focus { border-color: #22c55e; }
-    button {
-      width: 100%; padding: 12px; background: #22c55e;
-      border: none; color: white; border-radius: 6px;
-      font-weight: bold; cursor: pointer; transition: background 0.3s;
-    }
-    button:hover:not(:disabled) { background: #16a34a; }
-    button:disabled { background: #475569; cursor: not-allowed; }
-    .error { color: #ef4444; font-size: 14px; margin-top: 15px; min-height: 20px; }
-    .info { color: #22c55e; font-size: 12px; margin-top: 10px; }
-  </style>
+    <!-- Open Graph -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://ghotimarket.com">
+    <meta property="og:title" content="Ghoti Market | বাংলাদেশের শ্রেষ্ঠ অনলাইন মার্কেটপ্লেস">
+    <meta property="og:description" content="ঘোটি মার্কেট - বিশ্বস্ত বিক্রেতাদের কাছ থেকে সেরা দামে মোবাইল, গ্যাজেট, ফ্যাশন ও নিত্যপ্রয়োজনীয় পণ্য কিনুন।">
+    <meta property="og:image" content="https://i.ibb.co.com/RG2hrf3y/background-remove-ghoti-market.png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:site_name" content="Ghoti Market">
+    <meta property="og:locale" content="bn_BD">
+
+    <!-- Twitter / X -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://ghotimarket.com">
+    <meta property="twitter:title" content="Ghoti Market | বাংলাদেশের শ্রেষ্ঠ অনলাইন মার্কেটপ্লেস">
+    <meta property="twitter:description" content="ঘোটি মার্কেট - বিশ্বস্ত বিক্রেতাদের কাছ থেকে সেরা দামে পণ্য কিনুন।">
+    <meta property="twitter:image" content="https://i.ibb.co.com/RG2hrf3y/background-remove-ghoti-market.png">
+
+    <!-- Google Analytics (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-P25N2WYNED"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-P25N2WYNED');
+    </script>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;600;700;800&family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- External CSS Libraries -->
+    <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <!-- External JS Libraries -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
+
+    <!-- Production CSS -->
+    <style>
+        :root {
+            --primary: #FF6B35;
+            --primary-dark: #E85A1A;
+            --secondary: #0f172a;
+            --bg: #FFF8F3;
+            --glass: rgba(255, 255, 255, 0.95);
+            --glass-border: rgba(255, 107, 53, 0.15);
+            --text-main: #1e293b;
+            --text-sub: #64748b;
+            --shadow-sm: 0 4px 15px rgba(0, 0, 0, 0.04);
+            --shadow-lux: 0 15px 40px -10px rgba(255, 107, 53, 0.18);
+            --radius-lg: 20px;
+            --radius-md: 16px;
+            --gradient: linear-gradient(135deg, #FF6B35 0%, #FFA500 100%);
+        }
+
+        * { 
+            margin: 0; 
+            padding: 0; 
+            box-sizing: border-box; 
+            -webkit-tap-highlight-color: transparent; 
+        }
+
+        html { 
+            scroll-behavior: smooth; 
+        }
+
+        body { 
+            font-family: 'Inter', 'Hind Siliguri', sans-serif; 
+            background: var(--bg); 
+            color: var(--text-main); 
+            overflow-x: hidden; 
+            padding-bottom: 85px; 
+            -webkit-font-smoothing: antialiased;
+            text-rendering: optimizeSpeed;
+        }
+
+        /* --- Header --- */
+        header { 
+            background: var(--glass); 
+            position: sticky; 
+            top: 0; 
+            z-index: 1000; 
+            border-bottom: 1px solid var(--glass-border); 
+            padding: 8px 0; 
+            box-shadow: 0 2px 10px rgba(0,0,0,0.02);
+        }
+
+        .header-container { 
+            display: flex; 
+            align-items: center; 
+            justify-content: space-between; 
+            max-width: 1400px; 
+            margin: 0 auto; 
+            padding: 0 12px; 
+            gap: 10px; 
+        }
+
+        .logo { 
+            height: 38px; 
+            width: auto; 
+            object-fit: contain; 
+            flex-shrink: 0; 
+        }
+
+        .search-wrapper { 
+            flex-grow: 1; 
+            position: relative; 
+            min-width: 0;
+        }
+
+        .search-bar { 
+            width: 100%; 
+            height: 42px; 
+            background: #ffffff; 
+            border: 2px solid #FFE4D6; 
+            padding: 0 16px; 
+            border-radius: 50px; 
+            font-size: 14px; 
+            outline: none; 
+            font-weight: 600;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .search-bar:focus { 
+            border-color: var(--primary); 
+            box-shadow: 0 0 0 3px rgba(255, 107, 53, 0.12); 
+        }
+
+        #search-results { 
+            position: absolute; 
+            top: 50px; 
+            left: 0; 
+            width: 100%; 
+            background: #fff; 
+            border-radius: 16px; 
+            box-shadow: var(--shadow-lux); 
+            display: none; 
+            max-height: 380px; 
+            overflow-y: auto; 
+            z-index: 1001; 
+            padding: 8px; 
+            border: 1px solid #FFE4D6; 
+        }
+
+        .search-group-title { 
+            font-size: 11px; 
+            color: var(--primary); 
+            padding: 5px 10px; 
+            background: #f1f5f9; 
+            border-radius: 6px;
+            margin: 4px 0; 
+            font-weight: 800; 
+            text-transform: uppercase; 
+        }
+
+        .search-item { 
+            display: flex; 
+            align-items: center; 
+            gap: 10px; 
+            padding: 8px 10px; 
+            text-decoration: none; 
+            color: var(--text-main); 
+            border-radius: 10px; 
+            font-weight: 600; 
+            font-size: 13px;
+            transition: background 0.15s ease;
+        }
+
+        .search-item:hover { 
+            background: #FFF0E6; 
+            color: var(--primary); 
+        }
+
+        .search-item img { 
+            width: 32px; 
+            height: 32px; 
+            border-radius: 6px; 
+            object-fit: cover; 
+            flex-shrink: 0; 
+        }
+
+        /* --- Header Actions --- */
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-shrink: 0;
+        }
+
+        .cart-icon, .notification-icon {
+            position: relative;
+            width: 40px;
+            height: 40px;
+            min-width: 40px;
+            background: linear-gradient(135deg, #FF6B35, #FFA500);
+            color: #fff;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 17px;
+            text-decoration: none;
+            box-shadow: 0 4px 12px rgba(255,107,53,.25);
+            transition: transform 0.15s ease;
+        }
+
+        .cart-icon:active, .notification-icon:active {
+            transform: scale(0.95);
+        }
+
+        .new-badge {
+            position: absolute;
+            top: -4px;
+            right: -6px;
+            background: #16a34a;
+            color: #fff;
+            font-size: 8px;
+            font-weight: 900;
+            padding: 2px 5px;
+            border-radius: 20px;
+            border: 2px solid #fff;
+            line-height: 1;
+        }
+
+        /* --- Banner Section --- */
+        .banner-section { 
+            width: 100%; 
+            max-width: 1400px; 
+            margin: 12px auto 16px; 
+            padding: 0 12px; 
+        }
+
+        .banner-container { 
+            width: 100%; 
+            aspect-ratio: 981 / 363; 
+            border-radius: var(--radius-lg); 
+            overflow: hidden; 
+            box-shadow: var(--shadow-sm); 
+            background: #f8fafc;
+            position: relative;
+        }
+
+        .swiper-slide img { 
+            width: 100%; 
+            height: 100%; 
+            object-fit: cover; 
+            display: block;
+        }
+
+        .swiper-pagination-bullet-active {
+            background: var(--primary) !important;
+        }
+
+        /* --- Section Titles --- */
+        .section-title { 
+            padding: 0 12px; 
+            margin: 20px auto 12px; 
+            max-width: 1400px; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+        }
+
+        .section-title h2 { 
+            font-size: 1.15rem; 
+            font-weight: 800; 
+            color: var(--secondary); 
+        }
+
+        .section-title a { 
+            color: var(--primary); 
+            text-decoration: none; 
+            font-size: 13px; 
+            font-weight: 700; 
+        }
+
+        /* --- Categories Grid --- */
+        .category-grid { 
+            display: grid; 
+            grid-template-columns: repeat(5, minmax(0, 1fr)); 
+            gap: 6px; 
+            padding: 0 8px; 
+            max-width: 1400px; 
+            margin: 0 auto; 
+        }
+
+        .category-card { 
+            background: #fff; 
+            border: 1px solid #f1e5df; 
+            padding: 6px 3px 8px; 
+            border-radius: 10px; 
+            text-align: center; 
+            text-decoration: none; 
+            transition: transform 0.2s ease; 
+            position: relative; 
+            overflow: hidden; 
+            box-shadow: 0 2px 6px rgba(0,0,0,.03);
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        @media (hover: hover) {
+            .category-card:hover { 
+                transform: translateY(-2px); 
+                border-color: var(--primary); 
+            }
+        }
+
+        .cat-img-box { 
+            width: 100%; 
+            aspect-ratio: 1 / 1; 
+            border-radius: 8px; 
+            margin: 0 auto 5px; 
+            background: #fff; 
+            border: 1px solid #FFE4D6; 
+            overflow: hidden; 
+        }
+
+        .cat-img-box img { 
+            width: 100%; 
+            height: 100%; 
+            object-fit: cover; 
+            display: block; 
+        }
+
+        .cat-name { 
+            font-size: 10px; 
+            font-weight: 700; 
+            color: var(--text-main); 
+            line-height: 1.25;
+            display: -webkit-box; 
+            -webkit-line-clamp: 2; 
+            -webkit-box-orient: vertical; 
+            overflow: hidden; 
+            word-break: break-word;
+        }
+
+        @media (min-width: 768px) { 
+            .category-grid { 
+                grid-template-columns: repeat(6, minmax(0, 1fr)); 
+                gap: 12px; 
+                padding: 0 12px; 
+            } 
+            .category-card { 
+                padding: 8px 6px 10px; 
+                border-radius: var(--radius-md); 
+            }
+            .cat-name { 
+                font-size: 12px; 
+            }
+        }
+
+        @media (min-width: 1024px) { 
+            .category-grid { 
+                grid-template-columns: repeat(8, minmax(0, 1fr)); 
+                gap: 16px; 
+            } 
+        }
+
+        /* --- Products Section --- */
+        .product-grid-home {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 8px;
+            padding: 0 8px;
+            max-width: 1400px;
+            margin: auto;
+        }
+
+        @media (min-width: 540px) {
+            .product-grid-home {
+                grid-template-columns: repeat(3, minmax(0, 1fr));
+                gap: 10px;
+            }
+        }
+
+        @media (min-width: 768px) {
+            .product-grid-home { 
+                grid-template-columns: repeat(4, minmax(0, 1fr)); 
+                gap: 14px; 
+                padding: 0 12px; 
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .product-grid-home { 
+                grid-template-columns: repeat(5, minmax(0, 1fr)); 
+                gap: 18px; 
+            }
+        }
+
+        @media (min-width: 1400px) {
+            .product-grid-home { 
+                grid-template-columns: repeat(6, minmax(0, 1fr)); 
+            }
+        }
+
+        .home-product-card {
+            background: #ffffff;
+            border-radius: 12px;
+            overflow: hidden;
+            text-decoration: none;
+            color: #1e293b;
+            border: 1px solid #f1f5f9;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+            transition: border-color 0.2s ease, transform 0.2s ease;
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        @media (hover: hover) {
+            .home-product-card:hover {
+                transform: translateY(-3px);
+                border-color: #ffd8c7;
+                box-shadow: 0 8px 20px rgba(255, 107, 53, 0.1);
+            }
+        }
+
+        .product-image-box {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 1 / 1;
+            overflow: hidden;
+            background: #f8fafc;
+        }
+
+        .product-image-box img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .discount-badge {
+            position: absolute;
+            top: 6px;
+            left: 6px;
+            background: linear-gradient(135deg, #FF6B35 0%, #E85A1A 100%);
+            color: #ffffff;
+            padding: 3px 6px;
+            border-radius: 5px;
+            font-size: 9px;
+            font-weight: 800;
+            z-index: 2;
+            line-height: 1;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+        }
+
+        .home-product-info { 
+            padding: 8px 8px 10px; 
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+            justify-content: space-between;
+            gap: 6px;
+        }
+
+        .home-product-name {
+            font-size: 11px;
+            font-weight: 700;
+            line-height: 1.35;
+            color: #1e293b;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            word-break: break-word;
+        }
+
+        .product-meta-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 4px;
+        }
+
+        .price-box {
+            display: flex;
+            align-items: baseline;
+            gap: 4px;
+            flex-wrap: wrap;
+        }
+
+        .home-product-price {
+            color: var(--primary);
+            font-size: 13px;
+            font-weight: 800;
+            line-height: 1;
+        }
+
+        .old-price {
+            color: #94a3b8;
+            font-size: 10px;
+            text-decoration: line-through;
+            line-height: 1;
+            font-weight: 500;
+        }
+
+        .product-action-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            width: 100%;
+            padding: 6px 0;
+            background: #FFF0E6;
+            color: var(--primary);
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 800;
+            margin-top: 2px;
+        }
+
+        @media (min-width: 768px) {
+            .home-product-card {
+                border-radius: 14px;
+            }
+            .home-product-info { 
+                padding: 10px; 
+                gap: 8px;
+            }
+            .home-product-name { 
+                font-size: 12px; 
+            }
+            .home-product-price { 
+                font-size: 15px; 
+            }
+            .old-price { 
+                font-size: 11px; 
+            }
+            .discount-badge { 
+                font-size: 10px; 
+                padding: 3px 7px; 
+                top: 8px; 
+                left: 8px; 
+            }
+            .product-action-btn {
+                font-size: 12px;
+                padding: 7px 0;
+            }
+        }
+
+        /* --- Buttons --- */
+        .all-shops-box, .track-order-box { 
+            max-width: 380px; 
+            margin: 24px auto 16px; 
+            padding: 0 12px;
+        }
+
+        .all-shops-btn, .track-order-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            width: 100%;
+            padding: 12px 18px;
+            border-radius: 50px;
+            background: linear-gradient(135deg, #FF6B35, #FF8A00);
+            color: #fff;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 800;
+            box-shadow: 0 8px 20px rgba(255,107,53,.2);
+            transition: transform 0.15s ease;
+        }
+
+        .all-shops-btn:active, .track-order-btn:active { 
+            transform: scale(0.98); 
+        }
+
+        /* --- Social Icons --- */
+        .social-icons { 
+            display: flex; 
+            justify-content: center; 
+            gap: 12px; 
+            margin: 20px 0; 
+        }
+
+        .social-icons a { 
+            width: 38px; 
+            height: 38px; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            background: #fff; 
+            color: var(--primary); 
+            border-radius: 50%; 
+            text-decoration: none; 
+            font-size: 16px; 
+            transition: background 0.2s ease, color 0.2s ease; 
+        }
+
+        .social-icons a.fb:hover { background: #1877F2; color: #fff; }
+        .social-icons a.wa:hover { background: #25D366; color: #fff; }
+        .social-icons a.yt:hover { background: #FF0000; color: #fff; }
+
+        /* --- Bottom Nav --- */
+        .bottom-nav { 
+            position: fixed; 
+            bottom: 0; 
+            left: 0; 
+            width: 100%; 
+            height: 60px; 
+            background: rgba(255,255,255,0.96); 
+            display: flex; 
+            justify-content: space-around; 
+            align-items: center; 
+            border-top: 1px solid var(--glass-border); 
+            z-index: 1000; 
+            padding-bottom: env(safe-area-inset-bottom); 
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.03);
+        }
+
+        .nav-item { 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            text-decoration: none; 
+            color: var(--text-sub); 
+            font-size: 10px; 
+            font-weight: 800; 
+            transition: color 0.15s ease; 
+            flex: 1; 
+        }
+
+        .nav-item i { 
+            font-size: 17px; 
+            margin-bottom: 2px; 
+        }
+
+        .nav-item.active { 
+            color: var(--primary); 
+        }
+
+        /* --- Footer & Updated Watermark Styling --- */
+        footer { 
+            background: var(--secondary); 
+            color: white; 
+            padding: 35px 12px 85px; 
+            text-align: center; 
+            margin-top: 30px; 
+        }
+
+        .footer-brand { 
+            text-align: center; 
+            margin-bottom: 20px; 
+        }
+
+        /* Watermark image fixed styling */
+        .footer-logo-img { 
+            max-width: 180px; 
+            height: auto; 
+            max-height: 50px;
+            margin: 0 auto 10px; 
+            display: block;
+            object-fit: contain; 
+            filter: drop-shadow(0 4px 10px rgba(255,107,53,0.25));
+        }
+
+        .footer-logo { 
+            font-size: 20px; 
+            font-weight: 800; 
+            color: var(--primary); 
+            margin-bottom: 8px; 
+        }
+
+        .verified-marketplace { 
+            display: inline-flex; 
+            align-items: center; 
+            gap: 6px; 
+            background: #16a34a; 
+            color: #fff; 
+            padding: 5px 12px; 
+            border-radius: 50px; 
+            font-size: 12px; 
+            font-weight: 700; 
+            margin: 8px 0 12px; 
+        }
+
+        .footer-desc { 
+            color: #cbd5e1; 
+            font-size: 12px; 
+            margin-bottom: 16px; 
+        }
+
+        .footer-contact { 
+            display: flex; 
+            flex-direction: column; 
+            gap: 8px; 
+            align-items: center; 
+        }
+
+        .footer-item { 
+            display: flex; 
+            align-items: center; 
+            gap: 6px; 
+            color: #e2e8f0; 
+            font-size: 12px; 
+        }
+
+        .footer-item i { 
+            color: #FF6B35; 
+        }
+
+        .footer-item a { 
+            color: #e2e8f0; 
+            text-decoration: none; 
+        }
+
+        .footer-links { 
+            display: flex; 
+            flex-wrap: wrap; 
+            justify-content: center; 
+            gap: 10px; 
+            margin-bottom: 18px; 
+        }
+
+        .footer-links a { 
+            color: #94a3b8; 
+            text-decoration: none; 
+            font-size: 12px; 
+            font-weight: 600; 
+        }
+
+        .footer-links a:hover { 
+            color: var(--primary); 
+        }
+
+        .footer-bottom { 
+            color: #94a3b8; 
+            font-size: 11px; 
+        }
+
+        /* --- Side Drawer Menu --- */
+        .menu-btn {
+            position: fixed;
+            top: 10px;
+            left: 10px;
+            width: 38px;
+            height: 38px;
+            border: none;
+            border-radius: 8px;
+            background: #FF6B35;
+            color: #fff;
+            font-size: 18px;
+            cursor: pointer;
+            z-index: 2001;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 10px rgba(255,107,53,0.3);
+        }
+
+        .side-menu {
+            position: fixed;
+            top: 0;
+            left: -280px;
+            width: 260px;
+            height: 100%;
+            background: #fff;
+            box-shadow: 2px 0 15px rgba(0,0,0,.12);
+            transition: left 0.25s ease-out;
+            z-index: 2002;
+            overflow-y: auto;
+        }
+
+        .side-menu.active {
+            left: 0;
+        }
+
+        .menu-header {
+            background: #FF6B35;
+            color: #fff;
+            text-align: center;
+            padding: 16px 12px;
+        }
+
+        .side-menu a {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 18px;
+            color: #333;
+            text-decoration: none;
+            border-bottom: 1px solid #f1f5f9;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .side-menu a i {
+            width: 18px;
+            text-align: center;
+            color: #FF6B35;
+        }
+
+        .side-menu a:hover {
+            background: #FFF8F3;
+        }
+
+        .menu-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,.35);
+            display: none;
+            z-index: 2000;
+        }
+
+        .menu-overlay.active {
+            display: block;
+        }
+
+        /* --- Toast Notification --- */
+        #offline-toast {
+            position: fixed;
+            bottom: 70px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #1e293b;
+            color: #fff;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 11px;
+            z-index: 9999;
+            display: none;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            white-space: nowrap;
+        }
+    </style>
 </head>
-
 <body>
 
-<div class="box">
-  <div class="logo">
-    <img src="https://ghotimarket.com/logo.png" alt="GHOTI MARKET Logo">
-  </div>
+    <!-- Drawer Navigation Button -->
+    <button class="menu-btn" onclick="toggleMenu()" aria-label="Toggle Navigation Menu">
+        <i class="fas fa-bars"></i>
+    </button>
 
-  <h2>Admin Login</h2>
+    <!-- Side Menu Overlay -->
+    <div class="menu-overlay" onclick="toggleMenu()"></div>
 
-  <input type="email" id="email" placeholder="Email Address">
-  <input type="password" id="password" placeholder="Password">
+    <!-- Side Navigation Menu -->
+    <div class="side-menu" id="sideMenu">
+        <div class="menu-header">
+            <img src="https://i.ibb.co.com/RG2hrf3y/background-remove-ghoti-market.png" width="45" alt="Ghoti Market Logo">
+            <h3 style="margin-top:4px; font-size:15px;">GHOTI MARKET</h3>
+        </div>
+        <a href="https://ghotimarket.com"><i class="fas fa-home"></i> Home</a>
+        <a href="https://ghotimarket.com/categories"><i class="fas fa-th-large"></i> Categories</a>
+        <a href="https://ghotimarket.com/shops"><i class="fas fa-store"></i> All Shops</a>
+        <a href="https://ghotimarket.com/all-product"><i class="fas fa-box"></i> All Products</a>
+        <a href="https://ghotimarket.com/cart"><i class="fa-solid fa-cart-shopping"></i> Shopping Cart</a>
+        <a href="https://ghotimarket.com/Affiliate/register"><i class="fas fa-handshake"></i> Affiliate Account</a>
+        <a href="https://seller.ghotimarket.com"><i class="fas fa-shop"></i> Seller Account</a>
+        <a href="https://ghotimarket.com/contact"><i class="fas fa-headset"></i> Support</a>
+        <a href="https://ghotimarket.com/track"><i class="fas fa-truck"></i> Order Track</a>
+        <a href="https://ghotimarket.com/privacy-policy"><i class="fas fa-shield-alt"></i> Privacy Policy</a>
+        <a href="https://ghotimarket.com/termsandcondition"><i class="fas fa-file-contract"></i> Terms & Conditions</a>
+        <a href="https://about.ghotimarket.com"><i class="fa-solid fa-circle-info"></i> About GHOTI MARKET</a>
+        <a href="https://www.facebook.com/@ghotimarketbd" target="_blank"><i class="fab fa-facebook"></i> Facebook</a>
+        <a href="https://youtube.com/@ghotimarket" target="_blank"><i class="fab fa-youtube"></i> YouTube</a>
+    </div>
 
-  <button type="button" id="loginBtn" onclick="login()">Login</button>
+    <h1 style="position:absolute; left:-9999px;">Ghoti Market - বাংলাদেশের সেরা অনলাইন মার্কেটপ্লেস</h1>
 
-  <p class="error" id="error"></p>
-  <p class="info" id="info"></p>
-</div>
+    <!-- Header -->
+    <header>
+        <div class="header-container">
+            <a href="https://ghotimarket.com">
+                <img src="https://i.ibb.co.com/RG2hrf3y/background-remove-ghoti-market.png" class="logo" alt="Ghoti Market Logo">
+            </a>
 
-<script>
-  const firebaseConfig = {
-    apiKey: "AIzaSyBUhNhYvuo_FTvZ5RZR6Gn-4hsUY21S0XE",
-    authDomain: "ghotimarket.firebaseapp.com",
-    projectId: "ghotimarket",
-    databaseURL: "https://ghotimarket-default-rtdb.firebaseio.com",
-    storageBucket: "ghotimarket.firebasestorage.app",
-    messagingSenderId: "481257644093",
-    appId: "1:481257644093:web:0dfc3699d6b3c86afeca54",
-    measurementId: "G-4SR8V2EKC1"
-  };
+            <div class="search-wrapper">
+                <input type="text" class="search-bar" id="smartSearch" placeholder="পণ্য, শপ বা ক্যাটাগরি খুঁজুন..." aria-label="Search Products">
+                <div id="search-results"></div>
+            </div>
 
-  firebase.initializeApp(firebaseConfig);
-  const auth = firebase.auth();
+            <div class="header-actions">
+                <a href="https://ghotimarket.com/cart" class="cart-icon" aria-label="Shopping Cart">
+                    <i class="fa-solid fa-cart-shopping"></i>
+                </a>
 
-  // সিকিউরিটি Key
-  const ADMIN_EMAIL = "support@ghotimarket.com";
-  const DEVICE_ID = 'gm_device_' + btoa(navigator.userAgent + navigator.language).substring(0,20);
-  
-  let pageLoadTime = Date.now();
-  const loginBtn = document.getElementById("loginBtn");
-  const errorEl = document.getElementById("error");
-  const infoEl = document.getElementById("info");
+                <a href="notification.html" class="notification-icon" aria-label="Notifications">
+                    <i class="fa-solid fa-bell"></i>
+                    <span class="new-badge">NEW</span>
+                </a>
+            </div>
+        </div>
+    </header>
 
-  // পেজ লোডেই চেক
-  initSecurity();
+    <!-- Banner Section -->
+    <div class="banner-section">
+        <div class="swiper banner-container">
+            <div class="swiper-wrapper" id="banner-wrapper"></div>
+            <div class="swiper-pagination"></div>
+        </div>
+    </div>
 
-  function initSecurity(){
-    const isBanned = localStorage.getItem(DEVICE_ID + '_banned');
-    const attempts = parseInt(localStorage.getItem(DEVICE_ID + '_attempts') || 0);
-    
-    if(isBanned === 'true'){
-      lockDeviceForever("This device is permanently banned.");
-      return;
+    <!-- Categories Section -->
+    <div class="section-title">
+        <h2>জনপ্রিয় ক্যাটাগরি</h2>
+        <a href="https://ghotimarket.com/categories.html">সব ক্যাটাগরি দেখুন</a>
+    </div>
+    <div class="category-grid" id="category-grid"></div>
+
+    <!-- Popular Products Section -->
+    <div class="section-title">
+        <h2>পপুলার কালেকশন</h2>
+        <a href="https://ghotimarket.com/all-product.html">সব পণ্য দেখুন</a>
+    </div>
+    <div class="product-grid-home" id="latest-products"></div>
+
+    <!-- All Shops Button Section -->
+    <div class="all-shops-box">
+        <a href="https://ghotimarket.com/shops" class="all-shops-btn">
+            <i class="fa-solid fa-store"></i>
+            <span>সব শপ দেখুন</span>
+        </a>
+    </div>
+
+    <!-- Footer Section -->
+    <footer>
+        <div class="footer-brand">
+            <img src="https://ghotimarket.com/watermark.png" alt="Ghoti Market Watermark Logo" class="footer-logo-img" loading="lazy">
+            <h3 class="footer-logo">GHOTI MARKET</h3>
+            <div class="verified-marketplace">
+                <i class="fa-solid fa-circle-check"></i>
+                Verified Marketplace
+            </div>
+            <p class="footer-desc">বাংলাদেশের বিশ্বস্ত অনলাইন মার্কেটপ্লেস।</p>
+            <div class="footer-contact">
+                <div class="footer-item">
+                    <i class="fa-solid fa-envelope"></i>
+                    <a href="mailto:support@ghotimarket.com">support@ghotimarket.com</a>
+                </div>
+                <div class="footer-item">
+                    <i class="fa-solid fa-location-dot"></i>
+                    Sunamganj, Sylhet, Bangladesh
+                </div>
+                <div style="margin-top:6px;font-size:11px;color:#94a3b8;">
+                    Powered by Ghoti Market Team
+                </div>
+            </div>
+        </div>
+
+        <div class="track-order-box">
+            <a href="https://ghotimarket.com/track" class="track-order-btn">
+                <i class="fa-solid fa-truck-fast"></i>
+                <span>অর্ডার ট্র্যাক করুন</span>
+            </a>
+        </div>
+
+        <div class="footer-links">
+            <a href="https://about.ghotimarket.com">ঘটি মার্কেট সম্পর্কে</a>
+            <a href="https://ghotimarket.com/privacy-policy">প্রাইভেসি পলিসি</a>
+            <a href="https://ghotimarket.com/termsandcondition">টার্মস ও কন্ডিশন</a>
+            <a href="https://ghotimarket.com/contact">সাপোর্ট</a>
+            <a href="https://ghotimarket.com/return&refund-policy">রিটার্ন এবং রিফান্ড পলিসি</a>
+        </div>
+
+        <div class="social-icons">
+            <a href="https://facebook.com/ghotimarket" class="fb" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+            <a href="https://wa.me/+8801727003670" class="wa" aria-label="WhatsApp"><i class="fab fa-whatsapp"></i></a>
+            <a href="https://youtube.com/@ghotimarketofficial" class="yt" aria-label="YouTube"><i class="fab fa-youtube"></i></a>
+        </div>
+
+        <div class="footer-bottom">
+            © <span id="year"></span> Ghoti Market. All Rights Reserved.
+            <br><br>
+            Made with ❤️ in Bangladesh 🇧🇩
+        </div>
+    </footer>
+
+    <!-- Bottom Navigation Bar -->
+    <nav class="bottom-nav">
+        <a href="https://ghotimarket.com" class="nav-item active"><i data-lucide="home"></i><span>Home</span></a>
+        <a href="https://ghotimarket.com/categories" class="nav-item"><i data-lucide="grid"></i><span>Categories</span></a>
+        <a href="https://ghotimarket.com/all-product" class="nav-item"><i data-lucide="box"></i><span>All product</span></a>
+        <a href="https://ghotimarket.com/contact" class="nav-item"><i data-lucide="headphones"></i><span>Support</span></a>
+        <a href="https://ghotimarket.com/privacy-policy" class="nav-item"><i data-lucide="shield-check"></i><span>Privacy</span></a>
+        <a href="https://seller.ghotimarket.com/signup" class="nav-item"><i data-lucide="store"></i><span>J.Seller</span></a>
+    </nav>
+
+    <!-- Offline Status Toast Notification -->
+    <div id="offline-toast">অফলাইন মোড — ক্যাশ থেকে তথ্য দেখানো হচ্ছে</div>
+
+    <script>
+    function toggleMenu(){
+        const menu = document.getElementById("sideMenu");
+        const overlay = document.querySelector(".menu-overlay");
+        if(menu) menu.classList.toggle("active");
+        if(overlay) overlay.classList.toggle("active");
     }
-    
-    if(attempts >= 3){
-      lockDeviceForever("Too many failed attempts. Device banned.");
-      return;
-    }
-    
-    // লগইন থাকলে ডাইরেক্ট হোমে
-    auth.onAuthStateChanged((user) => {
-      if (user && user.email === ADMIN_EMAIL) {
-        window.location.href = "home.html";
-      } else if(user) {
-        auth.signOut(); // অন্য কেউ লগইন থাকলে লগআউট
-      }
-    });
-  }
+    </script>
 
-  function lockDeviceForever(msg){
-    loginBtn.disabled = true;
-    document.getElementById("email").disabled = true;
-    document.getElementById("password").disabled = true;
-    errorEl.innerText = msg;
-    infoEl.innerText = "Contact Admin to unban this device.";
-    localStorage.setItem(DEVICE_ID + '_banned', 'true');
-  }
+    <!-- Firebase Application Module -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getFirestore, collection, getDocs, query, limit } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-  function login() {
-    const email = document.getElementById("email").value.trim();
-    const password = document.getElementById("password").value;
+        // Firebase Configuration
+        const FIREBASE_CONFIG = {
+            apiKey: "AIzaSyBUhNhYvuo_FTvZ5RZR6Gn-4hsUY21S0XE",
+            authDomain: "ghotimarket.firebaseapp.com",
+            projectId: "ghotimarket",
+            storageBucket: "ghotimarket.firebasestorage.app",
+            messagingSenderId: "481257644093",
+            appId: "1:481257644093:web:0dfc3699d6b3c86afeca54"
+        };
 
-    errorEl.innerText = ""; infoEl.innerText = "";
+        const FALLBACK_IMG = 'https://via.placeholder.com/300?text=Image+Unavailable';
 
-    // রুল 1: 5 সেকেন্ড বট প্রটেকশন
-    if (Date.now() - pageLoadTime < 5000) {
-      errorEl.innerText = "Wait 5 seconds. Bot activity detected!";
-      banDevice();
-      return;
-    }
+        // Initialize Firebase
+        const app = initializeApp(FIREBASE_CONFIG);
+        const db = getFirestore(app);
 
-    // রুল 2: শুধু Admin Email ই allow
-    if(email !== ADMIN_EMAIL){
-      errorEl.innerText = "Access Denied! Only Admin can login.";
-      addAttempt();
-      return;
-    }
+        // --- static Banners Data ---
+        const BANNERS = [
+            {
+                url: "https://i.ibb.co/RTzNyjHX/25613.png",
+                link: "https://chat.whatsapp.com/JuKEgjxwAfVIb0fr8Tbcc4?s=cl&p=a&ilr=1"
+            },
+            {
+                url: "https://i.ibb.co/5W2fLgqw/25808.png",
+                link: "https://chat.whatsapp.com/JuKEgjxwAfVIb0fr8Tbcc4?s=cl&p=a&ilr=1"
+            }
+        ];
 
-    if (!email || !password) {
-      errorEl.innerText = "Please enter email and password!";
-      return;
-    }
+        // --- Static Categories Data with Search Keywords ---
+        const CATEGORIES = [
+            {
+                name: "Sharee-শাড়ি",
+                slug: "sharee",
+                link: "https://www.ghotimarket.com/category.html?slug=sharee",
+                image: "https://i.ibb.co/848tWxY4/blob.webp",
+                keywords: ["sharee", "শাড়ি", "সাড়ি", "saree", "jamdani", "silk"]
+            },
+            {
+                name: "Three piece-ত্রি পিস",
+                slug: "three-piece",
+                link: "https://www.ghotimarket.com/category.html?slug=three-piece",
+                image: "https://i.ibb.co/ycq3cQzW/blob.webp",
+                keywords: ["three piece", "ত্রি পিস", "থ্রি পিস", "dress", "salwar kameez", "kamiz"]
+            },
+            {
+                name: "T-shirts-গেঞ্জি",
+                slug: "t-shirts",
+                link: "https://www.ghotimarket.com/category.html?slug=t-shirts",
+                image: "https://i.ibb.co/wFV3Vzjx/blob.webp",
+                keywords: ["t-shirt", "tshirts", "গেঞ্জি", "টি শার্ট", "tshirt", "polo"]
+            },
+            {
+                name: "Bad sheets-বিছানা চাদর",
+                slug: "bad-sheets",
+                link: "https://www.ghotimarket.com/category.html?slug=bad-sheets",
+                image: "https://i.ibb.co/fd1YdkcM/blob.webp",
+                keywords: ["bad sheets", "bedsheet", "বিছানা চাদর", "চাদর", "bed cover", "bedding"]
+            },
+            {
+                name: "gadgets-গ্যাজেটস",
+                slug: "gadgets",
+                link: "https://www.ghotimarket.com/category.html?slug=gadgets",
+                image: "https://i.ibb.co/dJzHppxZ/blob.webp",
+                keywords: ["gadgets", "গ্যাজেটস", "গ্যাজেট", "tech items", "electronics", "accessories"]
+            },
+            {
+                name: "Phone-মোবাইল",
+                slug: "phone",
+                link: "https://www.ghotimarket.com/category.html?slug=phone",
+                image: "https://i.ibb.co/Txsxf2JN/blob.webp",
+                keywords: ["phone", "মোবাইল", "স্মার্টফোন", "smartphone", "mobile", "android"]
+            },
+            {
+                name: "shoes-জুতা",
+                slug: "shoes",
+                link: "https://www.ghotimarket.com/category.html?slug=shoes",
+                image: "https://i.ibb.co/8n8X1Ntz/blob.webp",
+                keywords: ["shoes", "জুতা", "কেডস", "sneakers", "juta", "footwear"]
+            },
+            {
+                name: "Beauty & personal care-...",
+                slug: "beauty-personal-care",
+                link: "https://www.ghotimarket.com/category.html?slug=beauty-personal-care",
+                image: "https://beauty-personal.edgeone.dev/file.png",
+                keywords: ["beauty", "personal care", "বিউটি", "প্রসাধন", "makeup", "skincare"]
+            },
+            {
+                name: "Bags-ব্যাগ",
+                slug: "bags",
+                link: "https://www.ghotimarket.com/category.html?slug=bags",
+                image: "https://i.ibb.co/BH6P92YC/blob.webp",
+                keywords: ["bags", "ব্যাগ", "bag", "backpack", "handbag", "school bag"]
+            },
+            {
+                name: "Kids Fashion-ছোটদের ফ্যাশন",
+                slug: "kids-fashion",
+                link: "https://www.ghotimarket.com/category.html?slug=kids-fashion",
+                image: "https://i.ibb.co/m5yhyCyK/blob.webp",
+                keywords: ["kids fashion", "ছোটদের ফ্যাশন", "বাচ্চাদের কাপড়", "baby dress", "kids", "children wear"]
+            },
+            {
+                name: "Jersy-জার্সি",
+                slug: "jersey",
+                link: "https://www.ghotimarket.com/category.html?slug=jersey",
+                image: "https://i.ibb.co/GQcTFBBC/blob.webp",
+                keywords: ["jersy", "jersey", "জার্সি", "football jersey", "cricket jersey", "sports tshirt"]
+            },
+            {
+                name: "Borka-বোরকা",
+                slug: "borka",
+                link: "https://www.ghotimarket.com/category.html?slug=borka",
+                image: "https://i.ibb.co/6RwCMNGt/blob.webp",
+                keywords: ["borka", "বোরকা", "hijab", "burqa", "abaya", "হিযাব"]
+            },
+            {
+                name: "Smart watch-ঘড়ি",
+                slug: "smart-watch",
+                link: "https://www.ghotimarket.com/category.html?slug=smart-watch",
+                image: "https://i.ibb.co/ch4Q9Sn3/blob.webp",
+                keywords: ["smart watch", "ghori", "ঘড়ি", "স্মার্ট ওয়াচ", "watch", "hand watch"]
+            },
+            {
+                name: "Electronics-ইলেকট্রনিক্স",
+                slug: "electronics",
+                link: "https://www.ghotimarket.com/category.html?slug=electronics",
+                image: "https://i.ibb.co/zTLF1DB2/blob.webp",
+                keywords: ["electronics", "ইলেকট্রনিক্স", "home appliances", "charger", "electric"]
+            },
+            {
+                name: "Fans-ফ্যান",
+                slug: "fans",
+                link: "https://www.ghotimarket.com/category.html?slug=fans",
+                image: "https://i.ibb.co/DjmqHQ4/blob.webp",
+                keywords: ["fans", "ফ্যান", "পাখা", "ceiling fan", "rechargeable fan", "table fan"]
+            },
+            {
+                name: "Drone-ড্রোন",
+                slug: "drone",
+                link: "https://www.ghotimarket.com/category.html?slug=drone",
+                image: "https://i.ibb.co/VcyjNXsq/blob.webp",
+                keywords: ["drone", "ড্রোন", "camera drone", "mini drone", "flying camera"]
+            },
+            {
+                name: "umbrella-ছাতা",
+                slug: "umbrella",
+                link: "https://www.ghotimarket.com/category.html?slug=umbrella",
+                image: "https://i.ibb.co/PZqszX2y/blob.webp",
+                keywords: ["umbrella", "ছাতা", "chata", "rain umbrella", "sun umbrella"]
+            },
+            {
+                name: "Health And Wellness-স্বাস্থ্য ও সুস্থ",
+                slug: "health-and-wellness",
+                link: "https://www.ghotimarket.com/category.html?slug=health-and-wellness",
+                image: "https://i.ibb.co/B2y3wd5h/blob.webp",
+                keywords: ["health", "wellness", "স্বাস্থ্য", "চিকিৎসা", "fitness", "medicine"]
+            },
+            {
+                name: "Book-বই",
+                slug: "book",
+                link: "https://www.ghotimarket.com/category.html?slug=book",
+                image: "https://i.ibb.co/W4TnGwcN/blob.webp",
+                keywords: ["book", "বই", "boi", "novel", "story book", "books"]
+            },
+            {
+                name: "Islamic",
+                slug: "islamic",
+                link: "https://www.ghotimarket.com/category.html?slug=islamic",
+                image: "https://i.ibb.co/8n8X1Ntz/blob.webp",
+                keywords: ["islamic", "ইসলামিক", "quran", "jaynamaz", "tasbih", "attar", "ইসলামিক পণ্য"]
+            },
+            {
+                name: "Others/অন্যান্য",
+                slug: "others",
+                link: "https://www.ghotimarket.com/category.html?slug=others",
+                image: "https://i.ibb.co/LXLpT7dP/blob.webp",
+                keywords: ["others", "অন্যান্য", "miscellaneous", "general", "onnanno"]
+            }
+        ];
 
-    loginBtn.disabled = true;
-    errorEl.innerText = "Processing...";
+        // Global State
+        let swiperInstance = null;
+        let globalSearchIndex = { categories: [], products: [] };
 
-    auth.signInWithEmailAndPassword(email, password)
-      .then((userCredential) => {
-        // সফল হলে সব রিসেট
-        localStorage.removeItem(DEVICE_ID + '_attempts');
-        infoEl.innerText = "Login Successful! Redirecting...";
-        window.location.href = "home.html";
-      })
-      .catch((error) => {
-        addAttempt();
-        errorEl.innerText = "Invalid credentials!";
-        loginBtn.disabled = false;
-      });
-  }
+        // Security Utilities
+        function escapeHTML(str) {
+            if (!str || typeof str !== 'string') return '';
+            return str.replace(/[&<>"']/g, (m) => ({
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                '"': '&quot;',
+                "'": '&#39;'
+            })[m]);
+        }
 
-  function addAttempt(){
-    let attempts = parseInt(localStorage.getItem(DEVICE_ID + '_attempts') || 0);
-    attempts++;
-    localStorage.setItem(DEVICE_ID + '_attempts', attempts);
-    
-    if(attempts >= 3){
-      banDevice();
-    } else {
-      infoEl.innerText = `Attempt ${attempts}/3. After 3 fails device will be banned.`;
-    }
-  }
+        function safeURL(urlStr, fallback = '#') {
+            if (!urlStr || typeof urlStr !== 'string') return fallback;
+            try {
+                const parsed = new URL(urlStr, window.location.origin);
+                if (['http:', 'https:', 'mailto:', 'tel:'].includes(parsed.protocol)) {
+                    return escapeHTML(urlStr);
+                }
+            } catch (_) {
+                if (urlStr.startsWith('/') || urlStr.startsWith('#')) return escapeHTML(urlStr);
+            }
+            return fallback;
+        }
 
-  function banDevice(){
-    localStorage.setItem(DEVICE_ID + '_banned', 'true');
-    lockDeviceForever("Device Permanently Banned!");
-  }
-</script>
+        function debounce(func, delay) {
+            let timer;
+            return (...args) => {
+                clearTimeout(timer);
+                timer = setTimeout(() => func(...args), delay);
+            };
+        }
 
+        function attachImageErrorHandlers(container) {
+            if (!container) return;
+            const imgs = container.querySelectorAll('img');
+            imgs.forEach(img => {
+                img.onerror = function() {
+                    this.onerror = null;
+                    this.src = this.getAttribute('data-fallback') || FALLBACK_IMG;
+                };
+            });
+        }
+
+        // Render Functions
+        function renderBanners(banners) {
+            const bannerWrapper = document.getElementById('banner-wrapper');
+            if (!bannerWrapper || !banners || !banners.length) return;
+
+            bannerWrapper.innerHTML = banners.map((banner, index) => {
+                const targetAttr = banner.link ? 'target="_blank" rel="noopener noreferrer"' : '';
+                const loadingAttr = index === 0 ? 'loading="eager" fetchpriority="high"' : 'loading="lazy"';
+                const link = safeURL(banner.link);
+                const imgUrl = safeURL(banner.url, FALLBACK_IMG);
+
+                return `
+                <div class="swiper-slide">
+                    <a href="${link}" ${targetAttr} style="display:block;width:100%;height:100%;">
+                        <img src="${imgUrl}" alt="Banner" ${loadingAttr} data-fallback="${FALLBACK_IMG}">
+                    </a>
+                </div>
+                `;
+            }).join('');
+
+            attachImageErrorHandlers(bannerWrapper);
+
+            if (typeof Swiper !== 'undefined') {
+                if (swiperInstance) {
+                    swiperInstance.destroy(true, true);
+                }
+                swiperInstance = new Swiper('.banner-container', {
+                    loop: banners.length > 1,
+                    autoplay: banners.length > 1 ? { delay: 4000, disableOnInteraction: false } : false,
+                    pagination: { el: '.swiper-pagination', clickable: true }
+                });
+            }
+        }
+
+        function renderCategories(categories) {
+            const catGrid = document.getElementById('category-grid');
+            if (!catGrid) return;
+
+            catGrid.innerHTML = categories.map(cat => {
+                const catName = escapeHTML(cat.name || 'Unnamed');
+                const catImage = safeURL(cat.image, FALLBACK_IMG);
+                const link = safeURL(cat.link);
+
+                return `
+                <a href="${link}" class="category-card">
+                    <div class="cat-img-box">
+                        <img src="${catImage}" alt="${catName}" loading="lazy" data-fallback="${FALLBACK_IMG}">
+                    </div>
+                    <div class="cat-name">${catName}</div>
+                </a>
+                `;
+            }).join('');
+
+            attachImageErrorHandlers(catGrid);
+        }
+
+        function renderProducts(products) {
+            const productBox = document.getElementById("latest-products");
+            if (!productBox) return;
+
+            if (!products || !products.length) {
+                productBox.innerHTML = `<p style="grid-column: 1/-1; text-align:center; color:#64748b; padding:20px;">'popular' কালেকশনে কোনো পণ্য পাওয়া যায়নি।</p>`;
+                return;
+            }
+
+            productBox.innerHTML = products.map((p, index) => {
+                let discount = "";
+                const price = Number(p.price) || 0;
+                const oldPrice = Number(p.oldPrice) || 0;
+
+                if (oldPrice > price) {
+                    const percent = Math.round(((oldPrice - price) / oldPrice) * 100);
+                    discount = `<span class="discount-badge">${percent}% ছাড়</span>`;
+                }
+
+                const productImage = safeURL(p.images?.[0] || p.image, FALLBACK_IMG);
+                // ফায়ারবেসে 'Name' (Capital N) থাকলে তা অগ্রাধিকার পাবে
+                const productName = escapeHTML(p.Name || p.name || "Unnamed Product");
+                const productSlug = escapeHTML(p.slug || p.id || '');
+                const productLink = `https://ghotimarket.com/product.html?${productSlug}`;
+                const loadingAttr = index < 4 ? 'loading="eager"' : 'loading="lazy"';
+
+                return `
+                <a class="home-product-card" href="${productLink}">
+                    <div class="product-image-box">
+                        ${discount}
+                        <img src="${productImage}" alt="${productName}" ${loadingAttr} data-fallback="${FALLBACK_IMG}">
+                    </div>
+                    <div class="home-product-info">
+                        <div class="home-product-name">${productName}</div>
+                        <div class="product-meta-row">
+                            <div class="price-box">
+                                <span class="home-product-price">৳${price}</span>
+                                ${oldPrice > price ? `<span class="old-price">৳${oldPrice}</span>` : ''}
+                            </div>
+                        </div>
+                        <div class="product-action-btn">
+                            <i class="fa-solid fa-cart-shopping"></i>
+                            <span>কিনুন</span>
+                        </div>
+                    </div>
+                </a>
+                `;
+            }).join("");
+
+            attachImageErrorHandlers(productBox);
+        }
+
+        // Fetch Products directly from Firestore Collection "popular"
+        async function loadPopularProducts() {
+            const productBox = document.getElementById("latest-products");
+            try {
+                const q = query(collection(db, "popular"), limit(20));
+                const snap = await getDocs(q);
+                
+                const products = snap.docs
+                    .map(d => ({ id: d.id, ...d.data() }))
+                    .filter(p => p.active !== false);
+
+                renderProducts(products);
+                buildSearchIndexProducts(products);
+            } catch (err) {
+                console.error("Popular Products Fetch Error:", err);
+                if (productBox) {
+                    productBox.innerHTML = `<p style="grid-column: 1/-1; text-align:center; color:#e11d48; padding:20px;">পণ্য লোড করতে ব্যর্থ হয়েছে। ফায়ারবেস কালেকশন নাম 'popular' চেক করুন।</p>`;
+                }
+            }
+        }
+
+        // Search Engine Indexers
+        function buildSearchIndexCategories(categories) {
+            globalSearchIndex.categories = categories.map(c => ({
+                name: c.name,
+                slug: c.slug,
+                link: c.link,
+                image: c.image,
+                searchKey: (c.name + " " + (c.keywords ? c.keywords.join(" ") : "")).toLowerCase()
+            }));
+        }
+
+        function buildSearchIndexProducts(products) {
+            if (!products) return;
+            globalSearchIndex.products = products.map(p => {
+                const prodName = p.Name || p.name || '';
+                return {
+                    id: p.id,
+                    name: prodName,
+                    slug: p.slug || p.id || '',
+                    image: p.images?.[0] || p.image || '',
+                    searchKey: (prodName + " " + (p.description || '') + " " + (Array.isArray(p.keywords) ? p.keywords.join(" ") : (p.keywords || ''))).toLowerCase()
+                };
+            });
+        }
+
+        // Search Engine
+        function initSearch() {
+            const searchInput = document.getElementById('smartSearch');
+            const resultsBox = document.getElementById('search-results');
+            if (!searchInput || !resultsBox) return;
+
+            const executeSearch = debounce((queryVal) => {
+                const val = queryVal.toLowerCase().trim();
+                if (val.length < 2) {
+                    resultsBox.style.display = 'none';
+                    return;
+                }
+
+                const matchCats = globalSearchIndex.categories
+                    .filter(c => c.searchKey.includes(val))
+                    .slice(0, 4);
+
+                const matchProds = globalSearchIndex.products
+                    .filter(p => p.searchKey.includes(val))
+                    .slice(0, 6);
+
+                let html = '';
+
+                if (matchCats.length) {
+                    html += `<div class="search-group-title">ক্যাটাগরি</div>`;
+                    html += matchCats.map(c => `
+                        <a href="${safeURL(c.link)}" class="search-item">
+                            <img src="${safeURL(c.image, FALLBACK_IMG)}" alt="${escapeHTML(c.name)}"> 
+                            <span>${escapeHTML(c.name)}</span>
+                        </a>
+                    `).join('');
+                }
+
+                if (matchProds.length) {
+                    html += `<div class="search-group-title">পণ্য</div>`;
+                    html += matchProds.map(p => `
+                       <a href="https://ghotimarket.com/product.html?${escapeHTML(p.slug)}" class="search-item">
+                            <img src="${safeURL(p.image, FALLBACK_IMG)}" alt="${escapeHTML(p.name)}"> 
+                            <span>${escapeHTML(p.name)}</span>
+                        </a>
+                    `).join('');
+                }
+
+                resultsBox.innerHTML = html || '<p style="text-align:center; padding:10px; color:#94a3b8; margin:0;">কিছু পাওয়া যায়নি</p>';
+                resultsBox.style.display = 'block';
+            }, 150);
+
+            searchInput.addEventListener('input', (e) => executeSearch(e.target.value));
+
+            document.addEventListener('click', (e) => {
+                if (!e.target.closest('.search-wrapper')) {
+                    resultsBox.style.display = 'none';
+                }
+            });
+        }
+
+        // Network Status
+        function initNetworkMonitoring() {
+            const toast = document.getElementById('offline-toast');
+            const updateStatus = () => {
+                if (toast) toast.style.display = navigator.onLine ? 'none' : 'block';
+            };
+            window.addEventListener('online', updateStatus);
+            window.addEventListener('offline', updateStatus);
+            updateStatus();
+        }
+
+        // Initialize App
+        function initApp() {
+            if (typeof lucide !== 'undefined') lucide.createIcons();
+            
+            const yearEl = document.getElementById('year');
+            if (yearEl) yearEl.textContent = new Date().getFullYear();
+
+            // 1. Render Banners & Categories Instant from Local Arrays
+            renderBanners(BANNERS);
+            renderCategories(CATEGORIES);
+            buildSearchIndexCategories(CATEGORIES);
+
+            // 2. Initialize Search & Network Monitor
+            initSearch();
+            initNetworkMonitoring();
+
+            // 3. Fetch Products directly from Firestore 'popular' collection
+            loadPopularProducts();
+        }
+
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initApp);
+        } else {
+            initApp();
+        }
+    </script>
 </body>
 </html>
