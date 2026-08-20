@@ -1,0 +1,1938 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GHOTI MARKET - এডমিন রিভিউ ম্যানেজমেন্ট প্যানেল</title>
+    
+    <!-- Google Fonts Bengali -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary: #FF6B35;
+            --primary-dark: #E85A1A;
+            --primary-light: #FFF0EB;
+            --secondary: #0F172A;
+            --bg: #FFF8F3;
+            --card: #FFFFFF;
+            --text: #1E293B;
+            --text-sub: #64748B;
+            --border: #FFE4D6;
+            --border-light: #F8E8E0;
+            --danger: #EF4444;
+            --danger-dark: #DC2626;
+            --danger-light: #FEF2F2;
+            --warning: #F59E0B;
+            --success: #10B981;
+            --shadow-sm: 0 2px 8px rgba(255, 107, 53, 0.05);
+            --shadow-md: 0 6px 18px rgba(255, 107, 53, 0.08);
+            --shadow-lg: 0 10px 25px rgba(15, 23, 42, 0.1);
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 18px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Hind Siliguri', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            padding-bottom: 60px;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        /* Generic SVG Icon Helper */
+        .svg-icon {
+            width: 1.1em;
+            height: 1.1em;
+            fill: currentColor;
+            display: inline-block;
+            vertical-align: -0.15em;
+            flex-shrink: 0;
+        }
+
+        .fa-spin {
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Toast Notifications */
+        #toastContainer {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            max-width: 360px;
+            width: calc(100% - 48px);
+            pointer-events: none;
+        }
+
+        .toast {
+            background: var(--secondary);
+            color: #FFFFFF;
+            padding: 14px 18px;
+            border-radius: var(--radius-md);
+            font-size: 14px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: var(--shadow-lg);
+            pointer-events: auto;
+            animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            border-left: 4px solid var(--primary);
+        }
+
+        .toast.success { border-left-color: var(--success); }
+        .toast.error { border-left-color: var(--danger); }
+        .toast.warning { border-left-color: var(--warning); }
+
+        @keyframes slideUp {
+            from { transform: translateY(100%); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        /* Initial Auth Checking Loader */
+        #authCheckLoader {
+            position: fixed;
+            inset: 0;
+            background: var(--bg);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .auth-spinner {
+            font-size: 42px;
+            color: var(--primary);
+            display: inline-block;
+            margin-bottom: 16px;
+        }
+
+        /* Login Screen UI */
+        #loginScreen {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            background: radial-gradient(circle at top right, rgba(255, 107, 53, 0.12), transparent 40%),
+                        radial-gradient(circle at bottom left, rgba(15, 23, 42, 0.05), transparent 40%);
+        }
+
+        .login-card {
+            background: var(--card);
+            border-radius: var(--radius-lg);
+            padding: 40px 32px;
+            width: 100%;
+            max-width: 440px;
+            box-shadow: var(--shadow-lg);
+            border: 1px solid var(--border);
+            text-align: center;
+        }
+
+        .brand-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--primary-light);
+            color: var(--primary-dark);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 13px;
+            margin-bottom: 16px;
+            border: 1px solid var(--border);
+        }
+
+        .login-card h1 {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--secondary);
+            margin-bottom: 6px;
+        }
+
+        .login-card p {
+            font-size: 14px;
+            color: var(--text-sub);
+            margin-bottom: 28px;
+        }
+
+        .form-group {
+            text-align: left;
+            margin-bottom: 18px;
+            position: relative;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--secondary);
+            margin-bottom: 6px;
+        }
+
+        .input-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .input-icon {
+            position: absolute;
+            left: 14px;
+            color: var(--text-sub);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            pointer-events: none;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px 14px 12px 42px;
+            font-family: inherit;
+            font-size: 14px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            background: var(--bg);
+            color: var(--text);
+            outline: none;
+            transition: all 0.2s ease;
+        }
+
+        .form-control:focus {
+            border-color: var(--primary);
+            background: #FFFFFF;
+            box-shadow: 0 0 0 3px rgba(255, 107, 53, 0.15);
+        }
+
+        .toggle-password {
+            position: absolute;
+            right: 14px;
+            background: none;
+            border: none;
+            color: var(--text-sub);
+            cursor: pointer;
+            font-size: 15px;
+            padding: 4px;
+            display: flex;
+            align-items: center;
+        }
+
+        .btn-primary {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: #FFFFFF;
+            border: none;
+            border-radius: var(--radius-md);
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(255, 107, 53, 0.3);
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-primary:hover {
+            opacity: 0.95;
+            transform: translateY(-1px);
+            box-shadow: 0 6px 16px rgba(255, 107, 53, 0.4);
+        }
+
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .login-error {
+            background: var(--danger-light);
+            border: 1px solid #FCA5A5;
+            color: var(--danger-dark);
+            padding: 10px 14px;
+            border-radius: var(--radius-sm);
+            font-size: 13px;
+            margin-bottom: 18px;
+            display: none;
+            align-items: center;
+            gap: 8px;
+            text-align: left;
+        }
+
+        /* Admin Header */
+        .admin-header {
+            background: var(--secondary);
+            color: #FFFFFF;
+            padding: 16px 24px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: var(--shadow-md);
+        }
+
+        .header-content {
+            max-width: 1100px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .header-title {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .header-title h2 {
+            font-size: 18px;
+            font-weight: 700;
+            color: #FFFFFF;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .header-title span {
+            background: var(--primary);
+            color: #FFFFFF;
+            font-size: 11px;
+            font-weight: 700;
+            padding: 3px 8px;
+            border-radius: 6px;
+            text-transform: uppercase;
+        }
+
+        .header-user {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .user-pill {
+            font-size: 13px;
+            color: #94A3B8;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(255, 255, 255, 0.08);
+            padding: 6px 12px;
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+        }
+
+        .btn-logout {
+            background: rgba(239, 68, 68, 0.15);
+            color: #FCA5A5;
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            padding: 7px 14px;
+            border-radius: var(--radius-sm);
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-logout:hover {
+            background: var(--danger);
+            color: #FFFFFF;
+            border-color: var(--danger);
+        }
+
+        /* Container Layout */
+        .container {
+            max-width: 1100px;
+            margin: 24px auto 0;
+            padding: 0 16px;
+        }
+
+        /* Stats Cards Section */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        .stat-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 16px;
+            box-shadow: var(--shadow-sm);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .stat-info .stat-value {
+            font-size: 22px;
+            font-weight: 800;
+            color: var(--secondary);
+            line-height: 1.2;
+        }
+
+        .stat-info .stat-label {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-sub);
+            margin-top: 2px;
+        }
+
+        .stat-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            background: var(--primary-light);
+            color: var(--primary);
+        }
+
+        .stat-card.total .stat-icon { background: var(--primary-light); color: var(--primary); }
+        .stat-card.star-5 .stat-icon { background: #FEF3C7; color: #D97706; }
+        .stat-card.star-4 .stat-icon { background: #ECFDF5; color: #059669; }
+        .stat-card.star-3 .stat-icon { background: #EFF6FF; color: #2563EB; }
+        .stat-card.star-2 .stat-icon { background: #FFF7ED; color: #EA580C; }
+        .stat-card.star-1 .stat-icon { background: #FEF2F2; color: #DC2626; }
+
+        /* Filter Controls Bar */
+        .filter-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 18px;
+            box-shadow: var(--shadow-sm);
+            margin-bottom: 20px;
+        }
+
+        .filter-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr auto;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .filter-input-wrap {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .filter-control {
+            width: 100%;
+            padding: 10px 12px 10px 36px;
+            font-family: inherit;
+            font-size: 13.5px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            background: var(--bg);
+            color: var(--text);
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        select.filter-control {
+            padding-left: 36px;
+            cursor: pointer;
+        }
+
+        .filter-control:focus {
+            border-color: var(--primary);
+            background: #FFFFFF;
+        }
+
+        .btn-clear-filter {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            color: var(--text-sub);
+            padding: 10px 16px;
+            border-radius: var(--radius-sm);
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            white-space: nowrap;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s;
+        }
+
+        .btn-clear-filter:hover {
+            background: var(--primary-light);
+            color: var(--primary-dark);
+            border-color: var(--border);
+        }
+
+        /* Review Cards Grid / Wrapper */
+        .reviews-list {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        /* Review Card Styling */
+        .review-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 20px;
+            box-shadow: var(--shadow-sm);
+            transition: box-shadow 0.2s, border-color 0.2s;
+        }
+
+        .review-card:hover {
+            box-shadow: var(--shadow-md);
+            border-color: var(--primary);
+        }
+
+        .card-header-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            margin-bottom: 14px;
+            flex-wrap: wrap;
+        }
+
+        .rating-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: #FFFBEB;
+            border: 1px solid #FDE68A;
+            padding: 5px 12px;
+            border-radius: 20px;
+        }
+
+        .rating-stars {
+            color: var(--warning);
+            font-size: 13px;
+            display: flex;
+            gap: 2px;
+            align-items: center;
+        }
+
+        .rating-text {
+            font-size: 12px;
+            font-weight: 700;
+            color: #B45309;
+        }
+
+        .date-badge {
+            font-size: 12px;
+            color: var(--text-sub);
+            background: var(--bg);
+            padding: 4px 10px;
+            border-radius: 20px;
+            border: 1px solid var(--border-light);
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        /* Product Embedded Info Box */
+        .product-box {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 12px;
+            margin-bottom: 14px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .product-img {
+            width: 64px;
+            height: 64px;
+            border-radius: var(--radius-sm);
+            background: #FFFFFF;
+            border: 1px solid var(--border);
+            object-fit: cover;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            font-size: 24px;
+            color: var(--text-sub);
+        }
+
+        .product-img img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .product-details {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .product-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--secondary);
+            margin-bottom: 4px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .product-price-line {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 4px;
+        }
+
+        .price-now {
+            font-size: 14px;
+            font-weight: 800;
+            color: var(--primary-dark);
+        }
+
+        .price-old {
+            font-size: 12px;
+            color: var(--text-sub);
+            text-decoration: line-through;
+        }
+
+        .shop-info-line {
+            font-size: 12px;
+            color: var(--text-sub);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .shop-info-line span {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        /* Customer Info Row */
+        .customer-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 12px;
+            font-size: 13px;
+        }
+
+        .user-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: var(--primary-light);
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: 700;
+            border: 1px solid var(--border);
+        }
+
+        .customer-email {
+            font-weight: 700;
+            color: var(--secondary);
+        }
+
+        .customer-id {
+            font-size: 11px;
+            color: var(--text-sub);
+            background: var(--bg);
+            padding: 2px 6px;
+            border-radius: 4px;
+            border: 1px solid var(--border-light);
+        }
+
+        /* Review Message Box */
+        .message-box {
+            background: var(--primary-light);
+            border-left: 3px solid var(--primary);
+            padding: 12px 14px;
+            border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+            font-size: 14px;
+            color: #334155;
+            line-height: 1.5;
+            margin-bottom: 16px;
+            word-break: break-word;
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+        }
+
+        /* Card Footer Actions */
+        .card-actions {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 10px;
+            padding-top: 12px;
+            border-top: 1px dashed var(--border);
+        }
+
+        .btn-action {
+            padding: 7px 14px;
+            border-radius: var(--radius-sm);
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s;
+        }
+
+        .btn-edit {
+            background: #EFF6FF;
+            color: #2563EB;
+            border: 1px solid #BFDBFE;
+        }
+
+        .btn-edit:hover {
+            background: #2563EB;
+            color: #FFFFFF;
+            border-color: #2563EB;
+        }
+
+        .btn-delete {
+            background: var(--danger-light);
+            color: var(--danger-dark);
+            border: 1px solid #FCA5A5;
+        }
+
+        .btn-delete:hover {
+            background: var(--danger);
+            color: #FFFFFF;
+            border-color: var(--danger);
+        }
+
+        /* Load More & General State Boxes */
+        .load-more-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            padding: 14px;
+            margin-top: 24px;
+            background: var(--card);
+            border: 2px solid var(--primary);
+            border-radius: var(--radius-md);
+            color: var(--primary);
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.2s;
+            box-shadow: var(--shadow-sm);
+            gap: 8px;
+        }
+
+        .load-more-btn:hover {
+            background: var(--primary);
+            color: #FFFFFF;
+            box-shadow: var(--shadow-md);
+        }
+
+        .state-box {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 40px 20px;
+            text-align: center;
+            box-shadow: var(--shadow-sm);
+            margin-top: 20px;
+        }
+
+        .state-box .state-icon {
+            font-size: 42px;
+            color: var(--primary);
+            margin-bottom: 12px;
+            display: inline-block;
+        }
+
+        .state-box h3 {
+            font-size: 18px;
+            color: var(--secondary);
+            margin-bottom: 6px;
+        }
+
+        .state-box p {
+            font-size: 14px;
+            color: var(--text-sub);
+        }
+
+        /* Skeleton Animation */
+        .skeleton-card {
+            background: var(--card);
+            border-radius: var(--radius-lg);
+            padding: 20px;
+            border: 1px solid var(--border);
+            margin-bottom: 16px;
+        }
+
+        .skeleton-line {
+            height: 14px;
+            background: #E2E8F0;
+            border-radius: 6px;
+            margin-bottom: 10px;
+            animation: pulse 1.5s infinite ease-in-out;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 0.6; }
+            50% { opacity: 1; }
+            100% { opacity: 0.6; }
+        }
+
+        /* Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(4px);
+            z-index: 1000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal-card {
+            background: var(--card);
+            border-radius: var(--radius-lg);
+            width: 100%;
+            max-width: 500px;
+            box-shadow: var(--shadow-lg);
+            border: 1px solid var(--border);
+            overflow: hidden;
+            animation: modalPop 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        @keyframes modalPop {
+            from { transform: scale(0.95); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        .modal-header {
+            padding: 18px 20px;
+            background: var(--bg);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .modal-header h3 {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--secondary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 18px;
+            color: var(--text-sub);
+            cursor: pointer;
+            padding: 4px;
+            display: flex;
+            align-items: center;
+        }
+
+        .modal-body {
+            padding: 20px;
+        }
+
+        .modal-footer {
+            padding: 14px 20px;
+            background: var(--bg);
+            border-top: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        .star-picker {
+            display: flex;
+            gap: 8px;
+            font-size: 24px;
+            color: #CBD5E1;
+            cursor: pointer;
+            margin-top: 6px;
+        }
+
+        .star-picker span {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            transition: color 0.2s;
+        }
+
+        .star-picker span.active {
+            color: var(--warning);
+        }
+
+        /* Responsive Tweaks */
+        @media (max-width: 768px) {
+            .filter-grid {
+                grid-template-columns: 1fr;
+            }
+            .header-content {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .header-user {
+                width: 100%;
+                justify-content: space-between;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Toast Container -->
+    <div id="toastContainer"></div>
+
+    <!-- Initial Auth Checking Screen -->
+    <div id="authCheckLoader">
+        <span class="auth-spinner" id="mainLoaderSpinner"></span>
+        <h3 style="color: var(--secondary); font-size: 18px;">সিস্টেম যাচাই করা হচ্ছে...</h3>
+    </div>
+
+    <!-- Login Screen -->
+    <div id="loginScreen" style="display: none;">
+        <div class="login-card">
+            <span class="brand-badge" id="brandBadgeIcon">GHOTI MARKET</span>
+            <h1>এডমিন লগইন</h1>
+            <p>রিভিউ ম্যানেজমেন্ট প্যানেলে প্রবেশ করতে লগইন করুন</p>
+
+            <div id="loginError" class="login-error">
+                <span id="loginErrorIcon"></span>
+                <span id="loginErrorMsg"></span>
+            </div>
+
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="loginEmail">এডমিন ইমেইল</label>
+                    <div class="input-wrapper">
+                        <span class="input-icon" id="emailIcon"></span>
+                        <input type="email" id="loginEmail" class="form-control" value="support@ghotimarket.com" required placeholder="support@ghotimarket.com">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="loginPassword">পাসওয়ার্ড</label>
+                    <div class="input-wrapper">
+                        <span class="input-icon" id="lockIcon"></span>
+                        <input type="password" id="loginPassword" class="form-control" required placeholder="••••••••">
+                        <button type="button" class="toggle-password" id="togglePasswordBtn">
+                            <span id="toggleIcon"></span>
+                        </button>
+                    </div>
+                </div>
+
+                <button type="submit" id="loginSubmitBtn" class="btn-primary">
+                    <span id="loginBtnText">এডমিন লগইন করুন</span>
+                    <span id="loginBtnSpinner" style="display: none;"></span>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Main Admin Dashboard Container -->
+    <div id="adminApp" style="display: none;">
+
+        <!-- Header -->
+        <header class="admin-header">
+            <div class="header-content">
+                <div class="header-title">
+                    <h2><span id="headerShieldIcon" style="color: var(--primary);"></span> GHOTI MARKET</h2>
+                    <span>Admin Review Panel</span>
+                </div>
+                <div class="header-user">
+                    <div class="user-pill">
+                        <span id="userShieldIcon"></span>
+                        <span id="currentUserEmail">support@ghotimarket.com</span>
+                    </div>
+                    <button id="logoutBtn" class="btn-logout">
+                        <span id="logoutIcon"></span> লগআউট
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Workspace -->
+        <div class="container">
+
+            <!-- Stats Bar -->
+            <div class="stats-grid">
+                <div class="stat-card total">
+                    <div class="stat-info">
+                        <div id="statTotal" class="stat-value">০</div>
+                        <div class="stat-label">মোট রিভিউ</div>
+                    </div>
+                    <div class="stat-icon" id="statIconTotal"></div>
+                </div>
+                <div class="stat-card star-5">
+                    <div class="stat-info">
+                        <div id="statStar5" class="stat-value">০</div>
+                        <div class="stat-label">৫-স্টার রিভিউ</div>
+                    </div>
+                    <div class="stat-icon" id="statIconStar5"></div>
+                </div>
+                <div class="stat-card star-4">
+                    <div class="stat-info">
+                        <div id="statStar4" class="stat-value">০</div>
+                        <div class="stat-label">৪-স্টার রিভিউ</div>
+                    </div>
+                    <div class="stat-icon" id="statIconStar4"></div>
+                </div>
+                <div class="stat-card star-3">
+                    <div class="stat-info">
+                        <div id="statStar3" class="stat-value">০</div>
+                        <div class="stat-label">৩-স্টার রিভিউ</div>
+                    </div>
+                    <div class="stat-icon" id="statIconStar3"></div>
+                </div>
+                <div class="stat-card star-2">
+                    <div class="stat-info">
+                        <div id="statStar2" class="stat-value">০</div>
+                        <div class="stat-label">২-স্টার রিভিউ</div>
+                    </div>
+                    <div class="stat-icon" id="statIconStar2"></div>
+                </div>
+                <div class="stat-card star-1">
+                    <div class="stat-info">
+                        <div id="statStar1" class="stat-value">০</div>
+                        <div class="stat-label">১-স্টার রিভিউ</div>
+                    </div>
+                    <div class="stat-icon" id="statIconStar1"></div>
+                </div>
+            </div>
+
+            <!-- Filter Card -->
+            <div class="filter-card">
+                <div class="filter-grid">
+                    <div class="filter-input-wrap">
+                        <span class="input-icon" id="searchFilterIcon"></span>
+                        <input type="text" id="searchInput" class="filter-control" placeholder="Search by Product ID, Seller ID, User ID or Email...">
+                    </div>
+
+                    <div class="filter-input-wrap">
+                        <span class="input-icon" id="ratingFilterIcon"></span>
+                        <select id="ratingFilter" class="filter-control">
+                            <option value="all">সব Rating</option>
+                            <option value="5">৫ স্টার</option>
+                            <option value="4">৪ স্টার</option>
+                            <option value="3">৩ স্টার</option>
+                            <option value="2">২ স্টার</option>
+                            <option value="1">১ স্টার</option>
+                        </select>
+                    </div>
+
+                    <div class="filter-input-wrap">
+                        <span class="input-icon" id="sellerFilterIcon"></span>
+                        <input type="text" id="sellerFilter" class="filter-control" placeholder="Seller ID দিয়ে ফিল্টার">
+                    </div>
+
+                    <button id="clearFiltersBtn" class="btn-clear-filter">
+                        <span id="resetIcon"></span> রিসেট ফিল্টার
+                    </button>
+                </div>
+            </div>
+
+            <!-- Skeleton Loaders -->
+            <div id="skeletonContainer" style="display: none;">
+                <div class="skeleton-card">
+                    <div class="skeleton-line" style="width: 30%;"></div>
+                    <div class="skeleton-line" style="width: 100%; height: 60px;"></div>
+                    <div class="skeleton-line" style="width: 80%;"></div>
+                </div>
+                <div class="skeleton-card">
+                    <div class="skeleton-line" style="width: 40%;"></div>
+                    <div class="skeleton-line" style="width: 100%; height: 60px;"></div>
+                    <div class="skeleton-line" style="width: 70%;"></div>
+                </div>
+            </div>
+
+            <!-- Reviews Container -->
+            <div id="reviewsList" class="reviews-list"></div>
+
+            <!-- Empty State -->
+            <div id="emptyState" class="state-box" style="display: none;">
+                <span class="state-icon" id="emptyStateIcon"></span>
+                <h3>কোনো রিভিউ পাওয়া যায়নি</h3>
+                <p>আপনার সিলেক্ট করা ফিল্টার বা সার্চে কোনো রেকর্ড নেই।</p>
+            </div>
+
+            <!-- Error State -->
+            <div id="errorState" class="state-box" style="display: none;">
+                <span class="state-icon" id="errorStateIcon" style="color: var(--danger);"></span>
+                <h3>ডাটা লোড করতে ব্যর্থ হয়েছে</h3>
+                <p id="errorMsgText">ইন্টারনেট বা ফায়ারবেস কনফিগারেশন চেক করে আবার চেষ্টা করুন।</p>
+            </div>
+
+            <!-- Load More Button -->
+            <button id="loadMoreBtn" class="load-more-btn" style="display: none;">
+                <span id="loadMoreSpinner" style="display: none;"></span>
+                <span>আরও দেখুন (২০টি)</span>
+            </button>
+
+        </div>
+    </div>
+
+    <!-- Edit Review Modal -->
+    <div id="editModal" class="modal-overlay">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3><span id="editModalHeaderIcon" style="color: var(--primary);"></span> রিভিউ এডিট করুন</h3>
+                <button class="modal-close" id="closeEditModal"><span id="closeEditIcon"></span></button>
+            </div>
+            <form id="editForm">
+                <div class="modal-body">
+                    <input type="hidden" id="editReviewId">
+                    
+                    <div class="form-group">
+                        <label>স্টার রেটিং সিলেক্ট করুন</label>
+                        <div id="starPicker" class="star-picker">
+                            <span data-val="1"></span>
+                            <span data-val="2"></span>
+                            <span data-val="3"></span>
+                            <span data-val="4"></span>
+                            <span data-val="5"></span>
+                        </div>
+                        <input type="hidden" id="editStarVal" value="5">
+                    </div>
+
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label for="editMessage">রিভিউ মেসেজ</label>
+                        <textarea id="editMessage" class="form-control" rows="4" style="padding-left: 14px;" required></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-action" id="cancelEditBtn" style="background: var(--bg); color: var(--text-sub); border: 1px solid var(--border);">বাতিল</button>
+                    <button type="submit" class="btn-action btn-primary" id="saveEditBtn" style="width: auto; padding: 8px 18px;">
+                        <span id="saveBtnText">সংরক্ষণ করুন</span>
+                        <span id="saveBtnSpinner" style="display: none;"></span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div id="deleteModal" class="modal-overlay">
+        <div class="modal-card">
+            <div class="modal-header" style="background: var(--danger-light);">
+                <h3 style="color: var(--danger-dark);"><span id="deleteModalHeaderIcon"></span> রিভিউ মুছে ফেলুন</h3>
+                <button class="modal-close" id="closeDeleteModal"><span id="closeDeleteIcon"></span></button>
+            </div>
+            <div class="modal-body">
+                <p style="font-size: 14px; color: var(--text); line-height: 1.5;">
+                    আপনি কি সত্যিই এই রিভিউটি মুছে ফেলতে চান? এই কাজটি ডিলিট হয়ে গেলে আর ফেরানো সম্ভব নয়।
+                </p>
+                <input type="hidden" id="deleteReviewId">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-action" id="cancelDeleteBtn" style="background: var(--bg); color: var(--text-sub); border: 1px solid var(--border);">বাতিল</button>
+                <button type="button" class="btn-action btn-delete" id="confirmDeleteBtn" style="padding: 8px 18px;">
+                    <span id="deleteBtnText">হ্যাঁ, মুছে ফেলুন</span>
+                    <span id="deleteBtnSpinner" style="display: none;"></span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase SDK Imports & Main Controller Script -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { 
+            getAuth, 
+            signInWithEmailAndPassword, 
+            signOut, 
+            onAuthStateChanged 
+        } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { 
+            getFirestore, 
+            collection, 
+            query, 
+            where, 
+            orderBy, 
+            limit, 
+            startAfter, 
+            getDocs, 
+            doc, 
+            getDoc, 
+            updateDoc, 
+            deleteDoc 
+        } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        // SVG Dictionary
+        const SVG = {
+            store: `<svg class="svg-icon" viewBox="0 0 24 24"><path fill="currentColor" d="M20 4H4v2h16V4zm1 10v-2l-1-5H4l-1 5v2h1v6h10v-6h4v6h2v-6h1zm-9 4H6v-4h6v4z"/></svg>`,
+            shield: `<svg class="svg-icon" viewBox="0 0 24 24"><path fill="currentColor" d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z"/></svg>`,
+            userShield: `<svg class="svg-icon" viewBox="0 0 24 24"><path fill="currentColor" d="M12 2A10 10 0 0 0 2 12a10 10 0 0 0 10 10 10 10 0 0 0 10-10A10 10 0 0 0 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/></svg>`,
+            logout: `<svg class="svg-icon" viewBox="0 0 24 24"><path fill="currentColor" d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/></svg>`,
+            comments: `<svg class="svg-icon" viewBox="0 0 24 24"><path fill="currentColor" d="M20 2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h14l4 4V4c0-1.1-.9-2-2-2zm-2 12H6v-2h12v2zm0-3H6V9h12v2zm0-3H6V6h12v2z"/></svg>`,
+            star: `<svg class="svg-icon" viewBox="0 0 24 24"><path fill="currentColor" d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>`,
+            search: `<svg class="svg-icon" viewBox="0 0 24 24"><path fill="currentColor" d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>`,
+            filter: `<svg class="svg-icon" viewBox="0 0 24 24"><path fill="currentColor" d="M10 18h4v-2h-4v2zM3 6v2h18V6H3zm3 7h12v-2H6v2z"/></svg>`,
+            reset: `<svg class="svg-icon" viewBox="0 0 24 24"><path fill="currentColor" d="M12.5 8c-2.65 0-5.05.99-6.9 2.6L2 7v9h9l-3.62-3.62c1.39-1.16 3.16-1.88 5.12-1.88 3.54 0 6.55 2.31 7.6 5.5l2.37-.78C21.08 11.03 17.15 8 12.5 8z"/></svg>`,
+            clock: `<svg class="svg-icon" viewBox="0 0 24 24"><path fill="currentColor" d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg>`,
+            box: `<svg class="svg-icon" viewBox="0 0 24 24"><path fill="currentColor" d="M19 5v14H5V5h14m0-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2z"/></svg>`,
+            exclamationCircle: `<svg class="svg-icon" viewBox="0 0 24 24"><path fill="currentColor" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>`,
+            exclamationTriangle: `<svg class="svg-icon" viewBox="0 0 24 24"><path fill="currentColor" d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/></svg>`,
+            image: `<svg class="svg-icon" viewBox="0 0 24 24"><path fill="currentColor" d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/></svg>`,
+            user: `<svg class="svg-icon" viewBox="0 0 24 24"><path fill="currentColor" d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>`,
+            userTag: `<svg class="svg-icon" viewBox="0 0 24 24"><path fill="currentColor" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/></svg>`,
+            quote: `<svg class="svg-icon" viewBox="0 0 24 24"><path fill="currentColor" d="M6 17h3l2-4V7H5v6h3zm8 0h3l2-4V7h-6v6h3z"/></svg>`,
+            calendar: `<svg class="svg-icon" viewBox="0 0 24 24"><path fill="currentColor" d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V10h14v10zm0-12H5V6h14v2z"/></svg>`,
+            edit: `<svg class="svg-icon" viewBox="0 0 24 24"><path fill="currentColor" d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>`,
+            trash: `<svg class="svg-icon" viewBox="0 0 24 24"><path fill="currentColor" d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>`,
+            folderOpen: `<svg class="svg-icon" viewBox="0 0 24 24"><path fill="currentColor" d="M20 6h-8l-2-2H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm0 12H4V8h16v10z"/></svg>`,
+            times: `<svg class="svg-icon" viewBox="0 0 24 24"><path fill="currentColor" d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>`,
+            checkCircle: `<svg class="svg-icon" viewBox="0 0 24 24"><path fill="currentColor" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>`,
+            envelope: `<svg class="svg-icon" viewBox="0 0 24 24"><path fill="currentColor" d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>`,
+            lock: `<svg class="svg-icon" viewBox="0 0 24 24"><path fill="currentColor" d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg>`,
+            eye: `<svg class="svg-icon" viewBox="0 0 24 24"><path fill="currentColor" d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>`,
+            eyeSlash: `<svg class="svg-icon" viewBox="0 0 24 24"><path fill="currentColor" d="M12 7c2.76 0 5 2.24 5 5 0 .65-.13 1.26-.36 1.83l2.92 2.92c1.51-1.26 2.7-2.89 3.44-4.75-1.73-4.39-6-7.5-11-7.5-1.4 0-2.74.25-3.98.7l2.16 2.16C10.74 7.13 11.35 7 12 7zM2 4.27l2.28 2.28.46.46C3.08 8.3 1.78 10.02 1 12c1.73 4.39 6 7.5 11 7.5 1.55 0 3.03-.3 4.38-.84l.42.42L19.73 22 21 20.73 3.27 3 2 4.27zM7.53 9.8l1.55 1.55c-.05.21-.08.43-.08.65 0 1.66 1.34 3 3 3 .22 0 .44-.03.65-.08l1.55 1.55c-.67.33-1.41.53-2.2.53-2.76 0-5-2.24-5-5 0-.79.2-1.53.53-2.2zm4.31-.78l3.15 3.15.02-.17c0-1.66-1.34-3-3-3l-.17.02z"/></svg>`,
+            spinner: `<svg class="svg-icon fa-spin" viewBox="0 0 24 24"><path fill="currentColor" d="M12 2v4a8 8 0 1 0 8 8h4a12 12 0 1 1-12-12z"/></svg>`
+        };
+
+        // Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyBUhNhYvuo_FTvZ5RZR6Gn-4hsUY21S0XE",
+            authDomain: "ghotimarket.firebaseapp.com",
+            databaseURL: "https://ghotimarket-default-rtdb.firebaseio.com",
+            projectId: "ghotimarket",
+            storageBucket: "ghotimarket.firebasestorage.app",
+            messagingSenderId: "481257644093",
+            appId: "1:481257644093:web:0dfc3699d6b3c86afeca54",
+            measurementId: "G-4SR8V2EKC1"
+        };
+
+        const ALLOWED_ADMIN_EMAIL = "support@ghotimarket.com";
+        const PAGE_SIZE = 20;
+
+        // App State
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        const productCache = new Map();
+        const loadedReviewsMap = new Map();
+
+        let lastDocSnapshot = null;
+        let isFetching = false;
+        let searchDebounceTimeout = null;
+
+        // DOM Element Cache
+        const getEl = (id) => document.getElementById(id);
+
+        // Inject Static SVG Icons
+        const injectStaticIcons = () => {
+            getEl("mainLoaderSpinner").innerHTML = SVG.spinner;
+            getEl("brandBadgeIcon").insertAdjacentHTML("afterbegin", SVG.store + " ");
+            getEl("loginErrorIcon").innerHTML = SVG.exclamationCircle;
+            getEl("emailIcon").innerHTML = SVG.envelope;
+            getEl("lockIcon").innerHTML = SVG.lock;
+            getEl("toggleIcon").innerHTML = SVG.eye;
+            getEl("loginBtnSpinner").innerHTML = SVG.spinner;
+            getEl("headerShieldIcon").innerHTML = SVG.shield;
+            getEl("userShieldIcon").innerHTML = SVG.userShield;
+            getEl("logoutIcon").innerHTML = SVG.logout;
+            getEl("statIconTotal").innerHTML = SVG.comments;
+            getEl("statIconStar5").innerHTML = SVG.star;
+            getEl("statIconStar4").innerHTML = SVG.star;
+            getEl("statIconStar3").innerHTML = SVG.star;
+            getEl("statIconStar2").innerHTML = SVG.star;
+            getEl("statIconStar1").innerHTML = SVG.star;
+            getEl("searchFilterIcon").innerHTML = SVG.search;
+            getEl("ratingFilterIcon").innerHTML = SVG.filter;
+            getEl("sellerFilterIcon").innerHTML = SVG.store;
+            getEl("resetIcon").innerHTML = SVG.reset;
+            getEl("emptyStateIcon").innerHTML = SVG.folderOpen;
+            getEl("errorStateIcon").innerHTML = SVG.exclamationTriangle;
+            getEl("loadMoreSpinner").innerHTML = SVG.spinner;
+            getEl("editModalHeaderIcon").innerHTML = SVG.edit;
+            getEl("closeEditIcon").innerHTML = SVG.times;
+            getEl("saveBtnSpinner").innerHTML = SVG.spinner;
+            getEl("deleteModalHeaderIcon").innerHTML = SVG.trash;
+            getEl("closeDeleteIcon").innerHTML = SVG.times;
+            getEl("deleteBtnSpinner").innerHTML = SVG.spinner;
+
+            // Star Picker Setup
+            const pickerSpans = getEl("starPicker").querySelectorAll("span[data-val]");
+            pickerSpans.forEach(span => span.innerHTML = SVG.star);
+        };
+
+        // Toast Notification System
+        const showToast = (message, type = 'success') => {
+            const container = getEl('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            
+            let iconSvg = SVG.checkCircle;
+            if (type === 'error') iconSvg = SVG.exclamationCircle;
+            if (type === 'warning') iconSvg = SVG.exclamationTriangle;
+
+            toast.innerHTML = `${iconSvg} <span>${escapeHtml(message)}</span>`;
+            container.appendChild(toast);
+
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transform = 'translateY(100%)';
+                toast.style.transition = 'all 0.3s ease';
+                setTimeout(() => toast.remove(), 300);
+            }, 3500);
+        };
+
+        // Formatting Helpers
+        const safeNum = (val, def = 0) => {
+            const n = Number(val);
+            return isNaN(n) ? def : n;
+        };
+
+        const escapeHtml = (str) => {
+            if (!str) return '';
+            return String(str)
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        };
+
+        const toBanglaNum = (num) => {
+            const bnDigits = ['০', '১', '২', '৩', '৪', '৫', '৬', '৭', '৮', '৯'];
+            return String(num).replace(/\d/g, (digit) => bnDigits[digit]);
+        };
+
+        const formatBanglaDate = (timestamp) => {
+            if (!timestamp || !timestamp.seconds) {
+                return { fullDate: 'অজানা তারিখ', relative: 'সাম্প্রতিক' };
+            }
+
+            const date = new Date(timestamp.seconds * 1000);
+            const now = new Date();
+            const diffSec = Math.floor((now - date) / 1000);
+
+            let relative = 'সাম্প্রতিক';
+            if (diffSec < 60) relative = 'কিছুক্ষণ আগে';
+            else if (diffSec < 3600) relative = `${toBanglaNum(Math.floor(diffSec / 60))} মিনিট আগে`;
+            else if (diffSec < 86400) relative = `${toBanglaNum(Math.floor(diffSec / 3600))} ঘণ্টা আগে`;
+            else if (diffSec < 172800) relative = 'গতকাল';
+            else if (diffSec < 2592000) relative = `${toBanglaNum(Math.floor(diffSec / 86400))} দিন আগে`;
+
+            const fullDate = date.toLocaleDateString('bn-BD', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            }) + ', ' + date.toLocaleTimeString('bn-BD', {
+                hour: '2-digit',
+                minute: '2-digit',
+                hour12: true
+            });
+
+            return { fullDate, relative };
+        };
+
+        const renderStarsHTML = (rating) => {
+            const val = Math.min(5, Math.max(1, safeNum(rating, 5)));
+            let stars = '';
+            for (let i = 1; i <= 5; i++) {
+                if (i <= val) {
+                    stars += `<span style="color:var(--warning);">${SVG.star}</span>`;
+                } else {
+                    stars += `<span style="color:#CBD5E1;">${SVG.star}</span>`;
+                }
+            }
+            return stars;
+        };
+
+        // N+1 Prevention: Batch Fetch Missing Products into Map Cache
+        const fetchMissingProducts = async (productIds) => {
+            const uniqueIds = [...new Set(productIds.filter(id => id && typeof id === 'string'))];
+            const missingIds = uniqueIds.filter(id => !productCache.has(id));
+
+            if (missingIds.length > 0) {
+                await Promise.all(missingIds.map(async (pId) => {
+                    try {
+                        const pSnap = await getDoc(doc(db, "products", pId));
+                        if (pSnap.exists()) {
+                            productCache.set(pId, pSnap.data());
+                        } else {
+                            productCache.set(pId, null);
+                        }
+                    } catch (err) {
+                        console.error("Error fetching product metadata:", pId, err);
+                        productCache.set(pId, null);
+                    }
+                }));
+            }
+        };
+
+        // UI Builder for Product Preview Inside Review Card
+        const buildProductPreviewHTML = (productId) => {
+            if (!productId) {
+                return `
+                    <div class="product-box">
+                        <div class="product-img">${SVG.box}</div>
+                        <div class="product-details">
+                            <div class="product-title" style="color:var(--text-sub);">প্রোডাক্ট আইডি অনুপস্থিত</div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            const product = productCache.get(productId);
+
+            if (!product) {
+                return `
+                    <div class="product-box">
+                        <div class="product-img">${SVG.exclamationCircle}</div>
+                        <div class="product-details">
+                            <div class="product-title" style="color:var(--danger-dark);">প্রোডাক্ট তথ্য পাওয়া যায়নি (Product Deleted/Inactive)</div>
+                            <div class="shop-info-line">
+                                <span>ID: ${escapeHtml(productId)}</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            const pName = product.name || 'শিরোনামহীন প্রোডাক্ট';
+            const price = safeNum(product.price, 0);
+            const oldPrice = safeNum(product.oldPrice, 0);
+            const shopName = product.shopName || 'GHOTI MARKET Store';
+            const sellerId = product.sellerId || 'N/A';
+
+            let imgUrl = '';
+            if (Array.isArray(product.images) && product.images.length > 0) {
+                imgUrl = product.images[0];
+            } else if (typeof product.images === 'string') {
+                imgUrl = product.images;
+            }
+
+            const imgHTML = imgUrl 
+                ? `<img src="${escapeHtml(imgUrl)}" alt="${escapeHtml(pName)}" loading="lazy" decoding="async" onerror="this.parentElement.innerHTML='${SVG.image}'">`
+                : SVG.image;
+
+            const priceHTML = `৳${toBanglaNum(price)}`;
+            const oldPriceHTML = (oldPrice > price) ? `<span class="price-old">৳${toBanglaNum(oldPrice)}</span>` : '';
+
+            return `
+                <div class="product-box">
+                    <div class="product-img">${imgHTML}</div>
+                    <div class="product-details">
+                        <div class="product-title" title="${escapeHtml(pName)}">${escapeHtml(pName)}</div>
+                        <div class="product-price-line">
+                            <span class="price-now">${priceHTML}</span>
+                            ${oldPriceHTML}
+                        </div>
+                        <div class="shop-info-line">
+                            <span><span style="color:var(--primary);">${SVG.store}</span> ${escapeHtml(shopName)}</span>
+                            <span>${SVG.userTag} Seller ID: ${escapeHtml(sellerId)}</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+        };
+
+        // Render Individual Review Card Element
+        const createReviewCardElement = (reviewData, docId) => {
+            const { fullDate, relative } = formatBanglaDate(reviewData.createdAt);
+            const starVal = safeNum(reviewData.star, 5);
+            const userEmail = reviewData.userEmail || 'অজানা গ্রাহক';
+            const userId = reviewData.userId ? `${reviewData.userId.substring(0, 8)}...` : 'N/A';
+            const pId = reviewData.productId || '';
+
+            const card = document.createElement('div');
+            card.className = 'review-card';
+            card.id = `review-card-${docId}`;
+
+            card.innerHTML = `
+                <div class="card-header-row">
+                    <div class="rating-badge">
+                        <div class="rating-stars">${renderStarsHTML(starVal)}</div>
+                        <span class="rating-text">${toBanglaNum(starVal)}.০/৫</span>
+                    </div>
+                    <span class="date-badge">${SVG.clock} ${escapeHtml(relative)}</span>
+                </div>
+
+                ${buildProductPreviewHTML(pId)}
+
+                <div class="customer-row">
+                    <div class="user-avatar">${SVG.user}</div>
+                    <div>
+                        <span class="customer-email">${escapeHtml(userEmail)}</span>
+                        <span class="customer-id">UID: ${escapeHtml(userId)}</span>
+                    </div>
+                </div>
+
+                <div class="message-box">
+                    <span style="color:var(--primary); opacity:0.7;">${SVG.quote}</span>
+                    <span class="msg-content">${escapeHtml(reviewData.message || 'কোনো লিখিত মন্তব্য নেই।')}</span>
+                </div>
+
+                <div class="card-actions">
+                    <span style="font-size:11px; color:var(--text-sub); margin-right:auto; display:inline-flex; align-items:center; gap:4px;">
+                        ${SVG.calendar} ${escapeHtml(fullDate)}
+                    </span>
+                    <button type="button" class="btn-action btn-edit" data-id="${docId}">
+                        ${SVG.edit} Edit
+                    </button>
+                    <button type="button" class="btn-action btn-delete" data-id="${docId}">
+                        ${SVG.trash} Delete
+                    </button>
+                </div>
+            `;
+
+            // Attach Direct Action Handlers
+            card.querySelector('.btn-edit').addEventListener('click', () => openEditModal(docId));
+            card.querySelector('.btn-delete').addEventListener('click', () => openDeleteModal(docId));
+
+            return card;
+        };
+
+        // Recalculate Dashboard Statistics
+        const updateStatsUI = () => {
+            const allReviews = Array.from(loadedReviewsMap.values());
+            const total = allReviews.length;
+
+            let s5 = 0, s4 = 0, s3 = 0, s2 = 0, s1 = 0;
+
+            allReviews.forEach(r => {
+                const star = safeNum(r.star, 5);
+                if (star === 5) s5++;
+                else if (star === 4) s4++;
+                else if (star === 3) s3++;
+                else if (star === 2) s2++;
+                else if (star === 1) s1++;
+            });
+
+            getEl("statTotal").innerText = toBanglaNum(total);
+            getEl("statStar5").innerText = toBanglaNum(s5);
+            getEl("statStar4").innerText = toBanglaNum(s4);
+            getEl("statStar3").innerText = toBanglaNum(s3);
+            getEl("statStar2").innerText = toBanglaNum(s2);
+            getEl("statStar1").innerText = toBanglaNum(s1);
+        };
+
+        // Build Dynamic Firestore Query Based on Admin Filters
+        const buildFirestoreQuery = (isInitial) => {
+            const ratingVal = getEl("ratingFilter").value;
+            const sellerVal = getEl("sellerFilter").value.trim();
+            const searchVal = getEl("searchInput").value.trim();
+
+            const constraints = [];
+
+            if (ratingVal !== "all") {
+                constraints.push(where("star", "==", Number(ratingVal)));
+            }
+
+            if (sellerVal) {
+                constraints.push(where("sellerId", "==", sellerVal));
+            }
+
+            if (searchVal && !sellerVal) {
+                if (searchVal.length > 15 && !searchVal.includes('@')) {
+                    constraints.push(where("productId", "==", searchVal));
+                } else if (searchVal.includes('@')) {
+                    constraints.push(where("userEmail", "==", searchVal));
+                }
+            }
+
+            constraints.push(orderBy("createdAt", "desc"));
+
+            if (!isInitial && lastDocSnapshot) {
+                constraints.push(startAfter(lastDocSnapshot));
+            }
+
+            constraints.push(limit(PAGE_SIZE));
+
+            return query(collection(db, "product_reviews"), ...constraints);
+        };
+
+        // Core Fetch Reviews Controller
+        const fetchReviews = async (isInitial = false) => {
+            if (isFetching) return;
+            isFetching = true;
+
+            const skeleton = getEl("skeletonContainer");
+            const reviewsListEl = getEl("reviewsList");
+            const emptyState = getEl("emptyState");
+            const errorState = getEl("errorState");
+            const loadMoreBtn = getEl("loadMoreBtn");
+            const loadMoreSpinner = getEl("loadMoreSpinner");
+
+            if (isInitial) {
+                skeleton.style.display = "block";
+                reviewsListEl.innerHTML = "";
+                loadedReviewsMap.clear();
+                lastDocSnapshot = null;
+                emptyState.style.display = "none";
+                errorState.style.display = "none";
+            } else {
+                loadMoreBtn.disabled = true;
+                loadMoreSpinner.style.display = "inline-block";
+            }
+
+            try {
+                const q = buildFirestoreQuery(isInitial);
+                const snap = await getDocs(q);
+
+                if (snap.empty) {
+                    if (isInitial) {
+                        emptyState.style.display = "block";
+                    } else {
+                        showToast("আর কোনো রিভিউ ডাটা নেই।", "warning");
+                    }
+                    loadMoreBtn.style.display = "none";
+                } else {
+                    lastDocSnapshot = snap.docs[snap.docs.length - 1];
+
+                    const productIds = snap.docs.map(docSnap => docSnap.data().productId);
+                    await fetchMissingProducts(productIds);
+
+                    const fragment = document.createDocumentFragment();
+
+                    snap.docs.forEach(docSnap => {
+                        const data = docSnap.data();
+                        loadedReviewsMap.set(docSnap.id, data);
+                        const cardEl = createReviewCardElement(data, docSnap.id);
+                        fragment.appendChild(cardEl);
+                    });
+
+                    reviewsListEl.appendChild(fragment);
+
+                    if (snap.docs.length < PAGE_SIZE) {
+                        loadMoreBtn.style.display = "none";
+                    } else {
+                        loadMoreBtn.style.display = "flex";
+                    }
+                }
+
+                updateStatsUI();
+
+            } catch (err) {
+                console.error("Firestore Review Fetch Error:", err);
+                errorState.style.display = "block";
+
+                const indexUrlMatch = err.message ? err.message.match(/(https:\/\/console\.firebase\.google\.com[^\s"']+)/) : null;
+                if (indexUrlMatch && indexUrlMatch[0]) {
+                    getEl("errorMsgText").innerHTML = `
+                        এই ফিল্টারের জন্য একটি Firestore Index প্রয়োজন।<br>
+                        <a href="${indexUrlMatch[0]}" target="_blank" style="color:var(--primary); font-weight:700; text-decoration:underline; display:inline-block; margin-top:8px;">
+                            ১-ক্লিকে Firestore Index তৈরি করুন
+                        </a>
+                    `;
+                } else {
+                    getEl("errorMsgText").innerText = "ডাটা লোড করতে সমস্যা হয়েছে। অনুগ্রহ করে ইন্টারনেট বা ফায়ারবেস রুলস চেক করুন।";
+                }
+            } finally {
+                skeleton.style.display = "none";
+                isFetching = false;
+                if (!isInitial) {
+                    loadMoreBtn.disabled = false;
+                    loadMoreSpinner.style.display = "none";
+                }
+            }
+        };
+
+        // Modal Controllers (Edit / Delete)
+        const setStarPickerVal = (val) => {
+            getEl("editStarVal").value = val;
+            const stars = getEl("starPicker").querySelectorAll("span[data-val]");
+            stars.forEach(s => {
+                const sVal = Number(s.getAttribute("data-val"));
+                if (sVal <= val) s.classList.add("active");
+                else s.classList.remove("active");
+            });
+        };
+
+        const openEditModal = (reviewId) => {
+            const data = loadedReviewsMap.get(reviewId);
+            if (!data) return;
+
+            getEl("editReviewId").value = reviewId;
+            getEl("editMessage").value = data.message || '';
+            setStarPickerVal(safeNum(data.star, 5));
+
+            getEl("editModal").style.display = "flex";
+        };
+
+        const closeEditModal = () => {
+            getEl("editModal").style.display = "none";
+        };
+
+        const openDeleteModal = (reviewId) => {
+            getEl("deleteReviewId").value = reviewId;
+            getEl("deleteModal").style.display = "flex";
+        };
+
+        const closeDeleteModal = () => {
+            getEl("deleteModal").style.display = "none";
+        };
+
+        // Form Submission: Edit Review
+        getEl("editForm").addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const rId = getEl("editReviewId").value;
+            const newStar = Number(getEl("editStarVal").value);
+            const newMessage = getEl("editMessage").value.trim();
+
+            if (!rId) return;
+
+            const saveBtnText = getEl("saveBtnText");
+            const saveSpinner = getEl("saveBtnSpinner");
+            const saveBtn = getEl("saveEditBtn");
+
+            saveBtn.disabled = true;
+            saveBtnText.innerText = "সংরক্ষণ হচ্ছে...";
+            saveSpinner.style.display = "inline-block";
+
+            try {
+                const docRef = doc(db, "product_reviews", rId);
+                await updateDoc(docRef, {
+                    star: newStar,
+                    message: newMessage
+                });
+
+                // Optimistic UI Update
+                const existingData = loadedReviewsMap.get(rId);
+                if (existingData) {
+                    existingData.star = newStar;
+                    existingData.message = newMessage;
+                    loadedReviewsMap.set(rId, existingData);
+
+                    const oldCard = getEl(`review-card-${rId}`);
+                    if (oldCard) {
+                        const newCard = createReviewCardElement(existingData, rId);
+                        oldCard.replaceWith(newCard);
+                    }
+                }
+
+                updateStatsUI();
+                closeEditModal();
+                showToast("রিভিউ সফলভাবে আপডেট করা হয়েছে।", "success");
+
+            } catch (err) {
+                console.error("Update Error:", err);
+                showToast("রিভিউ আপডেট করতে ব্যর্থ হয়েছে: " + err.message, "error");
+            } finally {
+                saveBtn.disabled = false;
+                saveBtnText.innerText = "সংরক্ষণ করুন";
+                saveSpinner.style.display = "none";
+            }
+        });
+
+        // Form Submission: Delete Review
+        getEl("confirmDeleteBtn").addEventListener("click", async () => {
+            const rId = getEl("deleteReviewId").value;
+            if (!rId) return;
+
+            const deleteBtnText = getEl("deleteBtnText");
+            const deleteSpinner = getEl("deleteBtnSpinner");
+            const deleteBtn = getEl("confirmDeleteBtn");
+
+            deleteBtn.disabled = true;
+            deleteBtnText.innerText = "মুছে ফেলা হচ্ছে...";
+            deleteSpinner.style.display = "inline-block";
+
+            try {
+                await deleteDoc(doc(db, "product_reviews", rId));
+
+                // Optimistic DOM Removal
+                loadedReviewsMap.delete(rId);
+                const card = getEl(`review-card-${rId}`);
+                if (card) {
+                    card.style.opacity = '0';
+                    card.style.transform = 'scale(0.95)';
+                    card.style.transition = 'all 0.2s ease';
+                    setTimeout(() => card.remove(), 200);
+                }
+
+                updateStatsUI();
+                closeDeleteModal();
+                showToast("রিভিউ সফলভাবে মুছে ফেলা হয়েছে।", "success");
+
+            } catch (err) {
+                console.error("Delete Error:", err);
+                showToast("রিভিউ ডিলিট করতে ব্যর্থ হয়েছে: " + err.message, "error");
+            } finally {
+                deleteBtn.disabled = false;
+                deleteBtnText.innerText = "হ্যাঁ, মুছে ফেলুন";
+                deleteSpinner.style.display = "none";
+            }
+        });
+
+        // Auth Logic & Observer
+        onAuthStateChanged(auth, (user) => {
+            getEl("authCheckLoader").style.display = "none";
+
+            if (user) {
+                if (user.email === ALLOWED_ADMIN_EMAIL) {
+                    getEl("loginScreen").style.display = "none";
+                    getEl("adminApp").style.display = "block";
+                    getEl("currentUserEmail").innerText = user.email;
+                    fetchReviews(true);
+                } else {
+                    signOut(auth);
+                    getEl("adminApp").style.display = "none";
+                    getEl("loginScreen").style.display = "flex";
+                    getEl("loginError").style.display = "flex";
+                    getEl("loginErrorMsg").innerText = `অনুমোদিত নয়! কেবল ${ALLOWED_ADMIN_EMAIL} প্রবেশ করতে পারবে।`;
+                    showToast("এডমিন এক্সেস প্রত্যাখ্যাত!", "error");
+                }
+            } else {
+                getEl("adminApp").style.display = "none";
+                getEl("loginScreen").style.display = "flex";
+            }
+        });
+
+        // Handle Login Submission
+        getEl("loginForm").addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const email = getEl("loginEmail").value.trim();
+            const password = getEl("loginPassword").value;
+
+            if (email !== ALLOWED_ADMIN_EMAIL) {
+                getEl("loginError").style.display = "flex";
+                getEl("loginErrorMsg").innerText = `শুধুমাত্র ${ALLOWED_ADMIN_EMAIL} লগইন করতে পারবে।`;
+                return;
+            }
+
+            const loginBtn = getEl("loginSubmitBtn");
+            const btnText = getEl("loginBtnText");
+            const spinner = getEl("loginBtnSpinner");
+
+            loginBtn.disabled = true;
+            btnText.innerText = "লগইন হচ্ছে...";
+            spinner.style.display = "inline-block";
+            getEl("loginError").style.display = "none";
+
+            try {
+                await signInWithEmailAndPassword(auth, email, password);
+                showToast("এডমিন লগইন সফল হয়েছে!", "success");
+            } catch (err) {
+                console.error("Login Error:", err);
+                getEl("loginError").style.display = "flex";
+                getEl("loginErrorMsg").innerText = "ইমেইল বা পাসওয়ার্ড ভুল হয়েছে। আবার চেষ্টা করুন।";
+                showToast("লগইন ব্যর্থ হয়েছে। তথ্য যাচাই করুন।", "error");
+            } finally {
+                loginBtn.disabled = false;
+                btnText.innerText = "এডমিন লগইন করুন";
+                spinner.style.display = "none";
+            }
+        });
+
+        // Logout Handler
+        getEl("logoutBtn").addEventListener("click", () => {
+            signOut(auth).then(() => {
+                showToast("সফলভাবে লগআউট হয়েছে।", "success");
+            });
+        });
+
+        // Password Show/Hide Toggle
+        getEl("togglePasswordBtn").addEventListener("click", () => {
+            const passInput = getEl("loginPassword");
+            const iconSpan = getEl("toggleIcon");
+            if (passInput.type === "password") {
+                passInput.type = "text";
+                iconSpan.innerHTML = SVG.eyeSlash;
+            } else {
+                passInput.type = "password";
+                iconSpan.innerHTML = SVG.eye;
+            }
+        });
+
+        // Star Picker Interactivity
+        getEl("starPicker").addEventListener("click", (e) => {
+            const starElem = e.target.closest("[data-val]");
+            if (starElem) {
+                const val = Number(starElem.getAttribute("data-val"));
+                setStarPickerVal(val);
+            }
+        });
+
+        // Modal Close Event Listeners
+        getEl("closeEditModal").addEventListener("click", closeEditModal);
+        getEl("cancelEditBtn").addEventListener("click", closeEditModal);
+        getEl("closeDeleteModal").addEventListener("click", closeDeleteModal);
+        getEl("cancelDeleteBtn").addEventListener("click", closeDeleteModal);
+
+        // Filter Control Event Listeners
+        getEl("ratingFilter").addEventListener("change", () => fetchReviews(true));
+        
+        getEl("sellerFilter").addEventListener("input", () => {
+            clearTimeout(searchDebounceTimeout);
+            searchDebounceTimeout = setTimeout(() => fetchReviews(true), 500);
+        });
+
+        getEl("searchInput").addEventListener("input", () => {
+            clearTimeout(searchDebounceTimeout);
+            searchDebounceTimeout = setTimeout(() => fetchReviews(true), 500);
+        });
+
+        getEl("clearFiltersBtn").addEventListener("click", () => {
+            getEl("ratingFilter").value = "all";
+            getEl("sellerFilter").value = "";
+            getEl("searchInput").value = "";
+            fetchReviews(true);
+        });
+
+        getEl("loadMoreBtn").addEventListener("click", () => fetchReviews(false));
+
+        // Initialize Icons
+        injectStaticIcons();
+
+    </script>
+</body>
+</html>
