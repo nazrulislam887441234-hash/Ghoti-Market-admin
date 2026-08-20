@@ -19,8 +19,7 @@ header{background:var(--card);padding:15px 20px;display:flex;justify-content:spa
 .toolbar{display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap;}
 .toolbar input,.toolbar select{padding:12px;border:1.5px solid var(--border);border-radius:10px;flex:1;min-width:160px;background:#fff;}
 .order-card{background:var(--card);border-radius:18px;padding:18px;margin-bottom:15px;box-shadow:var(--shadow);}
-.order-top{display:flex;gap:15px;}
-.order-top img{width:90px;height:90px;border-radius:12px;object-fit:cover;}
+.order-top{display:flex;gap:15px;flex-wrap:wrap;}
 .meta{font-size:13px;margin:3px 0;}
 .badge{padding:5px 10px;border-radius:20px;font-size:11px;font-weight:700;display:inline-block;}
 .badge-Pending{background:#FEF3C7;color:#92400E;}
@@ -40,6 +39,7 @@ header{background:var(--card);padding:15px 20px;display:flex;justify-content:spa
 .modal-content{background:#fff;border-radius:20px;width:100%;max-width:750px;max-height:90vh;overflow-y:auto;padding:25px;position:relative;}
 .info-box{background:#FFF4EC;padding:12px;border-radius:10px;margin-top:10px;}
 .info-box h4{color:var(--primary);margin-bottom:8px;font-size:14px;}
+.variant-chip{background:#FFF0EB;color:var(--primary);border:1px solid var(--border);padding:2px 8px;border-radius:6px;font-size:11px;font-weight:600;display:inline-block;margin-right:4px;margin-top:3px;}
 #toast{position:fixed;bottom:20px;right:20px;background:#22c55e;color:#fff;padding:14px 20px;border-radius:12px;display:none;z-index:10000;}
 .skeleton{background:linear-gradient(90deg,#f1f5f9 25%,#e2e8f0 50%,#f1f5f9 75%);background-size:200% 100%;animation:load 1.5s infinite;border-radius:18px;height:180px;margin-bottom:15px;}
 @keyframes load{0%{background-position:200% 0}100%{background-position:-200% 0}}
@@ -127,6 +127,40 @@ const db = getFirestore(app);
 let allOrders = [];
 let deleteId = null;
 
+// ========== SAFE HELPERS FOR COMPATIBILITY ==========
+function getItemsList(o) {
+  if (Array.isArray(o.items) && o.items.length > 0) {
+    return o.items;
+  }
+  // Fallback for older orders where product info was at root level
+  return [{
+    name: o.productName || 'N/A',
+    image: o.productImage || 'https://via.placeholder.com/90',
+    price: o.productPrice || 0,
+    quantity: o.quantity || 1,
+    selectedVariants: o.selectedVariants || o.variants || null
+  }];
+}
+
+function getSelectedVariantsHTML(item) {
+  const variantsObj = item?.selectedVariants || item?.variants || null;
+  if (!variantsObj || typeof variantsObj !== 'object' || Array.isArray(variantsObj)) {
+    return '';
+  }
+  const entries = Object.entries(variantsObj);
+  if (entries.length === 0) return '';
+
+  return `
+    <div style="margin-top:4px;">
+      <span style="font-size:11px; font-weight:700; color:var(--primary);">Variants:</span>
+      <div>
+        ${entries.map(([key, val]) => `<span class="variant-chip"><b>${key}:</b> ${val}</span>`).join('')}
+      </div>
+    </div>
+  `;
+}
+// ===================================================
+
 // 1. AUTH CHECK
 onAuthStateChanged(auth, async (user) => {
   if(!user){
@@ -213,15 +247,16 @@ function renderOrders(){
   const sort = document.getElementById('sortFilter').value;
 
   let filtered = allOrders.filter(o=>{
+    const items = getItemsList(o);
     const matchSearch =
       o.orderTrackId?.toLowerCase().includes(search) ||
       o.customerName?.toLowerCase().includes(search) ||
       o.customerPhone?.includes(search) ||
-      o.productName?.toLowerCase().includes(search) ||
       o.sellerId?.toLowerCase().includes(search) ||
       o.shopName?.toLowerCase().includes(search) ||
       o.affiliatePromoCode?.toLowerCase().includes(search) ||
-      o.affiliateUserId?.toLowerCase().includes(search);
+      o.affiliateUserId?.toLowerCase().includes(search) ||
+      items.some(item => (item.name || item.productName || '').toLowerCase().includes(search));
 
     const matchAffiliate = affiliateFilter === 'affiliate' ? o.affiliateApplied === true :
                            affiliateFilter === 'normal' ? !o.affiliateApplied : true;
@@ -245,22 +280,39 @@ function renderOrders(){
     const date = o.createdAt?.toDate().toLocaleString('bn-BD') || 'N/A';
     const updatedDate = o.updatedAt?.toDate().toLocaleString('bn-BD') || 'N/A';
     const isAffiliate = o.affiliateApplied === true;
+    const items = getItemsList(o);
+
+    const itemsHtml = items.map(item => `
+      <div style="display:flex; gap:12px; align-items:flex-start; margin-bottom:10px; padding-bottom:10px; border-bottom:1px dashed var(--border);">
+        <img src="${item.image || item.productImage || 'https://via.placeholder.com/90'}" style="width:70px; height:70px; border-radius:10px; object-fit:cover;">
+        <div style="flex:1;">
+          <div style="font-weight:700; font-size:14px; color:#222;">${item.name || item.productName || 'N/A'}</div>
+          <div class="meta">Qty: ${item.quantity || 1} | Price: ৳${item.price || o.productPrice || 0}</div>
+          ${getSelectedVariantsHTML(item)}
+        </div>
+      </div>
+    `).join('');
 
     return `
     <div class="order-card">
-      <div class="order-top">
-        <img src="${o.productImage || 'https://via.placeholder.com/90'}">
-        <div style="flex:1;">
-          <div style="display:flex; justify-content:space-between; align-items:flex-start;">
-            <b>${o.productName || 'N/A'}</b>
+      <div class="order-top" style="flex-direction:column;">
+        <div style="display:flex; justify-content:space-between; align-items:flex-start; width:100%;">
+          <div style="flex:1;">
+            <div class="meta"><b>Track ID:</b> ${o.orderTrackId || 'N/A'}</div>
+            <div class="meta"><b>Shop:</b> ${o.shopName || 'N/A'} | <b>Seller ID:</b> ${o.sellerId || 'N/A'}</div>
+            <div class="meta"><b>Customer:</b> ${o.customerName || 'N/A'} - ${o.customerPhone || 'N/A'}</div>
+            <div class="meta"><b>Address:</b> ${o.division || ''}, ${o.district || ''}, ${o.upazila || ''}</div>
+          </div>
+          <div>
             ${isAffiliate ? '<span class="badge badge-affiliate"><i class="fas fa-handshake"></i> Affiliate Order</span>' : ''}
           </div>
-          <div class="meta"><b>Track ID:</b> ${o.orderTrackId || 'N/A'}</div>
-          <div class="meta"><b>Shop:</b> ${o.shopName || 'N/A'} | <b>Seller ID:</b> ${o.sellerId || 'N/A'}</div>
-          <div class="meta"><b>Customer:</b> ${o.customerName || 'N/A'} - ${o.customerPhone || 'N/A'}</div>
-          <div class="meta"><b>Address:</b> ${o.division || ''}, ${o.district || ''}, ${o.upazila || ''}</div>
-          <div class="meta">Qty: ${o.quantity || 1} | Price: ৳${o.productPrice || 0} | Delivery: ৳${o.deliveryCharge || 0}</div>
-          
+        </div>
+
+        <div style="margin-top:10px; width:100%; background:#FAFAFA; padding:10px; border-radius:12px;">
+          ${itemsHtml}
+        </div>
+
+        <div style="width:100%;">
           ${isAffiliate ? `
             <div class="info-box" style="margin:8px 0; padding:8px 12px;">
               <p style="font-size:12px; color:var(--primary); font-weight:bold;"><i class="fas fa-tag"></i> Affiliate Details</p>
@@ -275,13 +327,14 @@ function renderOrders(){
             </div>
           ` : ''}
 
-          <div class="meta"><b>Grand Total: ৳${o.grandTotal || 0}</b></div>
+          <div class="meta"><b>Delivery Charge:</b> ৳${o.deliveryCharge || 0} | <b>Grand Total: ৳${o.grandTotal || 0}</b></div>
           <div class="meta">Payment: ${o.paymentMethod || 'N/A'} - <span class="badge badge-${o.paymentStatus}">${o.paymentStatus || 'Unpaid'}</span></div>
           <div class="meta">Status: <span class="badge badge-${o.orderStatus}">${o.orderStatus || 'Pending'}</span> | Delivery Status: ${o.deliveryStatus || 'New'}</div>
           <div class="meta"><b>Order Date:</b> ${date} | <b>Updated Date:</b> ${updatedDate}</div>
           ${o.orderNote ? `<div class="meta"><b>Note:</b> ${o.orderNote}</div>` : ''}
         </div>
       </div>
+
       <div style="margin-top:12px; display:flex; flex-wrap:wrap; gap:8px; align-items:center;">
         <button class="btn btn-primary" onclick="viewOrder('${o.id}')"><i class="fas fa-eye"></i> View</button>
         <select onchange="updateField('${o.id}','orderStatus',this.value)" style="padding:8px; border-radius:8px; border:1px solid var(--border);">
@@ -323,12 +376,35 @@ window.viewOrder = (id) => {
   const date = o.createdAt?.toDate ? o.createdAt.toDate().toLocaleString('bn-BD') : 'N/A';
   const updatedDate = o.updatedAt?.toDate ? o.updatedAt.toDate().toLocaleString('bn-BD') : 'N/A';
   const isAffiliate = o.affiliateApplied === true;
+  const items = getItemsList(o);
+
+  const modalItemsHtml = items.map(item => {
+    const varObj = item.selectedVariants || item.variants || null;
+    const varEntries = (varObj && typeof varObj === 'object' && !Array.isArray(varObj)) ? Object.entries(varObj) : [];
+
+    return `
+      <div style="display:flex; gap:15px; align-items:center; background:#FAFAFA; padding:12px; border-radius:12px; margin-bottom:10px;">
+        <img src="${item.image || item.productImage || 'https://via.placeholder.com/90'}" style="width:80px;height:80px;border-radius:10px;object-fit:cover;">
+        <div style="flex:1;">
+          <h3 style="font-size:16px; margin-bottom:4px;">${item.name || item.productName || 'N/A'}</h3>
+          <p style="color:var(--muted); font-size:13px;">Price: ৳${item.price || 0} × Qty: ${item.quantity || 1} = <b>৳${(item.price || 0) * (item.quantity || 1)}</b></p>
+          ${varEntries.length > 0 ? `
+            <div style="margin-top:6px;">
+              <span style="font-size:11px; font-weight:700; color:var(--primary);">Selected Variants:</span>
+              <div>
+                ${varEntries.map(([k, v]) => `<span class="variant-chip"><b>${k}:</b> ${v}</span>`).join('')}
+              </div>
+            </div>
+          ` : ''}
+        </div>
+      </div>
+    `;
+  }).join('');
 
   document.getElementById('modalBody').innerHTML = `
-    <div style="text-align:center; margin-bottom:15px;">
-      <img src="${o.productImage || 'https://via.placeholder.com/120'}" style="width:120px;height:120px;border-radius:15px;object-fit:cover;">
-      <h2 style="margin-top:10px;">${o.productName || 'N/A'}</h2>
-      <p style="color:var(--muted);">Price: ৳${o.productPrice || 0} × Qty: ${o.quantity || 1} = Subtotal: ৳${o.subtotal || 0}</p>
+    <div style="margin-bottom:15px;">
+      <h2 style="margin-bottom:10px; color:var(--primary); text-align:center;"><i class="fas fa-box"></i> Order Items</h2>
+      ${modalItemsHtml}
     </div>
 
     <div style="background:#FFF4EC; padding:12px; border-radius:12px; margin-bottom:15px; display:flex; justify-content:space-between; align-items:center;">
@@ -441,7 +517,9 @@ document.getElementById('confirmDeleteBtn').onclick = async () => {
 window.exportCSV = () => {
   let csv = 'Track ID,Product,Customer,Phone,Seller ID,Affiliate Applied,Promo Code,Affiliate User ID,Discount,Subtotal,Grand Total,Status\n';
   allOrders.forEach(o => {
-    csv += `"${o.orderTrackId || ''}","${o.productName || ''}","${o.customerName || ''}","${o.customerPhone || ''}","${o.sellerId || ''}","${o.affiliateApplied ? 'Yes' : 'No'}","${o.affiliatePromoCode || ''}","${o.affiliateUserId || ''}","${o.affiliateDiscount || 0}","${o.subtotal || 0}","${o.grandTotal || 0}","${o.orderStatus || ''}"\n`;
+    const items = getItemsList(o);
+    const prodNames = items.map(i => i.name || i.productName || '').join(' | ');
+    csv += `"${o.orderTrackId || ''}","${prodNames}","${o.customerName || ''}","${o.customerPhone || ''}","${o.sellerId || ''}","${o.affiliateApplied ? 'Yes' : 'No'}","${o.affiliatePromoCode || ''}","${o.affiliateUserId || ''}","${o.affiliateDiscount || 0}","${o.subtotal || 0}","${o.grandTotal || 0}","${o.orderStatus || ''}"\n`;
   });
   const blob = new Blob(["\uFEFF" + csv], {type: 'text/csv;charset=utf-8;'});
   const url = URL.createObjectURL(blob);
