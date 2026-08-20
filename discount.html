@@ -16,6 +16,15 @@
                 extend: {
                     fontFamily: {
                         sans: ['Hind Siliguri', 'Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        ghoti: {
+                            primary: '#FF6B35',
+                            secondary: '#FFA500',
+                            dark: '#E85A1A',
+                            light: '#FFF8F3',
+                            darkText: '#0F172A'
+                        }
                     }
                 }
             }
@@ -23,7 +32,7 @@
     </script>
     <style>
         .glass-panel {
-            background: rgba(255, 255, 255, 0.85);
+            background: rgba(255, 255, 255, 0.9);
             backdrop-filter: blur(12px);
             -webkit-backdrop-filter: blur(12px);
         }
@@ -32,41 +41,40 @@
             width: 6px;
         }
         ::-webkit-scrollbar-track {
-            background: #f1f5f9;
+            background: #FFF8F3;
         }
         ::-webkit-scrollbar-thumb {
-            background: #cbd5e1;
+            background: #FF6B35;
             border-radius: 9999px;
         }
         ::-webkit-scrollbar-thumb:hover {
-            background: #94a3b8;
+            background: #E85A1A;
         }
     </style>
 </head>
-<body class="bg-slate-50 text-slate-800 font-sans min-h-screen antialiased selection:bg-indigo-500 selection:text-white">
+<body class="bg-[#FFF8F3] text-[#0F172A] font-sans min-h-screen antialiased selection:bg-[#FF6B35] selection:text-white">
 
     <!-- TOP HEADER -->
-    <header class="bg-slate-900/95 backdrop-blur-md text-white shadow-lg sticky top-0 z-30 border-b border-slate-800">
+    <header class="bg-slate-900/95 backdrop-blur-md text-white shadow-xl sticky top-0 z-30 border-b border-[#FF6B35]/20">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 py-3.5 flex justify-between items-center">
             <div class="flex items-center space-x-3">
-                <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-indigo-500 via-indigo-600 to-violet-500 flex items-center justify-center shadow-md shadow-indigo-500/20">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-[#FF6B35] via-[#FFA500] to-[#E85A1A] flex items-center justify-center shadow-lg shadow-[#FF6B35]/30">
                     <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 11h14l1 12H4L5 11z"/>
                     </svg>
                 </div>
                 <div>
-                    <h1 class="text-lg font-bold tracking-tight text-white flex items-center gap-2">
+                    <h1 class="text-base sm:text-lg font-bold tracking-tight text-white flex items-center gap-2">
                         ঘটি মার্কেট অ্যাডমিন
-                        <span class="bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 text-[11px] font-semibold px-2 py-0.5 rounded-full">v2.0 Pro</span>
                     </h1>
                 </div>
             </div>
-            <div id="userInfo" class="hidden flex items-center space-x-4">
-                <div class="hidden sm:flex items-center gap-2 bg-slate-800/80 px-3 py-1.5 rounded-lg border border-slate-700/60">
+            <div id="userInfo" class="hidden flex items-center space-x-3 sm:space-x-4">
+                <div class="hidden sm:flex items-center gap-2 bg-slate-800/90 px-3.5 py-1.5 rounded-xl border border-slate-700/60 shadow-inner">
                     <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
                     <span id="userEmail" class="text-xs text-slate-200 font-medium font-mono"></span>
                 </div>
-                <button id="logoutBtn" class="bg-rose-600/90 hover:bg-rose-600 text-white text-xs px-3.5 py-1.5 rounded-lg transition-all font-medium shadow-sm hover:shadow flex items-center gap-1.5">
+                <button id="logoutBtn" class="bg-rose-600/90 hover:bg-rose-600 text-white text-xs px-3.5 py-2 rounded-xl transition-all font-medium shadow-sm hover:shadow flex items-center gap-1.5 active:scale-95">
                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
                     </svg>
@@ -80,12 +88,12 @@
     <main class="max-w-7xl mx-auto px-4 sm:px-6 py-8">
 
         <!-- AUTH / LOGIN SECTION -->
-        <section id="authSection" class="max-w-md mx-auto my-16 bg-white p-8 sm:p-10 rounded-2xl shadow-xl border border-slate-100 relative overflow-hidden">
-            <div class="absolute -top-12 -right-12 w-32 h-32 bg-indigo-50 rounded-full blur-2xl"></div>
+        <section id="authSection" class="max-w-md mx-auto my-16 bg-white p-8 sm:p-10 rounded-3xl shadow-2xl border border-[#FF6B35]/15 relative overflow-hidden">
+            <div class="absolute -top-16 -right-16 w-36 h-36 bg-[#FFF8F3] rounded-full blur-3xl pointer-events-none"></div>
             
             <div class="text-center mb-8 relative">
-                <div class="w-14 h-14 bg-indigo-50 rounded-2xl flex items-center justify-center mx-auto mb-4 border border-indigo-100 shadow-inner">
-                    <svg class="w-7 h-7 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div class="w-16 h-16 bg-[#FFF8F3] rounded-2xl flex items-center justify-center mx-auto mb-4 border border-[#FF6B35]/25 shadow-inner">
+                    <svg class="w-8 h-8 text-[#FF6B35]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
                     </svg>
                 </div>
@@ -97,18 +105,18 @@
                 <div>
                     <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">ইমেইল ঠিকানা</label>
                     <input type="email" id="loginEmail" required placeholder="support@ghotimarket.com"
-                        class="w-full px-4 py-2.5 text-sm border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 focus:outline-none transition bg-slate-50/50">
+                        class="w-full px-4 py-3 text-sm border border-slate-200 rounded-xl focus:ring-2 focus:ring-[#FF6B35] focus:border-[#FF6B35] focus:outline-none transition bg-[#FFF8F3]/50">
                 </div>
                 <div>
                     <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">পাসওয়ার্ড</label>
                     <input type="password" id="loginPassword" required placeholder="••••••••"
-                        class="w-full px-4 py-2.5 text-sm border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 focus:outline-none transition bg-slate-50/50">
+                        class="w-full px-4 py-3 text-sm border border-slate-200 rounded-xl focus:ring-2 focus:ring-[#FF6B35] focus:border-[#FF6B35] focus:outline-none transition bg-[#FFF8F3]/50">
                 </div>
                 
                 <div id="loginError" class="hidden text-rose-600 text-xs font-medium p-3 bg-rose-50 rounded-xl border border-rose-100"></div>
 
                 <button type="submit" id="loginSubmitBtn"
-                    class="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-3 rounded-xl font-semibold text-sm transition-all duration-200 shadow-md shadow-indigo-500/20 hover:shadow-lg active:scale-[0.99]">
+                    class="w-full bg-[#FF6B35] hover:bg-[#E85A1A] text-white py-3.5 rounded-xl font-bold text-sm transition-all duration-200 shadow-md shadow-[#FF6B35]/25 hover:shadow-lg active:scale-[0.99]">
                     প্রবেশ করুন
                 </button>
             </form>
@@ -118,7 +126,7 @@
         <section id="dashboardSection" class="hidden space-y-6">
 
             <!-- CONTROLS BAR -->
-            <div class="glass-panel p-4 sm:p-5 rounded-2xl shadow-sm border border-slate-200/80 space-y-4 lg:space-y-0 lg:flex lg:items-center lg:justify-between">
+            <div class="glass-panel p-4 sm:p-5 rounded-2xl shadow-sm border border-[#FF6B35]/20 space-y-4 lg:space-y-0 lg:flex lg:items-center lg:justify-between">
                 
                 <!-- Seller Search -->
                 <div class="flex items-center space-x-2">
@@ -129,29 +137,30 @@
                             </svg>
                         </div>
                         <input type="text" id="sellerSearchInput" placeholder="Seller ID দিয়ে খুঁজুন..."
-                            class="w-full pl-9 pr-3 py-2 text-sm border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 focus:outline-none bg-white shadow-sm">
+                            class="w-full pl-9 pr-3 py-2.5 text-sm border border-slate-200 rounded-xl focus:ring-2 focus:ring-[#FF6B35] focus:border-[#FF6B35] focus:outline-none bg-white shadow-sm">
                     </div>
-                    <button id="searchBtn" class="bg-indigo-600 hover:bg-indigo-700 text-white text-sm px-4 py-2 rounded-xl transition-all font-medium shadow-sm active:scale-95">
+                    <button id="searchBtn" class="bg-[#FF6B35] hover:bg-[#E85A1A] text-white text-sm px-5 py-2.5 rounded-xl transition-all font-semibold shadow-sm shadow-[#FF6B35]/20 active:scale-95">
                         সার্চ
                     </button>
-                    <button id="clearSearchBtn" class="bg-slate-100 hover:bg-slate-200 text-slate-700 text-sm px-3.5 py-2 rounded-xl transition-all font-medium active:scale-95">
+                    <button id="clearSearchBtn" class="bg-slate-100 hover:bg-slate-200 text-slate-700 text-sm px-4 py-2.5 rounded-xl transition-all font-medium active:scale-95">
                         ক্লিয়ার
                     </button>
                 </div>
 
                 <!-- Selection & Bulk Actions -->
-                <div class="flex flex-wrap items-center gap-3 sm:gap-4 justify-between lg:justify-end border-t lg:border-t-0 pt-3 lg:pt-0 border-slate-100">
-                    <label class="flex items-center space-x-2 cursor-pointer select-none text-sm font-semibold text-slate-700 bg-white px-3 py-2 rounded-xl border border-slate-200 shadow-sm">
-                        <input type="checkbox" id="selectAllCheckbox" class="w-4 h-4 text-indigo-600 rounded border-slate-300 focus:ring-indigo-500 cursor-pointer">
-                        <span>সব সিলেক্ট (<span id="loadedCount" class="text-indigo-600">0</span>)</span>
+                <div class="flex flex-wrap items-center gap-3 sm:gap-4 justify-between lg:justify-end border-t lg:border-t-0 pt-3 lg:pt-0 border-orange-100">
+                    <label class="flex items-center space-x-2.5 cursor-pointer select-none text-sm font-semibold text-slate-700 bg-white px-3.5 py-2 rounded-xl border border-slate-200 shadow-sm hover:border-[#FF6B35]/50 transition">
+                        <input type="checkbox" id="selectAllCheckbox" class="w-4 h-4 text-[#FF6B35] rounded border-slate-300 focus:ring-[#FF6B35] cursor-pointer">
+                        <span>সব সিলেক্ট (<span id="loadedCount" class="text-[#FF6B35] font-bold">0</span>)</span>
                     </label>
 
-                    <div class="text-xs font-semibold text-slate-600 bg-slate-100 px-3 py-2 rounded-xl border border-slate-200/60">
-                        সিলেক্টেড: <span id="selectedCount" class="bg-indigo-600 text-white px-2 py-0.5 rounded-md font-bold text-xs">0</span>
+                    <div class="text-xs font-semibold text-slate-600 bg-white px-3.5 py-2 rounded-xl border border-slate-200 shadow-sm flex items-center gap-1.5">
+                        <span>সিলেক্টেড:</span>
+                        <span id="selectedCount" class="bg-[#FF6B35] text-white px-2 py-0.5 rounded-md font-bold text-xs">0</span>
                     </div>
 
                     <button id="openUpdateModalBtn" disabled
-                        class="bg-emerald-600 hover:bg-emerald-700 disabled:opacity-40 disabled:cursor-not-allowed text-white text-sm px-4 py-2 rounded-xl transition-all font-semibold shadow-sm shadow-emerald-600/20 active:scale-95 flex items-center gap-1.5">
+                        class="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 disabled:opacity-40 disabled:cursor-not-allowed text-white text-sm px-5 py-2.5 rounded-xl transition-all font-bold shadow-md shadow-emerald-600/20 active:scale-95 flex items-center gap-2">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
                         </svg>
@@ -166,8 +175,8 @@
             </div>
 
             <!-- EMPTY STATE MESSAGE -->
-            <div id="emptyState" class="hidden text-center py-16 bg-white rounded-2xl border border-slate-200/80 shadow-sm p-6">
-                <div class="w-16 h-16 bg-slate-50 text-slate-400 rounded-full flex items-center justify-center mx-auto mb-4 border border-slate-100">
+            <div id="emptyState" class="hidden text-center py-16 bg-white rounded-2xl border border-orange-100 shadow-sm p-6">
+                <div class="w-16 h-16 bg-[#FFF8F3] text-[#FF6B35] rounded-2xl flex items-center justify-center mx-auto mb-4 border border-[#FF6B35]/20 shadow-inner">
                     <svg class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
                     </svg>
@@ -178,7 +187,7 @@
 
             <!-- LOAD MORE BUTTON CONTAINER -->
             <div class="text-center py-6">
-                <button id="loadMoreBtn" class="bg-white border border-slate-300 hover:border-indigo-400 hover:bg-slate-50 text-indigo-600 font-bold text-sm px-8 py-3 rounded-xl shadow-sm transition-all duration-200 disabled:opacity-50 active:scale-95 inline-flex items-center gap-2">
+                <button id="loadMoreBtn" class="bg-white border-2 border-slate-200 hover:border-[#FF6B35] hover:bg-[#FFF8F3] text-[#FF6B35] font-bold text-sm px-8 py-3 rounded-xl shadow-sm transition-all duration-200 disabled:opacity-50 active:scale-95 inline-flex items-center gap-2">
                     <span>আরো দেখুন</span>
                 </button>
                 <p id="noMoreProductsText" class="hidden text-xs text-slate-400 font-semibold uppercase tracking-wider py-2">
@@ -191,38 +200,46 @@
 
     <!-- MODAL 1: RANGE CONFIGURATION -->
     <div id="rangeModal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 transition-opacity">
-        <div class="bg-white rounded-2xl max-w-md w-full p-6 sm:p-7 space-y-5 shadow-2xl border border-slate-100 transform transition-all">
-            <div class="flex items-center justify-between border-b border-slate-100 pb-3">
-                <h3 class="text-lg font-bold text-slate-900">Old Price Percentage সেট করুন</h3>
-                <button id="closeRangeModalBtn" class="text-slate-400 hover:text-slate-600 p-1 rounded-lg">
+        <div class="bg-white rounded-3xl max-w-md w-full p-6 sm:p-7 space-y-5 shadow-2xl border border-orange-100 transform transition-all">
+            <div class="flex items-center justify-between border-b border-orange-100 pb-3.5">
+                <div class="flex items-center gap-2.5">
+                    <div class="w-8 h-8 rounded-lg bg-[#FFF8F3] text-[#FF6B35] flex items-center justify-center border border-[#FF6B35]/30">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    </div>
+                    <h3 class="text-base sm:text-lg font-bold text-slate-900">Old Price Percentage সেট করুন</h3>
+                </div>
+                <button id="closeRangeModalBtn" class="text-slate-400 hover:text-slate-600 p-1 rounded-lg transition">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
                 </button>
             </div>
 
             <p class="text-xs text-slate-600 leading-relaxed">
-                নির্বাচিত <span id="modalSelectedCount" class="font-bold text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded">0</span> টি প্রোডাক্টের জন্য মূল দামের (Price) ওপর ভিত্তি করে র‍্যান্ডম Old Price তৈরি হবে।
+                নির্বাচিত <span id="modalSelectedCount" class="font-bold text-[#FF6B35] bg-[#FFF8F3] px-2 py-0.5 rounded border border-[#FF6B35]/30">0</span> টি প্রোডাক্টের জন্য মূল দামের (Price) ওপর ভিত্তি করে র‍্যান্ডম Old Price তৈরি হবে।
             </p>
             
             <div class="grid grid-cols-2 gap-4">
                 <div>
                     <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">সর্বনিম্ন শতকরা (%)</label>
                     <input type="number" id="minPercentageInput" value="10" min="1" max="100"
-                        class="w-full px-3.5 py-2 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 text-sm font-semibold bg-slate-50/50">
+                        class="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-[#FF6B35] focus:border-[#FF6B35] text-sm font-bold bg-[#FFF8F3]/50">
                 </div>
                 <div>
                     <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">সর্বোচ্চ শতকরা (%)</label>
                     <input type="number" id="maxPercentageInput" value="70" min="1" max="100"
-                        class="w-full px-3.5 py-2 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 text-sm font-semibold bg-slate-50/50">
+                        class="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-[#FF6B35] focus:border-[#FF6B35] text-sm font-bold bg-[#FFF8F3]/50">
                 </div>
             </div>
 
-            <div class="bg-amber-50 border border-amber-200/70 rounded-xl p-3 text-xs text-amber-800 flex items-start gap-2">
-                <svg class="w-4 h-4 text-amber-600 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                <span>উদাহরণ: মূল দাম ৳১০০ এবং শতকরা ২০% হলে ক্যালকুলেট করা Old Price হবে ৳২০।</span>
+            <div class="bg-[#FFF8F3] border border-[#FF6B35]/20 rounded-2xl p-3.5 text-xs text-slate-700 flex items-start gap-2.5">
+                <svg class="w-4 h-4 text-[#FF6B35] shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                <div>
+                    <span>উদাহরণ: বর্তমান দাম ৳১০০০ এবং ২০% যোগ করলে Old Price হবে ৳১২০০।</span>
+                    <div class="font-bold mt-1 text-[#E85A1A]">৳১০০০ + ২০% = ৳১২০০</div>
+                </div>
             </div>
 
             <div class="flex justify-end space-x-3 pt-2">
-                <button id="confirmUpdateBtn" class="w-full py-2.5 text-sm font-bold bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl shadow-md shadow-emerald-600/20 active:scale-95 transition-all">
+                <button id="confirmUpdateBtn" class="w-full py-3 text-sm font-bold bg-gradient-to-r from-[#FF6B35] to-[#FFA500] hover:from-[#E85A1A] hover:to-[#FF6B35] text-white rounded-xl shadow-lg shadow-[#FF6B35]/25 active:scale-95 transition-all">
                     কনফার্ম ও আপডেট করুন
                 </button>
             </div>
@@ -231,18 +248,18 @@
 
     <!-- MODAL 2: PROGRESS / STATUS -->
     <div id="progressModal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-        <div class="bg-white rounded-2xl max-w-sm w-full p-7 text-center space-y-5 shadow-2xl border border-slate-100">
+        <div class="bg-white rounded-3xl max-w-sm w-full p-7 text-center space-y-5 shadow-2xl border border-orange-100">
             <h3 id="progressTitle" class="text-lg font-bold text-slate-900">আপডেট করা হচ্ছে...</h3>
             
             <div id="progressSpinner" class="py-2">
-                <div class="w-12 h-12 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin mx-auto"></div>
+                <div class="w-12 h-12 border-4 border-[#FF6B35] border-t-transparent rounded-full animate-spin mx-auto"></div>
             </div>
 
             <p id="progressMessage" class="text-xs text-slate-600 font-medium leading-relaxed">
                 অনুগ্রহ করে অপেক্ষা করুন। Firestore ডাটাবেজ আপডেট হচ্ছে।
             </p>
 
-            <button id="closeProgressModalBtn" class="hidden w-full py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold rounded-xl shadow-md active:scale-95 transition">
+            <button id="closeProgressModalBtn" class="hidden w-full py-3 bg-[#FF6B35] hover:bg-[#E85A1A] text-white text-sm font-bold rounded-xl shadow-md shadow-[#FF6B35]/20 active:scale-95 transition">
                 ঠিক আছে
             </button>
         </div>
@@ -491,7 +508,7 @@
 
             productsArray.forEach(product => {
                 const card = document.createElement("div");
-                card.className = "group relative bg-white rounded-2xl p-4 border border-slate-200/80 shadow-sm hover:shadow-xl hover:border-indigo-300 transition-all duration-300 flex flex-col justify-between hover:-translate-y-1";
+                card.className = "group relative bg-white rounded-2xl p-4 border border-slate-200/80 shadow-sm hover:shadow-xl hover:border-[#FF6B35]/40 transition-all duration-300 flex flex-col justify-between hover:-translate-y-1";
                 card.setAttribute("data-id", product.id);
 
                 const imageUrl = (product.images.length > 0 && product.images[0]) ? product.images[0] : SVG_IMAGE_FALLBACK;
@@ -499,7 +516,7 @@
 
                 card.innerHTML = `
                     <div>
-                        <div class="relative mb-3 bg-gradient-to-b from-slate-100/80 to-slate-50 rounded-xl overflow-hidden h-44 flex items-center justify-center p-2 border border-slate-100">
+                        <div class="relative mb-3 bg-gradient-to-b from-[#FFF8F3]/60 to-slate-50 rounded-xl overflow-hidden h-44 flex items-center justify-center p-2 border border-orange-100/60">
                             <img src="${imageUrl}" 
                                  alt="${escapeHtml(product.name)}" 
                                  loading="lazy" 
@@ -507,7 +524,7 @@
                                  onerror="this.onerror=null; this.src='${SVG_IMAGE_FALLBACK}';"
                                  class="object-contain h-full w-full group-hover:scale-105 transition-transform duration-300">
                             
-                            <span class="absolute top-2 left-2 flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-bold tracking-wider uppercase ${product.active ? 'bg-emerald-50 text-emerald-700 border border-emerald-200/80' : 'bg-rose-50 text-rose-700 border border-rose-200/80'}">
+                            <span class="absolute top-2 left-2 flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold tracking-wider uppercase ${product.active ? 'bg-emerald-50 text-emerald-700 border border-emerald-200/80' : 'bg-rose-50 text-rose-700 border border-rose-200/80'}">
                                 <span class="w-1.5 h-1.5 rounded-full ${product.active ? 'bg-emerald-500 animate-pulse' : 'bg-rose-500'}"></span>
                                 ${product.active ? 'Active' : 'Inactive'}
                             </span>
@@ -516,27 +533,27 @@
                                    data-action="select-item" 
                                    data-id="${product.id}"
                                    ${isSelected ? 'checked' : ''}
-                                   class="absolute top-2.5 right-2.5 w-5 h-5 text-indigo-600 rounded-md border-slate-300 focus:ring-indigo-500 cursor-pointer shadow-sm">
+                                   class="absolute top-2.5 right-2.5 w-5 h-5 text-[#FF6B35] rounded-md border-slate-300 focus:ring-[#FF6B35] cursor-pointer shadow-sm">
                         </div>
 
-                        <h4 class="text-xs font-bold text-slate-800 line-clamp-2 mb-1.5 group-hover:text-indigo-600 transition-colors" title="${escapeHtml(product.name)}">
+                        <h4 class="text-xs font-bold text-slate-800 line-clamp-2 mb-1.5 group-hover:text-[#FF6B35] transition-colors" title="${escapeHtml(product.name)}">
                             ${escapeHtml(product.name)}
                         </h4>
                         
                         <p class="text-[11px] text-slate-500 mb-3 flex items-center gap-1">
                             <span>Seller:</span> 
-                            <span class="font-mono bg-slate-100 text-slate-700 px-1.5 py-0.5 rounded text-[10px] font-medium">${escapeHtml(product.sellerId)}</span>
+                            <span class="font-mono bg-[#FFF8F3] text-[#E85A1A] px-1.5 py-0.5 rounded border border-[#FF6B35]/20 text-[10px] font-semibold">${escapeHtml(product.sellerId)}</span>
                         </p>
                     </div>
 
-                    <div class="pt-3 border-t border-slate-100 flex justify-between items-center bg-slate-50/50 -mx-4 -mb-4 p-3.5 rounded-b-2xl">
+                    <div class="pt-3 border-t border-slate-100 flex justify-between items-center bg-[#FFF8F3]/30 -mx-4 -mb-4 p-3.5 rounded-b-2xl">
                         <div>
                             <span class="text-slate-400 block text-[9px] uppercase font-bold tracking-wider">Price</span>
                             <span class="font-bold text-slate-900 text-sm">৳${product.price}</span>
                         </div>
                         <div class="text-right">
                             <span class="text-slate-400 block text-[9px] uppercase font-bold tracking-wider">Old Price</span>
-                            <span class="font-bold text-indigo-600 text-sm old-price-display">৳${product.oldPrice}</span>
+                            <span class="font-bold text-[#FF6B35] text-sm old-price-display">৳${product.oldPrice}</span>
                         </div>
                     </div>
                 `;
@@ -561,7 +578,7 @@
             if (isLoading) {
                 loadMoreBtn.disabled = true;
                 loadMoreBtn.innerHTML = `
-                    <svg class="w-4 h-4 animate-spin text-indigo-600" fill="none" viewBox="0 0 24 24">
+                    <svg class="w-4 h-4 animate-spin text-[#FF6B35]" fill="none" viewBox="0 0 24 24">
                         <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                         <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                     </svg>
@@ -665,7 +682,7 @@
         });
 
         // =========================================================================
-        // 9. MODAL & FIRESTORE BATCH WRITE OPTIMIZATION
+        // 9. MODAL & FIRESTORE BATCH WRITE OPTIMIZATION (BUG FIXED HERE)
         // =========================================================================
         openUpdateModalBtn.addEventListener("click", () => {
             if (selectedProductsMap.size === 0) return;
@@ -692,7 +709,7 @@
             await executeBatchUpdate(minPct, maxPct);
         });
 
-        // BATCH WRITE IMPLEMENTATION
+        // BATCH WRITE IMPLEMENTATION WITH CORRECT CALCULATION
         async function executeBatchUpdate(minPct, maxPct) {
             const selectedItems = Array.from(selectedProductsMap.values());
             const totalItems = selectedItems.length;
@@ -707,7 +724,8 @@
 
                     chunk.forEach(product => {
                         const randomPct = (Math.random() * (maxPct - minPct) + minPct);
-                        const calculatedOldPrice = Math.round((product.price * (randomPct / 100)) * 100) / 100;
+                        // Correct calculation: oldPrice = price + (price * randomPct / 100)
+                        const calculatedOldPrice = Math.round(product.price * (1 + randomPct / 100));
 
                         product.newCalculatedOldPrice = calculatedOldPrice;
 
