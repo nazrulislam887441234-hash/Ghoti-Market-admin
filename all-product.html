@@ -632,13 +632,17 @@ async function fetchProducts(reset = false) {
     } catch(err) {
         console.error("Query error:", err);
         const errMsg = err.message || '';
-        const urlMatch = errMsg.match(/https:\/\/console\.firebase\.google\.com[^\s]*/);
-        if(urlMatch) {
-            const cleanUrl = urlMatch[0].replace(/['"().,;!?]/g, '');
+        
+        // Improved Firebase Index URL extraction regex matching full query parameters
+        const urlRegex = /https:\/\/console\.firebase\.google\.com[^\s'"]*/g;
+        const matches = errMsg.match(urlRegex);
+        
+        if(matches && matches.length > 0) {
+            let cleanUrl = matches[0].replace(/[.,;!?)'"]+$/, '');
             document.getElementById('indexLinkBtn').href = cleanUrl;
             document.getElementById('indexModal').style.display = 'flex';
-        } else if(err.code === 'failed-precondition') {
-            showToast("এই ফিল্টারের জন্য Firebase Index প্রয়োজন। কনসোল চেক করুন।", "error");
+        } else if(err.code === 'failed-precondition' || errMsg.includes('index')) {
+            showToast("এই ফিল্টারের জন্য Firebase Index প্রয়োজন। কনসোল (F12) চেক করুন।", "error");
         } else {
             showToast("ডাটা লোড করতে সমস্যা হয়েছে।", "error");
         }
