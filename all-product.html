@@ -168,9 +168,32 @@ textarea{resize:vertical;min-height:75px;}
 </head>
 <body>
 
+<!-- Login Screen -->
+<div id="loginContainer" style="display:none; min-height:100vh; align-items:center; justify-content:center; padding:15px;">
+    <div class="glass-card" style="max-width:400px; width:100%; text-align:center; padding:30px;">
+        <div class="brand-title" style="justify-content:center; margin-bottom:20px; font-size:22px;">
+            <i class="fas fa-store"></i> GHOTI MARKET | Admin
+        </div>
+        <form id="loginForm">
+            <div class="form-group" style="text-align:left; margin-bottom:15px;">
+                <label>Admin Email</label>
+                <input type="email" id="loginEmail" value="support@ghotimarket.com" readonly style="background:#f3f4f6; cursor:not-allowed;">
+            </div>
+            <div class="form-group" style="text-align:left; margin-bottom:20px;">
+                <label>Firebase Password *</label>
+                <input type="password" id="loginPassword" placeholder="পাসওয়ার্ড লিখুন" required>
+            </div>
+            <button type="submit" class="btn btn-primary" id="loginBtn" style="width:100%;">Login to Admin</button>
+        </form>
+        <div style="margin-top: 15px;">
+            <a href="index.html" class="btn btn-secondary btn-sm" style="width:100%;"><i class="fas fa-home"></i> Go to Home</a>
+        </div>
+    </div>
+</div>
+
+<!-- Main Admin Dashboard -->
 <div class="admin-container" id="mainContent" style="display:none;">
     
-    <!-- Professional Header -->
     <div class="glass-card">
         <div class="header-top">
             <div class="brand-title">
@@ -184,7 +207,6 @@ textarea{resize:vertical;min-height:75px;}
             </div>
         </div>
 
-        <!-- Statistics Section -->
         <div class="stats-grid">
             <div class="stat-card">
                 <div class="stat-icon"><i class="fas fa-boxes"></i></div>
@@ -209,14 +231,12 @@ textarea{resize:vertical;min-height:75px;}
             </div>
         </div>
 
-        <!-- Status Segmented Control (One-Click Quick Filter) -->
         <div class="status-segments">
             <button class="segment-btn active" data-status="all">All</button>
             <button class="segment-btn" data-status="active">Active</button>
             <button class="segment-btn" data-status="inactive">Inactive</button>
         </div>
 
-        <!-- Search & Filter Section -->
         <div class="controls-section">
             <div class="search-row">
                 <div class="search-input-group">
@@ -249,14 +269,12 @@ textarea{resize:vertical;min-height:75px;}
             </div>
         </div>
 
-        <!-- Active Filter Summary Chips -->
         <div class="active-filters-bar" id="activeFiltersBar" style="display: none;">
             <span style="font-size: 11px; font-weight: 700; color: var(--muted);">Filters:</span>
             <div id="activeChipsContainer" style="display: flex; gap: 5px; flex-wrap: wrap;"></div>
             <button class="clear-all-filters" id="clearAllFiltersBtn">Clear All</button>
         </div>
 
-        <!-- Bulk Action Bar -->
         <div class="bulk-bar">
             <label class="select-all-wrap">
                 <input type="checkbox" id="selectAllCheckbox" style="width: 16px; height: 16px; accent-color: var(--primary);"> Select All
@@ -268,7 +286,6 @@ textarea{resize:vertical;min-height:75px;}
         </div>
     </div>
 
-    <!-- Product Grid Container -->
     <div class="glass-card">
         <div class="product-grid" id="productGrid">
             <div class="p-card skeleton skeleton-card"></div>
@@ -329,7 +346,6 @@ textarea{resize:vertical;min-height:75px;}
                     <textarea id="editDesc" required></textarea>
                 </div>
                 
-                <!-- Affiliate Section -->
                 <div class="form-group full">
                     <label>Affiliate Status</label>
                     <div style="display: flex; gap: 15px; align-items: center; margin-top: 4px;">
@@ -342,7 +358,6 @@ textarea{resize:vertical;min-height:75px;}
                     <input type="number" id="editAffiliateDiscount" min="1">
                 </div>
 
-                <!-- Keywords Section -->
                 <div class="form-group full">
                     <label>Keywords (সর্বোচ্চ ৫০টি)</label>
                     <div class="keyword-box">
@@ -352,14 +367,12 @@ textarea{resize:vertical;min-height:75px;}
                     <div class="keyword-list" id="editKeywordList"></div>
                 </div>
 
-                <!-- Variants Section -->
                 <div class="form-group full">
                     <label>Product Variants</label>
                     <div id="editVariantsContainer"></div>
                     <button type="button" class="btn btn-secondary btn-sm" id="addVariantBtn" style="margin-top: 4px;"><i class="fas fa-plus"></i> Add Variant</button>
                 </div>
 
-                <!-- Images Section -->
                 <div class="form-group full">
                     <label>Product Images (সর্বোচ্চ ২টি)</label>
                     <div class="upload-grid" id="editImagePreview"></div>
@@ -425,7 +438,7 @@ textarea{resize:vertical;min-height:75px;}
 <!-- Firebase & Application Script -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 import { getFirestore, collection, getDocs, getCountFromServer, query, orderBy, limit, startAfter, where, doc, getDoc, updateDoc, deleteDoc, writeBatch, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 const firebaseConfig = { apiKey: "AIzaSyBUhNhYvuo_FTvZ5RZR6Gn-4hsUY21S0XE", authDomain: "ghotimarket.firebaseapp.com", projectId: "ghotimarket" };
@@ -439,10 +452,8 @@ let allCategoriesCache = [];
 let allUsersCache = [];
 let editingKeywords = [];
 let editingImages = [];
-let editingNewFiles = [];
 let editingVariants = [];
 let searchDebounceTimer = null;
-
 let currentStatusFilter = 'all';
 
 function escapeHTML(str) {
@@ -456,17 +467,42 @@ function escapeHTML(str) {
 }
 
 onAuthStateChanged(auth, user => {
+    const loginContainer = document.getElementById('loginContainer');
+    const mainContent = document.getElementById('mainContent');
+
     if(user && user.email === "support@ghotimarket.com"){
-        document.getElementById('mainContent').style.display = 'block';
+        loginContainer.style.display = 'none';
+        mainContent.style.display = 'block';
         initApp();
     } else {
-        showToast("আপনার এই পেজে প্রবেশাধিকার নেই!", "error");
-        setTimeout(() => window.location.href = "index.html", 1500);
+        mainContent.style.display = 'none';
+        loginContainer.style.display = 'flex';
     }
 });
 
+document.getElementById('loginForm').onsubmit = async (e) => {
+    e.preventDefault();
+    const password = document.getElementById('loginPassword').value;
+    const btn = document.getElementById('loginBtn');
+    btn.disabled = true;
+    btn.innerText = "লগইন হচ্ছে...";
+
+    try {
+        await signInWithEmailAndPassword(auth, "support@ghotimarket.com", password);
+        showToast("সফলভাবে লগইন হয়েছে!");
+    } catch(err) {
+        console.error(err);
+        showToast("পাসওয়ার্ড ভুল হয়েছে অথবা লগইন ব্যর্থ হয়েছে!", "error");
+    } finally {
+        btn.disabled = false;
+        btn.innerText = "Login to Admin";
+    }
+};
+
 document.getElementById('logoutBtn').onclick = () => {
-    signOut(auth).then(() => window.location.href = "index.html");
+    signOut(auth).then(() => {
+        showToast("লগআউট সফল হয়েছে");
+    });
 };
 
 window.showToast = function(message, type = 'success') {
@@ -478,7 +514,7 @@ window.showToast = function(message, type = 'success') {
     setTimeout(() => {
         toast.style.opacity = '0';
         setTimeout(() => toast.remove(), 300);
-    }, 3000);
+    }, 4000); // সময় একটু বাড়িয়ে দেওয়া হলো যাতে পড়ার সুযোগ থাকে
 }
 
 async function initApp() {
@@ -573,14 +609,8 @@ async function fetchProducts(reset = false) {
 
         if(currentStatusFilter === 'active') constraints.push(where("active", "==", true));
         if(currentStatusFilter === 'inactive') constraints.push(where("active", "==", false));
-
-        if(shopFilter !== 'all') {
-            constraints.push(where("shopName", "==", shopFilter));
-        }
-
-        if(catFilter !== 'all') {
-            constraints.push(where("categoryName", "==", catFilter));
-        }
+        if(shopFilter !== 'all') constraints.push(where("shopName", "==", shopFilter));
+        if(catFilter !== 'all') constraints.push(where("categoryName", "==", catFilter));
 
         if(searchTerm) {
             if(searchMode === 'slug') {
@@ -632,8 +662,6 @@ async function fetchProducts(reset = false) {
     } catch(err) {
         console.error("Query error:", err);
         const errMsg = err.message || '';
-        
-        // Improved Firebase Index URL extraction regex matching full query parameters
         const urlRegex = /https:\/\/console\.firebase\.google\.com[^\s'"]*/g;
         const matches = errMsg.match(urlRegex);
         
@@ -641,10 +669,8 @@ async function fetchProducts(reset = false) {
             let cleanUrl = matches[0].replace(/[.,;!?)'"]+$/, '');
             document.getElementById('indexLinkBtn').href = cleanUrl;
             document.getElementById('indexModal').style.display = 'flex';
-        } else if(err.code === 'failed-precondition' || errMsg.includes('index')) {
-            showToast("এই ফিল্টারের জন্য Firebase Index প্রয়োজন। কনসোল (F12) চেক করুন।", "error");
         } else {
-            showToast("ডাটা লোড করতে সমস্যা হয়েছে।", "error");
+            showToast("Query Error: " + errMsg, "error");
         }
     }
 }
@@ -702,9 +728,7 @@ document.querySelectorAll('.segment-btn').forEach(btn => {
 document.getElementById('searchBtn').onclick = () => fetchProducts(true);
 document.getElementById('searchInput').oninput = () => {
     clearTimeout(searchDebounceTimer);
-    searchDebounceTimer = setTimeout(() => {
-        fetchProducts(true);
-    }, 400);
+    searchDebounceTimer = setTimeout(() => { fetchProducts(true); }, 400);
 };
 document.getElementById('filterShop').onchange = () => fetchProducts(true);
 document.getElementById('filterCategory').onchange = () => fetchProducts(true);
@@ -715,25 +739,12 @@ function updateActiveChipsUI(state) {
     const bar = document.getElementById('activeFiltersBar');
     const container = document.getElementById('activeChipsContainer');
     container.innerHTML = '';
-
     let activeCount = 0;
 
-    if(state.status !== 'all') {
-        activeCount++;
-        container.innerHTML += `<div class="filter-chip">Status: ${state.status} <span onclick="resetFilter('status')">&times;</span></div>`;
-    }
-    if(state.shopFilter !== 'all') {
-        activeCount++;
-        container.innerHTML += `<div class="filter-chip">Shop: ${escapeHTML(state.shopFilter)} <span onclick="resetFilter('shop')">&times;</span></div>`;
-    }
-    if(state.catFilter !== 'all') {
-        activeCount++;
-        container.innerHTML += `<div class="filter-chip">Cat: ${escapeHTML(state.catFilter)} <span onclick="resetFilter('category')">&times;</span></div>`;
-    }
-    if(state.searchTerm) {
-        activeCount++;
-        container.innerHTML += `<div class="filter-chip">${state.searchMode}: ${escapeHTML(state.searchTerm)} <span onclick="resetFilter('search')">&times;</span></div>`;
-    }
+    if(state.status !== 'all') { activeCount++; container.innerHTML += `<div class="filter-chip">Status: ${state.status} <span onclick="resetFilter('status')">&times;</span></div>`; }
+    if(state.shopFilter !== 'all') { activeCount++; container.innerHTML += `<div class="filter-chip">Shop: ${escapeHTML(state.shopFilter)} <span onclick="resetFilter('shop')">&times;</span></div>`; }
+    if(state.catFilter !== 'all') { activeCount++; container.innerHTML += `<div class="filter-chip">Cat: ${escapeHTML(state.catFilter)} <span onclick="resetFilter('category')">&times;</span></div>`; }
+    if(state.searchTerm) { activeCount++; container.innerHTML += `<div class="filter-chip">${state.searchMode}: ${escapeHTML(state.searchTerm)} <span onclick="resetFilter('search')">&times;</span></div>`; }
 
     bar.style.display = activeCount > 0 ? 'flex' : 'none';
 }
@@ -743,13 +754,9 @@ window.resetFilter = function(type) {
         currentStatusFilter = 'all';
         document.querySelectorAll('.segment-btn').forEach(b => b.classList.remove('active'));
         document.querySelector('.segment-btn[data-status="all"]').classList.add('active');
-    } else if(type === 'shop') {
-        document.getElementById('filterShop').value = 'all';
-    } else if(type === 'category') {
-        document.getElementById('filterCategory').value = 'all';
-    } else if(type === 'search') {
-        document.getElementById('searchInput').value = '';
-    }
+    } else if(type === 'shop') { document.getElementById('filterShop').value = 'all'; }
+    else if(type === 'category') { document.getElementById('filterCategory').value = 'all'; }
+    else if(type === 'search') { document.getElementById('searchInput').value = ''; }
     fetchProducts(true);
 }
 
@@ -775,9 +782,7 @@ document.getElementById('selectAllCheckbox').onchange = (e) => {
 };
 
 document.addEventListener('change', (e) => {
-    if(e.target.classList.contains('p-checkbox')) {
-        updateSelectedCount();
-    }
+    if(e.target.classList.contains('p-checkbox')) updateSelectedCount();
 });
 
 function updateSelectedCount() {
@@ -809,8 +814,7 @@ window.openEditModal = async function(id) {
         document.getElementById('affiliateDiscountGroup').style.display = (p.affiliate === 'ON') ? 'block' : 'none';
 
         editingKeywords = p.keywords || [];
-        editingImages = p.images || [];
-        editingNewFiles = [];
+        editingImages = (p.images || []).map(url => ({ url, file: null }));
         editingVariants = p.variants || [];
 
         renderEditKeywords();
@@ -829,7 +833,7 @@ window.openEditModal = async function(id) {
         document.getElementById('editModal').style.display = 'flex';
     } catch(err) {
         console.error(err);
-        showToast("Product ডাটা লোড করতে সমস্যা হয়েছে", "error");
+        showToast("Error loading product: " + err.message, "error");
     }
 }
 
@@ -845,10 +849,7 @@ function renderEditKeywords() {
         <div class="keyword-tag">${escapeHTML(k)} <span onclick="removeEditKeyword(${i})">&times;</span></div>
     `).join('');
 }
-window.removeEditKeyword = function(i) {
-    editingKeywords.splice(i, 1);
-    renderEditKeywords();
-}
+window.removeEditKeyword = function(i) { editingKeywords.splice(i, 1); renderEditKeywords(); }
 document.getElementById('editAddKeywordBtn').onclick = () => {
     const input = document.getElementById('editKeywordInput');
     const val = input.value.trim();
@@ -863,17 +864,14 @@ document.getElementById('editAddKeywordBtn').onclick = () => {
 
 function renderEditImages() {
     const preview = document.getElementById('editImagePreview');
-    preview.innerHTML = editingImages.map((url, i) => `
+    preview.innerHTML = editingImages.map((imgObj, i) => `
         <div class="img-wrap">
-            <img src="${escapeHTML(url)}" class="preview-img">
+            <img src="${escapeHTML(imgObj.url)}" class="preview-img">
             <button type="button" class="img-remove-btn" onclick="removeEditImage(${i})">&times;</button>
         </div>
     `).join('');
 }
-window.removeEditImage = function(i) {
-    editingImages.splice(i, 1);
-    renderEditImages();
-}
+window.removeEditImage = function(i) { editingImages.splice(i, 1); renderEditImages(); }
 
 document.getElementById('editUploadBox').onclick = () => document.getElementById('editImageInput').click();
 document.getElementById('editImageInput').onchange = async (e) => {
@@ -885,8 +883,10 @@ document.getElementById('editImageInput').onchange = async (e) => {
     }
     for(let file of files) {
         const compressed = await compressImage(file, 1200, 0.8);
-        editingNewFiles.push(compressed);
-        editingImages.push(URL.createObjectURL(file));
+        editingImages.push({
+            url: URL.createObjectURL(compressed),
+            file: compressed
+        });
     }
     renderEditImages();
 }
@@ -972,18 +972,19 @@ document.getElementById('editForm').onsubmit = async (e) => {
         const slug = document.getElementById('editSlug').value.trim().toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
 
         let finalImages = [];
-        for(let imgUrl of editingImages) {
-            if(imgUrl.startsWith('blob:')) {
-                const file = editingNewFiles.shift();
-                if(file) {
-                    const formData = new FormData();
-                    formData.append("image", file);
-                    const res = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, { method: "POST", body: formData });
-                    const data = await res.json();
-                    if(data.success) finalImages.push(data.data.url);
+        for(let imgObj of editingImages) {
+            if(imgObj.file) {
+                const formData = new FormData();
+                formData.append("image", imgObj.file);
+                const res = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, { method: "POST", body: formData });
+                const data = await res.json();
+                if(data.success) {
+                    finalImages.push(data.data.url);
+                } else {
+                    throw new Error("ImgBB Image Upload Failed: " + (data.error?.message || "Unknown error"));
                 }
             } else {
-                finalImages.push(imgUrl);
+                finalImages.push(imgObj.url);
             }
         }
 
@@ -1019,8 +1020,9 @@ document.getElementById('editForm').onsubmit = async (e) => {
         fetchProducts(true);
         loadGlobalStats();
     } catch(err) {
-        console.error(err);
-        showToast("Update করতে সমস্যা হয়েছে", "error");
+        console.error("Detailed Update Error:", err);
+        // এখন আসল এরর মেসেজটি টোস্টে দেখাবে যাতে বোঝা যায় সমস্যা কোথায় (যেমন: Firestore Permission, Network, বা ImgBB API)
+        showToast("Error: " + (err.message || err), "error");
     } finally {
         saveBtn.disabled = false;
         saveBtn.innerText = "Update";
@@ -1064,7 +1066,7 @@ window.confirmDeleteOne = function(id) {
             fetchProducts(true);
             loadGlobalStats();
         } catch(err) {
-            showToast("Delete করতে সমস্যা হয়েছে", "error");
+            showToast("Delete Error: " + err.message, "error");
         }
     };
     document.getElementById('confirmModal').style.display = 'flex';
@@ -1083,6 +1085,7 @@ document.getElementById('bulkDeleteBtn').onclick = async () => {
     yesBtn.onclick = async () => {
         try {
             const batch = writeBatch(db);
+            selected.push(...[]); // Safe dummy reference
             selected.forEach(id => {
                 batch.delete(doc(db, "products", id));
             });
@@ -1092,7 +1095,7 @@ document.getElementById('bulkDeleteBtn').onclick = async () => {
             fetchProducts(true);
             loadGlobalStats();
         } catch(err) {
-            showToast("Bulk Delete করতে সমস্যা হয়েছে", "error");
+            showToast("Bulk Delete Error: " + err.message, "error");
         }
     };
     document.getElementById('confirmModal').style.display = 'flex';
