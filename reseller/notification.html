@@ -1,0 +1,782 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>নোটিফিকেশন ম্যানেজমেন্ট — GHOTI RESELLER ADMIN</title>
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#FF6B35',
+            'primary-dark': '#E85A1A',
+            dark: '#0F172A',
+            background: '#FFF8F3',
+            muted: '#64748B',
+            border: '#E2E8F0',
+          },
+          fontFamily: {
+            hind: ['Hind Siliguri', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+  <!-- Google Font: Hind Siliguri -->
+  <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Hind Siliguri', sans-serif;
+      background-color: #FFF8F3;
+      color: #0F172A;
+    }
+  </style>
+</head>
+<body class="bg-background text-dark min-h-screen flex flex-col">
+
+  <!-- Sticky Header -->
+  <header class="sticky top-0 z-50 bg-white border-b border-border shadow-xs">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      <div class="flex items-center space-x-3">
+        <img src="https://reseller.ghotimarket.com/logo.png" alt="GHOTI RESELLER" class="h-8 w-auto">
+        <div>
+          <span class="font-bold text-dark text-base tracking-tight block leading-none">GHOTI RESELLER</span>
+          <span class="text-xs text-muted">নোটিফিকেশন ম্যানেজমেন্ট</span>
+        </div>
+      </div>
+      <div class="flex items-center space-x-4">
+        <div class="hidden sm:flex flex-col text-right">
+          <span class="text-xs font-medium text-dark" id="adminEmailDisplay">support@ghotimarket.com</span>
+          <span class="text-[10px] text-muted">অ্যাডমিন</span>
+        </div>
+        <button id="logoutBtn" class="inline-flex items-center space-x-1.5 text-xs font-semibold text-red-600 hover:text-red-700 bg-red-50 hover:bg-red-100 px-3.5 py-2 rounded-xl border border-red-100 transition">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+          </svg>
+          <span>লগআউট</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="flex-1 max-w-7xl mx-auto w-full p-4 sm:p-6 lg:p-8 space-y-8 mb-12">
+
+    <!-- Success / Alert Banner -->
+    <div id="alertBanner" class="hidden rounded-2xl p-4 border text-sm font-medium transition-all duration-300"></div>
+
+    <!-- Create Notification Section -->
+    <section class="bg-white rounded-2xl p-6 sm:p-8 shadow-sm border border-border space-y-6">
+      <div class="flex items-center space-x-3 pb-4 border-b border-border">
+        <div class="w-10 h-10 bg-orange-50 text-primary rounded-xl flex items-center justify-center border border-orange-100">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+          </svg>
+        </div>
+        <h2 class="text-lg font-bold text-dark">নতুন নোটিফিকেশন পাঠান</h2>
+      </div>
+
+      <form id="createNotificationForm" class="space-y-6">
+        <!-- Recipient Type Selection -->
+        <div class="space-y-3">
+          <label class="block text-sm font-semibold text-dark">প্রাপক নির্বাচন করুন</label>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <label class="flex items-center space-x-3 p-4 rounded-xl border border-border cursor-pointer hover:border-primary transition has-checked:border-primary has-checked:bg-orange-50/50">
+              <input type="radio" name="recipientType" value="all" checked class="text-primary focus:ring-primary h-4 w-4">
+              <div>
+                <span class="block font-semibold text-dark text-sm">সকল রিসেলার</span>
+                <span class="block text-xs text-muted">সকল নিবন্ধিত রিসেলার এই নোটিফিকেশন দেখতে পাবেন।</span>
+              </div>
+            </label>
+            <label class="flex items-center space-x-3 p-4 rounded-xl border border-border cursor-pointer hover:border-primary transition has-checked:border-primary has-checked:bg-orange-50/50">
+              <input type="radio" name="recipientType" value="custom" class="text-primary focus:ring-primary h-4 w-4">
+              <div>
+                <span class="block font-semibold text-dark text-sm">নির্দিষ্ট রিসেলার</span>
+                <span class="block text-xs text-`.muted` text-muted">নির্দিষ্ট কোনো নির্দিষ্ট রিসেলারকে UID বা ইমেইল দিয়ে টার্গেট করুন।</span>
+              </div>
+            </label>
+          </div>
+        </div>
+
+        <!-- Custom Reseller Selection Box (Hidden by default) -->
+        <div id="customResellerContainer" class="hidden space-y-4 p-4 rounded-xl bg-background border border-border">
+          <div class="flex items-center justify-between">
+            <label class="block text-sm font-semibold text-dark">রিসেলার খুঁজুন (UID, নাম, ইমেইল বা ফোন)</label>
+            <span id="selectedResellerBadge" class="hidden text-xs bg-orange-100 text-primary-dark px-2.5 py-1 rounded-lg font-semibold"></span>
+          </div>
+          <div class="relative">
+            <input type="text" id="resellerSearchInput" placeholder="রিসেলারের নাম, ইমেইল, UID বা ফোন নম্বর লিখুন..." class="w-full px-4 py-2.5 pl-10 rounded-xl border border-border bg-white text-sm focus:outline-none focus:border-primary transition">
+            <svg class="w-5 h-5 text-muted absolute left-3 top-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+            </svg>
+          </div>
+          <!-- Reseller Search Results Dropdown/List -->
+          <div id="resellerSearchResults" class="hidden max-h-48 overflow-y-auto space-y-2 bg-white rounded-xl border border-border p-2"></div>
+          <input type="hidden" id="targetResellerUid">
+          <input type="hidden" id="targetResellerEmail">
+        </div>
+
+        <!-- Notification Text -->
+        <div class="space-y-2">
+          <label class="block text-sm font-semibold text-dark">নোটিফিকেশনের বার্তা <span class="text-red-500">*</span></label>
+          <textarea id="notificationText" rows="3" required placeholder="নোটিফিকেশনের বিস্তারিত বার্তা এখানে লিখুন..." class="w-full px-4 py-3 rounded-xl border border-border text-sm focus:outline-none focus:border-primary transition"></textarea>
+        </div>
+
+        <!-- Click Link -->
+        <div class="space-y-2">
+          <label class="block text-sm font-semibold text-dark">ক্লিক লিংক (ঐচ্ছিক)</label>
+          <input type="text" id="clickLinkInput" placeholder="https://example.com অথবা relative URL" class="w-full px-4 py-2.5 rounded-xl border border-border text-sm focus:outline-none focus:border-primary transition">
+        </div>
+
+        <!-- Submit Button -->
+        <button type="submit" id="submitBtn" class="w-full sm:w-auto px-6 py-3 bg-primary hover:bg-primary-dark text-white font-semibold rounded-xl transition shadow-md flex items-center justify-center space-x-2">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
+          </svg>
+          <span>নোটিফিকেশন পাঠান</span>
+        </button>
+      </form>
+    </section>
+
+    <!-- Notification List Section -->
+    <section class="bg-white rounded-2xl p-6 sm:p-8 shadow-sm border border-border space-y-6">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-border">
+        <div class="flex items-center space-x-3">
+          <div class="w-10 h-10 bg-orange-50 text-primary rounded-xl flex items-center justify-center border border-orange-100">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+            </svg>
+          </div>
+          <h2 class="text-lg font-bold text-dark">পাঠানো নোটিফিকেশনসমূহ</h2>
+        </div>
+        <!-- Local Search Box -->
+        <div class="relative w-full sm:w-72">
+          <input type="text" id="localSearchInput" placeholder="বার্তা, UID বা ইমেইল দিয়ে খুঁজুন..." class="w-full px-4 py-2 pl-9 rounded-xl border border-border text-sm focus:outline-none focus:border-primary transition">
+          <svg class="w-4 h-4 text-muted absolute left-3 top-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+          </svg>
+        </div>
+      </div>
+
+      <!-- Loading State -->
+      <div id="listLoadingState" class="space-y-4">
+        <div class="p-4 rounded-xl border border-border animate-pulse flex items-center justify-between">
+          <div class="space-y-2 flex-1"><div class="h-4 bg-gray-200 rounded w-3/4"></div><div class="h-3 bg-gray-200 rounded w-1/2"></div></div>
+          <div class="w-20 h-8 bg-gray-200 rounded"></div>
+        </div>
+        <div class="p-4 rounded-xl border border-border animate-pulse flex items-center justify-between">
+          <div class="space-y-2 flex-1"><div class="h-4 bg-gray-200 rounded w-2/3"></div><div class="h-3 bg-gray-200 rounded w-1/3"></div></div>
+          <div class="w-20 h-8 bg-gray-200 rounded"></div>
+        </div>
+      </div>
+
+      <!-- Error State -->
+      <div id="listErrorState" class="hidden flex-col items-center justify-center text-center py-8 space-y-3">
+        <div class="w-12 h-12 bg-red-50 text-red-500 rounded-full flex items-center justify-center border border-red-100">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+          </svg>
+        </div>
+        <p class="text-dark font-semibold text-sm">নোটিফিকেশন তালিকা লোড করা যায়নি</p>
+      </div>
+
+      <!-- Empty State -->
+      <div id="listEmptyState" class="hidden flex-col items-center justify-center text-center py-12 space-y-3">
+        <div class="w-12 h-12 bg-orange-50 text-primary rounded-full flex items-center justify-center border border-orange-100">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path>
+          </svg>
+        </div>
+        <p class="text-dark font-semibold text-sm">কোনো নোটিফিকেশন পাঠানো হয়নি</p>
+      </div>
+
+      <!-- Table / Cards List -->
+      <div id="notificationTableContainer" class="hidden overflow-x-auto">
+        <table class="w-full text-left border-collapse">
+          <thead>
+            <tr class="border-b border-border text-xs text-muted uppercase font-semibold bg-gray-50/50">
+              <th class="p-3.5">বার্তা ও লিংক</th>
+              <th class="p-3.5">প্রাপক (Target)</th>
+              <th class="p-3.5">তারিখ ও সময়</th>
+              <th class="p-3.5 text-right">কার্যক্রম</th>
+            </tr>
+          </thead>
+          <tbody id="notificationTableBody" class="divide-y divide-border text-sm">
+            <!-- Dynamic Rows Here -->
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Edit Modal -->
+  <div id="editModal" class="fixed inset-0 z-50 hidden bg-black/50 backdrop-blur-xs flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-lg w-full p-6 space-y-6 shadow-xl border border-border">
+      <div class="flex items-center justify-between pb-4 border-b border-border">
+        <h3 class="text-lg font-bold text-dark">নোটিফিকেশন সম্পাদনা করুন</h3>
+        <button id="closeEditModalBtn" class="text-muted hover:text-dark">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+          </svg>
+        </button>
+      </div>
+      <form id="editForm" class="space-y-4">
+        <input type="hidden" id="editNotificationId">
+        <div class="space-y-2">
+          <label class="block text-sm font-semibold text-dark">বার্তা</label>
+          <textarea id="editNotificationText" rows="3" required class="w-full px-4 py-2.5 rounded-xl border border-border text-sm focus:outline-none focus:border-primary transition"></textarea>
+        </div>
+        <div class="space-y-2">
+          <label class="block text-sm font-semibold text-dark">ক্লিক লিংক</label>
+          <input type="text" id="editClickLinkInput" class="w-full px-4 py-2.5 rounded-xl border border-border text-sm focus:outline-none focus:border-primary transition">
+        </div>
+        <div class="space-y-2">
+          <label class="block text-sm font-semibold text-dark">টার্গেট পরিবর্তন</label>
+          <select id="editTargetType" class="w-full px-4 py-2.5 rounded-xl border border-border text-sm focus:outline-none focus:border-primary transition bg-white">
+            <option value="all">সকল রিসেলার</option>
+            <option value="customUid">নির্দিষ্ট UID</option>
+            <option value="customEmail">নির্দিষ্ট ইমেইল</option>
+          </select>
+        </div>
+        <div id="editCustomTargetContainer" class="hidden space-y-2">
+          <label class="block text-sm font-semibold text-dark" id="editCustomTargetLabel">UID / ইমেইল</label>
+          <input type="text" id="editCustomTargetValue" class="w-full px-4 py-2.5 rounded-xl border border-border text-sm focus:outline-none focus:border-primary transition">
+        </div>
+        <div class="flex items-center justify-end space-x-3 pt-4 border-t border-border">
+          <button type="button" id="cancelEditBtn" class="px-4 py-2.5 rounded-xl border border-border text-muted hover:bg-gray-50 text-sm font-semibold transition">বাতিল</button>
+          <button type="submit" id="updateBtn" class="px-5 py-2.5 rounded-xl bg-primary hover:bg-primary-dark text-white text-sm font-semibold transition">আপডেট করুন</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Delete Confirmation Modal -->
+  <div id="deleteModal" class="fixed inset-0 z-50 hidden bg-black/50 backdrop-blur-xs flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-sm w-full p-6 space-y-5 text-center shadow-xl border border-border">
+      <div class="w-12 h-12 bg-red-50 text-red-500 rounded-full flex items-center justify-center mx-auto border border-red-100">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+        </svg>
+      </div>
+      <div class="space-y-2">
+        <h3 class="text-lg font-bold text-dark">মুছে ফেলার নিশ্চিতকরণ</h3>
+        <p class="text-muted text-sm">আপনি কি এই নোটিফিকেশনটি মুছে ফেলতে চান?</p>
+      </div>
+      <div class="flex items-center space-x-3 pt-2">
+        <button id="cancelDeleteBtn" class="flex-1 px-4 py-2.5 rounded-xl border border-border text-muted hover:bg-gray-50 text-sm font-semibold transition">বাতিল</button>
+        <button id="confirmDeleteBtn" class="flex-1 px-4 py-2.5 rounded-xl bg-red-600 hover:bg-red-700 text-white text-sm font-semibold transition">Delete</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="bg-white border-t border-border mt-auto py-6">
+    <div class="max-w-7xl mx-auto px-4 text-center text-xs text-muted">
+      © 2026 GHOTI RESELLER. সর্বস্বত্ব সংরক্ষিত।
+    </div>
+  </footer>
+
+  <!-- Firebase Modular SDK & App Script -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+    import { getFirestore, collection, addDoc, getDocs, doc, updateDoc, deleteDoc, onSnapshot, serverTimestamp, query, orderBy, limit } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyBUhNhYvuo_FTvZ5RZR6Gn-4hsUY21S0XE",
+      authDomain: "ghotimarket.firebaseapp.com",
+      databaseURL: "https://ghotimarket-default-rtdb.firebaseio.com",
+      projectId: "ghotimarket",
+      storageBucket: "ghotimarket.firebasestorage.app",
+      messagingSenderId: "481257644093",
+      appId: "1:481257644093:web:0dfc3699d6b3c86afeca54",
+      measurementId: "G-4SR8V2EKC1"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    const ADMIN_EMAIL = "support@ghotimarket.com";
+
+    // DOM Elements
+    const adminEmailDisplay = document.getElementById('adminEmailDisplay');
+    const logoutBtn = document.getElementById('logoutBtn');
+    const alertBanner = document.getElementById('alertBanner');
+    const createForm = document.getElementById('createNotificationForm');
+    const recipientTypeRadios = document.getElementsByName('recipientType');
+    const customResellerContainer = document.getElementById('customResellerContainer');
+    const resellerSearchInput = document.getElementById('resellerSearchInput');
+    const resellerSearchResults = document.getElementById('resellerSearchResults');
+    const targetResellerUidInput = document.getElementById('targetResellerUid');
+    const targetResellerEmailInput = document.getElementById('targetResellerEmail');
+    const selectedResellerBadge = document.getElementById('selectedResellerBadge');
+    const submitBtn = document.getElementById('submitBtn');
+
+    const listLoadingState = document.getElementById('listLoadingState');
+    const listErrorState = document.getElementById('listErrorState');
+    const listEmptyState = document.getElementById('listEmptyState');
+    const notificationTableContainer = document.getElementById('notificationTableContainer');
+    const notificationTableBody = document.getElementById('notificationTableBody');
+    const localSearchInput = document.getElementById('localSearchInput');
+
+    // Modals
+    const editModal = document.getElementById('editModal');
+    const closeEditModalBtn = document.getElementById('closeEditModalBtn');
+    const cancelEditBtn = document.getElementById('cancelEditBtn');
+    const editForm = document.getElementById('editForm');
+    const editNotificationId = document.getElementById('editNotificationId');
+    const editNotificationText = document.getElementById('editNotificationText');
+    const editClickLinkInput = document.getElementById('editClickLinkInput');
+    const editTargetType = document.getElementById('editTargetType');
+    const editCustomTargetContainer = document.getElementById('editCustomTargetContainer');
+    const editCustomTargetLabel = document.getElementById('editCustomTargetLabel');
+    const editCustomTargetValue = document.getElementById('editCustomTargetValue');
+
+    const deleteModal = document.getElementById('deleteModal');
+    const cancelDeleteBtn = document.getElementById('cancelDeleteBtn');
+    const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
+
+    let deleteTargetId = null;
+    let allNotificationsCache = [];
+
+    // Helper: Show Alert
+    function showAlert(message, isSuccess = true) {
+      alertBanner.textContent = message;
+      alertBanner.className = `rounded-2xl p-4 border text-sm font-medium transition-all duration-300 ${
+        isSuccess ? 'bg-green-50 border-green-200 text-green-700' : 'bg-red-50 border-red-200 text-red-700'
+      }`;
+      alertBanner.classList.remove('hidden');
+      setTimeout(() => {
+        alertBanner.classList.add('hidden');
+      }, 5000);
+    }
+
+    // Helper: Sanitize URL
+    function sanitizeUrl(url) {
+      if (!url) return null;
+      const trimmed = url.trim().toLowerCase();
+      if (trimmed.startsWith('javascript:') || trimmed.startsWith('data:') || trimmed.startsWith('vbscript:')) {
+        return null;
+      }
+      return url.trim();
+    }
+
+    // Helper: Format Bengali Date & Time
+    function formatBengaliDateTime(timestamp) {
+      if (!timestamp || typeof timestamp.toDate !== 'function') {
+        return 'তারিখ অনুপলব্ধ';
+      }
+      try {
+        const date = timestamp.toDate();
+        const months = [
+          'জানুয়ারি', 'ফেব্রুয়ারি', 'মার্চ', 'এপ্রিল', 'মে', 'জুন', 
+          'জুলাই', 'আগস্ট', 'সেপ্টেম্বর', 'অক্টোবর', 'নভেম্বর', 'ডিসেম্বর'
+        ];
+        const day = date.getDate();
+        const month = months[date.getMonth()];
+        const year = date.getFullYear();
+
+        let hours = date.getHours();
+        const minutes = date.getMinutes();
+        
+        let period = 'রাত';
+        if (hours >= 4 && hours < 12) period = 'সকাল';
+        else if (hours >= 12 && hours < 15) period = 'দুপুর';
+        else if (hours >= 15 && hours < 18) period = 'বিকেল';
+        else if (hours >= 18 && hours < 20) period = 'সন্ধ্যা';
+
+        const formattedHours = hours % 12 === 0 ? 12 : hours % 12;
+        const formattedMinutes = minutes < 10 ? '0' + minutes : minutes;
+
+        return `${day} ${month} ${year}, ${period} ${formattedHours}:${formattedMinutes}`;
+      } catch (e) {
+        return 'তারিখ অনুপলব্ধ';
+      }
+    }
+
+    // Authentication Guard
+    onAuthStateChanged(auth, (user) => {
+      if (!user) {
+        window.location.href = 'admin-login.html';
+        return;
+      }
+      if (user.email !== ADMIN_EMAIL) {
+        alert('অ্যাক্সেস ডিনায়েলড: আপনার অ্যাডমিন অনুমতি নেই।');
+        window.location.href = 'admin-login.html';
+        return;
+      }
+      adminEmailDisplay.textContent = user.email;
+      initDashboard();
+    });
+
+    // Logout Handler
+    logoutBtn.addEventListener('click', async () => {
+      try {
+        await signOut(auth);
+        window.location.href = 'admin-login.html';
+      } catch (err) {
+        console.error("Logout error:", err);
+      }
+    });
+
+    // Recipient Type Toggle
+    recipientTypeRadios.forEach(radio => {
+      radio.addEventListener('change', (e) => {
+        if (e.target.value === 'custom') {
+          customResellerContainer.classList.remove('hidden');
+        } else {
+          customResellerContainer.classList.add('hidden');
+          targetResellerUidInput.value = '';
+          targetResellerEmailInput.value = '';
+          selectedResellerBadge.classList.add('hidden');
+        }
+      });
+    });
+
+    // Reseller Search Handler for Custom Target
+    let searchTimeout;
+    resellerSearchInput.addEventListener('input', (e) => {
+      clearTimeout(searchTimeout);
+      const keyword = e.target.value.trim().toLowerCase();
+      if (!keyword) {
+        resellerSearchResults.classList.add('hidden');
+        return;
+      }
+      searchTimeout = setTimeout(async () => {
+        try {
+          const q = query(collection(db, "reseller"), limit(20));
+          const snapshot = await getDocs(q);
+          const results = [];
+          snapshot.forEach(docSnap => {
+            const data = docSnap.data();
+            const uid = docSnap.id;
+            const name = (data.Name || data.name || '').toLowerCase();
+            const email = (data.Email || data.email || '').toLowerCase();
+            const phone = (data.Phone || data.phone || '').toLowerCase();
+            const uidStr = uid.toLowerCase();
+
+            if (name.includes(keyword) || email.includes(keyword) || phone.includes(keyword) || uidStr.includes(keyword)) {
+              results.push({ uid, ...data });
+            }
+          });
+
+          if (results.length === 0) {
+            resellerSearchResults.innerHTML = `<div class="p-2 text-xs text-muted text-center">কোনো রিসেলার পাওয়া যায়নি</div>`;
+            resellerSearchResults.classList.remove('hidden');
+            return;
+          }
+
+          resellerSearchResults.innerHTML = results.map(r => `
+            <div class="p-2.5 rounded-lg hover:bg-orange-50 cursor-pointer flex items-center justify-between text-xs border-b border-border last:border-0 reseller-select-item" data-uid="${r.uid}" data-email="${r.Email || r.email || ''}" data-name="${r.Name || r.name || 'রিসেলার'}">
+              <div>
+                <span class="font-bold text-dark block">${r.Name || r.name || 'নামহীন'}</span>
+                <span class="text-muted">${r.Email || r.email || 'ইমেইল নেই'} | ${r.Phone || r.phone || 'ফোন নেই'}</span>
+              </div>
+              <span class="text-primary font-semibold">সিলেক্ট</span>
+            </div>
+          `).join('');
+          resellerSearchResults.classList.remove('hidden');
+
+          // Attach click event to results
+          document.querySelectorAll('.reseller-select-item').forEach(item => {
+            item.addEventListener('click', () => {
+              const uid = item.getAttribute('data-uid');
+              const email = item.getAttribute('data-email');
+              const name = item.getAttribute('data-name');
+
+              targetResellerUidInput.value = uid;
+              targetResellerEmailInput.value = email;
+
+              selectedResellerBadge.textContent = `সিলেক্টেড: ${name} (${email || uid})`;
+              selectedResellerBadge.classList.remove('hidden');
+              resellerSearchResults.classList.add('hidden');
+              resellerSearchInput.value = name;
+            });
+          });
+
+        } catch (err) {
+          console.error("Reseller search error:", err);
+        }
+      }, 300);
+    });
+
+    // Create Notification Form Submit
+    createForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const recipientType = document.querySelector('input[name="recipientType"]:checked').value;
+      const notificationText = document.getElementById('notificationText').value.trim();
+      const rawLink = document.getElementById('clickLinkInput').value;
+      const clickLink = sanitizeUrl(rawLink);
+
+      if (!notificationText) {
+        showAlert('নোটিফিকেশনের বার্তা খালি রাখা যাবে না।', false);
+        return;
+      }
+
+      let payload = {
+        notification: notificationText,
+        createdAt: serverTimestamp(),
+        clickLink: clickLink || ""
+      };
+
+      if (recipientType === 'all') {
+        payload.all = true;
+      } else {
+        const uid = targetResellerUidInput.value;
+        const email = targetResellerEmailInput.value;
+
+        if (!uid && !email) {
+          showAlert('অনুগ্রহ করে নির্দিষ্ট একজন রিসেলার নির্বাচন করুন।', false);
+          return;
+        }
+
+        payload.all = false;
+        if (uid) {
+          payload.resellerUid = uid;
+        } else if (email) {
+          payload.resellerEmail = email;
+        }
+      }
+
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'পাঠানো হচ্ছে...';
+
+      try {
+        await addDoc(collection(db, "reseller_notification"), payload);
+        showAlert('নোটিফিকেশন সফলভাবে পাঠানো হয়েছে।', true);
+        createForm.reset();
+        customResellerContainer.classList.add('hidden');
+        selectedResellerBadge.classList.add('hidden');
+        targetResellerUidInput.value = '';
+        targetResellerEmailInput.value = '';
+      } catch (err) {
+        console.error("Error adding notification:", err);
+        showAlert('নোটিফিকেশন পাঠাতে সমস্যা হয়েছে। আবার চেষ্টা করুন।', false);
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = `
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
+          </svg>
+          <span>নোটিফিকেশন পাঠান</span>
+        `;
+      }
+    });
+
+    // Initialize Notification List Real-time Listener
+    function initDashboard() {
+      const q = query(collection(db, "reseller_notification"));
+      
+      onSnapshot(q, (snapshot) => {
+        allNotificationsCache = [];
+        snapshot.forEach(docSnap => {
+          allNotificationsCache.push({ id: docSnap.id, ...docSnap.data() });
+        });
+
+        // Sort descending by createdAt with null safety
+        allNotificationsCache.sort((a, b) => {
+          const timeA = a.createdAt?.toMillis ? a.createdAt.toMillis() : 0;
+          const timeB = b.createdAt?.toMillis ? b.createdAt.toMillis() : 0;
+          return timeB - timeA;
+        });
+
+        renderNotificationList(allNotificationsCache);
+      }, (error) => {
+        console.error("Firestore snapshot error:", error);
+        listLoadingState.classList.add('hidden');
+        listErrorState.classList.remove('hidden');
+        listErrorState.classList.add('flex');
+      });
+    }
+
+    // Render Table List
+    function renderNotificationList(items, filterKeyword = '') {
+      listLoadingState.classList.add('hidden');
+      listErrorState.classList.add('hidden');
+      listErrorState.classList.remove('flex');
+
+      const filtered = items.filter(item => {
+        if (!filterKeyword) return true;
+        const text = (item.notification || '').toLowerCase();
+        const uid = (item.resellerUid || '').toLowerCase();
+        const email = (item.resellerEmail || '').toLowerCase();
+        const kw = filterKeyword.toLowerCase();
+        return text.includes(kw) || uid.includes(kw) || email.includes(kw);
+      });
+
+      if (filtered.length === 0) {
+        notificationTableContainer.classList.add('hidden');
+        listEmptyState.classList.remove('hidden');
+        listEmptyState.classList.add('flex');
+        return;
+      }
+
+      listEmptyState.classList.add('hidden');
+      listEmptyState.classList.remove('flex');
+      notificationTableContainer.classList.remove('hidden');
+
+      notificationTableBody.innerHTML = filtered.map(item => {
+        let targetText = 'সকল রিসেলার';
+        if (item.all !== true) {
+          if (item.resellerUid) {
+            targetText = `UID: <span class="font-mono text-xs">${item.resellerUid}</span>`;
+          } else if (item.resellerEmail) {
+            targetText = `Email: ${item.resellerEmail}`;
+          }
+        }
+
+        const formattedTime = formatBengaliDateTime(item.createdAt);
+        const safeLink = sanitizeUrl(item.clickLink);
+
+        return `
+          <tr class="hover:bg-gray-50/50 transition">
+            <td class="p-3.5 space-y-1 max-w-xs">
+              <p class="font-medium text-dark">${item.notification || ''}</p>
+              ${safeLink ? `<a href="${safeLink}" target="_blank" rel="noopener noreferrer" class="text-xs text-primary hover:underline inline-flex items-center space-x-1"><span>লিংক দেখুন</span></a>` : ''}
+            </td>
+            <td class="p-3.5 text-xs text-muted">${targetText}</td>
+            <td class="p-3.5 text-xs text-muted whitespace-nowrap">${formattedTime}</td>
+            <td class="p-3.5 text-right space-x-2 whitespace-nowrap">
+              <button onclick="openEditModal('${item.id}')" class="px-2.5 py-1.5 rounded-lg bg-orange-50 text-primary hover:bg-orange-100 font-semibold text-xs transition">সম্পাদনা</button>
+              <button onclick="openDeleteModal('${item.id}')" class="px-2.5 py-1.5 rounded-lg bg-red-50 text-red-600 hover:bg-red-100 font-semibold text-xs transition">মুছুন</button>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    // Local Search Filtering
+    localSearchInput.addEventListener('input', (e) => {
+      renderNotificationList(allNotificationsCache, e.target.value.trim());
+    });
+
+    // Edit Modal Logic
+    window.openEditModal = function(id) {
+      const item = allNotificationsCache.find(n => n.id === id);
+      if (!item) return;
+
+      editNotificationId.value = item.id;
+      editNotificationText.value = item.notification || '';
+      editClickLinkInput.value = item.clickLink || '';
+
+      if (item.all === true) {
+        editTargetType.value = 'all';
+        editCustomTargetContainer.classList.add('hidden');
+      } else if (item.resellerUid) {
+        editTargetType.value = 'customUid';
+        editCustomTargetLabel.textContent = 'রিসেলার UID';
+        editCustomTargetValue.value = item.resellerUid;
+        editCustomTargetContainer.classList.remove('hidden');
+      } else if (item.resellerEmail) {
+        editTargetType.value = 'customEmail';
+        editCustomTargetLabel.textContent = 'রিসেলার ইমেইল';
+        editCustomTargetValue.value = item.resellerEmail;
+        editCustomTargetContainer.classList.remove('hidden');
+      }
+
+      editModal.classList.remove('hidden');
+    }
+
+    editTargetType.addEventListener('change', (e) => {
+      if (e.target.value === 'all') {
+        editCustomTargetContainer.classList.add('hidden');
+      } else {
+        editCustomTargetContainer.classList.remove('hidden');
+        if (e.target.value === 'customUid') {
+          editCustomTargetLabel.textContent = 'রিসেলার UID';
+          editCustomTargetValue.placeholder = 'রিসেলারের UID দিন';
+        } else {
+          editCustomTargetLabel.textContent = 'রিসেলার ইমেইল';
+          editCustomTargetValue.placeholder = 'রিসেলারের ইমেইল দিন';
+        }
+      }
+    });
+
+    closeEditModalBtn.addEventListener('click', () => editModal.classList.add('hidden'));
+    cancelEditBtn.addEventListener('click', () => editModal.classList.add('hidden'));
+
+    editForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const id = editNotificationId.value;
+      const text = editNotificationText.value.trim();
+      const link = sanitizeUrl(editClickLinkInput.value);
+      const targetType = editTargetType.value;
+      const targetVal = editCustomTargetValue.value.trim();
+
+      if (!text) {
+        showAlert('বার্তা খালি রাখা যাবে না।', false);
+        return;
+      }
+
+      let updateData = {
+        notification: text,
+        clickLink: link || ""
+      };
+
+      if (targetType === 'all') {
+        updateData.all = true;
+        updateData.resellerUid = null;
+        updateData.resellerEmail = null;
+      } else if (targetType === 'customUid') {
+        if (!targetVal) {
+          showAlert('UID প্রদান করুন।', false);
+          return;
+        }
+        updateData.all = false;
+        updateData.resellerUid = targetVal;
+        updateData.resellerEmail = null;
+      } else if (targetType === 'customEmail') {
+        if (!targetVal) {
+          showAlert('ইমেইল প্রদান করুন।', false);
+          return;
+        }
+        updateData.all = false;
+        updateData.resellerEmail = targetVal;
+        updateData.resellerUid = null;
+      }
+
+      try {
+        const docRef = doc(db, "reseller_notification", id);
+        await updateDoc(docRef, updateData);
+        showAlert('নোটিফিকেশন সফলভাবে আপডেট করা হয়েছে।', true);
+        editModal.classList.add('hidden');
+      } catch (err) {
+        console.error("Update error:", err);
+        showAlert('আপডেট করতে সমস্যা হয়েছে।', false);
+      }
+    });
+
+    // Delete Modal Logic
+    window.openDeleteModal = function(id) {
+      deleteTargetId = id;
+      deleteModal.classList.remove('hidden');
+    }
+
+    cancelDeleteBtn.addEventListener('click', () => {
+      deleteTargetId = null;
+      deleteModal.classList.add('hidden');
+    });
+
+    confirmDeleteBtn.addEventListener('click', async () => {
+      if (!deleteTargetId) return;
+      try {
+        await deleteDoc(doc(db, "reseller_notification", deleteTargetId));
+        showAlert('নোটিফিকেশন সফলভাবে মুছে ফেলা হয়েছে।', true);
+        deleteTargetId = null;
+        deleteModal.classList.add('hidden');
+      } catch (err) {
+        console.error("Delete error:", err);
+        showAlert('মুছে ফেলতে সমস্যা হয়েছে।', false);
+        deleteModal.classList.add('hidden');
+      }
+    });
+  </script>
+
+</body>
+</html>
