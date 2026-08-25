@@ -1,0 +1,1642 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>অর্ডার ম্যানেজমেন্ট — GHOTI RESELLER অ্যাডমিন প্যানেল</title>
+  <!-- Google Fonts for Bengali -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#FF6B35',
+            'primary-dark': '#E85A1A',
+            dark: '#0F172A',
+            background: '#FFF8F3',
+            muted: '#64748B',
+            border: '#E2E8F0'
+          },
+          fontFamily: {
+            bengali: ['"Hind Siliguri"', 'sans-serif']
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body {
+      font-family: 'Hind Siliguri', sans-serif;
+      background-color: #FFF8F3;
+      color: #0F172A;
+    }
+    .transition-custom {
+      transition: all 0.25s ease-in-out;
+    }
+  </style>
+</head>
+<body class="bg-background min-h-screen pb-20">
+
+  <!-- Access Denied / Unauthorized Screen -->
+  <div id="access-denied-screen" class="fixed inset-0 bg-dark/85 z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-white rounded-2xl p-6 md:p-8 max-w-md w-full text-center shadow-2xl border border-border">
+      <div class="w-16 h-16 bg-red-100 text-red-600 rounded-full flex items-center justify-center mx-auto mb-4">
+        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+      </div>
+      <h3 class="text-xl font-bold text-dark mb-2">অ্যাক্সেস সংরক্ষিত (Admin Access Denied)</h3>
+      <p id="access-denied-msg" class="text-muted text-sm mb-6">আপনার অ্যাকাউন্টটি অ্যাডমিন অ্যাকাউন্ট (support@ghotimarket.com) হিসেবে অনুমোদিত নয়।</p>
+      <a href="login.html" class="inline-block w-full py-3 bg-primary hover:bg-primary-dark text-white font-semibold rounded-xl transition-custom shadow-md">লগইন পেজে যান</a>
+    </div>
+  </div>
+
+  <!-- Header -->
+  <header class="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-border shadow-sm">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      <div class="flex items-center space-x-3">
+        <a href="admin-orders.html" class="flex items-center space-x-2">
+          <img src="https://reseller.ghotimarket.com/logo.png" alt="GHOTI RESELLER" class="h-9 w-auto object-contain">
+        </a>
+        <span class="text-xs font-semibold px-2.5 py-1 bg-primary/10 text-primary rounded-full hidden sm:inline-block">অ্যাডমিন প্যানেল</span>
+      </div>
+      <h1 class="text-lg md:text-xl font-bold text-dark absolute left-1/2 transform -translate-x-1/2">অর্ডার ম্যানেজমেন্ট</h1>
+      <div class="flex items-center space-x-3">
+        <span id="admin-email-display" class="text-xs text-muted font-medium hidden md:inline-block"></span>
+        <button id="logout-btn" class="p-2 rounded-xl hover:bg-slate-100 text-red-600 transition-custom" title="লগআউট">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6">
+
+    <!-- Summary Cards Grid -->
+    <section class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-3 mb-6">
+      <div class="bg-white rounded-2xl p-4 border border-border shadow-sm">
+        <span class="text-[11px] font-semibold text-muted uppercase tracking-wider block mb-1">মোট অর্ডার</span>
+        <div id="summary-total" class="text-xl font-bold text-dark">০</div>
+      </div>
+      <div class="bg-white rounded-2xl p-4 border border-border shadow-sm">
+        <span class="text-[11px] font-semibold text-amber-600 uppercase tracking-wider block mb-1">অপেক্ষমাণ</span>
+        <div id="summary-pending" class="text-xl font-bold text-amber-600">০</div>
+      </div>
+      <div class="bg-white rounded-2xl p-4 border border-border shadow-sm">
+        <span class="text-[11px] font-semibold text-blue-600 uppercase tracking-wider block mb-1">নিশ্চিত</span>
+        <div id="summary-confirmed" class="text-xl font-bold text-blue-600">০</div>
+      </div>
+      <div class="bg-white rounded-2xl p-4 border border-border shadow-sm">
+        <span class="text-[11px] font-semibold text-purple-600 uppercase tracking-wider block mb-1">প্রক্রিয়াধীন</span>
+        <div id="summary-processing" class="text-xl font-bold text-purple-600">০</div>
+      </div>
+      <div class="bg-white rounded-2xl p-4 border border-border shadow-sm">
+        <span class="text-[11px] font-semibold text-indigo-600 uppercase tracking-wider block mb-1">পাঠানো হয়েছে</span>
+        <div id="summary-shipped" class="text-xl font-bold text-indigo-600">০</div>
+      </div>
+      <div class="bg-white rounded-2xl p-4 border border-border shadow-sm">
+        <span class="text-[11px] font-semibold text-emerald-600 uppercase tracking-wider block mb-1">ডেলিভারি সম্পন্ন</span>
+        <div id="summary-delivered" class="text-xl font-bold text-emerald-600">০</div>
+      </div>
+      <div class="bg-white rounded-2xl p-4 border border-border shadow-sm">
+        <span class="text-[11px] font-semibold text-orange-600 uppercase tracking-wider block mb-1">রিটার্ন</span>
+        <div id="summary-return" class="text-xl font-bold text-orange-600">০</div>
+      </div>
+      <div class="bg-white rounded-2xl p-4 border border-border shadow-sm">
+        <span class="text-[11px] font-semibold text-red-600 uppercase tracking-wider block mb-1">বাতিল</span>
+        <div id="summary-cancelled" class="text-xl font-bold text-red-600">০</div>
+      </div>
+    </section>
+
+    <!-- Selected Reseller Special Balance Summary Box (Hidden by default) -->
+    <section id="reseller-balance-box" class="hidden bg-white rounded-2xl p-5 md:p-6 border-2 border-primary/30 shadow-md mb-6">
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-border">
+        <div>
+          <span class="text-xs font-semibold px-2.5 py-1 bg-primary/10 text-primary rounded-full inline-block mb-1">নির্বাচিত রিসেলার</span>
+          <h2 id="res-box-name" class="text-xl font-bold text-dark">রিসেলার নাম</h2>
+          <p class="text-xs text-muted mt-0.5">ইমেইল: <span id="res-box-email" class="text-dark font-medium"></span> | ইউআইডি: <span id="res-box-uid" class="text-dark font-medium"></span></p>
+        </div>
+        <button id="clear-reseller-filter-btn" class="self-start md:self-auto px-4 py-2 bg-slate-100 hover:bg-slate-200 text-dark rounded-xl text-xs font-semibold transition-custom flex items-center space-x-1.5">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+          <span>সব রিসেলারের অর্ডার দেখুন</span>
+        </button>
+      </div>
+
+      <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4 mt-5 text-xs">
+        <div class="bg-slate-50 p-3 rounded-xl border border-border/60">
+          <span class="text-muted block mb-1">বর্তমান ব্যালেন্স</span>
+          <div id="res-bal-current" class="text-base font-bold text-dark">৳ ০.০০</div>
+        </div>
+        <div class="bg-slate-50 p-3 rounded-xl border border-border/60">
+          <span class="text-muted block mb-1">ডেলিভারি আয়</span>
+          <div id="res-bal-profit" class="text-base font-bold text-primary">৳ ০.০০</div>
+        </div>
+        <div class="bg-slate-50 p-3 rounded-xl border border-border/60">
+          <span class="text-muted block mb-1">ডেলিভারি চার্জ কর্তন</span>
+          <div id="res-bal-charge" class="text-base font-bold text-red-600">৳ ০.০০</div>
+        </div>
+        <div class="bg-slate-50 p-3 rounded-xl border border-border/60">
+          <span class="text-muted block mb-1">হিসাবযোগ্য আয়</span>
+          <div id="res-bal-taxable" class="text-base font-bold text-dark">৳ ০.০০</div>
+        </div>
+        <div class="bg-orange-50/80 p-3 rounded-xl border border-primary/20 col-span-2 sm:col-span-2 lg:col-span-2">
+          <span class="text-primary font-semibold block mb-1">চূড়ান্ত ব্যালেন্স (বর্তমান + হিসাবযোগ্য)</span>
+          <div id="res-bal-final" class="text-lg font-bold text-primary">৳ ০.০০</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Reseller Selector / Search & Global Filters Section -->
+    <div class="bg-white rounded-2xl p-4 md:p-5 border border-border shadow-sm mb-6 space-y-4">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <!-- Reseller Search/Select -->
+        <div class="relative">
+          <label class="block text-xs font-semibold text-muted mb-1.5">রিসেলার নির্বাচন করুন (নাম, ইমেইল বা UID)</label>
+          <div class="relative">
+            <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-muted">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+            </span>
+            <input type="text" id="reseller-search-input" placeholder="রিসেলারের নাম বা ইমেইল লিখে খুঁজুন..." class="w-full pl-11 pr-4 py-2.5 bg-slate-50 border border-border rounded-xl text-dark placeholder-muted focus:outline-none focus:border-primary text-sm">
+          </div>
+          <!-- Reseller Dropdown Results Box -->
+          <div id="reseller-dropdown-results" class="absolute left-0 right-0 mt-1 bg-white border border-border rounded-xl shadow-xl max-h-60 overflow-y-auto z-30 hidden"></div>
+        </div>
+
+        <!-- Global Order Search -->
+        <div>
+          <label class="block text-xs font-semibold text-muted mb-1.5">অর্ডার সার্চ</label>
+          <div class="relative">
+            <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-muted">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+            </span>
+            <input type="text" id="global-search-input" placeholder="অর্ডার আইডি, পণ্য, গ্রাহক বা ফোন দিয়ে খুঁজুন..." class="w-full pl-11 pr-4 py-2.5 bg-slate-50 border border-border rounded-xl text-dark placeholder-muted focus:outline-none focus:border-primary text-sm">
+          </div>
+        </div>
+
+        <!-- Status Filter -->
+        <div>
+          <label class="block text-xs font-semibold text-muted mb-1.5">স্ট্যাটাস ফিল্টার</label>
+          <div class="relative">
+            <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-muted">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4h13M3 8h9m-9 4h6m4 0l4-4m0 0l4 4m-4-4v12"/></svg>
+            </span>
+            <select id="status-filter" class="w-full pl-11 pr-8 py-2.5 bg-slate-50 border border-border rounded-xl text-dark focus:outline-none focus:border-primary text-sm appearance-none cursor-pointer">
+              <option value="all">সব স্ট্যাটাস</option>
+              <option value="pending">অপেক্ষমাণ (Pending)</option>
+              <option value="confirmed">নিশ্চিত (Confirmed)</option>
+              <option value="processing">প্রক্রিয়াধীন (Processing)</option>
+              <option value="shipped">পাঠানো হয়েছে (Shipped)</option>
+              <option value="delivered">ডেলিভারি সম্পন্ন (Delivered)</option>
+              <option value="return">রিটার্ন (Return)</option>
+              <option value="cancelled">বাতিল (Cancelled)</option>
+            </select>
+            <span class="absolute inset-y-0 right-0 pr-3.5 flex items-center pointer-events-none text-muted">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Error State Box -->
+    <div id="error-box" class="hidden bg-red-50 border border-red-200 rounded-2xl p-6 text-center my-6">
+      <p id="error-message" class="text-red-700 font-medium mb-4">অর্ডারের তথ্য লোড করা যায়নি।</p>
+      <div id="index-btn-container" class="mb-4"></div>
+      <button id="retry-btn" class="px-5 py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-xl text-sm font-semibold transition-custom shadow-md inline-flex items-center space-x-2">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+        <span>আবার চেষ্টা করুন</span>
+      </button>
+    </div>
+
+    <!-- Skeleton Loader -->
+    <div id="skeleton-container" class="space-y-4">
+      <script>
+        for(let i=0; i<3; i++) {
+          document.write(`
+            <div class="bg-white rounded-2xl p-6 border border-border shadow-sm animate-pulse space-y-4">
+              <div class="flex justify-between items-center">
+                <div class="h-5 bg-slate-200 rounded w-36"></div>
+                <div class="h-8 bg-slate-200 rounded w-28"></div>
+              </div>
+              <div class="flex space-x-4">
+                <div class="w-20 h-20 bg-slate-200 rounded-xl"></div>
+                <div class="flex-1 space-y-2">
+                  <div class="h-4 bg-slate-200 rounded w-3/4"></div>
+                  <div class="h-3 bg-slate-200 rounded w-1/2"></div>
+                  <div class="h-3 bg-slate-200 rounded w-1/3"></div>
+                </div>
+              </div>
+            </div>
+          `);
+        }
+      </script>
+    </div>
+
+    <!-- Orders Content Wrapper -->
+    <div id="orders-content-wrapper" class="hidden">
+      <!-- Desktop Table View -->
+      <div class="hidden lg:block bg-white rounded-2xl border border-border shadow-sm overflow-hidden mb-6">
+        <div class="overflow-x-auto">
+          <table class="w-full text-left border-collapse">
+            <thead>
+              <tr class="bg-slate-50 border-b border-border text-xs font-semibold text-muted uppercase tracking-wider">
+                <th class="py-3.5 px-4">অর্ডার ও তারিখ</th>
+                <th class="py-3.5 px-4">পণ্য</th>
+                <th class="py-3.5 px-4">রিসেলার</th>
+                <th class="py-3.5 px-4">গ্রাহক</th>
+                <th class="py-3.5 px-4">মূল্য</th>
+                <th class="py-3.5 px-4">ডেলিভারি</th>
+                <th class="py-3.5 px-4">স্ট্যাটাস (স্ট্যাটাস পরিবর্তন)</th>
+                <th class="py-3.5 px-4 text-right">অ্যাকশন</th>
+              </tr>
+            </thead>
+            <tbody id="admin-table-body" class="divide-y divide-border text-sm"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Expanded Large Mobile & Tablet Card View -->
+      <div id="admin-card-grid" class="grid grid-cols-1 md:grid-cols-2 lg:hidden gap-6 mb-6"></div>
+
+      <!-- Empty State -->
+      <div id="empty-state" class="hidden bg-white border border-border rounded-2xl p-12 text-center my-8 shadow-sm">
+        <div class="w-16 h-16 bg-orange-50 text-primary rounded-full flex items-center justify-center mx-auto mb-4">
+          <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
+        </div>
+        <h3 class="text-lg font-bold text-dark mb-1">কোনো অর্ডার পাওয়া যায়নি</h3>
+        <p class="text-muted text-sm">আপনার অনুসন্ধান বা ফিল্টারের সাথে মিলে যায় এমন কোনো অর্ডার নেই।</p>
+      </div>
+
+      <!-- Load More Button -->
+      <div id="load-more-container" class="text-center mt-6 hidden">
+        <button id="load-more-btn" class="px-6 py-3 bg-white hover:bg-slate-50 text-dark border border-border rounded-xl font-semibold text-sm transition-custom shadow-sm inline-flex items-center space-x-2">
+          <span>আরও অর্ডার দেখুন</span>
+          <svg class="w-4 h-4 text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+        </button>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- ================= MODALS ================= -->
+
+  <!-- Status & Custom Profit/Return Confirmation Modal -->
+  <div id="status-confirm-modal" class="fixed inset-0 bg-dark/80 z-50 flex items-center justify-center p-4 hidden backdrop-blur-sm">
+    <div class="bg-white rounded-2xl max-w-md w-full shadow-2xl border border-border p-6 relative">
+      <div class="flex items-center justify-between pb-4 border-b border-border mb-4">
+        <h3 id="modal-title-text" class="text-lg font-bold text-dark">অর্ডার স্ট্যাটাস নিশ্চিত করুন</h3>
+        <button onclick="closeStatusConfirmModal()" class="p-2 text-muted hover:text-dark rounded-lg">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+      </div>
+      <div class="space-y-4 text-sm mb-6">
+        <div class="bg-slate-50 p-4 rounded-xl border border-border space-y-2">
+          <div class="flex justify-between text-xs">
+            <span class="text-muted">অর্ডার আইডি:</span>
+            <span class="font-bold text-dark" id="modal-order-human-id">---</span>
+          </div>
+          <div class="flex justify-between text-xs">
+            <span class="text-muted">নতুন স্ট্যাটাস:</span>
+            <span class="font-bold text-primary" id="modal-new-status-text">---</span>
+          </div>
+          <div class="flex justify-between text-xs">
+            <span id="modal-calc-label" class="text-muted">হিসাবকৃত পরিমাণ:</span>
+            <span class="font-bold text-emerald-600" id="modal-calc-profit">৳ ০.০০</span>
+          </div>
+        </div>
+        <div>
+          <label id="modal-input-label" class="block text-xs font-semibold text-muted mb-1.5">এমাউন্ট (টাকা):</label>
+          <input type="number" id="modal-custom-profit-input" class="w-full p-3 bg-white border border-border rounded-xl font-bold text-dark text-base focus:outline-none focus:border-primary shadow-sm" placeholder="পরিমাণ লিখুন">
+          <p id="modal-helper-text" class="text-[11px] text-muted mt-1">প্রয়োজনে এই এমাউন্ট পরিবর্তন বা কাস্টমাইজ করতে পারেন।</p>
+        </div>
+      </div>
+      <div class="flex space-x-3">
+        <button type="button" onclick="closeStatusConfirmModal()" class="flex-1 py-3 bg-slate-100 hover:bg-slate-200 text-dark font-semibold rounded-xl transition-custom">বাতিল</button>
+        <button id="confirm-status-update-btn" class="flex-1 py-3 bg-primary hover:bg-primary-dark text-white font-semibold rounded-xl shadow-md transition-custom">নিশ্চিত করুন</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 1. Order Details Modal -->
+  <div id="details-modal" class="fixed inset-0 bg-dark/80 z-50 flex items-center justify-center p-4 hidden backdrop-blur-sm">
+    <div class="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl border border-border p-6 relative">
+      <div class="flex items-center justify-between pb-4 border-b border-border mb-4">
+        <h3 class="text-lg font-bold text-dark">অর্ডারের বিস্তারিত তথ্য</h3>
+        <button onclick="closeDetailsModal()" class="p-2 text-muted hover:text-dark rounded-lg">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+      </div>
+      <div id="details-modal-content" class="space-y-4 text-sm"></div>
+      <div class="mt-6 pt-4 border-t border-border flex justify-end">
+        <button onclick="closeDetailsModal()" class="px-5 py-2.5 bg-slate-100 hover:bg-slate-200 text-dark rounded-xl font-semibold text-sm">বন্ধ করুন</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. JSON View Modal -->
+  <div id="json-modal" class="fixed inset-0 bg-dark/80 z-50 flex items-center justify-center p-4 hidden backdrop-blur-sm">
+    <div class="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl border border-border p-6 relative flex flex-col">
+      <div class="flex items-center justify-between pb-4 border-b border-border mb-4">
+        <h3 class="text-lg font-bold text-dark">অর্ডারের JSON ডাটা</h3>
+        <button onclick="closeJsonModal()" class="p-2 text-muted hover:text-dark rounded-lg">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+      </div>
+      <div class="flex-1 overflow-y-auto bg-slate-900 text-slate-100 p-4 rounded-xl font-mono text-xs mb-4 max-h-96">
+        <pre id="json-pre-content"></pre>
+      </div>
+      <div class="flex items-center justify-between pt-2">
+        <button id="copy-json-btn" class="px-5 py-2.5 bg-primary hover:bg-primary-dark text-white rounded-xl font-semibold text-sm inline-flex items-center space-x-2 transition-custom shadow-md">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+          <span>JSON কপি করুন</span>
+        </button>
+        <button onclick="closeJsonModal()" class="px-5 py-2.5 bg-slate-100 hover:bg-slate-200 text-dark rounded-xl font-semibold text-sm">বন্ধ করুন</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3. Edit Order Modal -->
+  <div id="edit-modal" class="fixed inset-0 bg-dark/80 z-50 flex items-center justify-center p-4 hidden backdrop-blur-sm">
+    <div class="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl border border-border p-6 relative">
+      <div class="flex items-center justify-between pb-4 border-b border-border mb-4">
+        <h3 class="text-lg font-bold text-dark">অর্ডার এডিট করুন</h3>
+        <button onclick="closeEditModal()" class="p-2 text-muted hover:text-dark rounded-lg">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+      </div>
+      <form id="edit-order-form" class="space-y-4 text-sm">
+        <input type="hidden" id="edit-doc-id">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-semibold text-muted mb-1">গ্রাহকের নাম</label>
+            <input type="text" id="edit-customer-name" class="w-full p-2.5 bg-slate-50 border border-border rounded-xl focus:outline-none focus:border-primary">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-muted mb-1">গ্রাহকের ফোন</label>
+            <input type="text" id="edit-customer-phone" class="w-full p-2.5 bg-slate-50 border border-border rounded-xl focus:outline-none focus:border-primary">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-muted mb-1">পণ্যের নাম</label>
+            <input type="text" id="edit-product-name" class="w-full p-2.5 bg-slate-50 border border-border rounded-xl focus:outline-none focus:border-primary">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-muted mb-1">পরিমাণ (Quantity)</label>
+            <input type="number" id="edit-quantity" class="w-full p-2.5 bg-slate-50 border border-border rounded-xl focus:outline-none focus:border-primary">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-muted mb-1">পাইকারি মূল্য (Unit Price)</label>
+            <input type="number" id="edit-unit-price" class="w-full p-2.5 bg-slate-50 border border-border rounded-xl focus:outline-none focus:border-primary">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-muted mb-1">বিক্রির রেট (Selling Rate)</label>
+            <input type="number" id="edit-selling-rate" class="w-full p-2.5 bg-slate-50 border border-border rounded-xl focus:outline-none focus:border-primary">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-muted mb-1">ডেলিভারি চার্জ</label>
+            <input type="number" id="edit-delivery-charge" class="w-full p-2.5 bg-slate-50 border border-border rounded-xl focus:outline-none focus:border-primary">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-muted mb-1">ডেলিভারি জোন</label>
+            <select id="edit-delivery-zone" class="w-full p-2.5 bg-slate-50 border border-border rounded-xl focus:outline-none focus:border-primary">
+              <option value="inside">ঢাকার ভিতরে (Inside)</option>
+              <option value="outside">ঢাকার বাইরে (Outside)</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-muted mb-1">স্ট্যাটাস</label>
+            <select id="edit-status" class="w-full p-2.5 bg-slate-50 border border-border rounded-xl focus:outline-none focus:border-primary">
+              <option value="pending">অপেক্ষমাণ (Pending)</option>
+              <option value="confirmed">নিশ্চিত (Confirmed)</option>
+              <option value="processing">প্রক্রিয়াধীন (Processing)</option>
+              <option value="shipped">পাঠানো হয়েছে (Shipped)</option>
+              <option value="delivered">ডেলিভারি সম্পন্ন (Delivered)</option>
+              <option value="return">রিটার্ন (Return)</option>
+              <option value="cancelled">বাতিল (Cancelled)</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-muted mb-1">ডেলিভারি চার্জ অগ্রিম?</label>
+            <select id="edit-delivery-charge-advance" class="w-full p-2.5 bg-slate-50 border border-border rounded-xl focus:outline-none focus:border-primary">
+              <option value="false">না (False)</option>
+              <option value="true">হ্যাঁ (True)</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-muted mb-1">থানা</label>
+            <input type="text" id="edit-thana" class="w-full p-2.5 bg-slate-50 border border-border rounded-xl focus:outline-none focus:border-primary">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-muted mb-1">জেলা</label>
+            <input type="text" id="edit-district" class="w-full p-2.5 bg-slate-50 border border-border rounded-xl focus:outline-none focus:border-primary">
+          </div>
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-muted mb-1">রিসেলার UID (সাবধান: পরিবর্তন করলে রিসেলার বদল হবে)</label>
+          <input type="text" id="edit-reseller-uid" class="w-full p-2.5 bg-slate-50 border border-border rounded-xl focus:outline-none focus:border-primary">
+        </div>
+        <div class="flex justify-end space-x-3 pt-4 border-t border-border">
+          <button type="button" onclick="closeEditModal()" class="px-5 py-2.5 bg-slate-100 hover:bg-slate-200 text-dark rounded-xl font-semibold">বাতিল</button>
+          <button type="submit" class="px-6 py-2.5 bg-primary hover:bg-primary-dark text-white rounded-xl font-semibold shadow-md transition-custom">সংরক্ষণ করুন</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- 4. Delete Confirmation Modal -->
+  <div id="delete-modal" class="fixed inset-0 bg-dark/80 z-50 flex items-center justify-center p-4 hidden backdrop-blur-sm">
+    <div class="bg-white rounded-2xl max-w-md w-full shadow-2xl border border-border p-6 text-center">
+      <div class="w-16 h-16 bg-red-100 text-red-600 rounded-full flex items-center justify-center mx-auto mb-4">
+        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+      </div>
+      <h3 class="text-xl font-bold text-dark mb-2">অর্ডার মুছে ফেলুন</h3>
+      <p class="text-muted text-sm mb-6">আপনি কি এই অর্ডারটি স্থায়ীভাবে মুছে ফেলতে চান?</p>
+      <input type="hidden" id="delete-target-id">
+      <div class="flex space-x-3">
+        <button onclick="closeDeleteModal()" class="flex-1 py-3 bg-slate-100 hover:bg-slate-200 text-dark font-semibold rounded-xl transition-custom">বাতিল</button>
+        <button id="confirm-delete-btn" class="flex-1 py-3 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-xl shadow-md transition-custom">অর্ডার মুছে ফেলুন</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 5. Image Preview Modal -->
+  <div id="image-modal" class="fixed inset-0 bg-dark/90 z-50 flex items-center justify-center p-4 hidden backdrop-blur-sm" onclick="closeImageModal()">
+    <div class="relative max-w-4xl max-h-[90vh]">
+      <button onclick="closeImageModal()" class="absolute -top-10 right-0 text-white p-2">
+        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+      </button>
+      <img id="preview-modal-img" src="" alt="Preview" class="max-w-full max-h-[85vh] object-contain rounded-xl shadow-2xl">
+    </div>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div id="toast-container" class="fixed bottom-6 right-6 z-50 space-y-2"></div>
+
+  <!-- ================= FIREBASE & APP SCRIPT ================= -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+    import { getFirestore, collection, getDocs, doc, getDoc, updateDoc, deleteDoc, serverTimestamp, query, orderBy, limit, startAfter, increment } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+    // Firebase Configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyBUhNhYvuo_FTvZ5RZR6Gn-4hsUY21S0XE",
+      authDomain: "ghotimarket.firebaseapp.com",
+      databaseURL: "https://ghotimarket-default-rtdb.firebaseio.com",
+      projectId: "ghotimarket",
+      storageBucket: "ghotimarket.firebasestorage.app",
+      messagingSenderId: "481257644093",
+      appId: "1:481257644093:web:0dfc3699d6b3c86afeca54",
+      measurementId: "G-4SR8V2EKC1"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    const ADMIN_EMAIL = "support@ghotimarket.com";
+
+    // DOM Elements
+    const accessDeniedScreen = document.getElementById('access-denied-screen');
+    const accessDeniedMsg = document.getElementById('access-denied-msg');
+    const adminEmailDisplay = document.getElementById('admin-email-display');
+    const logoutBtn = document.getElementById('logout-btn');
+    const skeletonContainer = document.getElementById('skeleton-container');
+    const ordersContentWrapper = document.getElementById('orders-content-wrapper');
+    const adminTableBody = document.getElementById('admin-table-body');
+    const adminCardGrid = document.getElementById('admin-card-grid');
+    const emptyState = document.getElementById('empty-state');
+    const errorBox = document.getElementById('error-box');
+    const errorMessage = document.getElementById('error-message');
+    const indexBtnContainer = document.getElementById('index-btn-container');
+    const retryBtn = document.getElementById('retry-btn');
+    const loadMoreContainer = document.getElementById('load-more-container');
+    const loadMoreBtn = document.getElementById('load-more-btn');
+
+    // Summary Elements
+    const sumTotal = document.getElementById('summary-total');
+    const sumPending = document.getElementById('summary-pending');
+    const sumConfirmed = document.getElementById('summary-confirmed');
+    const sumProcessing = document.getElementById('summary-processing');
+    const sumShipped = document.getElementById('summary-shipped');
+    const sumDelivered = document.getElementById('summary-delivered');
+    const sumReturn = document.getElementById('summary-return');
+    const sumCancelled = document.getElementById('summary-cancelled');
+
+    // Reseller Filter & Balance Box Elements
+    const resellerSearchInput = document.getElementById('reseller-search-input');
+    const resellerDropdownResults = document.getElementById('reseller-dropdown-results');
+    const resellerBalanceBox = document.getElementById('reseller-balance-box');
+    const resBoxName = document.getElementById('res-box-name');
+    const resBoxEmail = document.getElementById('res-box-email');
+    const resBoxUid = document.getElementById('res-box-uid');
+    const resBalCurrent = document.getElementById('res-bal-current');
+    const resBalProfit = document.getElementById('res-bal-profit');
+    const resBalCharge = document.getElementById('res-bal-charge');
+    const resBalTaxable = document.getElementById('res-bal-taxable');
+    const resBalFinal = document.getElementById('res-bal-final');
+    const clearResellerFilterBtn = document.getElementById('clear-reseller-filter-btn');
+
+    // Search and Status Filters
+    const globalSearchInput = document.getElementById('global-search-input');
+    const statusFilter = document.getElementById('status-filter');
+
+    // State Variables
+    let allOrders = [];
+    let allResellers = [];
+    let selectedReseller = null;
+    let lastVisibleDoc = null;
+    let hasMoreOrders = true;
+
+    // Pending Status Update State for Modal
+    let pendingDocId = null;
+    let pendingNewStatus = null;
+    let pendingSelectElement = null;
+
+    // Authentication Check
+    onAuthStateChanged(auth, async (user) => {
+      if (!user) {
+        window.location.href = "login.html";
+        return;
+      }
+
+      if (user.email !== ADMIN_EMAIL) {
+        accessDeniedMsg.textContent = `আপনার লগইন করা ইমেইল (${user.email}) অ্যাডমিন অ্যাকাউন্ট নয়। শুধুমাত্র ${ADMIN_EMAIL} এই পেজ ব্যবহার করতে পারবে।`;
+        accessDeniedScreen.classList.remove('hidden');
+        skeletonContainer.classList.add('hidden');
+        return;
+      }
+
+      adminEmailDisplay.textContent = user.email;
+
+      try {
+        await initializeDashboard();
+      } catch (err) {
+        console.error("Dashboard init error:", err);
+        showErrorState(err);
+      }
+    });
+
+    logoutBtn.addEventListener('click', async () => {
+      try {
+        await signOut(auth);
+        window.location.href = "login.html";
+      } catch (e) {
+        console.error("Logout error", e);
+      }
+    });
+
+    async function initializeDashboard() {
+      skeletonContainer.classList.remove('hidden');
+      errorBox.classList.add('hidden');
+      ordersContentWrapper.classList.add('hidden');
+
+      await Promise.all([
+        fetchAllResellers(),
+        fetchAllOrdersOnce()
+      ]);
+
+      skeletonContainer.classList.add('hidden');
+      ordersContentWrapper.classList.remove('hidden');
+
+      calculateAndRenderSummary();
+      renderFilteredOrders();
+    }
+
+    // Fetch Resellers Collection
+    async function fetchAllResellers() {
+      try {
+        const querySnapshot = await getDocs(collection(db, "reseller"));
+        allResellers = [];
+        querySnapshot.forEach((docSnap) => {
+          allResellers.push({
+            id: docSnap.id,
+            ...docSnap.data()
+          });
+        });
+      } catch (e) {
+        console.error("Error fetching resellers:", e);
+      }
+    }
+
+    // Fetch Orders from Firestore
+    async function fetchAllOrdersOnce() {
+      try {
+        const q = query(collection(db, "reseller_order"), orderBy("createdAt", "desc"), limit(100));
+        const querySnapshot = await getDocs(q);
+        allOrders = [];
+        querySnapshot.forEach((docSnap) => {
+          allOrders.push({
+            id: docSnap.id,
+            ...docSnap.data()
+          });
+        });
+        if (querySnapshot.docs.length > 0) {
+          lastVisibleDoc = querySnapshot.docs[querySnapshot.docs.length - 1];
+        }
+        hasMoreOrders = querySnapshot.docs.length >= 100;
+        if (hasMoreOrders) {
+          loadMoreContainer.classList.remove('hidden');
+        } else {
+          loadMoreContainer.classList.add('hidden');
+        }
+      } catch (err) {
+        console.error("Error fetching orders:", err);
+        throw err;
+      }
+    }
+
+    // Load More Orders
+    loadMoreBtn.addEventListener('click', async () => {
+      if (!lastVisibleDoc || !hasMoreOrders) return;
+      loadMoreBtn.disabled = true;
+      loadMoreBtn.textContent = "লোড হচ্ছে...";
+      try {
+        const q = query(collection(db, "reseller_order"), orderBy("createdAt", "desc"), startAfter(lastVisibleDoc), limit(50));
+        const querySnapshot = await getDocs(q);
+        querySnapshot.forEach((docSnap) => {
+          allOrders.push({
+            id: docSnap.id,
+            ...docSnap.data()
+          });
+        });
+        if (querySnapshot.docs.length > 0) {
+          lastVisibleDoc = querySnapshot.docs[querySnapshot.docs.length - 1];
+        }
+        hasMoreOrders = querySnapshot.docs.length >= 50;
+        if (!hasMoreOrders) {
+          loadMoreContainer.classList.add('hidden');
+        }
+        calculateAndRenderSummary();
+        renderFilteredOrders();
+        showToast(`${querySnapshot.docs.length} টি নতুন অর্ডার লোড হয়েছে`, "success");
+      } catch (e) {
+        console.error("Load more error:", e);
+        showToast("আরও অর্ডার লোড করতে সমস্যা হয়েছে", "error");
+      } finally {
+        loadMoreBtn.disabled = false;
+        loadMoreBtn.textContent = "আরও অর্ডার দেখুন";
+      }
+    });
+
+    // Summary Calculations
+    function calculateAndRenderSummary() {
+      let total = allOrders.length;
+      let pending = 0, confirmed = 0, processing = 0, shipped = 0, delivered = 0, returnCount = 0, cancelled = 0;
+
+      allOrders.forEach(o => {
+        if (o.status === 'pending') pending++;
+        else if (o.status === 'confirmed') confirmed++;
+        else if (o.status === 'processing') processing++;
+        else if (o.status === 'shipped') shipped++;
+        else if (o.status === 'delivered') delivered++;
+        else if (o.status === 'return') returnCount++;
+        else if (o.status === 'cancelled') cancelled++;
+      });
+
+      sumTotal.textContent = total.toLocaleString('bn-BD');
+      sumPending.textContent = pending.toLocaleString('bn-BD');
+      sumConfirmed.textContent = confirmed.toLocaleString('bn-BD');
+      sumProcessing.textContent = processing.toLocaleString('bn-BD');
+      sumShipped.textContent = shipped.toLocaleString('bn-BD');
+      sumDelivered.textContent = delivered.toLocaleString('bn-BD');
+      sumReturn.textContent = returnCount.toLocaleString('bn-BD');
+      sumCancelled.textContent = cancelled.toLocaleString('bn-BD');
+
+      if (selectedReseller) {
+        calculateResellerFinancials(selectedReseller);
+      }
+    }
+
+    // Profit Calculation Helper for an Order
+    function calculateOrderProfit(order) {
+      if (order.customProfit !== undefined && order.customProfit !== null) {
+        return Number(order.customProfit);
+      }
+      const qty = Number(order.quantity || 1);
+      const unitPrice = Number(order.unitPrice || 0);
+      const sellingRate = Number(order.sellingRate || 0);
+      const baseProfit = (sellingRate - unitPrice) * qty;
+
+      let deliveryCharge = Number(order.deliveryCharge || 0);
+      if (!deliveryCharge || deliveryCharge === 0) {
+        deliveryCharge = (order.deliveryZone === 'outside') ? 120 : 60;
+      }
+
+      let finalProfit = 0;
+      if (order.deliveryChargeAdvance === true) {
+        finalProfit = baseProfit;
+      } else {
+        finalProfit = baseProfit - deliveryCharge;
+      }
+      return finalProfit;
+    }
+
+    // Update Reseller Balance in Firestore Collection
+    async function updateResellerBalanceInFirestore(resellerUid, balanceChange) {
+      if (!resellerUid || balanceChange === 0) return;
+      try {
+        const resellerRef = doc(db, "reseller", resellerUid);
+        await updateDoc(resellerRef, {
+          balance: increment(balanceChange)
+        });
+
+        // Update local reseller array balance as well
+        const localRes = allResellers.find(r => (r.uid || r.id) === resellerUid);
+        if (localRes) {
+          localRes.balance = Number(localRes.balance || 0) + balanceChange;
+        }
+      } catch (err) {
+        console.error("Error updating reseller balance in Firestore:", err);
+      }
+    }
+
+    // Reseller Selector Search Logic
+    resellerSearchInput.addEventListener('input', (e) => {
+      const term = e.target.value.trim().toLowerCase();
+      if (!term) {
+        resellerDropdownResults.classList.add('hidden');
+        return;
+      }
+
+      const matched = allResellers.filter(r => {
+        const name = (r.name || r.Name || "").toLowerCase();
+        const email = (r.email || r.Email || "").toLowerCase();
+        const uid = (r.uid || r.id || "").toLowerCase();
+        return name.includes(term) || email.includes(term) || uid.includes(term);
+      });
+
+      if (matched.length === 0) {
+        resellerDropdownResults.innerHTML = `<div class="p-3 text-xs text-muted text-center">কোনো রিসেলার পাওয়া যায়নি</div>`;
+        resellerDropdownResults.classList.remove('hidden');
+        return;
+      }
+
+      let html = '';
+      matched.forEach(r => {
+        const rName = r.name || r.Name || 'নামবিহীন রিসেলার';
+        const rEmail = r.email || r.Email || 'ইমেইল নেই';
+        const rUid = r.uid || r.id;
+        html += `
+          <div class="p-3 hover:bg-slate-50 cursor-pointer border-b border-border last:border-0 reseller-option" data-uid="${rUid}">
+            <div class="font-bold text-dark text-xs">${rName}</div>
+            <div class="text-[11px] text-muted">${rEmail} | UID: ${rUid}</div>
+          </div>
+        `;
+      });
+
+      resellerDropdownResults.innerHTML = html;
+      resellerDropdownResults.classList.remove('hidden');
+
+      document.querySelectorAll('.reseller-option').forEach(el => {
+        el.addEventListener('click', () => {
+          const uid = el.getAttribute('data-uid');
+          selectResellerByUid(uid);
+          resellerSearchInput.value = '';
+          resellerDropdownResults.classList.add('hidden');
+        });
+      });
+    });
+
+    document.addEventListener('click', (e) => {
+      if (!resellerSearchInput.contains(e.target) && !resellerDropdownResults.contains(e.target)) {
+        resellerDropdownResults.classList.add('hidden');
+      }
+    });
+
+    function selectResellerByUid(uid) {
+      selectedReseller = allResellers.find(r => (r.uid || r.id) === uid);
+      if (!selectedReseller) return;
+
+      resBoxName.textContent = selectedReseller.name || selectedReseller.Name || 'নামবিহীন';
+      resBoxEmail.textContent = selectedReseller.email || selectedReseller.Email || 'প্রযোজ্য নয়';
+      resBoxUid.textContent = selectedReseller.uid || selectedReseller.id;
+
+      calculateResellerFinancials(selectedReseller);
+      resellerBalanceBox.classList.remove('hidden');
+      renderFilteredOrders();
+    }
+
+    clearResellerFilterBtn.addEventListener('click', () => {
+      selectedReseller = null;
+      resellerBalanceBox.classList.add('hidden');
+      renderFilteredOrders();
+    });
+
+    // Balance Calculation Rules for Selected Reseller
+    function calculateResellerFinancials(reseller) {
+      const rUid = reseller.uid || reseller.id;
+      const currentBal = Number(reseller.balance || 0);
+
+      let totalProfit = 0;
+      let totalChargeDeduction = 0;
+      let taxableIncome = 0;
+
+      const resellerOrders = allOrders.filter(o => o.resellerUid === rUid);
+
+      resellerOrders.forEach(o => {
+        if (o.status === "delivered") {
+          const qty = Number(o.quantity || 1);
+          const unitPrice = Number(o.unitPrice || 0);
+          const sellingRate = Number(o.sellingRate || 0);
+          const baseProfit = (sellingRate - unitPrice) * qty;
+
+          let deliveryCharge = Number(o.deliveryCharge || 0);
+          if (!deliveryCharge || deliveryCharge === 0) {
+            deliveryCharge = (o.deliveryZone === 'outside') ? 120 : 60;
+          }
+
+          let finalProfit = 0;
+          if (o.deliveryChargeAdvance === true) {
+            finalProfit = baseProfit;
+          } else {
+            finalProfit = baseProfit - deliveryCharge;
+            totalChargeDeduction += deliveryCharge;
+          }
+
+          const orderProfitUsed = (o.customProfit !== undefined && o.customProfit !== null) ? Number(o.customProfit) : finalProfit;
+
+          totalProfit += baseProfit;
+          taxableIncome += orderProfitUsed;
+        } else if (o.status === "return") {
+          const retCharge = Number(o.returnCharge || o.deliveryCharge || ((o.deliveryZone === 'outside') ? 120 : 60));
+          taxableIncome -= retCharge;
+          totalChargeDeduction += retCharge;
+        }
+      });
+
+      const finalBalance = currentBal + taxableIncome;
+
+      resBalCurrent.textContent = `৳ ${currentBal.toLocaleString('bn-BD', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+      resBalProfit.textContent = `৳ ${totalProfit.toLocaleString('bn-BD', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+      resBalCharge.textContent = `৳ ${totalChargeDeduction.toLocaleString('bn-BD', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+      resBalTaxable.textContent = `৳ ${taxableIncome.toLocaleString('bn-BD', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+      resBalFinal.textContent = `৳ ${finalBalance.toLocaleString('bn-BD', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    }
+
+    // Filtering and Rendering Orders
+    globalSearchInput.addEventListener('input', renderFilteredOrders);
+    statusFilter.addEventListener('change', renderFilteredOrders);
+
+    function renderFilteredOrders() {
+      const searchTerm = globalSearchInput.value.trim().toLowerCase();
+      const statusValue = statusFilter.value;
+
+      const filtered = allOrders.filter(o => {
+        if (selectedReseller) {
+          const rUid = selectedReseller.uid || selectedReseller.id;
+          if (o.resellerUid !== rUid) return false;
+        }
+
+        if (statusValue !== 'all' && o.status !== statusValue) return false;
+
+        if (searchTerm) {
+          const humanId = (o.humanOrderId || "").toLowerCase();
+          const docId = (o.id || "").toLowerCase();
+          const prodName = (o.productName || "").toLowerCase();
+          const custName = (o.customerName || "").toLowerCase();
+          const custPhone = (o.customerPhone || "").toLowerCase();
+          const resEmail = (o.resellerEmail || "").toLowerCase();
+          const resUid = (o.resellerUid || "").toLowerCase();
+
+          const matches = humanId.includes(searchTerm) ||
+                          docId.includes(searchTerm) ||
+                          prodName.includes(searchTerm) ||
+                          custName.includes(searchTerm) ||
+                          custPhone.includes(searchTerm) ||
+                          resEmail.includes(searchTerm) ||
+                          resUid.includes(searchTerm);
+
+          if (!matches) return false;
+        }
+
+        return true;
+      });
+
+      displayOrders(filtered);
+    }
+
+    function displayOrders(orders) {
+      adminTableBody.innerHTML = '';
+      adminCardGrid.innerHTML = '';
+
+      if (orders.length === 0) {
+        emptyState.classList.remove('hidden');
+        document.querySelector('.lg\\:block').classList.add('hidden');
+        adminCardGrid.classList.add('hidden');
+        return;
+      }
+
+      emptyState.classList.add('hidden');
+      document.querySelector('.lg\\:block').classList.remove('hidden');
+      adminCardGrid.classList.remove('hidden');
+
+      orders.forEach(order => {
+        const humanId = order.humanOrderId || order.id;
+        const prodName = order.productName || 'নামবিহীন পণ্য';
+        const prodImg = order.productImage || '';
+        const resEmail = order.resellerEmail || 'ইমেল নেই';
+        const custName = order.customerName || 'গ্রাহক নেই';
+        const custPhone = order.customerPhone || 'ফোন নেই';
+        const totalAmt = Number(order.totalAmount || 0);
+        const formattedDate = formatBengaliDate(order.createdAt);
+        const currentStatus = order.status || 'pending';
+        const currentProfitVal = calculateOrderProfit(order);
+
+        // Desktop Table Row
+        const tr = document.createElement('tr');
+        tr.className = "hover:bg-slate-50/80 transition-custom";
+        tr.innerHTML = `
+          <td class="py-3.5 px-4">
+            <div class="font-bold text-dark text-xs">${humanId}</div>
+            <div class="text-[11px] text-muted">${formattedDate}</div>
+          </td>
+          <td class="py-3.5 px-4">
+            <div class="flex items-center space-x-3">
+              <div class="w-10 h-10 rounded-lg bg-slate-100 overflow-hidden flex-shrink-0 border border-border cursor-pointer" onclick="openImageModal('${prodImg}')">
+                ${prodImg ? `<img src="${prodImg}" alt="" class="w-full h-full object-cover">` : `<div class="w-full h-full flex items-center justify-center text-muted"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg></div>`}
+              </div>
+              <div class="max-w-xs">
+                <div class="font-bold text-dark text-xs truncate">${prodName}</div>
+                <div class="text-[11px] text-muted">পরিমাণ: ${order.quantity || 1} টি</div>
+              </div>
+            </div>
+          </td>
+          <td class="py-3.5 px-4">
+            <div class="text-xs text-dark font-medium truncate max-w-[150px]">${resEmail}</div>
+            <div class="text-[10px] text-muted font-mono">UID: ${order.resellerUid || ''}</div>
+          </td>
+          <td class="py-3.5 px-4">
+            <div class="text-xs font-bold text-dark">${custName}</div>
+            <div class="text-[11px] text-muted">${custPhone}</div>
+          </td>
+          <td class="py-3.5 px-4">
+            <div class="text-xs font-bold text-primary">৳${totalAmt.toLocaleString('bn-BD')}</div>
+            <div class="text-[10px] text-muted">ইউনিট: ৳${order.unitPrice || 0} | বিক্রি: ৳${order.sellingRate || 0}</div>
+          </td>
+          <td class="py-3.5 px-4">
+            <div class="text-xs text-dark">৳${order.deliveryCharge || 60}</div>
+            <div class="text-[10px] text-muted">${order.deliveryZone === 'outside' ? 'ঢাকার বাইরে' : 'ঢাকার ভিতরে'}</div>
+          </td>
+          <td class="py-3.5 px-4">
+            <select onchange="promptStatusConfirm('${order.id}', this.value, this)" class="text-xs font-semibold px-3 py-1.5 rounded-xl border border-border bg-slate-50 focus:outline-none focus:border-primary cursor-pointer transition-custom ${getStatusColorClass(currentStatus)}">
+              <option value="pending" ${currentStatus==='pending'?'selected':''}>⏳ অপেক্ষমাণ</option>
+              <option value="confirmed" ${currentStatus==='confirmed'?'selected':''}>✔️ নিশ্চিত</option>
+              <option value="processing" ${currentStatus==='processing'?'selected':''}>🔄 প্রক্রিয়াধীন</option>
+              <option value="shipped" ${currentStatus==='shipped'?'selected':''}>🚚 পাঠানো হয়েছে</option>
+              <option value="delivered" ${currentStatus==='delivered'?'selected':''}>🎉 ডেলিভারি সম্পন্ন</option>
+              <option value="return" ${currentStatus==='return'?'selected':''}>↩️ রিটার্ন</option>
+              <option value="cancelled" ${currentStatus==='cancelled'?'selected':''}>❌ বাতিল</option>
+            </select>
+          </td>
+          <td class="py-3.5 px-4 text-right">
+            <div class="flex items-center justify-end space-x-1">
+              <button onclick="openDetailsModal('${order.id}')" class="p-1.5 rounded-lg hover:bg-slate-200 text-muted hover:text-dark transition-custom" title="বিস্তারিত">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+              </button>
+              <button onclick="openJsonModal('${order.id}')" class="p-1.5 rounded-lg hover:bg-slate-200 text-muted hover:text-primary transition-custom" title="JSON দেখুন">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/></svg>
+              </button>
+              <button onclick="openEditModal('${order.id}')" class="p-1.5 rounded-lg hover:bg-slate-200 text-muted hover:text-blue-600 transition-custom" title="এডিট">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+              </button>
+              <button onclick="openDeleteModal('${order.id}')" class="p-1.5 rounded-lg hover:bg-red-50 text-muted hover:text-red-600 transition-custom" title="ডিলিট">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+              </button>
+            </div>
+          </td>
+        `;
+        adminTableBody.appendChild(tr);
+
+        // Formulate Address HTML
+        let addressStr = 'ঠিকানা প্রদান করা হয়নি';
+        if (order.deliveryAddress) {
+          const addr = order.deliveryAddress;
+          addressStr = `${addr.thana ? `থানা: ${addr.thana}, ` : ''}${addr.district ? `জেলা: ${addr.district}, ` : ''}${addr.division ? `বিভাগ: ${addr.division}` : ''}`;
+        }
+
+        // Formulate Variants HTML
+        let variantsHtml = '';
+        if (order.selectedVariants && Array.isArray(order.selectedVariants) && order.selectedVariants.length > 0) {
+          variantsHtml = `<div class="bg-amber-50/60 p-3 rounded-xl border border-amber-200/60 mt-3"><span class="font-bold block mb-1 text-[11px] text-amber-800 uppercase tracking-wider">সিলেক্টেড ভ্যারিয়েন্টস:</span><div class="flex flex-wrap gap-2">`;
+          order.selectedVariants.forEach(v => {
+            variantsHtml += `<span class="px-2.5 py-1 bg-white border border-amber-200 rounded-lg text-xs text-dark font-medium">${v.name || 'ভ্যারিয়েন্ট'}: <strong>${v.value}</strong> ${v.extraPrice ? `(৳${v.extraPrice})` : ''}</span>`;
+          });
+          variantsHtml += `</div></div>`;
+        }
+
+        // Expanded Large Mobile & Tablet Card View
+        const card = document.createElement('div');
+        card.className = "bg-white rounded-2xl p-6 border-2 border-border/80 shadow-md flex flex-col justify-between space-y-4";
+        card.innerHTML = `
+          <div>
+            <!-- Card Header: Order ID & Status Dropdown -->
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-border">
+              <div>
+                <span class="text-xs font-bold px-2.5 py-1 bg-primary/10 text-primary rounded-full inline-block mb-1">অর্ডার #${humanId}</span>
+                <div class="text-[11px] text-muted">ফায়ারবেস আইডি: <span class="font-mono">${order.id}</span></div>
+                <div class="text-[11px] text-muted mt-0.5">তারিখ: ${formattedDate}</div>
+              </div>
+              <div class="self-start sm:self-auto">
+                <select onchange="promptStatusConfirm('${order.id}', this.value, this)" class="text-xs font-bold px-3 py-2 rounded-xl border-2 border-border bg-slate-50 focus:outline-none focus:border-primary cursor-pointer shadow-sm ${getStatusColorClass(currentStatus)}">
+                  <option value="pending" ${currentStatus==='pending'?'selected':''}>⏳ অপেক্ষমাণ (Pending)</option>
+                  <option value="confirmed" ${currentStatus==='confirmed'?'selected':''}>✔️ নিশ্চিত (Confirmed)</option>
+                  <option value="processing" ${currentStatus==='processing'?'selected':''}>🔄 প্রক্রিয়াধীন (Processing)</option>
+                  <option value="shipped" ${currentStatus==='shipped'?'selected':''}>🚚 পাঠানো হয়েছে (Shipped)</option>
+                  <option value="delivered" ${currentStatus==='delivered'?'selected':''}>🎉 ডেলিভারি সম্পন্ন (Delivered)</option>
+                  <option value="return" ${currentStatus==='return'?'selected':''}>↩️ রিটার্ন (Return)</option>
+                  <option value="cancelled" ${currentStatus==='cancelled'?'selected':''}>❌ বাতিল (Cancelled)</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Product Section -->
+            <div class="flex items-start space-x-4 pt-2">
+              <div class="w-16 h-16 bg-slate-100 rounded-2xl overflow-hidden flex-shrink-0 border border-border cursor-pointer shadow-sm" onclick="openImageModal('${prodImg}')">
+                ${prodImg ? `<img src="${prodImg}" alt="" class="w-full h-full object-cover">` : `<div class="w-full h-full flex items-center justify-center text-muted"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg></div>`}
+              </div>
+              <div class="flex-1 min-w-0">
+                <h4 class="font-bold text-dark text-base mb-1">${prodName}</h4>
+                <div class="grid grid-cols-2 gap-2 text-xs text-muted">
+                  <div>পরিমাণ: <strong class="text-dark">${order.quantity || 1} টি</strong></div>
+                  <div>ইউনিট মূল্য: <strong class="text-dark">৳${order.unitPrice || 0}</strong></div>
+                  <div>বিক্রির রেট: <strong class="text-dark">৳${order.sellingRate || 0}</strong></div>
+                  <div>ডেলিভারি চার্জ: <strong class="text-dark">৳${order.deliveryCharge || 60} (${order.deliveryZone === 'outside' ? 'ঢাকার বাইরে' : 'ঢাকার ভিতরে'})</strong></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Variants Box (if any) -->
+            ${variantsHtml}
+
+            <!-- Reseller & Customer Info Section -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-4 pt-4 border-t border-border">
+              <div class="bg-slate-50 p-3.5 rounded-xl border border-border/60 space-y-1">
+                <span class="text-[11px] font-bold text-muted uppercase tracking-wider block mb-1">রিসেলার তথ্য</span>
+                <div class="text-xs text-dark font-medium truncate">ইমেইল: ${resEmail}</div>
+                <div class="text-[11px] text-muted font-mono">UID: ${order.resellerUid || 'নেই'}</div>
+              </div>
+              <div class="bg-slate-50 p-3.5 rounded-xl border border-border/60 space-y-1">
+                <span class="text-[11px] font-bold text-muted uppercase tracking-wider block mb-1">গ্রাহকের তথ্য</span>
+                <div class="text-xs text-dark font-bold">${custName} (${custPhone})</div>
+                <div class="text-[11px] text-muted">ঠিকানা: ${addressStr}</div>
+              </div>
+            </div>
+
+            <!-- Financials Summary Box -->
+            <div class="bg-orange-50/50 p-4 rounded-xl border border-primary/20 mt-4 space-y-2 text-xs">
+              <div class="flex justify-between items-center">
+                <span class="text-muted">হিসাবকৃত প্রফিট / চার্জ:</span>
+                <strong class="text-primary text-sm">৳${currentProfitVal}</strong>
+              </div>
+              <div class="flex justify-between items-center">
+                <span class="text-muted">ডেলিভারি চার্জ অগ্রিম পেইড?:</span>
+                <strong class="${order.deliveryChargeAdvance ? 'text-emerald-600' : 'text-red-600'}">${order.deliveryChargeAdvance ? 'হ্যাঁ (True)' : 'না (False)'}</strong>
+              </div>
+              <div class="flex justify-between items-center pt-2 border-t border-primary/20 text-sm font-bold text-dark">
+                <span>সর্বমোট পরিমাণ (Total Amount):</span>
+                <span class="text-primary text-base">৳${totalAmt.toLocaleString('bn-BD')}</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card Actions Footer -->
+          <div class="grid grid-cols-3 gap-2.5 pt-3 border-t border-border">
+            <button onclick="openJsonModal('${order.id}')" class="py-2.5 bg-slate-100 hover:bg-slate-200 text-primary rounded-xl text-xs font-semibold text-center transition-custom flex items-center justify-center space-x-1.5 shadow-sm">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/></svg>
+              <span>JSON</span>
+            </button>
+            <button onclick="openEditModal('${order.id}')" class="py-2.5 bg-blue-50 hover:bg-blue-100 text-blue-600 rounded-xl text-xs font-semibold text-center transition-custom flex items-center justify-center space-x-1.5 shadow-sm">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+              <span>এডিট</span>
+            </button>
+            <button onclick="openDeleteModal('${order.id}')" class="py-2.5 bg-red-50 hover:bg-red-100 text-red-600 rounded-xl text-xs font-semibold text-center transition-custom flex items-center justify-center space-x-1.5 shadow-sm">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+              <span>ডিলিট</span>
+            </button>
+          </div>
+        `;
+        adminCardGrid.appendChild(card);
+      });
+    }
+
+    // Status Color Helper
+    function getStatusColorClass(status) {
+      switch (status) {
+        case 'pending': return 'text-amber-700 bg-amber-50';
+        case 'confirmed': return 'text-blue-700 bg-blue-50';
+        case 'processing': return 'text-purple-700 bg-purple-50';
+        case 'shipped': return 'text-indigo-700 bg-indigo-50';
+        case 'delivered': return 'text-emerald-700 bg-emerald-50';
+        case 'return': return 'text-orange-700 bg-orange-50';
+        case 'cancelled': return 'text-red-700 bg-red-50';
+        default: return 'text-slate-700 bg-slate-50';
+      }
+    }
+
+    // Status Name in Bengali
+    function getStatusBengaliName(status) {
+      switch (status) {
+        case 'pending': return 'অপেক্ষমাণ (Pending)';
+        case 'confirmed': return 'নিশ্চিত (Confirmed)';
+        case 'processing': return 'প্রক্রিয়াধীন (Processing)';
+        case 'shipped': return 'পাঠানো হয়েছে (Shipped)';
+        case 'delivered': return 'ডেলিভারি সম্পন্ন (Delivered)';
+        case 'return': return 'রিটার্ন (Return)';
+        case 'cancelled': return 'বাতিল (Cancelled)';
+        default: return status;
+      }
+    }
+
+    // Prompt Status Confirm Modal ONLY when delivered or return is selected
+    window.promptStatusConfirm = (docId, newStatus, selectEl) => {
+      const targetOrder = allOrders.find(o => o.id === docId);
+      if (!targetOrder) return;
+
+      const oldStatus = targetOrder.status || 'pending';
+      if (oldStatus === newStatus) return;
+
+      // Only show modal if newStatus is 'delivered' or 'return'
+      if (newStatus === 'delivered' || newStatus === 'return') {
+        pendingDocId = docId;
+        pendingNewStatus = newStatus;
+        pendingSelectElement = selectEl;
+
+        const modalTitle = document.getElementById('modal-title-text');
+        const modalStatusText = document.getElementById('modal-new-status-text');
+        const modalCalcLabel = document.getElementById('modal-calc-label');
+        const modalCalcProfit = document.getElementById('modal-calc-profit');
+        const modalInputLabel = document.getElementById('modal-input-label');
+        const modalCustomInput = document.getElementById('modal-custom-profit-input');
+        const modalHelper = document.getElementById('modal-helper-text');
+
+        modalStatusText.textContent = getStatusBengaliName(newStatus);
+
+        if (newStatus === 'delivered') {
+          modalTitle.textContent = 'অর্ডার ডেলিভারি সম্পন্ন ও প্রফিট নিশ্চিত করুন';
+          modalCalcLabel.textContent = 'সিস্টেম হিসাবকৃত প্রফিট:';
+          const calcProfit = calculateOrderProfit(targetOrder);
+          modalCalcProfit.textContent = `৳ ${calcProfit.toLocaleString('bn-BD', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+          modalCustomInput.value = calcProfit;
+          modalInputLabel.textContent = 'কাস্টম প্রফিট অ্যামাউন্ট (টাকা):';
+          modalHelper.textContent = 'ডেলিভারি সম্পন্ন হলে এই প্রফিট রিসেলারের ব্যালেন্সে যোগ হবে।';
+        } else if (newStatus === 'return') {
+          modalTitle.textContent = 'অর্ডার রিটার্ন ও চার্জ কর্তন নিশ্চিত করুন';
+          modalCalcLabel.textContent = 'সিস্টেম হিসাবকৃত রিটার্ন চার্জ:';
+          let defaultReturnCharge = Number(targetOrder.deliveryCharge || 0);
+          if (!defaultReturnCharge) {
+            defaultReturnCharge = (targetOrder.deliveryZone === 'outside') ? 120 : 60;
+          }
+          modalCalcProfit.textContent = `৳ ${defaultReturnCharge.toLocaleString('bn-BD', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+          modalCustomInput.value = defaultReturnCharge;
+          modalInputLabel.textContent = 'রিটার্ন চার্জ কর্তন অ্যামাউন্ট (টাকা):';
+          modalHelper.textContent = 'রিটার্ন অর্ডারের জন্য রিসেলারের ব্যালেন্স থেকে এই চার্জ কাটা হবে।';
+        }
+
+        document.getElementById('status-confirm-modal').classList.remove('hidden');
+      } else {
+        // For other statuses (pending, confirmed, processing, shipped, cancelled), update directly without modal
+        executeUpdateStatusDirectly(docId, newStatus);
+      }
+    };
+
+    window.closeStatusConfirmModal = () => {
+      if (pendingSelectElement) {
+        const targetOrder = allOrders.find(o => o.id === pendingDocId);
+        if (targetOrder) {
+          pendingSelectElement.value = targetOrder.status || 'pending';
+        }
+      }
+      document.getElementById('status-confirm-modal').classList.add('hidden');
+      pendingDocId = null;
+      pendingNewStatus = null;
+      pendingSelectElement = null;
+    };
+
+    document.getElementById('confirm-status-update-btn').addEventListener('click', async () => {
+      if (!pendingDocId || !pendingNewStatus) return;
+
+      const customAmountVal = Number(document.getElementById('modal-custom-profit-input').value);
+      if (isNaN(customAmountVal)) {
+        showToast("দয়া করে সঠিক এমাউন্ট লিখুন", "error");
+        return;
+      }
+
+      document.getElementById('status-confirm-modal').classList.add('hidden');
+      await executeStatusUpdateWithAmount(pendingDocId, pendingNewStatus, customAmountVal);
+    });
+
+    // Execute Direct Status Update (for non-delivered/non-return statuses)
+    async function executeUpdateStatusDirectly(docId, newStatus) {
+      try {
+        const targetOrder = allOrders.find(o => o.id === docId);
+        if (!targetOrder) return;
+
+        const oldStatus = targetOrder.status || 'pending';
+        let balanceChange = 0;
+
+        // Revert previous balance impact if it was delivered or return
+        if (oldStatus === 'delivered') {
+          const oldProfit = (targetOrder.customProfit !== undefined && targetOrder.customProfit !== null) ? Number(targetOrder.customProfit) : calculateOrderProfit(targetOrder);
+          balanceChange -= oldProfit;
+        } else if (oldStatus === 'return') {
+          const oldReturnCharge = Number(targetOrder.returnCharge || targetOrder.deliveryCharge || ((targetOrder.deliveryZone === 'outside') ? 120 : 60));
+          balanceChange += oldReturnCharge;
+        }
+
+        const orderRef = doc(db, "reseller_order", docId);
+        await updateDoc(orderRef, {
+          status: newStatus,
+          updatedAt: serverTimestamp()
+        });
+
+        if (targetOrder.resellerUid && balanceChange !== 0) {
+          await updateResellerBalanceInFirestore(targetOrder.resellerUid, balanceChange);
+        }
+
+        targetOrder.status = newStatus;
+        calculateAndRenderSummary();
+        renderFilteredOrders();
+        showToast("অর্ডার স্ট্যাটাস সফলভাবে আপডেট করা হয়েছে", "success");
+      } catch (err) {
+        console.error("Direct status update error:", err);
+        showToast("স্ট্যাটাস আপডেট করতে সমস্যা হয়েছে", "error");
+        renderFilteredOrders();
+      }
+    }
+
+    // Execute Delivered or Return Status Update with Custom Amount
+    async function executeStatusUpdateWithAmount(docId, newStatus, customAmount) {
+      try {
+        const targetOrder = allOrders.find(o => o.id === docId);
+        if (!targetOrder) return;
+
+        const oldStatus = targetOrder.status || 'pending';
+        let balanceChange = 0;
+
+        // Revert previous balance impact
+        if (oldStatus === 'delivered') {
+          const oldProfit = (targetOrder.customProfit !== undefined && targetOrder.customProfit !== null) ? Number(targetOrder.customProfit) : calculateOrderProfit(targetOrder);
+          balanceChange -= oldProfit;
+        } else if (oldStatus === 'return') {
+          const oldReturnCharge = Number(targetOrder.returnCharge || targetOrder.deliveryCharge || ((targetOrder.deliveryZone === 'outside') ? 120 : 60));
+          balanceChange += oldReturnCharge;
+        }
+
+        // Apply new status balance impact
+        let updatePayload = {
+          status: newStatus,
+          updatedAt: serverTimestamp()
+        };
+
+        if (newStatus === 'delivered') {
+          updatePayload.customProfit = customAmount;
+          targetOrder.customProfit = customAmount;
+          balanceChange += customAmount;
+        } else if (newStatus === 'return') {
+          updatePayload.returnCharge = customAmount;
+          targetOrder.returnCharge = customAmount;
+          balanceChange -= customAmount; // Deduct return charge from balance
+        }
+
+        const orderRef = doc(db, "reseller_order", docId);
+        await updateDoc(orderRef, updatePayload);
+
+        if (targetOrder.resellerUid && balanceChange !== 0) {
+          await updateResellerBalanceInFirestore(targetOrder.resellerUid, balanceChange);
+        }
+
+        targetOrder.status = newStatus;
+
+        calculateAndRenderSummary();
+        renderFilteredOrders();
+        showToast("অর্ডার স্ট্যাটাস ও ব্যালেন্স সফলভাবে আপডেট করা হয়েছে", "success");
+      } catch (err) {
+        console.error("Status update error:", err);
+        showToast("স্ট্যাটাস আপডেট করতে সমস্যা হয়েছে", "error");
+        renderFilteredOrders();
+      } finally {
+        pendingDocId = null;
+        pendingNewStatus = null;
+        pendingSelectElement = null;
+      }
+    }
+
+    // Bengali Date Formatter
+    function formatBengaliDate(timestamp) {
+      if (!timestamp) return 'তারিখ উপলব্ধ নেই';
+      let date;
+      if (timestamp.seconds) {
+        date = new Date(timestamp.seconds * 1000);
+      } else {
+        date = new Date(timestamp);
+      }
+      if (isNaN(date.getTime())) return 'তারিখ উপলব্ধ নেই';
+      try {
+        return date.toLocaleDateString('bn-BD', { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit', hour12: true });
+      } catch (e) {
+        return date.toLocaleString();
+      }
+    }
+
+    // Modal Actions
+    window.openImageModal = (url) => {
+      if (!url) return;
+      document.getElementById('preview-modal-img').src = url;
+      document.getElementById('image-modal').classList.remove('hidden');
+    };
+    window.closeImageModal = () => {
+      document.getElementById('image-modal').classList.add('hidden');
+    };
+
+    window.openDetailsModal = (docId) => {
+      const order = allOrders.find(o => o.id === docId);
+      if (!order) return;
+
+      let variantsHtml = '';
+      if (order.selectedVariants && Array.isArray(order.selectedVariants)) {
+        variantsHtml = `<div class="bg-slate-50 p-3 rounded-xl border border-border/60"><span class="font-bold block mb-1 text-xs text-muted uppercase">ভ্যারিয়েন্টস</span><div class="space-y-1">`;
+        order.selectedVariants.forEach(v => {
+          variantsHtml += `<div class="text-xs text-dark"><span>${v.name || 'ভ্যারিয়েন্ট'}: </span><span class="font-medium">${v.value}</span> ${v.extraPrice ? `(অতিরিক্ত: ৳${v.extraPrice})` : ''}</div>`;
+        });
+        variantsHtml += `</div></div>`;
+      }
+
+      let addressHtml = 'প্রযোজ্য নয়';
+      if (order.deliveryAddress) {
+        const addr = order.deliveryAddress;
+        addressHtml = `${addr.thana ? `থানা: ${addr.thana}, ` : ''}${addr.district ? `জেলা: ${addr.district}, ` : ''}${addr.division ? `বিভাগ: ${addr.division}` : ''}`;
+      }
+
+      const currentProfitVal = calculateOrderProfit(order);
+
+      const content = `
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div class="bg-slate-50 p-3 rounded-xl border border-border/60 space-y-1">
+            <span class="font-bold block mb-1 text-xs text-muted uppercase">অর্ডার তথ্য</span>
+            <p class="text-xs">অর্ডার আইডি: <span class="font-bold text-dark">${order.humanOrderId || order.id}</span></p>
+            <p class="text-xs">ফায়ারবেস আইডি: <span class="font-mono text-[11px]">${order.id}</span></p>
+            <p class="text-xs">স্ট্যাটাস: <span class="font-bold">${order.status}</span></p>
+            <p class="text-xs">তৈরি: ${formatBengaliDate(order.createdAt)}</p>
+            <p class="text-xs">আপডেট: ${formatBengaliDate(order.updatedAt)}</p>
+          </div>
+          <div class="bg-slate-50 p-3 rounded-xl border border-border/60 space-y-1">
+            <span class="font-bold block mb-1 text-xs text-muted uppercase">রিসেলার তথ্য</span>
+            <p class="text-xs">ইমেইল: <span class="font-bold text-dark">${order.resellerEmail || 'নেই'}</span></p>
+            <p class="text-xs">UID: <span class="font-mono text-[11px]">${order.resellerUid || 'নেই'}</span></p>
+          </div>
+          <div class="bg-slate-50 p-3 rounded-xl border border-border/60 space-y-1">
+            <span class="font-bold block mb-1 text-xs text-muted uppercase">গ্রাহকের তথ্য</span>
+            <p class="text-xs">নাম: <span class="font-bold text-dark">${order.customerName || 'নেই'}</span></p>
+            <p class="text-xs">ফোন: <span class="font-bold text-dark">${order.customerPhone || 'নেই'}</span></p>
+            <p class="text-xs">ঠিকানা: <span class="font-medium text-dark">${addressHtml}</span></p>
+          </div>
+          <div class="bg-slate-50 p-3 rounded-xl border border-border/60 space-y-1">
+            <span class="font-bold block mb-1 text-xs text-muted uppercase">মূল্য ও হিসাব</span>
+            <p class="text-xs">পণ্যের নাম: <span class="font-bold text-dark">${order.productName || 'নেই'}</span></p>
+            <p class="text-xs">পরিমাণ: <span class="font-bold text-dark">${order.quantity || 1} টি</span></p>
+            <p class="text-xs">ইউনিট মূল্য: <span class="font-bold text-dark">৳${order.unitPrice || 0}</span></p>
+            <p class="text-xs">বিক্রির রেট: <span class="font-bold text-dark">৳${order.sellingRate || 0}</span></p>
+            <p class="text-xs">ডেলিভারি চার্জ: <span class="font-bold text-dark">৳${order.deliveryCharge || 60} (${order.deliveryZone || 'inside'})</span></p>
+            <p class="text-xs">প্রফিট অ্যামাউন্ট: <span class="font-bold text-primary">৳${currentProfitVal}</span></p>
+            <p class="text-xs">মোট পরিমাণ: <span class="font-bold text-primary">৳${order.totalAmount || 0}</span></p>
+          </div>
+        </div>
+        ${variantsHtml}
+      `;
+      document.getElementById('details-modal-content').innerHTML = content;
+      document.getElementById('details-modal').classList.remove('hidden');
+    };
+    window.closeDetailsModal = () => {
+      document.getElementById('details-modal').classList.add('hidden');
+    };
+
+    let currentJsonString = '';
+    window.openJsonModal = (docId) => {
+      const order = allOrders.find(o => o.id === docId);
+      if (!order) return;
+      currentJsonString = JSON.stringify(order, null, 2);
+      document.getElementById('json-pre-content').textContent = currentJsonString;
+      document.getElementById('json-modal').classList.remove('hidden');
+    };
+    window.closeJsonModal = () => {
+      document.getElementById('json-modal').classList.add('hidden');
+    };
+
+    document.getElementById('copy-json-btn').addEventListener('click', () => {
+      navigator.clipboard.writeText(currentJsonString).then(() => {
+        showToast("অর্ডারের JSON কপি হয়েছে", "success");
+      }).catch(err => {
+        console.error("Copy failed", err);
+      });
+    });
+
+    // Edit Order Modal
+    window.openEditModal = (docId) => {
+      const order = allOrders.find(o => o.id === docId);
+      if (!order) return;
+
+      document.getElementById('edit-doc-id').value = order.id;
+      document.getElementById('edit-customer-name').value = order.customerName || '';
+      document.getElementById('edit-customer-phone').value = order.customerPhone || '';
+      document.getElementById('edit-product-name').value = order.productName || '';
+      document.getElementById('edit-quantity').value = order.quantity || 1;
+      document.getElementById('edit-unit-price').value = order.unitPrice || 0;
+      document.getElementById('edit-selling-rate').value = order.sellingRate || 0;
+      document.getElementById('edit-delivery-charge').value = order.deliveryCharge || 60;
+      document.getElementById('edit-delivery-zone').value = order.deliveryZone || 'inside';
+      document.getElementById('edit-status').value = order.status || 'pending';
+      document.getElementById('edit-delivery-charge-advance').value = order.deliveryChargeAdvance ? 'true' : 'false';
+      document.getElementById('edit-thana').value = order.deliveryAddress?.thana || '';
+      document.getElementById('edit-district').value = order.deliveryAddress?.district || '';
+      document.getElementById('edit-reseller-uid').value = order.resellerUid || '';
+
+      document.getElementById('edit-modal').classList.remove('hidden');
+    };
+    window.closeEditModal = () => {
+      document.getElementById('edit-modal').classList.add('hidden');
+    };
+
+    // Edit Form Submit Handler with Balance Adjustment
+    document.getElementById('edit-order-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const docId = document.getElementById('edit-doc-id').value;
+      const oldOrder = allOrders.find(o => o.id === docId);
+      if (!oldOrder) return;
+
+      const oldStatus = oldOrder.status || 'pending';
+      const newStatus = document.getElementById('edit-status').value;
+      const oldResellerUid = oldOrder.resellerUid;
+      const newResellerUid = document.getElementById('edit-reseller-uid').value.trim();
+
+      if (newResellerUid !== oldResellerUid) {
+        const confirmChange = confirm("সতর্কতা: আপনি রিসেলার UID পরিবর্তন করছেন। এতে অর্ডারটি অন্য রিসেলারের অধীনে চলে যাবে। আপনি কি নিশ্চিত?");
+        if (!confirmChange) return;
+      }
+
+      const tempNewOrder = {
+        ...oldOrder,
+        quantity: Number(document.getElementById('edit-quantity').value) || 1,
+        unitPrice: Number(document.getElementById('edit-unit-price').value) || 0,
+        sellingRate: Number(document.getElementById('edit-selling-rate').value) || 0,
+        deliveryCharge: Number(document.getElementById('edit-delivery-charge').value) || 60,
+        deliveryZone: document.getElementById('edit-delivery-zone').value,
+        deliveryChargeAdvance: document.getElementById('edit-delivery-charge-advance').value === 'true'
+      };
+
+      const oldProfit = (oldStatus === 'delivered') ? calculateOrderProfit(oldOrder) : 0;
+      const newProfit = (newStatus === 'delivered') ? calculateOrderProfit(tempNewOrder) : 0;
+      const oldReturnCharge = (oldStatus === 'return') ? Number(oldOrder.returnCharge || oldOrder.deliveryCharge || 60) : 0;
+      const newReturnCharge = (newStatus === 'return') ? Number(tempNewOrder.deliveryCharge || 60) : 0;
+
+      // Handle balance updates
+      if (oldResellerUid === newResellerUid) {
+        let netDiff = 0;
+        if (oldStatus === 'delivered') netDiff -= oldProfit;
+        if (oldStatus === 'return') netDiff += oldReturnCharge;
+        if (newStatus === 'delivered') netDiff += newProfit;
+        if (newStatus === 'return') netDiff -= newReturnCharge;
+
+        if (netDiff !== 0 && oldResellerUid) {
+          await updateResellerBalanceInFirestore(oldResellerUid, netDiff);
+        }
+      } else {
+        if (oldStatus === 'delivered' && oldResellerUid) {
+          await updateResellerBalanceInFirestore(oldResellerUid, -oldProfit);
+        }
+        if (oldStatus === 'return' && oldResellerUid) {
+          await updateResellerBalanceInFirestore(oldResellerUid, oldReturnCharge);
+        }
+        if (newStatus === 'delivered' && newResellerUid) {
+          await updateResellerBalanceInFirestore(newResellerUid, newProfit);
+        }
+        if (newStatus === 'return' && newResellerUid) {
+          await updateResellerBalanceInFirestore(newResellerUid, -newReturnCharge);
+        }
+      }
+
+      const updatedData = {
+        customerName: document.getElementById('edit-customer-name').value.trim(),
+        customerPhone: document.getElementById('edit-customer-phone').value.trim(),
+        productName: document.getElementById('edit-product-name').value.trim(),
+        quantity: tempNewOrder.quantity,
+        unitPrice: tempNewOrder.unitPrice,
+        sellingRate: tempNewOrder.sellingRate,
+        deliveryCharge: tempNewOrder.deliveryCharge,
+        deliveryZone: tempNewOrder.deliveryZone,
+        status: newStatus,
+        deliveryChargeAdvance: tempNewOrder.deliveryChargeAdvance,
+        resellerUid: newResellerUid,
+        deliveryAddress: {
+          ...(oldOrder.deliveryAddress || {}),
+          thana: document.getElementById('edit-thana').value.trim(),
+          district: document.getElementById('edit-district').value.trim()
+        },
+        updatedAt: serverTimestamp()
+      };
+
+      try {
+        const orderRef = doc(db, "reseller_order", docId);
+        await updateDoc(orderRef, updatedData);
+        showToast("অর্ডার ও রিসেলার ব্যালেন্স সফলভাবে আপডেট করা হয়েছে", "success");
+        closeEditModal();
+        await fetchAllOrdersOnce();
+        calculateAndRenderSummary();
+        renderFilteredOrders();
+      } catch (err) {
+        console.error("Update error:", err);
+        showToast("অর্ডার আপডেট করতে সমস্যা হয়েছে", "error");
+      }
+    });
+
+    // Delete Order Modal
+    window.openDeleteModal = (docId) => {
+      document.getElementById('delete-target-id').value = docId;
+      document.getElementById('delete-modal').classList.remove('hidden');
+    };
+    window.closeDeleteModal = () => {
+      document.getElementById('delete-modal').classList.add('hidden');
+    };
+
+    document.getElementById('confirm-delete-btn').addEventListener('click', async () => {
+      const docId = document.getElementById('delete-target-id').value;
+      if (!docId) return;
+
+      try {
+        const targetOrder = allOrders.find(o => o.id === docId);
+        if (targetOrder && targetOrder.resellerUid) {
+          if (targetOrder.status === 'delivered') {
+            const profit = calculateOrderProfit(targetOrder);
+            await updateResellerBalanceInFirestore(targetOrder.resellerUid, -profit);
+          } else if (targetOrder.status === 'return') {
+            const retCharge = Number(targetOrder.returnCharge || targetOrder.deliveryCharge || 60);
+            await updateResellerBalanceInFirestore(targetOrder.resellerUid, retCharge); // revert return deduction
+          }
+        }
+
+        await deleteDoc(doc(db, "reseller_order", docId));
+        showToast("অর্ডার স্থায়ীভাবে মুছে ফেলা হয়েছে", "success");
+        closeDeleteModal();
+        allOrders = allOrders.filter(o => o.id !== docId);
+        calculateAndRenderSummary();
+        renderFilteredOrders();
+      } catch (e) {
+        console.error("Delete error:", e);
+        showToast("অর্ডার ডিলিট করতে সমস্যা হয়েছে", "error");
+      }
+    });
+
+    // Toast Notification Helper
+    function showToast(message, type = 'success') {
+      const container = document.getElementById('toast-container');
+      const toast = document.createElement('div');
+      const isSuccess = type === 'success';
+      toast.className = `bg-dark text-white px-4 py-3 rounded-xl shadow-xl z-50 text-xs font-medium flex items-center space-x-2 transform translate-y-10 opacity-0 transition-all duration-300 border border-border`;
+      toast.innerHTML = `
+        ${isSuccess ? `<svg class="w-4 h-4 text-emerald-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>` : `<svg class="w-4 h-4 text-red-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>`}
+        <span>${message}</span>
+      `;
+      container.appendChild(toast);
+      setTimeout(() => {
+        toast.classList.remove('translate-y-10', 'opacity-0');
+      }, 10);
+      setTimeout(() => {
+        toast.classList.add('translate-y-10', 'opacity-0');
+        setTimeout(() => toast.remove(), 300);
+      }, 3000);
+    }
+
+    function showErrorState(err) {
+      skeletonContainer.classList.add('hidden');
+      errorBox.classList.remove('hidden');
+      let msg = "অর্ডারের তথ্য লোড করা যায়নি।";
+      let indexUrl = null;
+      if (err && err.message) {
+        const match = err.message.match(/(https:\/\/console\.firebase\.google\.com[^\s]+)/);
+        if (match) {
+          indexUrl = match[0];
+          msg = "এই কুয়েরিটির জন্য ফায়ারবেস ইনডেক্স (Firestore Index) প্রয়োজন। নিচে ক্লিক করে সরাসরি ইনডেক্স তৈরি করে নিন:";
+        }
+      }
+      errorMessage.textContent = msg;
+      if (indexUrl) {
+        indexBtnContainer.innerHTML = `
+          <a href="${indexUrl}" target="_blank" class="px-5 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-sm font-semibold transition-custom shadow-md inline-flex items-center space-x-2 mx-auto">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+            <span>ফায়ারবেস ইনডেক্স তৈরি করুন (Click Here)</span>
+          </a>
+        `;
+      } else {
+        indexBtnContainer.innerHTML = '';
+      }
+    }
+
+    retryBtn.addEventListener('click', () => {
+      initializeDashboard();
+    });
+  </script>
+</body>
+</html>
