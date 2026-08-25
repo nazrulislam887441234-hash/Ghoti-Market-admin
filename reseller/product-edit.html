@@ -1,0 +1,1715 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>পণ্য পরিচালনা ও সম্পাদনা — GHOTI MARKET ADMIN</title>
+  <style>
+    :root {
+      --primary: #0B0F19;
+      --primary-light: #1E293B;
+      --accent: #FF6B00;
+      --accent-hover: #E05E00;
+      --bg-gradient: linear-gradient(135deg, #F8FAFC 100%, #F1F5F9 100%);
+      --card-bg: #FFFFFF;
+      --text-main: #1E293B;
+      --text-muted: #64748B;
+      --border-color: #CBD5E1;
+      --error-color: #EF4444;
+      --success-color: #10B981;
+      --radius: 12px;
+      --shadow: 0 10px 25px -5px rgba(11, 15, 25, 0.05);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Inter, system-ui, -apple-system, sans-serif;
+    }
+
+    body {
+      background: var(--bg-gradient);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Auth Checking Overlay */
+    .auth-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: #FFFFFF;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+
+    .auth-spinner {
+      width: 45px;
+      height: 45px;
+      border: 3px solid var(--border-color);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin-bottom: 16px;
+    }
+
+    /* Header */
+    header {
+      background: var(--primary);
+      color: white;
+      padding: 16px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    .header-brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .header-brand img {
+      width: 40px;
+      height: 40px;
+      object-fit: contain;
+    }
+
+    .header-brand h1 {
+      font-size: 18px;
+      font-weight: 700;
+    }
+
+    .nav-links-menu {
+      display: flex;
+      gap: 16px;
+      align-items: center;
+    }
+
+    .nav-links-menu a {
+      color: #94A3B8;
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 600;
+      transition: color 0.2s;
+    }
+
+    .nav-links-menu a.active, .nav-links-menu a:hover {
+      color: #FFFFFF;
+    }
+
+    .admin-info {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .admin-email {
+      font-size: 13px;
+      color: #94A3B8;
+      background: var(--primary-light);
+      padding: 6px 12px;
+      border-radius: 8px;
+    }
+
+    .btn-logout {
+      background: rgba(239, 68, 68, 0.15);
+      color: #FCA5A5;
+      border: none;
+      padding: 8px 14px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s;
+    }
+
+    .btn-logout:hover {
+      background: rgba(239, 68, 68, 0.25);
+    }
+
+    /* Main Container */
+    .container {
+      max-width: 1200px;
+      width: 100%;
+      margin: 32px auto;
+      padding: 0 16px;
+      flex: 1;
+    }
+
+    .card {
+      background: var(--card-bg);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      border: 1px solid rgba(226, 232, 240, 0.8);
+      padding: 24px;
+    }
+
+    .page-title {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--primary);
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    /* Filters & Search Toolbar */
+    .toolbar {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .form-control {
+      width: 100%;
+      padding: 10px 14px;
+      font-size: 14px;
+      border: 1.5px solid var(--border-color);
+      border-radius: 10px;
+      outline: none;
+      transition: all 0.2s ease;
+      background-color: #FAFAFB;
+      color: var(--text-main);
+    }
+
+    .form-control:focus {
+      border-color: var(--accent);
+      background-color: #FFFFFF;
+      box-shadow: 0 0 0 3px rgba(255, 107, 0, 0.1);
+    }
+
+    /* Alerts */
+    .alert-box {
+      background-color: #FEF2F2;
+      border: 1px solid #FCA5A5;
+      color: var(--error-color);
+      padding: 12px 16px;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 20px;
+      display: none;
+    }
+
+    .success-box {
+      background-color: #ECFDF5;
+      border: 1px solid #A7F3D0;
+      color: #065F46;
+      padding: 12px 16px;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 20px;
+      display: none;
+    }
+
+    /* Table Styles */
+    .table-responsive {
+      width: 100%;
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 14px;
+    }
+
+    th, td {
+      padding: 14px 16px;
+      border-bottom: 1px solid #E2E8F0;
+    }
+
+    th {
+      background-color: #F8FAFC;
+      color: var(--primary);
+      font-weight: 650;
+    }
+
+    tr:hover td {
+      background-color: #F8FAFC;
+    }
+
+    .product-thumb {
+      width: 45px;
+      height: 45px;
+      border-radius: 8px;
+      object-fit: cover;
+      border: 1px solid var(--border-color);
+      background: #FFF;
+    }
+
+    .badge {
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      display: inline-block;
+    }
+
+    .badge-active {
+      background-color: #ECFDF5;
+      color: #065F46;
+    }
+
+    .badge-inactive {
+      background-color: #FEF2F2;
+      color: #991B1B;
+    }
+
+    .action-buttons {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .btn-icon {
+      background: #F1F5F9;
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      width: 34px;
+      height: 34px;
+      border-radius: 8px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+    }
+
+    .btn-icon:hover {
+      background: #E2E8F0;
+      border-color: #94A3B8;
+    }
+
+    .btn-icon.btn-delete:hover {
+      background: #FEE2E2;
+      color: var(--error-color);
+      border-color: #FCA5A5;
+    }
+
+    .btn-icon.btn-edit:hover {
+      background: #FEF3C7;
+      color: #D97706;
+      border-color: #FCD34D;
+    }
+
+    /* Pagination */
+    .pagination-container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 20px;
+      padding-top: 16px;
+      border-top: 1px solid #E2E8F0;
+    }
+
+    .pagination-info {
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    .pagination-buttons {
+      display: flex;
+      gap: 8px;
+    }
+
+    .btn-page {
+      background: #FFFFFF;
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      padding: 6px 14px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s;
+    }
+
+    .btn-page:hover:not(:disabled) {
+      background: #F1F5F9;
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    .btn-page:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    /* Empty & Loading States */
+    .state-container {
+      text-align: center;
+      padding: 40px 20px;
+      color: var(--text-muted);
+    }
+
+    .state-container svg {
+      margin-bottom: 12px;
+      stroke: var(--text-muted);
+    }
+
+    /* Modal Framework */
+    .modal-backdrop {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(11, 15, 25, 0.6);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 2000;
+      padding: 16px;
+    }
+
+    .modal-card {
+      background: var(--card-bg);
+      width: 100%;
+      max-width: 750px;
+      border-radius: var(--radius);
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      max-height: 90vh;
+    }
+
+    .modal-header {
+      padding: 16px 20px;
+      background: var(--primary);
+      color: white;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .modal-header h3 {
+      font-size: 16px;
+      font-weight: 600;
+    }
+
+    .modal-close {
+      background: none;
+      border: none;
+      color: white;
+      cursor: pointer;
+      font-size: 18px;
+    }
+
+    .modal-body {
+      padding: 24px;
+      overflow-y: auto;
+      flex: 1;
+    }
+
+    .modal-footer {
+      padding: 16px 20px;
+      background: #F8FAFC;
+      border-top: 1px solid var(--border-color);
+      display: flex;
+      justify-content: flex-end;
+      gap: 12px;
+    }
+
+    /* Form inside modal */
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    .form-group {
+      margin-bottom: 16px;
+    }
+
+    .form-group.full-width {
+      grid-column: span 2;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--primary);
+      margin-bottom: 6px;
+    }
+
+    textarea.form-control {
+      resize: vertical;
+      min-height: 90px;
+    }
+
+    /* Image Management inside Modal */
+    .image-upload-box {
+      border: 2px dashed var(--border-color);
+      border-radius: 10px;
+      padding: 16px;
+      text-align: center;
+      background: #FAFAFB;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .image-upload-box:hover {
+      border-color: var(--accent);
+      background: #FFF8F5;
+    }
+
+    .image-upload-box input {
+      display: none;
+    }
+
+    .image-preview-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .preview-card {
+      position: relative;
+      width: 70px;
+      height: 70px;
+      border-radius: 8px;
+      overflow: hidden;
+      border: 1px solid var(--border-color);
+      background: #FFF;
+    }
+
+    .preview-card img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .preview-remove {
+      position: absolute;
+      top: 3px;
+      right: 3px;
+      background: rgba(239, 68, 68, 0.9);
+      color: white;
+      border: none;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+    }
+
+    /* Advanced Variant Manager */
+    .variant-container {
+      background: #F8FAFC;
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      padding: 16px;
+      margin-bottom: 10px;
+    }
+
+    .variant-group-card {
+      background: #FFFFFF;
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      padding: 16px;
+      margin-bottom: 14px;
+      position: relative;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.02);
+    }
+
+    .variant-group-top {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .variant-options-list {
+      padding-left: 14px;
+      border-left: 2px solid #E2E8F0;
+      margin-top: 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .variant-option-row {
+      display: grid;
+      grid-template-columns: 2fr 1.5fr auto;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .btn-secondary {
+      background: #E2E8F0;
+      color: var(--primary);
+      border: none;
+      padding: 8px 14px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn-secondary:hover {
+      background: #CBD5E1;
+    }
+
+    .btn-danger-sm {
+      background: #FEE2E2;
+      color: var(--error-color);
+      border: none;
+      width: 34px;
+      height: 34px;
+      border-radius: 8px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+      flex-shrink: 0;
+    }
+
+    .btn-danger-sm:hover {
+      background: #FECACA;
+    }
+
+    /* Action Buttons Main */
+    .btn-submit {
+      padding: 12px 20px;
+      background-color: var(--accent);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-submit:hover:not(:disabled) {
+      background-color: var(--accent-hover);
+    }
+
+    .btn-submit:disabled {
+      opacity: 0.7;
+      cursor: not-allowed;
+    }
+
+    .btn-cancel {
+      padding: 12px 20px;
+      background-color: #E2E8F0;
+      color: var(--primary);
+      border: none;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-cancel:hover {
+      background-color: #CBD5E1;
+    }
+
+    .spinner {
+      width: 16px;
+      height: 16px;
+      border: 2px solid #ffffff;
+      border-top-color: transparent;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      display: none;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* JSON Pre formatting */
+    .json-pre {
+      background: #0B0F19;
+      color: #38BDF8;
+      padding: 16px;
+      border-radius: 8px;
+      font-family: monospace;
+      font-size: 12px;
+      white-space: pre-wrap;
+      word-break: break-all;
+      max-height: 350px;
+      overflow-y: auto;
+    }
+
+    /* Toggle Switch */
+    .toggle-container {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 6px;
+    }
+
+    @media (max-width: 768px) {
+      .toolbar {
+        grid-template-columns: 1fr;
+      }
+      .form-grid {
+        grid-template-columns: 1fr;
+      }
+      .form-group.full-width {
+        grid-column: span 1;
+      }
+      .variant-option-row {
+        grid-template-columns: 1fr;
+      }
+      .nav-links-menu, .admin-email {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Auth Loading/Checking Screen -->
+  <div id="authOverlay" class="auth-overlay">
+    <div class="auth-spinner"></div>
+    <div style="font-weight: 600; color: var(--primary); font-size: 14px;">অ্যাডমিন অথেন্টিকেশন যাচাই করা হচ্ছে...</div>
+  </div>
+
+  <!-- Header -->
+  <header>
+    <div class="header-brand">
+      <img src="https://reseller.ghotimarket.com/logo.png" alt="GHOTI MARKET লোগো" onerror="this.src='https://via.placeholder.com/40?text=GM'">
+      <h1>GHOTI MARKET ADMIN</h1>
+    </div>
+    
+    <div class="nav-links-menu">
+      <a href="admin-product-upload.html">পণ্য আপলোড</a>
+      <a href="admin-product-edit.html" class="active">পণ্য পরিচালনা</a>
+      <a href="admin-category.html">ক্যাটাগরি</a>
+    </div>
+
+    <div class="admin-info">
+      <span id="adminEmailDisplay" class="admin-email">support@ghotimarket.com</span>
+      <button id="logoutBtn" class="btn-logout">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+        লগআউট
+      </button>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <div class="container">
+    <div class="card">
+      <div class="page-title">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+        পণ্য তালিকা ও পরিচালনা
+      </div>
+
+      <div id="errorAlert" class="alert-box"></div>
+      <div id="successBox" class="success-box"></div>
+
+      <!-- Toolbar -->
+      <div class="toolbar">
+        <input type="text" id="searchInput" class="form-control" placeholder="পণ্য খুঁজুন (নাম বা স্লাগ দিয়ে)...">
+        <select id="categoryFilter" class="form-control">
+          <option value="">সব ক্যাটাগরি</option>
+        </select>
+        <select id="activeFilter" class="form-control">
+          <option value="">সব পণ্য (সক্রিয় ও নিষ্ক্রিয়)</option>
+          <option value="active">সক্রিয়</option>
+          <option value="inactive">নিষ্ক্রিয়</option>
+        </select>
+      </div>
+
+      <!-- Table Container -->
+      <div class="table-responsive">
+        <table>
+          <thead>
+            <tr>
+              <th>ছবি</th>
+              <th>পণ্যের নাম</th>
+              <th>মূল্য (টাকা)</th>
+              <th>হাই রেট</th>
+              <th>ক্যাটাগরি</th>
+              <th>স্লাগ</th>
+              <th>স্ট্যাটাস</th>
+              <th>তারিখ</th>
+              <th>অ্যাকশন</th>
+            </tr>
+          </thead>
+          <tbody id="productTableBody">
+            <!-- Dynamically populated -->
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Loading / Empty State -->
+      <div id="stateContainer" class="state-container" style="display: none;">
+        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+        <div id="stateText" style="font-weight: 600; font-size: 14px;">কোনো পণ্য পাওয়া যায়নি</div>
+      </div>
+
+      <!-- Pagination -->
+      <div class="pagination-container" id="paginationContainer">
+        <div class="pagination-info" id="paginationInfo">পৃষ্ঠা ১ এর ১ (মোট ০ টি পণ্য)</div>
+        <div class="pagination-buttons">
+          <button id="prevPageBtn" class="btn-page" disabled>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+            পূর্ববর্তী
+          </button>
+          <button id="nextPageBtn" class="btn-page" disabled>
+            পরবর্তী
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Edit Product Modal -->
+  <div id="editModal" class="modal-backdrop">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>পণ্যের তথ্য সম্পাদনা করুন</h3>
+        <button type="button" class="modal-close" id="editModalCloseBtn">&times;</button>
+      </div>
+      <div class="modal-body">
+        <form id="editProductForm" novalidate>
+          <div class="form-grid">
+            
+            <!-- Category Selection -->
+            <div class="form-group full-width">
+              <label for="editCategorySelect">ক্যাটাগরি নির্বাচন করুন *</label>
+              <select id="editCategorySelect" class="form-control" required>
+                <option value="">ক্যাটাগরি লোড হচ্ছে...</option>
+              </select>
+            </div>
+
+            <!-- Product Name -->
+            <div class="form-group full-width">
+              <label for="editNameInput">পণ্যের নাম *</label>
+              <input type="text" id="editNameInput" class="form-control" required>
+            </div>
+
+            <!-- Description -->
+            <div class="form-group full-width">
+              <label for="editDescInput">পণ্যের বিবরণ *</label>
+              <textarea id="editDescInput" class="form-control" required></textarea>
+            </div>
+
+            <!-- Price -->
+            <div class="form-group">
+              <label for="editPriceInput">মূল্য *</label>
+              <input type="number" id="editPriceInput" class="form-control" min="0" step="any" required>
+            </div>
+
+            <!-- Old Price -->
+            <div class="form-group">
+              <label for="editOldPriceInput">পুরোনো মূল্য (ঐচ্ছিক)</label>
+              <input type="number" id="editOldPriceInput" class="form-control" min="0" step="any">
+            </div>
+
+            <!-- High Rate -->
+            <div class="form-group">
+              <label for="editHighRateInput">হাই রেট *</label>
+              <input type="number" id="editHighRateInput" class="form-control" min="0" step="any" required>
+            </div>
+
+            <!-- Slug -->
+            <div class="form-group">
+              <label for="editSlugInput">স্লাগ *</label>
+              <input type="text" id="editSlugInput" class="form-control" required>
+            </div>
+
+            <!-- Active Status Toggle -->
+            <div class="form-group full-width">
+              <label>পণ্যের স্ট্যাটাস</label>
+              <div class="toggle-container">
+                <input type="checkbox" id="editActiveCheckbox" style="width: 18px; height: 18px; accent-color: var(--accent);">
+                <label for="editActiveCheckbox" style="margin-bottom: 0; font-weight: normal; cursor: pointer;">সক্রিয় পণ্য হিসেবে প্রকাশ করুন</label>
+              </div>
+            </div>
+
+            <!-- Product Images Management -->
+            <div class="form-group full-width">
+              <label>পণ্যের ছবিসমূহ</label>
+              <div class="image-upload-box" onclick="document.getElementById('editImageInput').click()">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#64748B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom: 6px;"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+                <div style="font-size: 13px; font-weight: 600; color: var(--text-main);">নতুন ছবি যোগ করতে ক্লিক করুন</div>
+                <input type="file" id="editImageInput" accept="image/jpeg, image/png, image/jpg, image/webp" multiple>
+              </div>
+              <div id="editImagePreviewGrid" class="image-preview-grid"></div>
+            </div>
+
+            <!-- Advanced Variants Section (Multiple Values & Prices) -->
+            <div class="form-group full-width">
+              <label>পণ্যের ভ্যারিয়েন্ট (ঐচ্ছিক)</label>
+              <div class="variant-container">
+                <div id="editVariantGroupContainer"></div>
+                <button type="button" id="editAddVariantGroupBtn" class="btn-secondary">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                  নতুন ভ্যারিয়েন্ট গ্রুপ যোগ করুন (যেমন: সাইজ বা কালার)
+                </button>
+              </div>
+            </div>
+
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" id="editModalCancelBtn" class="btn-cancel">বাতিল</button>
+        <button type="button" id="saveProductBtn" class="btn-submit">
+          <span id="saveBtnText">পরিবর্তন সংরক্ষণ করুন</span>
+          <div id="saveBtnSpinner" class="spinner"></div>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Delete Confirmation Modal -->
+  <div id="deleteModal" class="modal-backdrop">
+    <div class="modal-card" style="max-width: 420px;">
+      <div class="modal-header" style="background: var(--error-color);">
+        <h3>পণ্য মুছে ফেলার নিশ্চিতকরণ</h3>
+        <button type="button" class="modal-close" id="deleteModalCloseBtn">&times;</button>
+      </div>
+      <div class="modal-body" style="text-align: center; padding: 24px;">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#EF4444" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom: 12px;"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+        <div style="font-weight: 600; font-size: 15px; margin-bottom: 8px;">আপনি কি এই পণ্যটি মুছে ফেলতে চান?</div>
+        <div style="font-size: 13px; color: var(--text-muted);">এই কাজটি আর ফিরিয়ে আনা যাবে না।</div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" id="deleteCancelBtn" class="btn-cancel">বাতিল</button>
+        <button type="button" id="confirmDeleteBtn" class="btn-submit" style="background-color: var(--error-color);">মুছে ফেলুন</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- JSON View Modal -->
+  <div id="jsonModal" class="modal-backdrop">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>পণ্যের JSON বিবরণ</h3>
+        <button type="button" class="modal-close" id="jsonModalCloseBtn">&times;</button>
+      </div>
+      <div class="modal-body">
+        <pre id="jsonContent" class="json-pre"></pre>
+      </div>
+      <div class="modal-footer">
+        <button type="button" id="copyJsonBtn" class="btn-submit">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+          JSON কপি করুন
+        </button>
+        <button type="button" id="jsonCloseBtn" class="btn-cancel">বন্ধ করুন</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Firebase Modular SDK Scripts -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { 
+      getAuth, 
+      onAuthStateChanged, 
+      signOut 
+    } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+    import { 
+      getFirestore, 
+      collection, 
+      doc, 
+      getDocs, 
+      getDoc, 
+      updateDoc, 
+      deleteDoc, 
+      query, 
+      where, 
+      serverTimestamp 
+    } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+    // Firebase Configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyBUhNhYvuo_FTvZ5RZR6Gn-4hsUY21S0XE",
+      authDomain: "ghotimarket.firebaseapp.com",
+      databaseURL: "https://ghotimarket-default-rtdb.firebaseio.com",
+      projectId: "ghotimarket",
+      storageBucket: "ghotimarket.firebasestorage.app",
+      messagingSenderId: "481257644093",
+      appId: "1:481257644093:web:0dfc3699d6b3c86afeca54",
+      measurementId: "G-4SR8V2EKC1"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    // IMGBB API Key Constant
+    const IMGBB_API_KEY = "cbc05b6d6230ba1ed478e618ec5e7383";
+
+    // DOM Elements
+    const authOverlay = document.getElementById('authOverlay');
+    const adminEmailDisplay = document.getElementById('adminEmailDisplay');
+    const logoutBtn = document.getElementById('logoutBtn');
+    const productTableBody = document.getElementById('productTableBody');
+    const stateContainer = document.getElementById('stateContainer');
+    const stateText = document.getElementById('stateText');
+    const searchInput = document.getElementById('searchInput');
+    const categoryFilter = document.getElementById('categoryFilter');
+    const activeFilter = document.getElementById('activeFilter');
+    const errorAlert = document.getElementById('errorAlert');
+    const successBox = document.getElementById('successBox');
+
+    // Pagination Elements
+    const paginationContainer = document.getElementById('paginationContainer');
+    const paginationInfo = document.getElementById('paginationInfo');
+    const prevPageBtn = document.getElementById('prevPageBtn');
+    const nextPageBtn = document.getElementById('nextPageBtn');
+
+    // Edit Modal Elements
+    const editModal = document.getElementById('editModal');
+    const editModalCloseBtn = document.getElementById('editModalCloseBtn');
+    const editModalCancelBtn = document.getElementById('editModalCancelBtn');
+    const editProductForm = document.getElementById('editProductForm');
+    const editCategorySelect = document.getElementById('editCategorySelect');
+    const editNameInput = document.getElementById('editNameInput');
+    const editDescInput = document.getElementById('editDescInput');
+    const editPriceInput = document.getElementById('editPriceInput');
+    const editOldPriceInput = document.getElementById('editOldPriceInput');
+    const editHighRateInput = document.getElementById('editHighRateInput');
+    const editSlugInput = document.getElementById('editSlugInput');
+    const editActiveCheckbox = document.getElementById('editActiveCheckbox');
+    const editImageInput = document.getElementById('editImageInput');
+    const editImagePreviewGrid = document.getElementById('editImagePreviewGrid');
+    
+    // Variant Elements
+    const editVariantGroupContainer = document.getElementById('editVariantGroupContainer');
+    const editAddVariantGroupBtn = document.getElementById('editAddVariantGroupBtn');
+
+    const saveProductBtn = document.getElementById('saveProductBtn');
+    const saveBtnText = document.getElementById('saveBtnText');
+    const saveBtnSpinner = document.getElementById('saveBtnSpinner');
+
+    // Delete Modal Elements
+    const deleteModal = document.getElementById('deleteModal');
+    const deleteModalCloseBtn = document.getElementById('deleteModalCloseBtn');
+    const deleteCancelBtn = document.getElementById('deleteCancelBtn');
+    const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
+
+    // JSON Modal Elements
+    const jsonModal = document.getElementById('jsonModal');
+    const jsonModalCloseBtn = document.getElementById('jsonModalCloseBtn');
+    const jsonCloseBtn = document.getElementById('jsonCloseBtn');
+    const jsonContent = document.getElementById('jsonContent');
+    const copyJsonBtn = document.getElementById('copyJsonBtn');
+
+    let allProducts = [];
+    let categoriesMap = new Map();
+    let categoriesList = [];
+    let currentEditingId = null;
+    let currentDeletingId = null;
+    let currentImages = []; 
+    let newSelectedImageFiles = []; 
+
+    let currentPage = 1;
+    const itemsPerPage = 10;
+
+    // Helper: Show Error
+    function showError(message) {
+      successBox.style.display = 'none';
+      errorAlert.textContent = message;
+      errorAlert.style.display = 'block';
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // Helper: Hide Error
+    function hideError() {
+      errorAlert.textContent = '';
+      errorAlert.style.display = 'none';
+    }
+
+    // Helper: Show Success
+    function showSuccess(message) {
+      hideError();
+      successBox.textContent = message;
+      successBox.style.display = 'block';
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // 1. Authentication Check
+    onAuthStateChanged(auth, (user) => {
+      if (!user || user.email !== "support@ghotimarket.com") {
+        window.location.href = "login.html";
+      } else {
+        adminEmailDisplay.textContent = user.email;
+        authOverlay.style.display = 'none';
+        initializeData();
+      }
+    });
+
+    // Logout Handler
+    logoutBtn.addEventListener('click', async () => {
+      try {
+        await signOut(auth);
+        window.location.href = "login.html";
+      } catch (err) {
+        showError("লগআউট করতে সমস্যা হয়েছে।");
+      }
+    });
+
+    async function initializeData() {
+      await loadCategories();
+      await loadProducts();
+    }
+
+    async function loadCategories() {
+      try {
+        const snapshot = await getDocs(collection(db, "reseller_category"));
+        categoriesMap.clear();
+        categoriesList = [];
+
+        categoryFilter.innerHTML = '<option value="">সব ক্যাটাগরি</option>';
+        editCategorySelect.innerHTML = '<option value="">ক্যাটাগরি নির্বাচন করুন</option>';
+
+        snapshot.forEach((docSnap) => {
+          const cat = docSnap.data();
+          const catId = docSnap.id;
+          const catName = cat.categoryName || cat.name;
+          const catSlug = cat.categorySlug || cat.slug;
+
+          categoriesMap.set(catId, { categoryName: catName, categorySlug: catSlug });
+          categoriesList.push({ id: catId, categoryName: catName, categorySlug: catSlug });
+
+          const filterOption = document.createElement('option');
+          filterOption.value = catId;
+          filterOption.textContent = catName;
+          categoryFilter.appendChild(filterOption);
+
+          const editOption = document.createElement('option');
+          editOption.value = catId;
+          editOption.textContent = catName;
+          editCategorySelect.appendChild(editOption);
+        });
+      } catch (err) {
+        showError("ক্যাটাগরি লোড করতে ব্যর্থ হয়েছে।");
+      }
+    }
+
+    async function loadProducts() {
+      try {
+        stateContainer.style.display = 'block';
+        stateText.textContent = "তথ্য লোড হচ্ছে...";
+        productTableBody.innerHTML = '';
+
+        const snapshot = await getDocs(collection(db, "reseller_product"));
+        allProducts = [];
+
+        snapshot.forEach((docSnap) => {
+          allProducts.push({
+            id: docSnap.id,
+            ...docSnap.data()
+          });
+        });
+
+        filterAndRenderProducts();
+      } catch (err) {
+        stateContainer.style.display = 'block';
+        stateText.textContent = "পণ্য লোড করতে সমস্যা হয়েছে।";
+        showError("পণ্য ডেটাবেজ থেকে রিড করা যায়নি।");
+      }
+    }
+
+    function filterAndRenderProducts() {
+      const searchTerm = searchInput.value.toLowerCase().trim();
+      const selectedCat = categoryFilter.value;
+      const selectedActive = activeFilter.value;
+
+      const filtered = allProducts.filter(product => {
+        const nameMatch = (product.name || "").toLowerCase().includes(searchTerm);
+        const slugMatch = (product.slug || "").toLowerCase().includes(searchTerm);
+        const matchesSearch = nameMatch || slugMatch;
+
+        const matchesCat = !selectedCat || product.categoryId === selectedCat;
+
+        let matchesActive = true;
+        if (selectedActive === "active") {
+          matchesActive = product.active === true;
+        } else if (selectedActive === "inactive") {
+          matchesActive = product.active === false || product.active === undefined;
+        }
+
+        return matchesSearch && matchesCat && matchesActive;
+      });
+
+      renderTable(filtered);
+    }
+
+    function renderTable(products) {
+      productTableBody.innerHTML = '';
+      
+      const totalItems = products.length;
+      const totalPages = Math.ceil(totalItems / itemsPerPage) || 1;
+
+      if (currentPage > totalPages) {
+        currentPage = totalPages;
+      }
+      if (currentPage < 1) {
+        currentPage = 1;
+      }
+
+      const startIndex = (currentPage - 1) * itemsPerPage;
+      const endIndex = startIndex + itemsPerPage;
+      const paginatedItems = products.slice(startIndex, endIndex);
+
+      if (totalItems === 0) {
+        stateContainer.style.display = 'block';
+        stateText.textContent = "কোনো পণ্য পাওয়া যায়নি";
+        paginationContainer.style.display = 'none';
+        return;
+      }
+
+      stateContainer.style.display = 'none';
+      paginationContainer.style.display = 'flex';
+      paginationInfo.textContent = `পৃষ্ঠা ${currentPage} এর ${totalPages} (মোট ${totalItems} টি পণ্য)`;
+
+      prevPageBtn.disabled = currentPage === 1;
+      nextPageBtn.disabled = currentPage === totalPages;
+
+      paginatedItems.forEach(product => {
+        const tr = document.createElement('tr');
+        
+        const thumbUrl = (product.images && product.images.length > 0) ? product.images[0] : 'https://via.placeholder.com/45?text=GM';
+        const formattedDate = product.createdAt && product.createdAt.toDate ? product.createdAt.toDate().toLocaleDateString('bn-BD') : 'তারিখ নেই';
+        const isActive = product.active === true;
+
+        tr.innerHTML = `
+          <td><img src="${thumbUrl}" class="product-thumb" alt="Product"></td>
+          <td><div style="font-weight: 600; max-width: 200px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="${product.name}">${product.name || ''}</div></td>
+          <td>৳${product.price || 0}</td>
+          <td>৳${product.highRate || 0}</td>
+          <td>${product.categoryName || 'ক্যাটাগরি নেই'}</td>
+          <td><code style="font-size: 12px; color: var(--text-muted);">${product.slug || ''}</code></td>
+          <td><span class="badge ${isActive ? 'badge-active' : 'badge-inactive'}">${isActive ? 'সক্রিয়' : 'নিষ্ক্রিয়'}</span></td>
+          <td style="font-size: 13px; color: var(--text-muted);">${formattedDate}</td>
+          <td>
+            <div class="action-buttons">
+              <button class="btn-icon btn-edit" title="সম্পাদনা" data-id="${product.id}">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+              </button>
+              <button class="btn-icon btn-delete" title="মুছে ফেলুন" data-id="${product.id}">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+              </button>
+              <button class="btn-icon btn-json" title="JSON দেখুন" data-id="${product.id}">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg>
+              </button>
+            </div>
+          </td>
+        `;
+        productTableBody.appendChild(tr);
+      });
+
+      document.querySelectorAll('.btn-edit').forEach(btn => {
+        btn.addEventListener('click', () => openEditModal(btn.getAttribute('data-id')));
+      });
+      document.querySelectorAll('.btn-delete').forEach(btn => {
+        btn.addEventListener('click', () => openDeleteModal(btn.getAttribute('data-id')));
+      });
+      document.querySelectorAll('.btn-json').forEach(btn => {
+        btn.addEventListener('click', () => openJsonModal(btn.getAttribute('data-id')));
+      });
+    }
+
+    searchInput.addEventListener('input', () => {
+      currentPage = 1;
+      filterAndRenderProducts();
+    });
+
+    categoryFilter.addEventListener('change', () => {
+      currentPage = 1;
+      filterAndRenderProducts();
+    });
+
+    activeFilter.addEventListener('change', () => {
+      currentPage = 1;
+      filterAndRenderProducts();
+    });
+
+    prevPageBtn.addEventListener('click', () => {
+      if (currentPage > 1) {
+        currentPage--;
+        filterAndRenderProducts();
+      }
+    });
+
+    nextPageBtn.addEventListener('click', () => {
+      currentPage++;
+      filterAndRenderProducts();
+    });
+
+    // Open Edit Modal
+    async function openEditModal(productId) {
+      try {
+        const docRef = doc(db, "reseller_product", productId);
+        const docSnap = await getDoc(docRef);
+
+        if (!docSnap.exists()) {
+          showError("পণ্যটি ডেটাবেজে পাওয়া যায়নি।");
+          return;
+        }
+
+        const product = docSnap.data();
+        currentEditingId = productId;
+        currentImages = product.images ? [...product.images] : [];
+        newSelectedImageFiles = [];
+
+        editCategorySelect.value = product.categoryId || "";
+        editNameInput.value = product.name || "";
+        editDescInput.value = product.description || "";
+        editPriceInput.value = product.price || "";
+        editOldPriceInput.value = product.oldPrice !== undefined && product.oldPrice !== null ? product.oldPrice : "";
+        editHighRateInput.value = product.highRate || "";
+        editSlugInput.value = product.slug || "";
+        editActiveCheckbox.checked = product.active === true;
+
+        renderEditImagePreviews();
+
+        // Populate Advanced Variants
+        editVariantGroupContainer.innerHTML = '';
+        if (product.variants && Array.isArray(product.variants)) {
+          // Check if variants uses new grouped format or old flat format
+          if (product.variants.length > 0 && product.variants[0].options) {
+            // New Group Format
+            product.variants.forEach(group => {
+              addEditVariantGroupCard(group.name, group.options);
+            });
+          } else {
+            // Old Flat Format - convert to group format for backward compatibility
+            const groupedMap = new Map();
+            product.variants.forEach(v => {
+              const gName = v.name || "Default";
+              if (!groupedMap.has(gName)) {
+                groupedMap.set(gName, []);
+              }
+              groupedMap.get(gName).push({
+                value: v.value || "",
+                extraPrice: v.extraPrice !== undefined ? v.extraPrice : 0
+              });
+            });
+
+            groupedMap.forEach((options, gName) => {
+              addEditVariantGroupCard(gName, options);
+            });
+          }
+        }
+
+        hideError();
+        editModal.style.display = 'flex';
+      } catch (err) {
+        showError("পণ্যের তথ্য লোড করতে সমস্যা হয়েছে।");
+      }
+    }
+
+    // Image Management in Edit Modal
+    editImageInput.addEventListener('change', (e) => {
+      const files = Array.from(e.target.files);
+      files.forEach(file => {
+        if (['image/jpeg', 'image/jpg', 'image/png', 'image/webp'].includes(file.type)) {
+          newSelectedImageFiles.push(file);
+        }
+      });
+      renderEditImagePreviews();
+      editImageInput.value = '';
+    });
+
+    function renderEditImagePreviews() {
+      editImagePreviewGrid.innerHTML = '';
+      
+      currentImages.forEach((url, index) => {
+        const card = document.createElement('div');
+        card.className = 'preview-card';
+        card.innerHTML = `
+          <img src="${url}" alt="Image">
+          <button type="button" class="preview-remove" data-type="existing" data-index="${index}">&times;</button>
+        `;
+        card.querySelector('.preview-remove').addEventListener('click', () => {
+          currentImages.splice(index, 1);
+          renderEditImagePreviews();
+        });
+        editImagePreviewGrid.appendChild(card);
+      });
+
+      newSelectedImageFiles.forEach((file, index) => {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          const card = document.createElement('div');
+          card.className = 'preview-card';
+          card.innerHTML = `
+            <img src="${e.target.result}" alt="New">
+            <button type="button" class="preview-remove" data-type="new" data-index="${index}">&times;</button>
+          `;
+          card.querySelector('.preview-remove').addEventListener('click', () => {
+            newSelectedImageFiles.splice(index, 1);
+            renderEditImagePreviews();
+          });
+          editImagePreviewGrid.appendChild(card);
+        };
+        reader.readAsDataURL(file);
+      });
+    }
+
+    // Advanced Variant Group Management
+    editAddVariantGroupBtn.addEventListener('click', () => {
+      addEditVariantGroupCard();
+    });
+
+    function addEditVariantGroupCard(groupName = '', optionsList = []) {
+      const groupCard = document.createElement('div');
+      groupCard.className = 'variant-group-card';
+      
+      groupCard.innerHTML = `
+        <div class="variant-group-top">
+          <input type="text" class="form-control var-group-name" placeholder="ভ্যারিয়েন্ট নাম (যেমন: সাইজ বা কালার)" value="${groupName}">
+          <button type="button" class="btn-danger-sm btn-delete-group" title="গ্রুপ ডিলিট">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+          </button>
+        </div>
+        <div class="variant-options-list"></div>
+        <button type="button" class="btn-secondary btn-add-option" style="margin-top: 10px; font-size: 12px; padding: 6px 10px;">
+          + আরেকটি মান (Value) যোগ করুন
+        </button>
+      `;
+
+      const optionsListContainer = groupCard.querySelector('.variant-options-list');
+      const addOptionBtn = groupCard.querySelector('.btn-add-option');
+      const deleteGroupBtn = groupCard.querySelector('.btn-delete-group');
+
+      deleteGroupBtn.addEventListener('click', () => {
+        groupCard.remove();
+      });
+
+      const appendOptionRow = (val = '', price = 0) => {
+        const optionRow = document.createElement('div');
+        optionRow.className = 'variant-option-row';
+        optionRow.innerHTML = `
+          <input type="text" class="form-control opt-val" placeholder="মান (যেমন: লাল বা XL)" value="${val}">
+          <input type="number" class="form-control opt-price" placeholder="এক্সট্রা মূল্য" value="${price}" min="0">
+          <button type="button" class="btn-danger-sm btn-delete-option" title="মান ডিলিট">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+          </button>
+        `;
+        optionRow.querySelector('.btn-delete-option').addEventListener('click', () => {
+          optionRow.remove();
+        });
+        optionsListContainer.appendChild(optionRow);
+      };
+
+      addOptionBtn.addEventListener('click', () => {
+        appendOptionRow();
+      });
+
+      if (optionsList && optionsList.length > 0) {
+        optionsList.forEach(opt => {
+          appendOptionRow(opt.value, opt.extraPrice);
+        });
+      } else {
+        appendOptionRow();
+      }
+
+      editVariantGroupContainer.appendChild(groupCard);
+    }
+
+    // Bengali Slug Generator
+    function generateSlug(text) {
+      return text
+        .toLowerCase()
+        .trim()
+        .replace(/[\s\t\n]+/g, '-')
+        .replace(/[^\w\u0980-\u09FF-]+/g, '')
+        .replace(/--+/g, '-')
+        .replace(/^-+|-+$/g, '');
+    }
+
+    let isManualSlugEdited = false;
+    editNameInput.addEventListener('input', () => {
+      if (!isManualSlugEdited) {
+        editSlugInput.value = generateSlug(editNameInput.value);
+      }
+    });
+    editSlugInput.addEventListener('input', () => {
+      isManualSlugEdited = true;
+    });
+
+    // IMGBB Upload Helper
+    async function uploadImageToIMGBB(file) {
+      const formData = new FormData();
+      formData.append('image', file);
+
+      const response = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, {
+        method: 'POST',
+        body: formData
+      });
+
+      const data = await response.json();
+      if (data.success) {
+        return data.data.url;
+      } else {
+        throw new Error("IMGBB_UPLOAD_FAILED");
+      }
+    }
+
+    // Save Changes Handler
+    saveProductBtn.addEventListener('click', async () => {
+      hideError();
+
+      const categoryId = editCategorySelect.value;
+      const name = editNameInput.value.trim();
+      const description = editDescInput.value.trim();
+      const price = parseFloat(editPriceInput.value);
+      const oldPrice = editOldPriceInput.value ? parseFloat(editOldPriceInput.value) : null;
+      const highRate = parseFloat(editHighRateInput.value);
+      const slug = editSlugInput.value.trim();
+      const active = editActiveCheckbox.checked;
+
+      if (!categoryId) {
+        showError("ক্যাটাগরি নির্বাচন করুন।");
+        return;
+      }
+      if (!name) {
+        showError("পণ্যের নাম আবশ্যক।");
+        return;
+      }
+      if (!description) {
+        showError("পণ্যের বিবরণ আবশ্যক।");
+        return;
+      }
+      if (isNaN(price) || price < 0) {
+        showError("সঠিক মূল্য প্রদান করুন।");
+        return;
+      }
+      if (isNaN(highRate) || highRate < 0) {
+        showError("সঠিক হাই রেট প্রদান করুন।");
+        return;
+      }
+      if (!slug) {
+        showError("স্লাগ আবশ্যক।");
+        return;
+      }
+      if (currentImages.length === 0 && newSelectedImageFiles.length === 0) {
+        showError("অন্তত একটি ছবি থাকা আবশ্যক।");
+        return;
+      }
+
+      setLoadingState(true, "যাচাই করা হচ্ছে...");
+
+      try {
+        const slugQuery = query(collection(db, "reseller_product"), where("slug", "==", slug));
+        const slugSnap = await getDocs(slugQuery);
+        let isDuplicate = false;
+        slugSnap.forEach(docSnap => {
+          if (docSnap.id !== currentEditingId) {
+            isDuplicate = true;
+          }
+        });
+
+        if (isDuplicate) {
+          throw new Error("DUPLICATE_SLUG");
+        }
+
+        if (newSelectedImageFiles.length > 0) {
+          setLoadingState(true, "নতুন ছবি আপলোড হচ্ছে...");
+          for (let i = 0; i < newSelectedImageFiles.length; i++) {
+            const url = await uploadImageToIMGBB(newSelectedImageFiles[i]);
+            currentImages.push(url);
+          }
+        }
+
+        // Collect Advanced Variants Data
+        const variants = [];
+        const groupCards = editVariantGroupContainer.querySelectorAll('.variant-group-card');
+        groupCards.forEach(card => {
+          const vGroupName = card.querySelector('.var-group-name').value.trim();
+          if (vGroupName) {
+            const options = [];
+            const optionRows = card.querySelectorAll('.variant-option-row');
+            optionRows.forEach(optRow => {
+              const val = optRow.querySelector('.opt-val').value.trim();
+              const optPrice = parseFloat(optRow.querySelector('.opt-price').value) || 0;
+              if (val) {
+                options.push({ value: val, extraPrice: optPrice });
+              }
+            });
+            if (options.length > 0) {
+              variants.push({ name: vGroupName, options: options });
+            }
+          }
+        });
+
+        const categoryInfo = categoriesMap.get(categoryId);
+
+        setLoadingState(true, "সংরক্ষণ করা হচ্ছে...");
+        const docRef = doc(db, "reseller_product", currentEditingId);
+        await updateDoc(docRef, {
+          name: name,
+          description: description,
+          price: price,
+          oldPrice: oldPrice,
+          highRate: highRate,
+          slug: slug,
+          active: active,
+          images: currentImages,
+          variants: variants,
+          categoryId: categoryId,
+          categoryName: categoryInfo ? categoryInfo.categoryName : "",
+          categorySlug: categoryInfo ? categoryInfo.categorySlug : "",
+          updatedAt: serverTimestamp()
+        });
+
+        setLoadingState(false);
+        editModal.style.display = 'none';
+        showSuccess("পণ্যের তথ্য সফলভাবে আপডেট হয়েছে।");
+        await loadProducts();
+
+      } catch (err) {
+        setLoadingState(false);
+        let errMsg = "পরিবর্তন সংরক্ষণ করতে সমস্যা হয়েছে।";
+        if (err.message === "DUPLICATE_SLUG") {
+          errMsg = "এই স্লাগটি ইতোমধ্যে অন্য একটি পণ্যে ব্যবহার করা হয়েছে। অন্য স্লাগ দিন।";
+        } else if (err.message === "IMGBB_UPLOAD_FAILED") {
+          errMsg = "IMGBB-তে ছবি আপলোড করতে ব্যর্থ হয়েছে।";
+        }
+        showError(errMsg);
+      }
+    });
+
+    function setLoadingState(isLoading, text) {
+      saveProductBtn.disabled = isLoading;
+      if (isLoading) {
+        saveBtnText.textContent = text;
+        saveBtnSpinner.style.display = 'block';
+      } else {
+        saveBtnText.textContent = 'পরিবর্তন সংরক্ষণ করুন';
+        saveBtnSpinner.style.display = 'none';
+      }
+    }
+
+    editModalCloseBtn.addEventListener('click', () => editModal.style.display = 'none');
+    editModalCancelBtn.addEventListener('click', () => editModal.style.display = 'none');
+
+    // Delete Modal
+    function openDeleteModal(productId) {
+      currentDeletingId = productId;
+      deleteModal.style.display = 'flex';
+    }
+
+    deleteModalCloseBtn.addEventListener('click', () => deleteModal.style.display = 'none');
+    deleteCancelBtn.addEventListener('click', () => deleteModal.style.display = 'none');
+
+    confirmDeleteBtn.addEventListener('click', async () => {
+      if (!currentDeletingId) return;
+      try {
+        confirmDeleteBtn.disabled = true;
+        confirmDeleteBtn.textContent = "মুছে ফেলা হচ্ছে...";
+
+        await deleteDoc(doc(db, "reseller_product", currentDeletingId));
+
+        deleteModal.style.display = 'none';
+        confirmDeleteBtn.disabled = false;
+        confirmDeleteBtn.textContent = "মুছে ফেলুন";
+        showSuccess("পণ্যটি সফলভাবে মুছে ফেলা হয়েছে।");
+        await loadProducts();
+      } catch (err) {
+        confirmDeleteBtn.disabled = false;
+        confirmDeleteBtn.textContent = "মুছে ফেলুন";
+        deleteModal.style.display = 'none';
+        showError("পণ্য মুছতে সমস্যা হয়েছে।");
+      }
+    });
+
+    // View JSON Modal
+    async function openJsonModal(productId) {
+      try {
+        const docSnap = await getDoc(doc(db, "reseller_product", productId));
+        if (!docSnap.exists()) return;
+
+        const data = docSnap.data();
+        const safeJson = {
+          id: docSnap.id,
+          name: data.name || "",
+          description: data.description || "",
+          price: data.price || 0,
+          oldPrice: data.oldPrice || null,
+          highRate: data.highRate || 0,
+          images: data.images || [],
+          variants: data.variants || [],
+          slug: data.slug || "",
+          categoryId: data.categoryId || "",
+          categoryName: data.categoryName || "",
+          categorySlug: data.categorySlug || "",
+          active: data.active === true,
+          createdAt: data.createdAt && data.createdAt.toDate ? data.createdAt.toDate().toISOString() : null,
+          updatedAt: data.updatedAt && data.updatedAt.toDate ? data.updatedAt.toDate().toISOString() : null
+        };
+
+        jsonContent.textContent = JSON.stringify(safeJson, null, 2);
+        jsonModal.style.display = 'flex';
+      } catch (err) {
+        showError("JSON ডেটা লোড করতে ব্যর্থ হয়েছে।");
+      }
+    }
+
+    jsonModalCloseBtn.addEventListener('click', () => jsonModal.style.display = 'none');
+    jsonCloseBtn.addEventListener('click', () => jsonModal.style.display = 'none');
+
+    copyJsonBtn.addEventListener('click', () => {
+      const text = jsonContent.textContent;
+      navigator.clipboard.writeText(text).then(() => {
+        copyJsonBtn.textContent = "JSON কপি হয়েছে।";
+        setTimeout(() => {
+          copyJsonBtn.innerHTML = `
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+            JSON কপি করুন
+          `;
+        }, 2500);
+      }).catch(() => {
+        alert("কপি করতে সমস্যা হয়েছে।");
+      });
+    });
+
+    window.addEventListener('click', (e) => {
+      if (e.target === editModal) editModal.style.display = 'none';
+      if (e.target === deleteModal) deleteModal.style.display = 'none';
+      if (e.target === jsonModal) jsonModal.style.display = 'none';
+    });
+  </script>
+</body>
+</html>
