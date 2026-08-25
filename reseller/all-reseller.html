@@ -1,0 +1,1164 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>প্রো অ্যাডমিন প্যানেল — GHOTI RESELLER</title>
+  <style>
+    :root {
+      --primary: #0B0F19;
+      --primary-light: #1E293B;
+      --accent: #FF6B00;
+      --accent-hover: #E05E00;
+      --bg-gradient: linear-gradient(135deg, #FFF8F5 0%, #FFEDDF 100%);
+      --card-bg: #FFFFFF;
+      --text-main: #1E293B;
+      --text-muted: #64748B;
+      --border-color: #E2E8F0;
+      --error-color: #EF4444;
+      --success-color: #10B981;
+      --radius: 18px;
+      --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.05);
+      --shadow: 0 12px 30px -5px rgba(255, 107, 0, 0.1);
+      --shadow-lg: 0 20px 40px -10px rgba(11, 15, 25, 0.15);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Inter, system-ui, -apple-system, sans-serif;
+    }
+
+    body {
+      background-color: #F8FAFC;
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* কাস্টম স্ক্রলবার */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: #F1F5F9; }
+    ::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: #94A3B8; }
+
+    /* --- Login View --- */
+    #loginView {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 20px;
+      background: radial-gradient(circle at top right, #FFEDDF 0%, #FFF8F5 50%, #F1F5F9 100%);
+    }
+
+    .login-card {
+      width: 100%;
+      max-width: 400px;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(12px);
+      padding: 32px 24px;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-lg);
+      border: 1px solid rgba(255, 255, 255, 0.8);
+    }
+
+    .brand-header {
+      text-align: center;
+      margin-bottom: 28px;
+    }
+
+    .brand-header img {
+      width: 56px;
+      height: 56px;
+      object-fit: contain;
+      margin-bottom: 10px;
+    }
+
+    .brand-header h1 {
+      font-size: 20px;
+      color: var(--primary);
+      font-weight: 800;
+    }
+
+    .brand-header p {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    .form-group {
+      margin-bottom: 16px;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 6px;
+      color: var(--primary);
+    }
+
+    .form-control {
+      width: 100%;
+      padding: 12px 14px;
+      font-size: 14px;
+      border: 1.5px solid var(--border-color);
+      border-radius: 12px;
+      outline: none;
+      transition: all 0.25s ease;
+      background-color: #FAFAFB;
+      color: var(--text-main);
+    }
+
+    .form-control:focus {
+      border-color: var(--accent);
+      background-color: #FFFFFF;
+      box-shadow: 0 0 0 4px rgba(255, 107, 0, 0.1);
+    }
+
+    .btn-submit {
+      width: 100%;
+      padding: 13px;
+      background-color: var(--accent);
+      color: white;
+      border: none;
+      border-radius: 12px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      box-shadow: 0 4px 14px rgba(255, 107, 0, 0.25);
+    }
+
+    .btn-submit:hover {
+      background-color: var(--accent-hover);
+    }
+
+    /* --- Main Dashboard Layout --- */
+    #adminView {
+      display: none;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    .top-header {
+      height: 70px;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 20px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .header-brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .header-brand img {
+      width: 32px;
+      height: 32px;
+      object-fit: contain;
+    }
+
+    .header-brand span {
+      font-size: 16px;
+      font-weight: 800;
+      background: linear-gradient(90deg, var(--primary) 60%, var(--accent));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .admin-profile-info {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-muted);
+      display: none;
+    }
+    @media(min-width: 640px) { .admin-profile-info { display: block; } }
+
+    .btn-logout {
+      background: #FEF2F2;
+      border: 1px solid #FCA5A5;
+      padding: 6px 12px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--error-color);
+      transition: all 0.2s;
+    }
+    .btn-logout:hover { background-color: var(--error-color); color: #FFFFFF; }
+
+    .main-container {
+      max-width: 1400px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    /* Stat Cards */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 14px;
+    }
+
+    .stat-card {
+      background: var(--card-bg);
+      padding: 18px;
+      border-radius: var(--radius);
+      border: 1px solid var(--border-color);
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .stat-card::after {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; width: 4px; height: 100%;
+      background: var(--accent);
+    }
+
+    .stat-title {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .stat-value {
+      font-size: 22px;
+      font-weight: 800;
+      color: var(--primary);
+    }
+
+    /* Section Boxes */
+    .section-box {
+      background: var(--card-bg);
+      border-radius: var(--radius);
+      border: 1px solid var(--border-color);
+      box-shadow: var(--shadow-sm);
+      overflow: hidden;
+    }
+
+    .section-header {
+      padding: 18px 20px;
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      background: #FAFAFB;
+    }
+
+    .section-header h2 {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--primary);
+    }
+
+    .controls-row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: center;
+      width: 100%;
+      justify-content: space-between;
+    }
+
+    /* Resellers Grid */
+    .resellers-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 18px;
+      padding: 20px;
+    }
+
+    .reseller-pro-card {
+      background: #FFFFFF;
+      border: 1.5px solid var(--border-color);
+      border-radius: var(--radius);
+      padding: 18px;
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .reseller-pro-card:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow);
+      border-color: rgba(255, 107, 0, 0.4);
+    }
+
+    .card-top-info {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .avatar-name-group {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .reseller-big-avatar {
+      width: 44px;
+      height: 44px;
+      background: var(--bg-gradient);
+      border: 2px solid rgba(255, 107, 0, 0.3);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      color: var(--accent);
+      font-size: 18px;
+    }
+
+    .badge {
+      padding: 4px 10px;
+      border-radius: 30px;
+      font-size: 11px;
+      font-weight: 700;
+    }
+    .badge.active { background-color: #DCFCE7; color: #166534; }
+    .badge.inactive { background-color: #FEE2E2; color: #991B1B; }
+
+    .reseller-details-box {
+      background: #F8FAFC;
+      border-radius: 10px;
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      font-size: 13px;
+      border: 1px solid #EDF2F7;
+    }
+
+    .detail-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .detail-row span:first-child {
+      color: var(--text-muted);
+      font-weight: 500;
+      word-break: break-all;
+    }
+
+    .detail-row span:last-child {
+      color: var(--text-main);
+      font-weight: 600;
+      word-break: break-all;
+      text-align: right;
+    }
+
+    .card-action-bar {
+      display: flex;
+      gap: 8px;
+      margin-top: auto;
+    }
+
+    .btn-card-action {
+      flex: 1;
+      padding: 8px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      border: 1px solid var(--border-color);
+      background: #FFFFFF;
+      color: var(--text-main);
+      text-align: center;
+      transition: all 0.2s;
+    }
+
+    .btn-card-action:hover { background: #F1F5F9; }
+    .btn-card-action.primary { background: var(--primary); color: #FFFFFF; border-color: var(--primary); }
+    .btn-card-action.primary:hover { background: var(--primary-light); }
+    .btn-card-action.danger { background: #FEF2F2; color: var(--error-color); border-color: #FCA5A5; }
+    .btn-card-action.danger:hover { background: var(--error-color); color: #FFFFFF; }
+
+    /* Quick Forms Grid */
+    .quick-forms-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
+    }
+
+    .form-inner-pad { padding: 20px; }
+
+    /* Modals - Mobile Optimized */
+    .modal-backdrop {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(11, 15, 25, 0.7);
+      backdrop-filter: blur(6px);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+      padding: 12px;
+    }
+
+    .modal-content {
+      background: var(--card-bg);
+      width: 100%;
+      max-width: 600px;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-lg);
+      overflow: hidden;
+      max-height: 92vh;
+      display: flex;
+      flex-direction: column;
+      animation: modalSlide 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    @keyframes modalSlide {
+      from { transform: translateY(15px) scale(0.98); opacity: 0; }
+      to { transform: translateY(0) scale(1); opacity: 1; }
+    }
+
+    .modal-header {
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #FAFAFB;
+    }
+
+    .modal-header h3 { font-size: 16px; font-weight: 700; color: var(--primary); }
+
+    .modal-body {
+      padding: 20px;
+      overflow-y: auto;
+      flex-grow: 1;
+    }
+
+    .modal-footer {
+      padding: 14px 20px;
+      border-top: 1px solid var(--border-color);
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      background: #FAFAFB;
+    }
+
+    .btn-secondary {
+      background: #FFFFFF;
+      border: 1px solid var(--border-color);
+      padding: 10px 16px;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      color: var(--text-main);
+    }
+    .btn-secondary:hover { background: #F1F5F9; }
+
+    /* Firebase-like Dynamic Field Row Styling in Modal */
+    .dynamic-field-row {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      margin-bottom: 10px;
+      background: #F8FAFC;
+      padding: 10px;
+      border-radius: 10px;
+      border: 1px solid var(--border-color);
+    }
+
+    .field-type-badge {
+      font-size: 10px;
+      padding: 2px 6px;
+      background: #E2E8F0;
+      border-radius: 4px;
+      color: var(--text-muted);
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    /* Toast Notification */
+    #notification-container {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      z-index: 2000;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      max-width: 90vw;
+    }
+
+    .toast {
+      padding: 12px 18px;
+      border-radius: 10px;
+      color: #FFF;
+      font-size: 13px;
+      font-weight: 600;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+      animation: toastIn 0.3s ease;
+    }
+    .toast.success { background-color: var(--success-color); }
+    .toast.error { background-color: var(--error-color); }
+
+    @keyframes toastIn {
+      from { transform: translateX(100%); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ==================== LOGIN VIEW ==================== -->
+  <div id="loginView">
+    <div class="login-card">
+      <div class="brand-header">
+        <img src="https://reseller.ghotimarket.com/logo.png" alt="লোগো" onerror="this.src='https://via.placeholder.com/56?text=GR'">
+        <h1>GHOTI RESELLER</h1>
+        <p>প্রো অ্যাডমিন প্যানেলে নিরাপদ লগইন করুন</p>
+      </div>
+      <form id="adminLoginForm">
+        <div class="form-group">
+          <label>অ্যাডমিন ইমেইল</label>
+          <input type="email" id="adminEmail" class="form-control" placeholder="support@ghotimarket.com" required>
+        </div>
+        <div class="form-group">
+          <label>পাসওয়ার্ড</label>
+          <input type="password" id="adminPassword" class="form-control" placeholder="পাসওয়ার্ড দিন" required>
+        </div>
+        <button type="submit" class="btn-submit">লগইন করুন</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- ==================== MAIN DASHBOARD ==================== -->
+  <div id="adminView">
+    <header class="top-header">
+      <div class="header-brand">
+        <img src="https://reseller.ghotimarket.com/logo.png" alt="Logo" onerror="this.style.display='none'">
+        <span>GHOTI RESELLER PRO</span>
+      </div>
+      <div class="header-right">
+        <div class="admin-profile-info" id="adminEmailDisplay">support@ghotimarket.com</div>
+        <button id="logoutBtn" class="btn-logout">লগআউট</button>
+      </div>
+    </header>
+
+    <div class="main-container">
+      
+      <!-- 1. STATS OVERVIEW -->
+      <div class="stats-grid">
+        <div class="stat-card">
+          <span class="stat-title">মোট রিসেলার</span>
+          <span id="statTotalResellers" class="stat-value">০</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-title">সক্রিয়</span>
+          <span id="statActiveResellers" class="stat-value">০</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-title">নিষ্ক্রিয়</span>
+          <span id="statInactiveResellers" class="stat-value">০</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-title">ভেরিফাইড</span>
+          <span id="statVerifiedResellers" class="stat-value">০</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-title">মোট ব্যালেন্স</span>
+          <span id="statTotalBalance" class="stat-value">৳ ০</span>
+        </div>
+      </div>
+
+      <!-- 2. RESELLERS SECTION -->
+      <div class="section-box">
+        <div class="section-header">
+          <h2>রিসেলার তালিকা ও কার্ডসমূহ</h2>
+          <button id="exportCsvBtn" class="btn-secondary">📥 CSV এক্সপোর্ট</button>
+        </div>
+        
+        <div style="padding: 16px 20px; background: #FAFAFB; border-bottom: 1px solid var(--border-color);">
+          <div class="controls-row">
+            <input type="text" id="searchInput" class="form-control" placeholder="🔍 নাম, ইমেইল বা মোবাইল দিয়ে খুঁজুন..." style="max-width: 100%;">
+            <select id="filterSelect" class="form-control" style="width: 100%;">
+              <option value="all">সব ফিল্টার</option>
+              <option value="active">সক্রিয়</option>
+              <option value="inactive">নিষ্ক্রিয়</option>
+              <option value="verified">ভেরিফাইড</option>
+            </select>
+          </div>
+        </div>
+
+        <div id="resellersGridContainer" class="resellers-grid">
+          <div style="grid-column: 1/-1; text-align: center; padding: 30px; color: var(--text-muted);">রিসেলার ডেটা লোড হচ্ছে...</div>
+        </div>
+      </div>
+
+      <!-- 3. QUICK FORMS -->
+      <div class="quick-forms-grid">
+        <!-- Add Reseller Form -->
+        <div class="section-box">
+          <div class="section-header">
+            <h2>✨ নতুন রিসেলার যুক্ত করুন</h2>
+          </div>
+          <div class="form-inner-pad">
+            <form id="addNewResellerForm">
+              <div class="form-group">
+                <label>পূর্ণ নাম</label>
+                <input type="text" id="newResellerName" class="form-control" required placeholder="নাম দিন">
+              </div>
+              <div class="form-group">
+                <label>ইমেইল ঠিকানা</label>
+                <input type="email" id="newResellerEmail" class="form-control" required placeholder="email@domain.com">
+              </div>
+              <div class="form-group">
+                <label>মোবাইল নম্বর</label>
+                <input type="tel" id="newResellerPhone" class="form-control" required placeholder="01XXXXXXXXX">
+              </div>
+              <div class="form-group">
+                <label>WhatsApp নম্বর</label>
+                <input type="tel" id="newResellerWhatsApp" class="form-control" required placeholder="01XXXXXXXXX">
+              </div>
+              <div class="form-group">
+                <label>প্রাথমিক ব্যালেন্স (৳)</label>
+                <input type="number" id="newResellerBalance" class="form-control" value="0" min="0">
+              </div>
+              <button type="submit" class="btn-submit">রিসেলার তৈরি করুন</button>
+            </form>
+          </div>
+        </div>
+
+        <!-- Balance Management Form -->
+        <div class="section-box">
+          <div class="section-header">
+            <h2>💳 ব্যালেন্স ম্যানেজমেন্ট</h2>
+          </div>
+          <div class="form-inner-pad">
+            <form id="balanceManageForm">
+              <div class="form-group">
+                <label>রিসেলার নির্বাচন করুন</label>
+                <select id="balanceResellerSelect" class="form-control" required>
+                  <option value="">রিসেলার বাছুন...</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>বর্তমান ব্যালেন্স: <span id="currentBalanceDisplay" style="color: var(--accent); font-weight: 700;">৳ ০</span></label>
+              </div>
+              <div class="form-group">
+                <label>অ্যাকশনের ধরন</label>
+                <select id="balanceActionType" class="form-control" required>
+                  <option value="add">ব্যালেন্স যোগ করুন (+)</option>
+                  <option value="remove">ব্যালেন্স কেটে নিন (-)</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>টাকার পরিমাণ</label>
+                <input type="number" id="balanceAmountInput" class="form-control" min="1" required placeholder="পরিমাণ">
+              </div>
+              <div class="form-group">
+                <label>কারণ</label>
+                <input type="text" id="balanceReasonInput" class="form-control" required placeholder="যেমন: পেমেন্ট রিসিভড">
+              </div>
+              <button type="submit" class="btn-submit">ব্যালেন্স আপডেট করুন</button>
+            </form>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ==================== MODALS ==================== -->
+  <div id="appModalBackdrop" class="modal-backdrop">
+    <div class="modal-content" id="appModalContent"></div>
+  </div>
+
+  <!-- Toast Container -->
+  <div id="notification-container"></div>
+
+  <!-- ==================== FIREBASE & APP SCRIPT ==================== -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { 
+      getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged 
+    } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+    import { 
+      getFirestore, collection, getDocs, doc, setDoc, updateDoc, deleteDoc, 
+      serverTimestamp, addDoc 
+    } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyBUhNhYvuo_FTvZ5RZR6Gn-4hsUY21S0XE",
+      authDomain: "ghotimarket.firebaseapp.com",
+      databaseURL: "https://ghotimarket-default-rtdb.firebaseio.com",
+      projectId: "ghotimarket",
+      storageBucket: "ghotimarket.firebasestorage.app",
+      messagingSenderId: "481257644093",
+      appId: "1:481257644093:web:0dfc3699d6b3c86afeca54",
+      measurementId: "G-4SR8V2EKC1"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+    const ADMIN_EMAIL = "support@ghotimarket.com";
+
+    let cachedResellers = [];
+
+    function showNotification(message, type = 'success') {
+      const container = document.getElementById('notification-container');
+      const toast = document.createElement('div');
+      toast.className = `toast ${type}`;
+      toast.textContent = message;
+      container.appendChild(toast);
+      setTimeout(() => toast.remove(), 4000);
+    }
+
+    onAuthStateChanged(auth, async (user) => {
+      if (user && user.email === ADMIN_EMAIL) {
+        document.getElementById('loginView').style.display = 'none';
+        document.getElementById('adminView').style.display = 'flex';
+        document.getElementById('adminEmailDisplay').textContent = user.email;
+        loadAllData();
+      } else {
+        if (user) await signOut(auth);
+        document.getElementById('loginView').style.display = 'flex';
+        document.getElementById('adminView').style.display = 'none';
+      }
+    });
+
+    document.getElementById('adminLoginForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const email = document.getElementById('adminEmail').value.trim();
+      const password = document.getElementById('adminPassword').value;
+      if (email !== ADMIN_EMAIL) {
+        showNotification('এই ইমেইলটি অ্যাডমিন অ্যাকাউন্ট নয়।', 'error');
+        return;
+      }
+      try {
+        await signInWithEmailAndPassword(auth, email, password);
+        showNotification('লগইন সফল হয়েছে।', 'success');
+      } catch (err) {
+        showNotification('ইমেইল বা পাসওয়ার্ড ভুল।', 'error');
+      }
+    });
+
+    document.getElementById('logoutBtn').addEventListener('click', async () => {
+      await signOut(auth);
+      showNotification('লগআউট সম্পন্ন হয়েছে।', 'success');
+    });
+
+    async function loadAllData() {
+      try {
+        const snap = await getDocs(collection(db, 'reseller'));
+        cachedResellers = [];
+        let total = 0, active = 0, inactive = 0, verified = 0, totalBalance = 0;
+
+        snap.forEach(d => {
+          const data = d.data();
+          data.id = d.id;
+          cachedResellers.push(data);
+          total++;
+          if (data.active === true) active++; else inactive++;
+          if (data.verified === true) verified++;
+          totalBalance += Number(data.balance || 0);
+        });
+
+        document.getElementById('statTotalResellers').textContent = total.toLocaleString('bn-BD');
+        document.getElementById('statActiveResellers').textContent = active.toLocaleString('bn-BD');
+        document.getElementById('statInactiveResellers').textContent = inactive.toLocaleString('bn-BD');
+        document.getElementById('statVerifiedResellers').textContent = verified.toLocaleString('bn-BD');
+        document.getElementById('statTotalBalance').textContent = `৳ ${totalBalance.toLocaleString('bn-BD')}`;
+
+        renderResellersGrid(cachedResellers);
+        populateBalanceDropdown();
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    function renderResellersGrid(list) {
+      const container = document.getElementById('resellersGridContainer');
+      if (list.length === 0) {
+        container.innerHTML = `<div style="grid-column: 1/-1; text-align: center; padding: 30px; color: var(--text-muted);">কোনো রিসেলার পাওয়া যায়নি।</div>`;
+        return;
+      }
+
+      container.innerHTML = '';
+      list.forEach(res => {
+        const name = res.Name || 'নামহীন';
+        const email = res.Email || '-';
+        const phone = res.Phone || '-';
+        const balance = Number(res.balance || 0).toLocaleString('bn-BD');
+        const activeBadge = res.active !== false ? `<span class="badge active">সক্রিয়</span>` : `<span class="badge inactive">নিষ্ক্রিয়</span>`;
+        const initial = name.charAt(0).toUpperCase();
+
+        let customFieldsHtml = '';
+        const excludeKeys = ['id', 'uid', 'Name', 'Email', 'Phone', 'WhatsApp', 'balance', 'active', 'verified', 'createdAt'];
+        let extraCount = 0;
+        for (const [k, v] of Object.entries(res)) {
+          if (!excludeKeys.includes(k)) {
+            extraCount++;
+            if (extraCount <= 2) {
+              customFieldsHtml += `<div class="detail-row"><span>${k}:</span> <span>${v}</span></div>`;
+            }
+          }
+        }
+
+        const card = document.createElement('div');
+        card.className = 'reseller-pro-card';
+        card.innerHTML = `
+          <div class="card-top-info">
+            <div class="avatar-name-group">
+              <div class="reseller-big-avatar">${initial}</div>
+              <div>
+                <strong style="font-size:15px; color:var(--primary);">${name}</strong>
+                <div style="font-size:11px; color:var(--text-muted)">UID: ${res.uid || res.id}</div>
+              </div>
+            </div>
+            <div>${activeBadge}</div>
+          </div>
+
+          <div class="reseller-details-box">
+            <div class="detail-row"><span>ইমেইল:</span> <span>${email}</span></div>
+            <div class="detail-row"><span>মোবাইল:</span> <span>${phone}</span></div>
+            <div class="detail-row"><span>ব্যালেন্স:</span> <span style="color:var(--accent); font-weight:700;">৳ ${balance}</span></div>
+            ${customFieldsHtml}
+            ${extraCount > 2 ? `<div style="text-align:center; font-size:11px; color:var(--accent); font-weight:600;">+ আরও ${extraCount - 2}টি ফিল্ড</div>` : ''}
+          </div>
+
+          <div class="card-action-bar">
+            <button class="btn-card-action" onclick="window.viewAllFields('${res.id}')">সব দেখুন</button>
+            <button class="btn-card-action primary" onclick="window.editResellerModal('${res.id}')">এডিট / ফিল্ড</button>
+            <button class="btn-card-action danger" onclick="window.deleteResellerModal('${res.id}')">ডিলিট</button>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    // Search and Filter
+    document.getElementById('searchInput').addEventListener('input', applySearchFilter);
+    document.getElementById('filterSelect').addEventListener('change', applySearchFilter);
+
+    function applySearchFilter() {
+      const q = document.getElementById('searchInput').value.toLowerCase();
+      const f = document.getElementById('filterSelect').value;
+
+      const filtered = cachedResellers.filter(res => {
+        const name = (res.Name || '').toLowerCase();
+        const email = (res.Email || '').toLowerCase();
+        const phone = (res.Phone || '').toLowerCase();
+        const matchQ = name.includes(q) || email.includes(q) || phone.includes(q);
+
+        let matchF = true;
+        if (f === 'active') matchF = res.active !== false;
+        if (f === 'inactive') matchF = res.active === false;
+        if (f === 'verified') matchF = res.verified === true;
+
+        return matchQ && matchF;
+      });
+
+      renderResellersGrid(filtered);
+    }
+
+    // Modal System
+    const modalBackdrop = document.getElementById('appModalBackdrop');
+    const modalContent = document.getElementById('appModalContent');
+
+    function openModal(html) {
+      modalContent.innerHTML = html;
+      modalBackdrop.style.display = 'flex';
+    }
+    window.closeModal = function() { modalBackdrop.style.display = 'none'; }
+    modalBackdrop.addEventListener('click', (e) => { if (e.target === modalBackdrop) closeModal(); });
+
+    // View All Fields Modal
+    window.viewAllFields = function(id) {
+      const res = cachedResellers.find(r => r.id === id);
+      if (!res) return;
+
+      let html = '';
+      for (const [k, v] of Object.entries(res)) {
+        html += `<div class="detail-row" style="padding:8px 0; border-bottom:1px solid var(--border-color);"><strong>${k}:</strong> <span>${v?.toString() || '-'}</span></div>`;
+      }
+
+      openModal(`
+        <div class="modal-header">
+          <h3>সম্পূর্ণ তথ্য (${res.Name})</h3>
+          <button class="btn-secondary" onclick="window.closeModal()">✕</button>
+        </div>
+        <div class="modal-body">${html}</div>
+        <div class="modal-footer"><button class="btn-secondary" onclick="window.closeModal()">বন্ধ করুন</button></div>
+      `);
+    };
+
+    // Firebase-like Advanced Dynamic Field Edit & Management Modal
+    window.editResellerModal = function(id) {
+      const res = cachedResellers.find(r => r.id === id);
+      if (!res) return;
+
+      window.currentEditingReseller = JSON.parse(JSON.stringify(res));
+      renderEditModalFields();
+    };
+
+    window.renderEditModalFields = function() {
+      const res = window.currentEditingReseller;
+      let fieldsHtml = '';
+
+      for (const [k, v] of Object.entries(res)) {
+        if (k === 'id') continue;
+        const type = typeof v;
+        fieldsHtml += `
+          <div class="dynamic-field-row" id="row_${k}">
+            <div style="flex: 1;">
+              <div style="display:flex; align-items:center; gap:6px; margin-bottom:4px;">
+                <strong style="font-size:12px; color:var(--primary);">${k}</strong>
+                <span class="field-type-badge">${type}</span>
+              </div>
+              <input type="text" id="val_${k}" class="form-control" value="${v ?? ''}" style="padding:8px 10px;">
+            </div>
+            ${!['uid', 'Name', 'Email'].includes(k) ? `<button type="button" class="btn-card-action danger" style="flex:0; padding:8px 12px; margin-top:18px;" onclick="window.removeFieldKey('${k}')">ডিলিট</button>` : ''}
+          </div>
+        `;
+      }
+
+      openModal(`
+        <div class="modal-header">
+          <h3>ফিল্ড এডিট ও ম্যানেজ করুন (${res.Name})</h3>
+          <button class="btn-secondary" onclick="window.closeModal()">✕</button>
+        </div>
+        <div class="modal-body">
+          <form id="editResForm" onsubmit="event.preventDefault();">
+            <div style="margin-bottom:16px;">${fieldsHtml}</div>
+            
+            <hr style="margin:20px 0; border:1px dashed var(--border-color);">
+            <h4 style="font-size:14px; margin-bottom:10px; color:var(--accent);">➕ ফায়ারবেসের মতো নতুন ফিল্ড যোগ করুন</h4>
+            <div style="display:flex; flex-direction:column; gap:8px; background:#FAFAFB; padding:12px; border-radius:10px; border:1.5px solid var(--border-color);">
+              <input type="text" id="newFieldKey" class="form-control" placeholder="Field Key (যেমন: shopName, district)" style="padding:8px 10px;">
+              <select id="newFieldType" class="form-control" style="padding:8px 10px;">
+                <option value="string">String (টেক্সট)</option>
+                <option value="number">Number (সংখ্যা)</option>
+                <option value="boolean">Boolean (true/false)</option>
+              </select>
+              <input type="text" id="newFieldValue" class="form-control" placeholder="Field Value (মান)" style="padding:8px 10px;">
+              <button type="button" class="btn-secondary" style="background:var(--primary); color:#FFF; border:none; margin-top:4px;" onclick="window.addNewFieldKey()">+ লিস্টে যোগ করুন</button>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button class="btn-secondary" onclick="window.closeModal()">বাতিল</button>
+          <button class="btn-submit" style="width:auto; padding: 10px 20px;" onclick="window.saveResellerEdits('${res.id}')">সব সংরক্ষণ করুন</button>
+        </div>
+      `);
+    };
+
+    window.removeFieldKey = function(key) {
+      delete window.currentEditingReseller[key];
+      renderEditModalFields();
+      showNotification(`ফিল্ড (${key}) বাদ দেওয়া হয়েছে।`, 'success');
+    };
+
+    window.addNewFieldKey = function() {
+      const key = document.getElementById('newFieldKey').value.trim();
+      const type = document.getElementById('newFieldType').value;
+      const rawVal = document.getElementById('newFieldValue').value.trim();
+
+      if (!key) {
+        showNotification('ফিল্ডের নাম (Key) দিন।', 'error');
+        return;
+      }
+
+      let parsedVal = rawVal;
+      if (type === 'number') parsedVal = Number(rawVal);
+      if (type === 'boolean') parsedVal = rawVal === 'true';
+
+      window.currentEditingReseller[key] = parsedVal;
+      renderEditModalFields();
+      showNotification(`নতুন ফিল্ড (${key}) যুক্ত করা হয়েছে।`, 'success');
+    };
+
+    window.saveResellerEdits = async function(id) {
+      const res = window.currentEditingReseller;
+      const updated = {};
+
+      for (const k of Object.keys(res)) {
+        if (k === 'id') continue;
+        const el = document.getElementById(`val_${k}`);
+        if (el) {
+          const val = el.value.trim();
+          const origType = typeof res[k];
+          
+          if (origType === 'number') {
+            updated[k] = Number(val);
+          } else if (origType === 'boolean') {
+            updated[k] = val === 'true';
+          } else {
+            updated[k] = val;
+          }
+        } else {
+          updated[k] = res[k];
+        }
+      }
+
+      try {
+        await updateDoc(doc(db, 'reseller', id), updated);
+        showNotification('সফলভাবে আপডেট করা হয়েছে।', 'success');
+        closeModal();
+        loadAllData();
+      } catch (err) {
+        showNotification('আপডেট করতে সমস্যা হয়েছে।', 'error');
+      }
+    };
+
+    window.deleteResellerModal = function(id) {
+      const res = cachedResellers.find(r => r.id === id);
+      if (!res) return;
+
+      openModal(`
+        <div class="modal-header">
+          <h3 style="color:var(--error-color);">রিসেলার ডিলিট নিশ্চিতকরণ</h3>
+          <button class="btn-secondary" onclick="window.closeModal()">✕</button>
+        </div>
+        <div class="modal-body">
+          <p>আপনি কি নিশ্চিতভাবে <strong>${res.Name}</strong>-কে ডিলিট করতে চান?</p>
+        </div>
+        <div class="modal-footer">
+          <button class="btn-secondary" onclick="window.closeModal()">বাতিল</button>
+          <button class="btn-submit" style="background:var(--error-color); width:auto; padding: 10px 18px;" onclick="window.confirmDelete('${res.id}')">ডিলিট করুন</button>
+        </div>
+      `);
+    };
+
+    window.confirmDelete = async function(id) {
+      try {
+        await deleteDoc(doc(db, 'reseller', id));
+        showNotification('সফলভাবে ডিলিট করা হয়েছে।', 'success');
+        closeModal();
+        loadAllData();
+      } catch (err) {
+        showNotification('ডিলিট করা যায়নি।', 'error');
+      }
+    };
+
+    // Add New Reseller
+    document.getElementById('addNewResellerForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const Name = document.getElementById('newResellerName').value.trim();
+      const Email = document.getElementById('newResellerEmail').value.trim();
+      const Phone = document.getElementById('newResellerPhone').value.trim();
+      const WhatsApp = document.getElementById('newResellerWhatsApp').value.trim();
+      const balance = Number(document.getElementById('newResellerBalance').value || 0);
+
+      try {
+        const uid = 'res_' + Date.now();
+        await setDoc(doc(db, 'reseller', uid), {
+          uid, Name, Email, Phone, WhatsApp, balance, verified: true, active: true, createdAt: serverTimestamp()
+        });
+        showNotification('নতুন রিসেলার সফলভাবে তৈরি হয়েছে।', 'success');
+        document.getElementById('addNewResellerForm').reset();
+        loadAllData();
+      } catch (err) {
+        showNotification('তৈরি করা যায়নি।', 'error');
+      }
+    });
+
+    // Balance Management
+    function populateBalanceDropdown() {
+      const select = document.getElementById('balanceResellerSelect');
+      select.innerHTML = `<option value="">রিসেলার বাছুন...</option>`;
+      cachedResellers.forEach(r => {
+        select.innerHTML += `<option value="${r.id}">${r.Name} (${r.Phone})</option>`;
+      });
+    }
+
+    document.getElementById('balanceResellerSelect').addEventListener('change', (e) => {
+      const r = cachedResellers.find(res => res.id === e.target.value);
+      document.getElementById('currentBalanceDisplay').textContent = r ? `৳ ${Number(r.balance || 0).toLocaleString('bn-BD')}` : `৳ ০`;
+    });
+
+    document.getElementById('balanceManageForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const id = document.getElementById('balanceResellerSelect').value;
+      const type = document.getElementById('balanceActionType').value;
+      const amount = Number(document.getElementById('balanceAmountInput').value);
+      const reason = document.getElementById('balanceReasonInput').value.trim();
+
+      const r = cachedResellers.find(res => res.id === id);
+      if (!r) return;
+
+      const prev = Number(r.balance || 0);
+      const newBal = type === 'add' ? prev + amount : prev - amount;
+
+      if (newBal < 0) {
+        showNotification('ব্যালেন্স শূন্যের নিচে নামতে পারে না।', 'error');
+        return;
+      }
+
+      try {
+        await updateDoc(doc(db, 'reseller', id), { balance: newBal });
+        await addDoc(collection(db, 'balanceTransactions'), {
+          resellerId: id, type, amount, previousBalance: prev, newBalance: newBal, reason, adminEmail: auth.currentUser.email, createdAt: serverTimestamp()
+        });
+        showNotification('ব্যালেন্স সফলভাবে আপডেট হয়েছে।', 'success');
+        document.getElementById('balanceManageForm').reset();
+        loadAllData();
+      } catch (err) {
+        showNotification('ব্যালেন্স আপডেট করা যায়নি।', 'error');
+      }
+    });
+
+    // CSV Export
+    document.getElementById('exportCsvBtn').addEventListener('click', () => {
+      if (cachedResellers.length === 0) {
+        showNotification('এক্সপোর্ট করার মতো ডেটা নেই।', 'error');
+        return;
+      }
+      let csv = "data:text/csv;charset=utf-8,UID,Name,Email,Phone,WhatsApp,Balance\n";
+      cachedResellers.forEach(r => {
+        csv += `"${r.uid || r.id}","${r.Name || ''}","${r.Email || ''}","${r.Phone || ''}","${r.WhatsApp || ''}",${r.balance || 0}\n`;
+      });
+      const link = document.createElement("a");
+      link.setAttribute("href", encodeURI(csv));
+      link.setAttribute("download", "resellers_export.csv");
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      showNotification('CSV ডাউনলোড সফল হয়েছে।', 'success');
+    });
+  </script>
+</body>
+</html>
