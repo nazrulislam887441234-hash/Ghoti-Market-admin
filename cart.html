@@ -1,0 +1,1257 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>কার্ট ম্যানেজমেন্ট - GHOTI MARKET Admin</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#FF6B35',
+                        primaryHover: '#e55a24',
+                        darkText: '#111827',
+                        appBg: '#F8FAFC'
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-appBg font-sans text-darkText antialiased selection:bg-primary selection:text-white">
+
+    <!-- TOAST SYSTEM -->
+    <div id="toastContainer" class="fixed top-5 right-5 z-50 flex flex-col space-y-3 pointer-events-none"></div>
+
+    <!-- MAIN APP CONTAINER -->
+    <div class="min-h-screen flex">
+
+        <!-- ================= SIDEBAR ================= -->
+        <aside id="sidebar" class="fixed inset-y-0 left-0 z-40 w-64 bg-white border-r border-gray-200 transform -translate-x-full lg:translate-x-0 transition-transform duration-300 ease-in-out flex flex-col justify-between shadow-sm">
+            <div>
+                <!-- Brand Logo -->
+                <div class="h-20 flex items-center px-6 border-b border-gray-100">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-primary to-orange-400 flex items-center justify-center text-white shadow-md shadow-orange-500/20">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/></svg>
+                        </div>
+                        <div>
+                            <span class="text-lg font-bold tracking-tight text-gray-900 block leading-tight">GHOTI MARKET</span>
+                            <span class="text-xs text-gray-400 font-medium tracking-wider">ADMIN PANEL</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Navigation Links -->
+                <nav class="p-4 space-y-1.5 overflow-y-auto max-h-[calc(100vh-160px)]">
+                    <a href="#" class="flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium text-gray-600 hover:bg-gray-50 transition-colors">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/></svg>
+                        <span>Dashboard</span>
+                    </a>
+                    <a href="#" class="flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium text-gray-600 hover:bg-gray-50 transition-colors">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+                        <span>Buyers</span>
+                    </a>
+                    <a href="#" class="flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium bg-gradient-to-r from-primary to-orange-500 text-white shadow-md shadow-primary/20 transition-all">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+                        <span>Cart Management</span>
+                    </a>
+                    <a href="#" class="flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium text-gray-600 hover:bg-gray-50 transition-colors">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/></svg>
+                        <span>Orders</span>
+                    </a>
+                    <a href="#" class="flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium text-gray-600 hover:bg-gray-50 transition-colors">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
+                        <span>Products</span>
+                    </a>
+                    <a href="#" class="flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium text-gray-600 hover:bg-gray-50 transition-colors">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/></svg>
+                        <span>Categories</span>
+                    </a>
+                    <a href="#" class="flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium text-gray-600 hover:bg-gray-50 transition-colors">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/></svg>
+                        <span>Reviews</span>
+                    </a>
+                    <a href="#" class="flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium text-gray-600 hover:bg-gray-50 transition-colors">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+                        <span>Affiliates</span>
+                    </a>
+                    <a href="#" class="flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium text-gray-600 hover:bg-gray-50 transition-colors">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                        <span>Settings</span>
+                    </a>
+                </nav>
+            </div>
+
+            <!-- Logout Button -->
+            <div class="p-4 border-t border-gray-100">
+                <button id="sidebarLogout" class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium text-red-600 hover:bg-red-50 transition-colors">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+                    <span>লগআউট</span>
+                </button>
+            </div>
+        </aside>
+
+        <!-- Mobile Overlay -->
+        <div id="sidebarOverlay" class="fixed inset-0 bg-black/40 z-30 hidden lg:hidden"></div>
+
+        <!-- ================= MAIN CONTENT WRAPPER ================= -->
+        <div class="flex-1 flex flex-col lg:pl-64">
+
+            <!-- Sticky Top Header -->
+            <header class="sticky top-0 z-20 h-20 bg-white/90 backdrop-blur-md border-b border-gray-200 flex items-center justify-between px-4 sm:px-8">
+                <div class="flex items-center space-x-4">
+                    <button id="mobileMenuBtn" class="p-2 rounded-lg text-gray-600 hover:bg-gray-100 lg:hidden">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+                    </button>
+                    <div>
+                        <h1 class="text-xl font-bold text-gray-900 tracking-tight">Cart Management</h1>
+                        <p class="text-xs text-gray-500 hidden sm:block">কাস্টমারদের কার্টে থাকা পণ্য পরিচালনা করুন</p>
+                    </div>
+                </div>
+
+                <div class="flex items-center space-x-4">
+                    <!-- Notification -->
+                    <button class="relative p-2 rounded-xl text-gray-600 hover:bg-gray-100 transition-colors">
+                        <span class="absolute top-1.5 right-1.5 w-2 h-2 bg-primary rounded-full animate-pulse"></span>
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>
+                    </button>
+
+                    <div class="h-8 w-[1px] bg-gray-200"></div>
+
+                    <!-- Admin Profile -->
+                    <div class="relative">
+                        <button id="profileDropdownBtn" class="flex items-center space-x-3 p-1.5 rounded-xl hover:bg-gray-100 transition-colors">
+                            <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-primary to-orange-400 text-white flex items-center justify-center font-bold shadow-sm">
+                                GM
+                            </div>
+                            <div class="text-left hidden md:block">
+                                <span class="text-sm font-bold text-gray-900 block leading-tight">GHOTI MARKET ADMIN</span>
+                                <span class="text-xs text-gray-500 block">support@ghotimarket.com</span>
+                            </div>
+                            <svg class="w-4 h-4 text-gray-400 hidden md:block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                        </button>
+
+                        <div id="profileDropdownMenu" class="absolute right-0 mt-2 w-56 bg-white rounded-2xl shadow-xl border border-gray-100 py-2 hidden z-50">
+                            <div class="px-4 py-2 border-b border-gray-100 md:hidden">
+                                <p class="text-sm font-bold text-gray-900">GHOTI MARKET ADMIN</p>
+                                <p class="text-xs text-gray-500 truncate">support@ghotimarket.com</p>
+                            </div>
+                            <button id="headerLogout" class="w-full flex items-center space-x-2 px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 text-left">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+                                <span>লগআউট করুন</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Page Main Content Body -->
+            <main class="flex-1 p-4 sm:p-8 space-y-6 max-w-7xl w-full mx-auto">
+
+                <!-- ================= STATISTICS CARDS ================= -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-5">
+                    <!-- Total Cart Items -->
+                    <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-all group">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-xs font-semibold tracking-wide text-gray-400 uppercase">Total Items</p>
+                                <h3 id="statTotalItems" class="text-2xl font-extrabold text-gray-900 mt-1">0</h3>
+                            </div>
+                            <div class="w-12 h-12 rounded-2xl bg-orange-50 text-primary flex items-center justify-center group-hover:scale-110 transition-transform">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+                            </div>
+                        </div>
+                        <p class="mt-3 text-xs text-gray-500 font-medium">মোট কার্ট আইটেম</p>
+                    </div>
+
+                    <!-- Total Customers -->
+                    <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-all group">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-xs font-semibold tracking-wide text-gray-400 uppercase">Customers</p>
+                                <h3 id="statTotalCustomers" class="text-2xl font-extrabold text-gray-900 mt-1">0</h3>
+                            </div>
+                            <div class="w-12 h-12 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center group-hover:scale-110 transition-transform">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+                            </div>
+                        </div>
+                        <p class="mt-3 text-xs text-gray-500 font-medium">ইউনিক কাস্টমার (UID)</p>
+                    </div>
+
+                    <!-- Total Cart Value -->
+                    <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-all group">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-xs font-semibold tracking-wide text-gray-400 uppercase">Cart Value</p>
+                                <h3 id="statTotalValue" class="text-xl font-extrabold text-gray-900 mt-1">৳0</h3>
+                            </div>
+                            <div class="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center group-hover:scale-110 transition-transform">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                            </div>
+                        </div>
+                        <p class="mt-3 text-xs text-gray-500 font-medium">মোট কার্ট মূল্য</p>
+                    </div>
+
+                    <!-- Total Quantity -->
+                    <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-all group">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-xs font-semibold tracking-wide text-gray-400 uppercase">Total Qty</p>
+                                <h3 id="statTotalQuantity" class="text-2xl font-extrabold text-gray-900 mt-1">0</h3>
+                            </div>
+                            <div class="w-12 h-12 rounded-2xl bg-purple-50 text-purple-600 flex items-center justify-center group-hover:scale-110 transition-transform">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16l-4-4m0 0l4-4m-4 4h18m-6 4l4-4m0 0l-4-4m4 4H3"/></svg>
+                            </div>
+                        </div>
+                        <p class="mt-3 text-xs text-gray-500 font-medium">পণ্যের মোট পরিমাণ</p>
+                    </div>
+
+                    <!-- Affiliate Items -->
+                    <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-all group">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-xs font-semibold tracking-wide text-gray-400 uppercase">Affiliate</p>
+                                <h3 id="statAffiliateCount" class="text-2xl font-extrabold text-gray-900 mt-1">0</h3>
+                            </div>
+                            <div class="w-12 h-12 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center group-hover:scale-110 transition-transform">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/></svg>
+                            </div>
+                        </div>
+                        <p class="mt-3 text-xs text-gray-500 font-medium">অ্যাফিলিয়েট কার্ট আইটেম</p>
+                    </div>
+                </div>
+
+                <!-- ================= SEARCH, FILTER & TOOLBAR ================= -->
+                <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 space-y-4">
+                    <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+                        <!-- Search Box -->
+                        <div class="relative flex-1">
+                            <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-400">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                            </span>
+                            <input type="text" id="searchInput" placeholder="পণ্য, নাম, ইমেইল, ফোন, UID, Shop দিয়ে খুঁজুন..." class="w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all">
+                        </div>
+
+                        <!-- Bulk Actions & Items per page -->
+                        <div class="flex items-center space-x-3">
+                            <button id="bulkDeleteBtn" disabled class="px-4 py-2.5 bg-red-50 text-red-600 rounded-xl font-medium text-sm hover:bg-red-100 transition-colors disabled:opacity-40 disabled:cursor-not-allowed flex items-center space-x-2">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                                <span>ডিলিট সিলেক্টেড (<span id="selectedCount">0</span>)</span>
+                            </button>
+
+                            <select id="itemsPerPage" class="px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm font-medium text-gray-700 focus:outline-none focus:ring-2 focus:ring-primary/20">
+                                <option value="10">১০ প্রতি পাতা</option>
+                                <option value="20">২০ প্রতি পাতা</option>
+                                <option value="50">৫০ প্রতি পাতা</option>
+                                <option value="100">১০০ প্রতি পাতা</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Filter Dropdowns Row -->
+                    <div class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-5 gap-3 pt-2 border-t border-gray-100">
+                        <select id="filterAffiliate" class="px-3 py-2 bg-gray-50 border border-gray-200 rounded-xl text-xs font-medium text-gray-700">
+                            <option value="all">অ্যাফিলিয়েট: সব</option>
+                            <option value="on">অ্যাফিলিয়েট: অন</option>
+                            <option value="off">অ্যাফিলিয়েট: অফ</option>
+                        </select>
+
+                        <select id="filterPrice" class="px-3 py-2 bg-gray-50 border border-gray-200 rounded-xl text-xs font-medium text-gray-700">
+                            <option value="all">মূল্য: সব</option>
+                            <option value="under500">৳৫০০ এর নিচে</option>
+                            <option value="500-1000">৳৫০০ - ৳১০০০</option>
+                            <option value="1000-5000">৳১০০০ - ৳৫০০০</option>
+                            <option value="above5000">৳৫০০০ এর বেশি</option>
+                        </select>
+
+                        <select id="filterBuyer" class="px-3 py-2 bg-gray-50 border border-gray-200 rounded-xl text-xs font-medium text-gray-700">
+                            <option value="all">বায়ার স্ট্যাটাস: সব</option>
+                            <option value="found">বায়ার পাওয়া গেছে</option>
+                            <option value="notfound">বায়ার পাওয়া যায়নি</option>
+                        </select>
+
+                        <select id="filterDate" class="px-3 py-2 bg-gray-50 border border-gray-200 rounded-xl text-xs font-medium text-gray-700">
+                            <option value="all">তারিখ: সব</option>
+                            <option value="today">আজ</option>
+                            <option value="last7">শেষ ৭ দিন</option>
+                            <option value="last30">শেষ ৩০ দিন</option>
+                        </select>
+
+                        <select id="sortOption" class="px-3 py-2 bg-gray-50 border border-gray-200 rounded-xl text-xs font-medium text-gray-700">
+                            <option value="newest">সর্টিং: নতুন আগে</option>
+                            <option value="oldest">সর্টিং: পুরাতন আগে</option>
+                            <option value="priceHigh">মূল্য: বেশি থেকে কম</option>
+                            <option value="priceLow">মূল্য: কম থেকে বেশি</option>
+                            <option value="qtyHigh">পরিমাণ: বেশি থেকে কম</option>
+                            <option value="qtyLow">পরিমাণ: কম থেকে বেশি</option>
+                            <option value="nameAZ">নাম: A -> Z</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- ================= MAIN TABLE / CONTENT CONTAINER ================= -->
+                <div class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+                    
+                    <!-- Error State -->
+                    <div id="errorState" class="hidden p-12 text-center">
+                        <div class="w-16 h-16 bg-red-50 text-red-500 rounded-2xl mx-auto flex items-center justify-center mb-4">
+                            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+                        </div>
+                        <h3 class="text-base font-bold text-gray-900 mb-1">ডাটা লোড করতে সমস্যা হয়েছে।</h3>
+                        <p class="text-sm text-gray-500 mb-4">অনুগ্রহ করে ইন্টারনেট কানেকশন চেক করুন।</p>
+                        <button id="retryBtn" class="px-4 py-2 bg-primary text-white text-sm font-medium rounded-xl hover:bg-primaryHover transition-colors shadow-sm">আবার চেষ্টা করুন</button>
+                    </div>
+
+                    <!-- Skeleton Loader -->
+                    <div id="skeletonLoader" class="divide-y divide-gray-100 p-6 animate-pulse space-y-4">
+                        <div class="h-10 bg-gray-100 rounded-xl w-full"></div>
+                        <div class="h-12 bg-gray-100 rounded-xl w-full"></div>
+                        <div class="h-12 bg-gray-100 rounded-xl w-full"></div>
+                        <div class="h-12 bg-gray-100 rounded-xl w-full"></div>
+                    </div>
+
+                    <!-- Empty State -->
+                    <div id="emptyState" class="hidden p-16 text-center">
+                        <div class="w-16 h-16 bg-orange-50 text-primary rounded-2xl mx-auto flex items-center justify-center mb-4">
+                            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+                        </div>
+                        <h3 class="text-base font-bold text-gray-900 mb-1">কোনো কার্ট আইটেম পাওয়া যায়নি</h3>
+                        <p class="text-sm text-gray-500">বর্তমানে কোনো বায়্যারের কার্টে কোনো পণ্য পাওয়া যাচ্ছে না।</p>
+                    </div>
+
+                    <!-- Desktop Table View -->
+                    <div class="overflow-x-auto hidden md:block">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50/70">
+                                <tr>
+                                    <th class="px-4 py-4 text-left"><input type="checkbox" id="selectAllCheckbox" class="rounded border-gray-300 text-primary focus:ring-primary"></th>
+                                    <th class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Product</th>
+                                    <th class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Buyer</th>
+                                    <th class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Email</th>
+                                    <th class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">UID</th>
+                                    <th class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Quantity</th>
+                                    <th class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Price</th>
+                                    <th class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Discount</th>
+                                    <th class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Affiliate</th>
+                                    <th class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Seller / Shop</th>
+                                    <th class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Added Date</th>
+                                    <th class="px-6 py-4 text-right text-xs font-semibold text-gray-500 uppercase tracking-wider">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="cartTableBody" class="bg-white divide-y divide-gray-100"></tbody>
+                        </table>
+                    </div>
+
+                    <!-- Mobile Card View -->
+                    <div id="cartCardContainer" class="grid grid-cols-1 gap-4 p-4 md:hidden"></div>
+
+                    <!-- Pagination Footer -->
+                    <div class="px-6 py-4 border-t border-gray-100 flex flex-col sm:flex-row items-center justify-between gap-4">
+                        <div id="paginationInfo" class="text-sm text-gray-500">Showing 0 to 0 of 0 items</div>
+                        <div id="paginationControls" class="flex items-center space-x-1"></div>
+                    </div>
+
+                </div>
+
+            </main>
+        </div>
+    </div>
+
+    <!-- ================= VIEW FULL INFORMATION MODAL ================= -->
+    <div id="detailsModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-3xl max-w-2xl w-full p-6 shadow-2xl transform transition-all scale-95 opacity-0 duration-300 max-h-[90vh] flex flex-col" id="detailsModalContent">
+            <div class="flex items-center justify-between pb-4 border-b border-gray-100">
+                <h3 class="text-lg font-bold text-gray-900">Cart & Buyer Full Information</h3>
+                <button onclick="closeDetailsModal()" class="w-8 h-8 rounded-full bg-gray-100 text-gray-500 flex items-center justify-center hover:bg-gray-200 transition-colors">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+            </div>
+            <div id="detailsModalBody" class="py-6 space-y-6 overflow-y-auto flex-1 pr-2"></div>
+            <div class="pt-4 border-t border-gray-100 flex justify-end">
+                <button onclick="closeDetailsModal()" class="px-5 py-2.5 bg-gray-100 text-gray-700 rounded-xl font-medium text-sm hover:bg-gray-200 transition-colors">বন্ধ করুন</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= EDIT CART MODAL ================= -->
+    <div id="editModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl transform transition-all scale-95 opacity-0 duration-300 max-h-[90vh] flex flex-col" id="editModalContent">
+            <div class="flex items-center justify-between pb-4 border-b border-gray-100">
+                <h3 class="text-lg font-bold text-gray-900">কার্ট তথ্য সম্পাদনা</h3>
+                <button onclick="closeEditModal()" class="w-8 h-8 rounded-full bg-gray-100 text-gray-500 flex items-center justify-center hover:bg-gray-200 transition-colors">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+            </div>
+            <form id="editForm" class="space-y-4 pt-4 overflow-y-auto flex-1 pr-2">
+                <input type="hidden" id="editDocId">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-600 uppercase mb-1">Product Name</label>
+                        <input type="text" id="editName" required class="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-primary/20">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-600 uppercase mb-1">Shop Name</label>
+                        <input type="text" id="editShopName" class="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-primary/20">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-600 uppercase mb-1">Quantity</label>
+                        <input type="number" id="editQuantity" min="1" required class="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-primary/20">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-600 uppercase mb-1">Price (৳)</label>
+                        <input type="number" id="editPrice" step="any" required class="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-primary/20">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-600 uppercase mb-1">Base Price (৳)</label>
+                        <input type="number" id="editBasePrice" step="any" class="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-primary/20">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-600 uppercase mb-1">Extra Price (৳)</label>
+                        <input type="number" id="editExtraPrice" step="any" class="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-primary/20">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-600 uppercase mb-1">Discount (%)</label>
+                        <input type="number" id="editDiscount" step="any" class="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-primary/20">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-600 uppercase mb-1">Affiliate</label>
+                        <select id="editAffiliate" class="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-primary/20">
+                            <option value="on">On</option>
+                            <option value="off">Off</option>
+                        </select>
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-gray-600 uppercase mb-1">Selected Variants (JSON format or comma separated)</label>
+                    <input type="text" id="editVariants" placeholder='{"Color": "Red", "Size": "XL"}' class="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-primary/20 font-mono">
+                </div>
+                <div class="flex items-center justify-end space-x-3 pt-4 border-t border-gray-100">
+                    <button type="button" onclick="closeEditModal()" class="px-5 py-2.5 bg-gray-100 text-gray-700 rounded-xl font-medium text-sm hover:bg-gray-200 transition-colors">বাতিল</button>
+                    <button type="submit" id="saveEditBtn" class="px-5 py-2.5 bg-primary text-white rounded-xl font-medium text-sm hover:bg-primaryHover transition-colors shadow-sm flex items-center space-x-2">
+                        <span>পরিবর্তন সংরক্ষণ করুন</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ================= DELETE CONFIRMATION MODAL ================= -->
+    <div id="deleteModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-3xl max-w-sm w-full p-6 shadow-2xl text-center transform transition-all scale-95 opacity-0 duration-300" id="deleteModalContent">
+            <div class="w-14 h-14 bg-red-50 text-red-500 rounded-2xl mx-auto flex items-center justify-center mb-4">
+                <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+            </div>
+            <h3 class="text-lg font-bold text-gray-900 mb-1" id="deleteModalTitle">কার্ট আইটেম ডিলিট করবেন?</h3>
+            <p class="text-xs text-gray-500 mb-6" id="deleteModalDesc">এই পণ্যটি নির্দিষ্ট বায়্যারের কার্ট থেকে স্থায়ীভাবে সরানো হবে।</p>
+            <input type="hidden" id="deleteTargetId">
+            <input type="hidden" id="isBulkDelete" value="false">
+            <div class="flex items-center space-x-3">
+                <button type="button" onclick="closeDeleteModal()" class="flex-1 px-4 py-2.5 bg-gray-100 text-gray-700 rounded-xl font-medium text-sm hover:bg-gray-200 transition-colors">বাতিল</button>
+                <button type="button" id="confirmDeleteBtn" class="flex-1 px-4 py-2.5 bg-red-600 text-white rounded-xl font-medium text-sm hover:bg-red-700 transition-colors shadow-sm">ডিলিট করুন</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= IMAGE PREVIEW MODAL ================= -->
+    <div id="imageModal" class="fixed inset-0 bg-black/80 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden" onclick="closeImageModal()">
+        <div class="relative max-w-3xl w-full max-h-[90vh] flex items-center justify-center">
+            <button onclick="closeImageModal()" class="absolute -top-10 right-0 w-8 h-8 rounded-full bg-white/20 text-white flex items-center justify-center hover:bg-white/40 transition-colors">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+            </button>
+            <img id="previewModalImg" src="" alt="Preview" class="max-w-full max-h-[85vh] rounded-2xl shadow-2xl object-contain">
+        </div>
+    </div>
+
+    <!-- ================= FIREBASE MODULE SCRIPT ================= -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getFirestore, collection, getDocs, doc, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        // FIREBASE CONFIG
+        const firebaseConfig = {
+            apiKey: "AIzaSyBUhNhYvuo_FTvZ5RZR6Gn-4hsUY21S0XE",
+            authDomain: "ghotimarket.firebaseapp.com",
+            databaseURL: "https://ghotimarket-default-rtdb.firebaseio.com",
+            projectId: "ghotimarket",
+            storageBucket: "ghotimarket.firebasestorage.app",
+            messagingSenderId: "481257644093",
+            appId: "1:481257644093:web:0dfc3699d6b3c86afeca54",
+            measurementId: "G-4SR8V2EKC1"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        // STATE
+        let allCarts = [];
+        let filteredCarts = [];
+        let buyerCache = {}; // uid -> buyer document data
+        let selectedCartIds = new Set();
+        let currentPage = 1;
+        let rowsPerPage = 10;
+
+        // TOAST SYSTEM
+        window.showToast = function(message, type = 'success') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            
+            let iconSvg = `<svg class="w-5 h-5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>`;
+            if (type === 'error') {
+                iconSvg = `<svg class="w-5 h-5 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>`;
+            } else if (type === 'warning') {
+                iconSvg = `<svg class="w-5 h-5 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>`;
+            }
+
+            toast.className = `flex items-center space-x-3 px-4 py-3 bg-gray-900 text-white rounded-2xl shadow-xl text-sm font-medium transform transition-all translate-y-2 opacity-0 duration-300 pointer-events-auto`;
+            toast.innerHTML = `${iconSvg}<span>${message}</span>`;
+            
+            container.appendChild(toast);
+            setTimeout(() => { toast.classList.remove('translate-y-2', 'opacity-0'); }, 10);
+
+            setTimeout(() => {
+                toast.classList.add('translate-y-2', 'opacity-0');
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        // COPY FUNCTION
+        window.copyToClipboard = function(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                showToast('কপি হয়েছে');
+            }).catch(() => {
+                showToast('কপি করা যায়নি', 'error');
+            });
+        }
+
+        // AUTHENTICATION STATE
+        onAuthStateChanged(auth, async (user) => {
+            if (!user || user.email !== 'support@ghotimarket.com') {
+                window.location.href = 'login.html';
+                return;
+            }
+            loadCartData();
+        });
+
+        // CART LOADING & BUYER LOOKUP
+        async function loadCartData() {
+            const skeleton = document.getElementById('skeletonLoader');
+            const errorState = document.getElementById('errorState');
+            const emptyState = document.getElementById('emptyState');
+            
+            skeleton.classList.remove('hidden');
+            errorState.classList.add('hidden');
+            emptyState.classList.add('hidden');
+
+            try {
+                // 1. Load Carts
+                const cartsSnap = await getDocs(collection(db, 'carts'));
+                allCarts = [];
+                cartsSnap.forEach((docSnap) => {
+                    const data = docSnap.data();
+                    const docId = docSnap.id;
+                    allCarts.push({ docId, id: docId, ...data });
+                });
+
+                // 2. Load Buyers for Caching (Performance Optimized)
+                const buyersSnap = await getDocs(collection(db, 'buyers'));
+                buyersSnap.forEach((docSnap) => {
+                    const buyerData = docSnap.data();
+                    const bUid = buyerData.uid || docSnap.id;
+                    buyerCache[bUid] = { buyerDocId: docSnap.id, ...buyerData };
+                });
+
+                skeleton.classList.add('hidden');
+                updateStatistics();
+                applySearchFilterAndSort();
+            } catch (error) {
+                console.error("Error loading carts:", error);
+                skeleton.classList.add('hidden');
+                errorState.classList.remove('hidden');
+                showToast('ডাটা লোড করতে সমস্যা হয়েছে', 'error');
+            }
+        }
+
+        document.getElementById('retryBtn').addEventListener('click', loadCartData);
+
+        // STATISTICS
+        function updateStatistics() {
+            const totalItems = allCarts.length;
+            
+            // Unique customers by UID
+            const uniqueUids = new Set();
+            let totalValue = 0;
+            let totalQty = 0;
+            let affiliateCount = 0;
+
+            allCarts.forEach(item => {
+                if (item.uid) uniqueUids.add(item.uid);
+                const price = Number(item.price) || 0;
+                const qty = Number(item.quantity) || 1;
+                totalValue += (price * qty);
+                totalQty += qty;
+                if (item.affiliate === 'on' || item.affiliate === true) {
+                    affiliateCount++;
+                }
+            });
+
+            document.getElementById('statTotalItems').textContent = totalItems;
+            document.getElementById('statTotalCustomers').textContent = uniqueUids.size;
+            document.getElementById('statTotalValue').textContent = '৳' + totalValue.toLocaleString();
+            document.getElementById('statTotalQuantity').textContent = totalQty;
+            document.getElementById('statAffiliateCount').textContent = affiliateCount;
+        }
+
+        // SEARCH, FILTER, SORT
+        function applySearchFilterAndSort() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase().trim();
+            const filterAff = document.getElementById('filterAffiliate').value;
+            const filterPrice = document.getElementById('filterPrice').value;
+            const filterBuyer = document.getElementById('filterBuyer').value;
+            const filterDate = document.getElementById('filterDate').value;
+            const sortVal = document.getElementById('sortOption').value;
+
+            filteredCarts = allCarts.filter(item => {
+                const name = (item.name || '').toLowerCase();
+                const email = (item.email || '').toLowerCase();
+                const phone = (item.phone || '').toString().toLowerCase();
+                const uid = (item.uid || '').toLowerCase();
+                const shopName = (item.shopName || '').toLowerCase();
+                const sellerId = (item.sellerId || '').toLowerCase();
+                const slug = (item.slug || '').toLowerCase();
+                
+                const buyer = buyerCache[item.uid] || {};
+                const buyerName = (buyer.name || '').toLowerCase();
+
+                // Search matching
+                const matchesSearch = name.includes(searchTerm) ||
+                                      buyerName.includes(searchTerm) ||
+                                      email.includes(searchTerm) ||
+                                      phone.includes(searchTerm) ||
+                                      uid.includes(searchTerm) ||
+                                      shopName.includes(searchTerm) ||
+                                      sellerId.includes(searchTerm) ||
+                                      slug.includes(searchTerm);
+
+                if (!matchesSearch) return false;
+
+                // Affiliate filter
+                if (filterAff === 'on' && !(item.affiliate === 'on' || item.affiliate === true)) return false;
+                if (filterAff === 'off' && (item.affiliate === 'on' || item.affiliate === true)) return false;
+
+                // Price filter
+                const itemPrice = Number(item.price) || 0;
+                if (filterPrice === 'under500' && itemPrice >= 500) return false;
+                if (filterPrice === '500-1000' && (itemPrice < 500 || itemPrice > 1000)) return false;
+                if (filterPrice === '1000-5000' && (itemPrice < 1000 || itemPrice > 5000)) return false;
+                if (filterPrice === 'above5000' && itemPrice <= 5000) return false;
+
+                // Buyer found filter
+                const hasBuyer = !!buyerCache[item.uid];
+                if (filterBuyer === 'found' && !hasBuyer) return false;
+                if (filterBuyer === 'notfound' && hasBuyer) return false;
+
+                // Date filter
+                if (filterDate !== 'all' && item.createdAt) {
+                    let d = item.createdAt.toDate ? item.createdAt.toDate() : new Date(item.createdAt);
+                    const now = new Date();
+                    const diffDays = (now - d) / (1000 * 60 * 60 * 24);
+                    if (filterDate === 'today' && diffDays > 1) return false;
+                    if (filterDate === 'last7' && diffDays > 7) return false;
+                    if (filterDate === 'last30' && diffDays > 30) return false;
+                }
+
+                return true;
+            });
+
+            // Sorting
+            filteredCarts.sort((a, b) => {
+                if (sortVal === 'newest') {
+                    let da = a.createdAt ? (a.createdAt.toDate ? a.createdAt.toDate() : new Date(a.createdAt)) : new Date(0);
+                    let db = b.createdAt ? (b.createdAt.toDate ? b.createdAt.toDate() : new Date(b.createdAt)) : new Date(0);
+                    return db - da;
+                } else if (sortVal === 'oldest') {
+                    let da = a.createdAt ? (a.createdAt.toDate ? a.createdAt.toDate() : new Date(a.createdAt)) : new Date(0);
+                    let db = b.createdAt ? (b.createdAt.toDate ? b.createdAt.toDate() : new Date(b.createdAt)) : new Date(0);
+                    return da - db;
+                } else if (sortVal === 'priceHigh') {
+                    return (Number(b.price) || 0) - (Number(a.price) || 0);
+                } else if (sortVal === 'priceLow') {
+                    return (Number(a.price) || 0) - (Number(b.price) || 0);
+                } else if (sortVal === 'qtyHigh') {
+                    return (Number(b.quantity) || 0) - (Number(a.quantity) || 0);
+                } else if (sortVal === 'qtyLow') {
+                    return (Number(a.quantity) || 0) - (Number(b.quantity) || 0);
+                } else if (sortVal === 'nameAZ') {
+                    return (a.name || '').localeCompare(b.name || '');
+                }
+                return 0;
+            });
+
+            currentPage = 1;
+            renderPagination();
+        }
+
+        // Event listeners for searching, filtering, sorting
+        document.getElementById('searchInput').addEventListener('input', applySearchFilterAndSort);
+        document.getElementById('filterAffiliate').addEventListener('change', applySearchFilterAndSort);
+        document.getElementById('filterPrice').addEventListener('change', applySearchFilterAndSort);
+        document.getElementById('filterBuyer').addEventListener('change', applySearchFilterAndSort);
+        document.getElementById('filterDate').addEventListener('change', applySearchFilterAndSort);
+        document.getElementById('sortOption').addEventListener('change', applySearchFilterAndSort);
+        document.getElementById('itemsPerPage').addEventListener('change', (e) => {
+            rowsPerPage = parseInt(e.target.value);
+            currentPage = 1;
+            renderPagination();
+        });
+
+        // PAGINATION & RENDERING
+        function renderPagination() {
+            const totalItems = filteredCarts.length;
+            const totalPages = Math.ceil(totalItems / rowsPerPage) || 1;
+            if (currentPage > totalPages) currentPage = totalPages;
+
+            const startIdx = (currentPage - 1) * rowsPerPage;
+            const endIdx = Math.min(startIdx + rowsPerPage, totalItems);
+            const paginatedData = filteredCarts.slice(startIdx, endIdx);
+
+            renderTable(paginatedData);
+            renderMobileCards(paginatedData);
+
+            document.getElementById('paginationInfo').textContent = `Showing ${totalItems > 0 ? startIdx + 1 : 0} to ${endIdx} of ${totalItems} items`;
+
+            const controls = document.getElementById('paginationControls');
+            controls.innerHTML = '';
+
+            // Previous Button
+            const prevBtn = document.createElement('button');
+            prevBtn.className = `px-3 py-1.5 rounded-lg text-xs font-medium border ${currentPage === 1 ? 'bg-gray-50 text-gray-300 border-gray-100 cursor-not-allowed' : 'bg-white text-gray-700 border-gray-200 hover:bg-gray-50'}`;
+            prevBtn.textContent = 'Previous';
+            prevBtn.disabled = currentPage === 1;
+            prevBtn.onclick = () => { if (currentPage > 1) { currentPage--; renderPagination(); } };
+            controls.appendChild(prevBtn);
+
+            for (let i = 1; i <= totalPages; i++) {
+                if (i === 1 || i === totalPages || (i >= currentPage - 1 && i <= currentPage + 1)) {
+                    const pageBtn = document.createElement('button');
+                    pageBtn.className = `px-3 py-1.5 rounded-lg text-xs font-medium border ${i === currentPage ? 'bg-primary text-white border-primary shadow-sm' : 'bg-white text-gray-700 border-gray-200 hover:bg-gray-50'}`;
+                    pageBtn.textContent = i;
+                    pageBtn.onclick = () => { currentPage = i; renderPagination(); };
+                    controls.appendChild(pageBtn);
+                }
+            }
+
+            // Next Button
+            const nextBtn = document.createElement('button');
+            nextBtn.className = `px-3 py-1.5 rounded-lg text-xs font-medium border ${currentPage === totalPages || totalPages === 0 ? 'bg-gray-50 text-gray-300 border-gray-100 cursor-not-allowed' : 'bg-white text-gray-700 border-gray-200 hover:bg-gray-50'}`;
+            nextBtn.textContent = 'Next';
+            nextBtn.disabled = currentPage === totalPages || totalPages === 0;
+            nextBtn.onclick = () => { if (currentPage < totalPages) { currentPage++; renderPagination(); } };
+            controls.appendChild(nextBtn);
+        }
+
+        // TABLE RENDERING
+        function renderTable(items) {
+            const tbody = document.getElementById('cartTableBody');
+            const emptyState = document.getElementById('emptyState');
+            tbody.innerHTML = '';
+
+            if (items.length === 0) {
+                emptyState.classList.remove('hidden');
+                return;
+            }
+            emptyState.classList.add('hidden');
+
+            items.forEach(item => {
+                const docId = item.docId;
+                const name = item.name || 'Unnamed Product';
+                const image = item.image || '';
+                const slug = item.slug || '—';
+                const email = item.email || '—';
+                const uid = item.uid || '—';
+                const shortUid = uid !== '—' && uid.length > 8 ? uid.substring(0, 8) + '...' : uid;
+                const quantity = item.quantity || 1;
+                const price = Number(item.price) || 0;
+                const discount = item.discount ? `${item.discount}%` : '—';
+                const affiliate = item.affiliate === 'on' || item.affiliate === true ? 'On' : 'Off';
+                const shopName = item.shopName || item.sellerId || '—';
+
+                const buyer = buyerCache[item.uid];
+                const buyerName = buyer ? (buyer.name || 'Found') : 'Buyer Not Found';
+
+                let dateStr = '—';
+                if (item.createdAt) {
+                    let d = item.createdAt.toDate ? item.createdAt.toDate() : new Date(item.createdAt);
+                    dateStr = d.toLocaleDateString() + ' ' + d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                }
+
+                const isChecked = selectedCartIds.has(docId);
+
+                tbody.innerHTML += `
+                    <tr class="hover:bg-gray-50/80 transition-colors group">
+                        <td class="px-4 py-4 whitespace-nowrap">
+                            <input type="checkbox" value="${docId}" ${isChecked ? 'checked' : ''} onchange="toggleSelectCart('${docId}')" class="rowCheckbox rounded border-gray-300 text-primary focus:ring-primary">
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-10 h-10 rounded-xl bg-gray-100 flex-shrink-0 overflow-hidden border border-gray-200 cursor-pointer" onclick="openImageModal('${image}')">
+                                    ${image ? `<img src="${image}" alt="" class="w-full h-full object-cover">` : `<div class="w-full h-full flex items-center justify-center text-gray-400"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg></div>`}
+                                </div>
+                                <div>
+                                    <span class="text-sm font-bold text-gray-900 block max-w-[200px] truncate" title="${name}">${name}</span>
+                                    <span class="text-xs text-gray-400 font-mono block max-w-[200px] truncate">${slug}</span>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <span class="text-sm font-semibold ${buyer ? 'text-gray-800' : 'text-amber-600'}">${buyerName}</span>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="flex items-center space-x-2">
+                                <span class="text-sm text-gray-600 truncate max-w-[150px]">${email}</span>
+                                ${email !== '—' ? `<button onclick="copyToClipboard('${email}')" class="text-gray-400 hover:text-primary"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"/></svg></button>` : ''}
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="flex items-center space-x-1 font-mono text-xs text-gray-500">
+                                <span>${shortUid}</span>
+                                ${uid !== '—' ? `<button onclick="copyToClipboard('${uid}')" class="text-gray-400 hover:text-primary"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"/></svg></button>` : ''}
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-800">${quantity}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-gray-900">৳${price.toLocaleString()}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-xs font-semibold text-emerald-600">${discount}</td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <span class="px-2.5 py-1 rounded-full text-xs font-semibold ${affiliate === 'On' ? 'bg-orange-50 text-primary' : 'bg-gray-100 text-gray-500'}">
+                                ${affiliate}
+                            </span>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">${shopName}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-xs text-gray-500">${dateStr}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                            <div class="flex items-center justify-end space-x-2">
+                                <button onclick="openDetails('${docId}')" class="p-1.5 rounded-lg bg-gray-50 text-gray-600 hover:bg-gray-100 hover:text-primary transition-colors" title="View Details">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                                </button>
+                                <button onclick="openEditModal('${docId}')" class="p-1.5 rounded-lg bg-orange-50 text-primary hover:bg-orange-100 transition-colors" title="Edit">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+                                </button>
+                                <button onclick="openDeleteModal('${docId}')" class="p-1.5 rounded-lg bg-red-50 text-red-600 hover:bg-red-100 transition-colors" title="Delete">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+
+        // MOBILE CARDS VIEW
+        function renderMobileCards(items) {
+            const container = document.getElementById('cartCardContainer');
+            container.innerHTML = '';
+
+            items.forEach(item => {
+                const docId = item.docId;
+                const name = item.name || 'Unnamed Product';
+                const image = item.image || '';
+                const email = item.email || '—';
+                const uid = item.uid || '—';
+                const quantity = item.quantity || 1;
+                const price = Number(item.price) || 0;
+                const affiliate = item.affiliate === 'on' || item.affiliate === true ? 'On' : 'Off';
+                const shopName = item.shopName || item.sellerId || '—';
+
+                const buyer = buyerCache[item.uid];
+                const buyerName = buyer ? (buyer.name || 'Found') : 'Buyer Not Found';
+                const isChecked = selectedCartIds.has(docId);
+
+                container.innerHTML += `
+                    <div class="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm space-y-3">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center space-x-3">
+                                <input type="checkbox" value="${docId}" ${isChecked ? 'checked' : ''} onchange="toggleSelectCart('${docId}')" class="rounded border-gray-300 text-primary focus:ring-primary">
+                                <div class="w-12 h-12 rounded-xl bg-gray-100 overflow-hidden border border-gray-200 cursor-pointer" onclick="openImageModal('${image}')">
+                                    ${image ? `<img src="${image}" alt="" class="w-full h-full object-cover">` : ''}
+                                </div>
+                                <div>
+                                    <h4 class="text-sm font-bold text-gray-900 line-clamp-1">${name}</h4>
+                                    <span class="text-xs text-primary font-semibold">৳${price.toLocaleString()} (Qty: ${quantity})</span>
+                                </div>
+                            </div>
+                            <span class="px-2.5 py-0.5 rounded-full text-[10px] font-semibold ${affiliate === 'On' ? 'bg-orange-50 text-primary' : 'bg-gray-100 text-gray-500'}">
+                                Affiliate: ${affiliate}
+                            </span>
+                        </div>
+
+                        <div class="text-xs space-y-1 text-gray-600 border-t border-b border-gray-50 py-2">
+                            <p><strong class="text-gray-400">Buyer:</strong> ${buyerName}</p>
+                            <p><strong class="text-gray-400">Email:</strong> ${email}</p>
+                            <p><strong class="text-gray-400">Shop:</strong> ${shopName}</p>
+                            <p class="font-mono text-[11px] text-gray-400 truncate">UID: ${uid}</p>
+                        </div>
+
+                        <div class="flex items-center justify-end space-x-2 pt-1">
+                            <button onclick="openDetails('${docId}')" class="px-3 py-1.5 bg-gray-100 text-gray-700 text-xs font-medium rounded-lg">View</button>
+                            <button onclick="openEditModal('${docId}')" class="px-3 py-1.5 bg-orange-50 text-primary text-xs font-medium rounded-lg">Edit</button>
+                            <button onclick="openDeleteModal('${docId}')" class="px-3 py-1.5 bg-red-50 text-red-600 text-xs font-medium rounded-lg">Delete</button>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        // BULK SELECTION LOGIC
+        window.toggleSelectCart = function(docId) {
+            if (selectedCartIds.has(docId)) {
+                selectedCartIds.delete(docId);
+            } else {
+                selectedCartIds.add(docId);
+            }
+            updateBulkDeleteUI();
+        }
+
+        document.getElementById('selectAllCheckbox').addEventListener('change', (e) => {
+            const checkboxes = document.querySelectorAll('.rowCheckbox');
+            checkboxes.forEach(cb => {
+                cb.checked = e.target.checked;
+                if (e.target.checked) {
+                    selectedCartIds.add(cb.value);
+                } else {
+                    selectedCartIds.delete(cb.value);
+                }
+            });
+            updateBulkDeleteUI();
+        });
+
+        function updateBulkDeleteUI() {
+            const count = selectedCartIds.size;
+            document.getElementById('selectedCount').textContent = count;
+            const btn = document.getElementById('bulkDeleteBtn');
+            if (count > 0) {
+                btn.removeAttribute('disabled');
+            } else {
+                btn.setAttribute('disabled', 'true');
+            }
+        }
+
+        document.getElementById('bulkDeleteBtn').addEventListener('click', () => {
+            if (selectedCartIds.size === 0) return;
+            document.getElementById('deleteModalTitle').textContent = `${selectedCartIds.size}টি কার্ট আইটেম ডিলিট করবেন?`;
+            document.getElementById('deleteModalDesc').textContent = 'নির্বাচিত পণ্যগুলো স্থায়ীভাবে মুছে ফেলা হবে।';
+            document.getElementById('isBulkDelete').value = 'true';
+            
+            const modal = document.getElementById('deleteModal');
+            const content = document.getElementById('deleteModalContent');
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                content.classList.remove('scale-95', 'opacity-0');
+                content.classList.add('scale-100', 'opacity-100');
+            }, 10);
+        });
+
+        // VIEW FULL INFORMATION MODAL
+        window.openDetails = function(docId) {
+            const item = allCarts.find(c => c.docId === docId);
+            if (!item) return;
+
+            const buyer = buyerCache[item.uid] || null;
+
+            // Variants parsing
+            let variantsHtml = 'কোনো variant নেই';
+            if (item.selectedVariants) {
+                if (typeof item.selectedVariants === 'object' && Object.keys(item.selectedVariants).length > 0) {
+                    variantsHtml = Object.entries(item.selectedVariants).map(([k, v]) => `<span class="px-2 py-1 bg-gray-100 rounded-lg text-xs font-medium mr-1">${k}: ${v}</span>`).join('');
+                } else if (typeof item.selectedVariants === 'string' && item.selectedVariants.trim() !== '') {
+                    variantsHtml = `<span class="px-2 py-1 bg-gray-100 rounded-lg text-xs font-medium">${item.selectedVariants}</span>`;
+                }
+            }
+
+            let cartDateStr = '—';
+            if (item.createdAt) {
+                let d = item.createdAt.toDate ? item.createdAt.toDate() : new Date(item.createdAt);
+                cartDateStr = d.toLocaleString();
+            }
+
+            const modalBody = document.getElementById('detailsModalBody');
+            modalBody.innerHTML = `
+                <!-- CART SECTION -->
+                <div class="space-y-3">
+                    <h4 class="text-xs font-bold text-primary uppercase tracking-wider flex items-center space-x-2">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+                        <span>Cart Information</span>
+                    </h4>
+                    <div class="bg-gray-50 p-4 rounded-2xl space-y-3 text-sm">
+                        <div class="flex items-center space-x-4">
+                            <div class="w-16 h-16 rounded-xl bg-white border border-gray-200 overflow-hidden flex-shrink-0 cursor-pointer" onclick="openImageModal('${item.image || ''}')">
+                                ${item.image ? `<img src="${item.image}" class="w-full h-full object-cover">` : ''}
+                            </div>
+                            <div>
+                                <h5 class="font-bold text-gray-900">${item.name || '—'}</h5>
+                                <p class="text-xs text-gray-400 font-mono">Slug: ${item.slug || '—'}</p>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+                            <div class="flex justify-between py-1 border-b border-gray-200/50"><span class="text-gray-500">Cart Document ID:</span><span class="font-mono font-medium">${item.docId}</span></div>
+                            <div class="flex justify-between py-1 border-b border-gray-200/50"><span class="text-gray-500">Price:</span><span class="font-bold text-gray-900">৳${item.price || 0}</span></div>
+                            <div class="flex justify-between py-1 border-b border-gray-200/50"><span class="text-gray-500">Base Price:</span><span>৳${item.basePrice || '—'}</span></div>
+                            <div class="flex justify-between py-1 border-b border-gray-200/50"><span class="text-gray-500">Extra Price:</span><span>৳${item.extraPrice || '—'}</span></div>
+                            <div class="flex justify-between py-1 border-b border-gray-200/50"><span class="text-gray-500">Quantity:</span><span class="font-bold">${item.quantity || 1}</span></div>
+                            <div class="flex justify-between py-1 border-b border-gray-200/50"><span class="text-gray-500">Discount:</span><span class="text-emerald-600">${item.discount ? item.discount + '%' : '—'}</span></div>
+                            <div class="flex justify-between py-1 border-b border-gray-200/50"><span class="text-gray-500">Affiliate:</span><span>${item.affiliate || 'off'}</span></div>
+                            <div class="flex justify-between py-1 border-b border-gray-200/50"><span class="text-gray-500">Shop / Seller:</span><span>${item.shopName || item.sellerId || '—'}</span></div>
+                            <div class="flex justify-between py-1 border-b border-gray-200/50"><span class="text-gray-500">Created At:</span><span>${cartDateStr}</span></div>
+                            <div class="flex justify-between py-1 border-b border-gray-200/50"><span class="text-gray-500">Cart Email:</span><span>${item.email || '—'}</span></div>
+                        </div>
+                        <div>
+                            <span class="text-gray-500 text-xs block mb-1">Selected Variants:</span>
+                            <div>${variantsHtml}</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- BUYER SECTION -->
+                <div class="space-y-3">
+                    <h4 class="text-xs font-bold text-primary uppercase tracking-wider flex items-center space-x-2">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+                        <span>Buyer Information (${buyer ? 'Found in DB' : 'Not Found'})</span>
+                    </h4>
+                    <div class="bg-gray-50 p-4 rounded-2xl space-y-2 text-xs">
+                        ${buyer ? `
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                                <div class="flex justify-between py-1 border-b border-gray-200/50"><span class="text-gray-500">Buyer Name:</span><span class="font-bold text-gray-900">${buyer.name || '—'}</span></div>
+                                <div class="flex justify-between py-1 border-b border-gray-200/50"><span class="text-gray-500">Buyer Email:</span><span class="font-medium">${buyer.email || '—'}</span></div>
+                                <div class="flex justify-between py-1 border-b border-gray-200/50"><span class="text-gray-500">Phone:</span><span>${buyer.phone || '—'}</span></div>
+                                <div class="flex justify-between py-1 border-b border-gray-200/50"><span class="text-gray-500">Country:</span><span>${buyer.country || '—'}</span></div>
+                                <div class="flex justify-between py-1 border-b border-gray-200/50"><span class="text-gray-500">UID:</span><span class="font-mono">${buyer.uid || item.uid}</span></div>
+                                <div class="flex justify-between py-1 border-b border-gray-200/50"><span class="text-gray-500">Active Status:</span><span>${buyer.active !== undefined ? buyer.active : '—'}</span></div>
+                                <div class="flex justify-between py-1 border-b border-gray-200/50"><span class="text-gray-500">Email Verified:</span><span>${buyer.emailVerified !== undefined ? buyer.emailVerified : '—'}</span></div>
+                            </div>
+                            <div class="mt-3 pt-3 border-t border-gray-200">
+                                <span class="text-gray-400 font-semibold block mb-1 uppercase tracking-wider text-[10px]">All Buyer Data (Dynamic)</span>
+                                <pre class="bg-white p-3 rounded-xl border border-gray-200 text-[11px] font-mono text-gray-700 overflow-x-auto max-h-40">${JSON.stringify(buyer, null, 2)}</pre>
+                            </div>
+                        ` : `
+                            <div class="text-amber-600 font-medium py-2">Buyer information not found for UID: ${item.uid}</div>
+                        `}
+                    </div>
+                </div>
+            `;
+
+            const modal = document.getElementById('detailsModal');
+            const content = document.getElementById('detailsModalContent');
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                content.classList.remove('scale-95', 'opacity-0');
+                content.classList.add('scale-100', 'opacity-100');
+            }, 10);
+        }
+
+        window.closeDetailsModal = function() {
+            const modal = document.getElementById('detailsModal');
+            const content = document.getElementById('detailsModalContent');
+            content.classList.remove('scale-100', 'opacity-100');
+            content.classList.add('scale-95', 'opacity-0');
+            setTimeout(() => modal.classList.add('hidden'), 200);
+        }
+
+        // EDIT CART MODAL
+        window.openEditModal = function(docId) {
+            const item = allCarts.find(c => c.docId === docId);
+            if (!item) return;
+
+            document.getElementById('editDocId').value = item.docId;
+            document.getElementById('editName').value = item.name || '';
+            document.getElementById('editShopName').value = item.shopName || '';
+            document.getElementById('editQuantity').value = item.quantity || 1;
+            document.getElementById('editPrice').value = item.price || 0;
+            document.getElementById('editBasePrice').value = item.basePrice || '';
+            document.getElementById('editExtraPrice').value = item.extraPrice || '';
+            document.getElementById('editDiscount').value = item.discount || '';
+            document.getElementById('editAffiliate').value = (item.affiliate === 'on' || item.affiliate === true) ? 'on' : 'off';
+            document.getElementById('editVariants').value = typeof item.selectedVariants === 'object' ? JSON.stringify(item.selectedVariants) : (item.selectedVariants || '');
+
+            const modal = document.getElementById('editModal');
+            const content = document.getElementById('editModalContent');
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                content.classList.remove('scale-95', 'opacity-0');
+                content.classList.add('scale-100', 'opacity-100');
+            }, 10);
+        }
+
+        window.closeEditModal = function() {
+            const modal = document.getElementById('editModal');
+            const content = document.getElementById('editModalContent');
+            content.classList.remove('scale-100', 'opacity-100');
+            content.classList.add('scale-95', 'opacity-0');
+            setTimeout(() => modal.classList.add('hidden'), 200);
+        }
+
+        document.getElementById('editForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const docId = document.getElementById('editDocId').value;
+            const name = document.getElementById('editName').value;
+            const shopName = document.getElementById('editShopName').value;
+            const quantity = Number(document.getElementById('editQuantity').value);
+            const price = Number(document.getElementById('editPrice').value);
+            const basePrice = document.getElementById('editBasePrice').value ? Number(document.getElementById('editBasePrice').value) : 0;
+            const extraPrice = document.getElementById('editExtraPrice').value ? Number(document.getElementById('editExtraPrice').value) : 0;
+            const discount = document.getElementById('editDiscount').value ? Number(document.getElementById('editDiscount').value) : 0;
+            const affiliate = document.getElementById('editAffiliate').value;
+            
+            let variantsInput = document.getElementById('editVariants').value.trim();
+            let selectedVariants = {};
+            try {
+                if (variantsInput.startsWith('{')) {
+                    selectedVariants = JSON.parse(variantsInput);
+                } else {
+                    selectedVariants = variantsInput;
+                }
+            } catch (err) {
+                selectedVariants = variantsInput;
+            }
+
+            const saveBtn = document.getElementById('saveEditBtn');
+            saveBtn.disabled = true;
+            saveBtn.innerHTML = `<span>আপডেট হচ্ছে...</span>`;
+
+            try {
+                // UID & Email protected against standard edit form as per rules
+                await updateDoc(doc(db, 'carts', docId), {
+                    name,
+                    shopName,
+                    quantity,
+                    price,
+                    basePrice,
+                    extraPrice,
+                    discount,
+                    affiliate,
+                    selectedVariants,
+                    updatedAt: new Date()
+                });
+
+                showToast('কার্ট তথ্য সফলভাবে আপডেট হয়েছে।');
+                closeEditModal();
+                loadCartData();
+            } catch (error) {
+                console.error("Error updating cart:", error);
+                showToast('আপডেট করতে সমস্যা হয়েছে।', 'error');
+            } finally {
+                saveBtn.disabled = false;
+                saveBtn.innerHTML = `<span>পরিবর্তন সংরক্ষণ করুন</span>`;
+            }
+        });
+
+        // DELETE CART ITEM
+        window.openDeleteModal = function(docId) {
+            document.getElementById('deleteTargetId').value = docId;
+            document.getElementById('isBulkDelete').value = 'false';
+            document.getElementById('deleteModalTitle').textContent = 'কার্ট আইটেম ডিলিট করবেন?';
+            document.getElementById('deleteModalDesc').textContent = 'এই পণ্যটি নির্দিষ্ট বায়্যারের কার্ট থেকে স্থায়ীভাবে সরানো হবে।';
+
+            const modal = document.getElementById('deleteModal');
+            const content = document.getElementById('deleteModalContent');
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                content.classList.remove('scale-95', 'opacity-0');
+                content.classList.add('scale-100', 'opacity-100');
+            }, 10);
+        }
+
+        window.closeDeleteModal = function() {
+            const modal = document.getElementById('deleteModal');
+            const content = document.getElementById('deleteModalContent');
+            content.classList.remove('scale-100', 'opacity-100');
+            content.classList.add('scale-95', 'opacity-0');
+            setTimeout(() => modal.classList.add('hidden'), 200);
+        }
+
+        document.getElementById('confirmDeleteBtn').addEventListener('click', async () => {
+            const isBulk = document.getElementById('isBulkDelete').value === 'true';
+            const confirmBtn = document.getElementById('confirmDeleteBtn');
+            confirmBtn.disabled = true;
+            confirmBtn.textContent = 'ডিলিট হচ্ছে...';
+
+            try {
+                if (isBulk) {
+                    const promises = Array.from(selectedCartIds).map(id => deleteDoc(doc(db, 'carts', id)));
+                    await Promise.all(promises);
+                    showToast('নির্বাচিত কার্ট আইটেমগুলো সফলভাবে ডিলিট হয়েছে।');
+                    selectedCartIds.clear();
+                    updateBulkDeleteUI();
+                } else {
+                    const docId = document.getElementById('deleteTargetId').value;
+                    await deleteDoc(doc(db, 'carts', docId));
+                    showToast('কার্ট আইটেম সফলভাবে ডিলিট হয়েছে।');
+                }
+                closeDeleteModal();
+                loadCartData();
+            } catch (error) {
+                console.error("Error deleting cart(s):", error);
+                showToast('ডিলিট করতে সমস্যা হয়েছে।', 'error');
+            } finally {
+                confirmBtn.disabled = false;
+                confirmBtn.textContent = 'ডিলিট করুন';
+            }
+        });
+
+        // IMAGE PREVIEW MODAL
+        window.openImageModal = function(url) {
+            if (!url) return;
+            document.getElementById('previewModalImg').src = url;
+            document.getElementById('imageModal').classList.remove('hidden');
+        }
+
+        window.closeImageModal = function() {
+            document.getElementById('imageModal').classList.add('hidden');
+        }
+
+        // LOGOUT HANDLING
+        function handleLogout() {
+            signOut(auth).then(() => {
+                window.location.href = 'login.html';
+            }).catch((error) => {
+                console.error("Logout error:", error);
+                showToast('লগআউট করতে সমস্যা হয়েছে', 'error');
+            });
+        }
+
+        document.getElementById('sidebarLogout').addEventListener('click', handleLogout);
+        document.getElementById('headerLogout').addEventListener('click', handleLogout);
+
+        // MOBILE SIDEBAR & DROPDOWN TOGGLES
+        const sidebar = document.getElementById('sidebar');
+        const sidebarOverlay = document.getElementById('sidebarOverlay');
+        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+        const profileDropdownBtn = document.getElementById('profileDropdownBtn');
+        const profileDropdownMenu = document.getElementById('profileDropdownMenu');
+
+        mobileMenuBtn.addEventListener('click', () => {
+            sidebar.classList.toggle('-translate-x-full');
+            sidebarOverlay.classList.toggle('hidden');
+        });
+
+        sidebarOverlay.addEventListener('click', () => {
+            sidebar.classList.add('-translate-x-full');
+            sidebarOverlay.classList.add('hidden');
+        });
+
+        profileDropdownBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            profileDropdownMenu.classList.toggle('hidden');
+        });
+
+        window.addEventListener('click', () => {
+            if (!profileDropdownMenu.classList.contains('hidden')) {
+                profileDropdownMenu.classList.add('hidden');
+            }
+        });
+    </script>
+</body>
+</html>
