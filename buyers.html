@@ -1,0 +1,1007 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>বায়্যার ম্যানেজমেন্ট - GHOTI MARKET Admin</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#FF6B35',
+                        primaryHover: '#e55a24',
+                        darkBg: '#1f2937'
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-50 font-sans text-gray-800 antialiased selection:bg-primary selection:text-white">
+
+    <!-- Toast Notification Container -->
+    <div id="toastContainer" class="fixed top-5 right-5 z-50 flex flex-col space-y-3"></div>
+
+    <!-- Main Layout Container -->
+    <div class="min-h-screen flex">
+
+        <!-- ================= SIDEBAR ================= -->
+        <aside id="sidebar" class="fixed inset-y-0 left-0 z-40 w-64 bg-white border-r border-gray-200 transform -translate-x-full lg:translate-x-0 transition-transform duration-300 ease-in-out flex flex-col justify-between shadow-sm">
+            <div>
+                <!-- Brand Logo -->
+                <div class="h-20 flex items-center px-6 border-b border-gray-100">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-primary to-orange-400 flex items-center justify-center text-white shadow-md shadow-orange-500/20">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/></svg>
+                        </div>
+                        <div>
+                            <span class="text-lg font-bold tracking-tight text-gray-900 block leading-tight">GHOTI MARKET</span>
+                            <span class="text-xs text-gray-400 font-medium tracking-wider">ADMIN PANEL</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Navigation Links -->
+                <nav class="p-4 space-y-1.5">
+                    <a href="#" class="flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium text-gray-600 hover:bg-gray-50 transition-colors">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/></svg>
+                        <span>Dashboard</span>
+                    </a>
+                    <a href="#" class="flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium bg-gradient-to-r from-primary to-orange-500 text-white shadow-md shadow-primary/20 transition-all">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+                        <span>Buyers</span>
+                    </a>
+                    <a href="#" class="flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium text-gray-600 hover:bg-gray-50 transition-colors">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/></svg>
+                        <span>Orders</span>
+                    </a>
+                    <a href="#" class="flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium text-gray-600 hover:bg-gray-50 transition-colors">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
+                        <span>Products</span>
+                    </a>
+                    <a href="#" class="flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium text-gray-600 hover:bg-gray-50 transition-colors">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/></svg>
+                        <span>Categories</span>
+                    </a>
+                    <a href="#" class="flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium text-gray-600 hover:bg-gray-50 transition-colors">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/></svg>
+                        <span>Reviews</span>
+                    </a>
+                    <a href="#" class="flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium text-gray-600 hover:bg-gray-50 transition-colors">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+                        <span>Affiliates</span>
+                    </a>
+                    <a href="#" class="flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium text-gray-600 hover:bg-gray-50 transition-colors">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                        <span>Settings</span>
+                    </a>
+                </nav>
+            </div>
+
+            <!-- Sidebar Footer Logout -->
+            <div class="p-4 border-t border-gray-100">
+                <button id="sidebarLogout" class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium text-red-600 hover:bg-red-50 transition-colors">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+                    <span>লগআউট</span>
+                </button>
+            </div>
+        </aside>
+
+        <!-- Overlay for Mobile Sidebar -->
+        <div id="sidebarOverlay" class="fixed inset-0 bg-black/40 z-30 hidden lg:hidden"></div>
+
+        <!-- ================= MAIN CONTENT AREA ================= -->
+        <div class="flex-1 flex flex-col lg:pl-64">
+
+            <!-- Top Header -->
+            <header class="sticky top-0 z-20 h-20 bg-white/80 backdrop-blur-md border-b border-gray-200 flex items-center justify-between px-4 sm:px-8">
+                <!-- Left Header -->
+                <div class="flex items-center space-x-4">
+                    <button id="mobileMenuBtn" class="p-2 rounded-lg text-gray-600 hover:bg-gray-100 lg:hidden">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+                    </button>
+                    <div>
+                        <h1 class="text-xl font-bold text-gray-900 tracking-tight">Buyer Management</h1>
+                        <p class="text-xs text-gray-500 hidden sm:block">Manage and monitor all platform buyers smoothly.</p>
+                    </div>
+                </div>
+
+                <!-- Right Header -->
+                <div class="flex items-center space-x-4">
+                    <!-- Notification Bell -->
+                    <button class="relative p-2 rounded-xl text-gray-600 hover:bg-gray-100 transition-colors">
+                        <span class="absolute top-1.5 right-1.5 w-2 h-2 bg-primary rounded-full animate-pulse"></span>
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>
+                    </button>
+
+                    <div class="h-8 w-[1px] bg-gray-200"></div>
+
+                    <!-- Admin Profile Dropdown -->
+                    <div class="relative">
+                        <button id="profileDropdownBtn" class="flex items-center space-x-3 p-1.5 rounded-xl hover:bg-gray-100 transition-colors">
+                            <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-primary to-orange-400 text-white flex items-center justify-center font-bold shadow-sm">
+                                GM
+                            </div>
+                            <div class="text-left hidden md:block">
+                                <span class="text-sm font-bold text-gray-900 block leading-tight">GHOTI MARKET ADMIN</span>
+                                <span class="text-xs text-gray-500 block">support@ghotimarket.com</span>
+                            </div>
+                            <svg class="w-4 h-4 text-gray-400 hidden md:block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                        </button>
+
+                        <!-- Dropdown Menu -->
+                        <div id="profileDropdownMenu" class="absolute right-0 mt-2 w-56 bg-white rounded-2xl shadow-xl border border-gray-100 py-2 hidden z-50">
+                            <div class="px-4 py-2 border-b border-gray-100 md:hidden">
+                                <p class="text-sm font-bold text-gray-900">GHOTI MARKET ADMIN</p>
+                                <p class="text-xs text-gray-500 truncate">support@ghotimarket.com</p>
+                            </div>
+                            <a href="#" class="flex items-center space-x-2 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50">
+                                <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+                                <span>প্রোফাইল সেটিংস</span>
+                            </a>
+                            <div class="my-1 border-t border-gray-100"></div>
+                            <button id="headerLogout" class="w-full flex items-center space-x-2 px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 text-left">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+                                <span>লগআউট করুন</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Main Body Content -->
+            <main class="flex-1 p-4 sm:p-8 space-y-6 max-w-7xl w-full mx-auto">
+
+                <!-- ================= STATISTICS CARDS ================= -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+                    <!-- Total Buyers Card -->
+                    <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-all duration-300 group">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-xs font-semibold tracking-wide text-gray-400 uppercase">Total Buyers</p>
+                                <h3 id="totalBuyersCount" class="text-3xl font-extrabold text-gray-900 mt-1">0</h3>
+                            </div>
+                            <div class="w-12 h-12 rounded-2xl bg-orange-50 text-primary flex items-center justify-center group-hover:scale-110 transition-transform">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+                            </div>
+                        </div>
+                        <div class="mt-4 flex items-center text-xs text-gray-500">
+                            <span class="text-emerald-600 font-semibold flex items-center mr-1">মোট বায়্যার</span> সংগৃহীত ডাটা
+                        </div>
+                    </div>
+
+                    <!-- Active Buyers Card -->
+                    <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-all duration-300 group">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-xs font-semibold tracking-wide text-gray-400 uppercase">Active Buyers</p>
+                                <h3 id="activeBuyersCount" class="text-3xl font-extrabold text-gray-900 mt-1">0</h3>
+                            </div>
+                            <div class="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center group-hover:scale-110 transition-transform">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                            </div>
+                        </div>
+                        <div class="mt-4 flex items-center text-xs text-gray-500">
+                            <span class="text-emerald-600 font-semibold flex items-center mr-1">অ্যাক্টিভ</span> ব্যবহারকারী
+                        </div>
+                    </div>
+
+                    <!-- Verified Buyers Card -->
+                    <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-all duration-300 group">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-xs font-semibold tracking-wide text-gray-400 uppercase">Verified Buyers</p>
+                                <h3 id="verifiedBuyersCount" class="text-3xl font-extrabold text-gray-900 mt-1">0</h3>
+                            </div>
+                            <div class="w-12 h-12 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center group-hover:scale-110 transition-transform">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+                            </div>
+                        </div>
+                        <div class="mt-4 flex items-center text-xs text-gray-500">
+                            <span class="text-blue-600 font-semibold flex items-center mr-1">ভেরিফাইড</span> ইমেইল অ্যাকাউন্ট
+                        </div>
+                    </div>
+
+                    <!-- New Buyers Card -->
+                    <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-all duration-300 group">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-xs font-semibold tracking-wide text-gray-400 uppercase">New Buyers</p>
+                                <h3 id="newBuyersCount" class="text-3xl font-extrabold text-gray-900 mt-1">0</h3>
+                            </div>
+                            <div class="w-12 h-12 rounded-2xl bg-purple-50 text-purple-600 flex items-center justify-center group-hover:scale-110 transition-transform">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                            </div>
+                        </div>
+                        <div class="mt-4 flex items-center text-xs text-gray-500">
+                            <span class="text-purple-600 font-semibold flex items-center mr-1">সাম্প্রতিক</span> যুক্ত হয়েছেন
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ================= BUYER MANAGEMENT SECTION ================= -->
+                <div class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+                    
+                    <!-- Search & Filters Toolbar -->
+                    <div class="p-6 border-b border-gray-100 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                        <!-- Search Bar -->
+                        <div class="relative flex-1 max-w-md">
+                            <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-400">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                            </span>
+                            <input type="text" id="searchInput" placeholder="নাম, ইমেইল, ফোন, UID দিয়ে খুঁজুন..." class="w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all">
+                        </div>
+
+                        <!-- Filters & Controls -->
+                        <div class="flex flex-wrap items-center gap-3">
+                            <select id="filterStatus" class="px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm font-medium text-gray-700 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all">
+                                <option value="all">সকল বায়্যার</option>
+                                <option value="verified">ভেরিফায়েড</option>
+                                <option value="unverified">আনভেরিফায়েড</option>
+                                <option value="active">অ্যাক্টিভ</option>
+                                <option value="inactive">ইনঅ্যাক্টিভ</option>
+                            </select>
+
+                            <select id="itemsPerPage" class="px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm font-medium text-gray-700 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all">
+                                <option value="10">১০ প্রতি পাতা</option>
+                                <option value="20">২০ প্রতি পাতা</option>
+                                <option value="50">৫০ প্রতি পাতা</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Error State Container (Hidden by default) -->
+                    <div id="errorState" class="hidden p-12 text-center">
+                        <div class="w-16 h-16 bg-red-50 text-red-500 rounded-2xl mx-auto flex items-center justify-center mb-4">
+                            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+                        </div>
+                        <h3 class="text-base font-bold text-gray-900 mb-1">তথ্য লোড করতে সমস্যা হয়েছে</h3>
+                        <p class="text-sm text-gray-500 mb-4">অনুগ্রহ করে আবার চেষ্টা করুন।</p>
+                        <button id="retryBtn" class="px-4 py-2 bg-primary text-white text-sm font-medium rounded-xl hover:bg-primaryHover transition-colors shadow-sm">পুনরায় চেষ্টা করুন</button>
+                    </div>
+
+                    <!-- Skeleton Loader Container -->
+                    <div id="skeletonLoader" class="divide-y divide-gray-100 p-6 animate-pulse space-y-4">
+                        <div class="h-10 bg-gray-100 rounded-xl w-full"></div>
+                        <div class="h-12 bg-gray-100 rounded-xl w-full"></div>
+                        <div class="h-12 bg-gray-100 rounded-xl w-full"></div>
+                        <div class="h-12 bg-gray-100 rounded-xl w-full"></div>
+                    </div>
+
+                    <!-- Empty State Container (Hidden by default) -->
+                    <div id="emptyState" class="hidden p-16 text-center">
+                        <div class="w-16 h-16 bg-orange-50 text-primary rounded-2xl mx-auto flex items-center justify-center mb-4">
+                            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"/></svg>
+                        </div>
+                        <h3 class="text-base font-bold text-gray-900 mb-1">কোনো বায়্যার পাওয়া যায়নি</h3>
+                        <p class="text-sm text-gray-500">বর্তমানে দেখানোর মতো কোনো বায়্যার তথ্য নেই।</p>
+                    </div>
+
+                    <!-- Desktop Table View -->
+                    <div class="overflow-x-auto hidden md:block">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50/70">
+                                <tr>
+                                    <th class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Buyer</th>
+                                    <th class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Email</th>
+                                    <th class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Phone</th>
+                                    <th class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Country</th>
+                                    <th class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">UID</th>
+                                    <th class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Status</th>
+                                    <th class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Verification</th>
+                                    <th class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Created Date</th>
+                                    <th class="px-6 py-4 text-right text-xs font-semibold text-gray-500 uppercase tracking-wider">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="buyersTableBody" class="bg-white divide-y divide-gray-100">
+                                <!-- Dynamic rows inserted here -->
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Mobile Card View -->
+                    <div id="buyersCardContainer" class="grid grid-cols-1 gap-4 p-4 md:hidden">
+                        <!-- Dynamic mobile cards inserted here -->
+                    </div>
+
+                    <!-- Pagination Section -->
+                    <div class="px-6 py-4 border-t border-gray-100 flex flex-col sm:flex-row items-center justify-between gap-4">
+                        <div id="paginationInfo" class="text-sm text-gray-500">
+                            Showing <span class="font-semibold text-gray-700">0</span> to <span class="font-semibold text-gray-700">0</span> of <span class="font-semibold text-gray-700">0</span> buyers
+                        </div>
+                        <div id="paginationControls" class="flex items-center space-x-1">
+                            <!-- Dynamic pagination buttons -->
+                        </div>
+                    </div>
+
+                </div>
+
+            </main>
+        </div>
+    </div>
+
+    <!-- ================= BUYER DETAILS MODAL ================= -->
+    <div id="detailsModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl transform transition-all scale-95 opacity-0 duration-300" id="detailsModalContent">
+            <div class="flex items-center justify-between pb-4 border-b border-gray-100">
+                <h3 class="text-lg font-bold text-gray-900">Buyer Details</h3>
+                <button onclick="closeDetailsModal()" class="w-8 h-8 rounded-full bg-gray-100 text-gray-500 flex items-center justify-center hover:bg-gray-200 transition-colors">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+            </div>
+            <div id="detailsModalBody" class="py-6 space-y-6">
+                <!-- Dynamically filled details -->
+            </div>
+            <div class="pt-4 border-t border-gray-100 flex justify-end">
+                <button onclick="closeDetailsModal()" class="px-5 py-2.5 bg-gray-100 text-gray-700 rounded-xl font-medium text-sm hover:bg-gray-200 transition-colors">বন্ধ করুন</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= EDIT BUYER MODAL ================= -->
+    <div id="editModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl transform transition-all scale-95 opacity-0 duration-300" id="editModalContent">
+            <div class="flex items-center justify-between pb-4 border-b border-gray-100">
+                <h3 class="text-lg font-bold text-gray-900">বায়্যার তথ্য সম্পাদনা</h3>
+                <button onclick="closeEditModal()" class="w-8 h-8 rounded-full bg-gray-100 text-gray-500 flex items-center justify-center hover:bg-gray-200 transition-colors">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+            </div>
+            <form id="editForm" class="space-y-4 pt-4">
+                <input type="hidden" id="editUid">
+                <div>
+                    <label class="block text-xs font-semibold text-gray-600 uppercase mb-1">নাম</label>
+                    <input type="text" id="editName" required class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-gray-600 uppercase mb-1">ফোন নম্বর</label>
+                    <input type="text" id="editPhone" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-gray-600 uppercase mb-1">দেশ</label>
+                    <input type="text" id="editCountry" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-gray-600 uppercase mb-1">অ্যাক্টিভ স্ট্যাটাস</label>
+                    <select id="editActiveStatus" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary">
+                        <option value="true">অ্যাক্টিভ (Active)</option>
+                        <option value="false">ইনঅ্যাক্টিভ (Inactive)</option>
+                    </select>
+                </div>
+                <div class="flex items-center justify-end space-x-3 pt-4 border-t border-gray-100">
+                    <button type="button" onclick="closeEditModal()" class="px-5 py-2.5 bg-gray-100 text-gray-700 rounded-xl font-medium text-sm hover:bg-gray-200 transition-colors">বাতিল</button>
+                    <button type="submit" id="saveEditBtn" class="px-5 py-2.5 bg-primary text-white rounded-xl font-medium text-sm hover:bg-primaryHover transition-colors shadow-sm flex items-center space-x-2">
+                        <span>সংরক্ষণ করুন</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ================= DELETE CONFIRMATION MODAL ================= -->
+    <div id="deleteModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-3xl max-w-sm w-full p-6 shadow-2xl text-center transform transition-all scale-95 opacity-0 duration-300" id="deleteModalContent">
+            <div class="w-14 h-14 bg-red-50 text-red-500 rounded-2xl mx-auto flex items-center justify-center mb-4">
+                <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+            </div>
+            <h3 class="text-lg font-bold text-gray-900 mb-1">বায়্যার ডিলিট করবেন?</h3>
+            <p class="text-xs text-gray-500 mb-6">এই বায়্যারের তথ্য স্থায়ীভাবে মুছে ফেলা হবে। এই কাজটি পূর্বাবস্থায় ফেরানো যাবে না।</p>
+            <input type="hidden" id="deleteTargetUid">
+            <div class="flex items-center space-x-3">
+                <button type="button" onclick="closeDeleteModal()" class="flex-1 px-4 py-2.5 bg-gray-100 text-gray-700 rounded-xl font-medium text-sm hover:bg-gray-200 transition-colors">বাতিল</button>
+                <button type="button" id="confirmDeleteBtn" class="flex-1 px-4 py-2.5 bg-red-600 text-white rounded-xl font-medium text-sm hover:bg-red-700 transition-colors shadow-sm">ডিলিট করুন</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= FIREBASE MODULE SCRIPT ================= -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getFirestore, collection, getDocs, doc, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        // Existing Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyBUhNhYvuo_FTvZ5RZR6Gn-4hsUY21S0XE",
+            authDomain: "ghotimarket.firebaseapp.com",
+            databaseURL: "https://ghotimarket-default-rtdb.firebaseio.com",
+            projectId: "ghotimarket",
+            storageBucket: "ghotimarket.firebasestorage.app",
+            messagingSenderId: "481257644093",
+            appId: "1:481257644093:web:0dfc3699d6b3c86afeca54",
+            measurementId: "G-4SR8V2EKC1"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        // State variables
+        let allBuyers = [];
+        let filteredBuyers = [];
+        let currentPage = 1;
+        let rowsPerPage = 10;
+
+        // ================= TOAST SYSTEM =================
+        window.showToast = function(message, type = 'success') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            
+            let bgClass = 'bg-gray-900 text-white';
+            let iconSvg = `<svg class="w-5 h-5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>`;
+
+            if (type === 'error') {
+                iconSvg = `<svg class="w-5 h-5 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>`;
+            } else if (type === 'warning') {
+                iconSvg = `<svg class="w-5 h-5 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>`;
+            }
+
+            toast.className = `flex items-center space-x-3 px-4 py-3 bg-gray-900 text-white rounded-2xl shadow-xl text-sm font-medium transform transition-all translate-y-2 opacity-0 duration-300`;
+            toast.innerHTML = `${iconSvg}<span>${message}</span>`;
+            
+            container.appendChild(toast);
+            setTimeout(() => { toast.classList.remove('translate-y-2', 'opacity-0'); }, 10);
+
+            setTimeout(() => {
+                toast.classList.add('translate-y-2', 'opacity-0');
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        // ================= COPY FUNCTIONALITY =================
+        window.copyToClipboard = function(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                showToast('কপি হয়েছে');
+            }).catch(() => {
+                showToast('কপি করা যায়নি', 'error');
+            });
+        }
+
+        // ================= AUTHENTICATION CHECK =================
+        onAuthStateChanged(auth, async (user) => {
+            if (!user || user.email !== 'support@ghotimarket.com') {
+                window.location.href = 'login.html';
+                return;
+            }
+            loadBuyers();
+        });
+
+        // ================= FIREBASE DATA LOADING =================
+        async function loadBuyers() {
+            const skeleton = document.getElementById('skeletonLoader');
+            const errorState = document.getElementById('errorState');
+            const emptyState = document.getElementById('emptyState');
+            
+            skeleton.classList.remove('hidden');
+            errorState.classList.add('hidden');
+            emptyState.classList.add('hidden');
+
+            try {
+                const querySnapshot = await getDocs(collection(db, 'buyers'));
+                allBuyers = [];
+                querySnapshot.forEach((docSnap) => {
+                    const data = docSnap.val ? docSnap.val() : docSnap.data();
+                    // Ensure doc ID or uid fallback
+                    const buyerId = docSnap.id;
+                    allBuyers.push({ id: buyerId, ...data });
+                });
+
+                skeleton.classList.add('hidden');
+                updateStatistics();
+                applyFiltersAndSearch();
+            } catch (error) {
+                console.error("Error loading buyers:", error);
+                skeleton.classList.add('hidden');
+                errorState.classList.remove('hidden');
+                showToast('তথ্য লোড করতে সমস্যা হয়েছে', 'error');
+            }
+        }
+
+        document.getElementById('retryBtn').addEventListener('click', loadBuyers);
+
+        // ================= STATISTICS UPDATE =================
+        function updateStatistics() {
+            const total = allBuyers.length;
+            let activeCount = 0;
+            let verifiedCount = 0;
+            let newCount = 0;
+
+            const today = new Date().toDateString();
+
+            allBuyers.forEach(b => {
+                if (b.active === true || b.active === 'true' || b.status === 'active') activeCount++;
+                if (b.emailVerified === true || b.verified === true) verifiedCount++;
+                
+                if (b.createdAt) {
+                    let createdDate = b.createdAt.toDate ? b.createdAt.toDate() : new Date(b.createdAt);
+                    if (createdDate.toDateString() === today) {
+                        newCount++;
+                    }
+                }
+            });
+
+            document.getElementById('totalBuyersCount').textContent = total;
+            document.getElementById('activeBuyersCount').textContent = activeCount || total; // fallback gracefully
+            document.getElementById('verifiedBuyersCount').textContent = verifiedCount;
+            document.getElementById('newBuyersCount').textContent = newCount;
+        }
+
+        // ================= SEARCH & FILTER =================
+        function applyFiltersAndSearch() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase().trim();
+            const statusFilter = document.getElementById('filterStatus').value;
+
+            filteredBuyers = allBuyers.filter(b => {
+                const name = (b.name || '').toLowerCase();
+                const email = (b.email || '').toLowerCase();
+                const phone = (b.phone || '').toString().toLowerCase();
+                const uid = (b.uid || b.id || '').toLowerCase();
+                const country = (b.country || '').toLowerCase();
+
+                const matchesSearch = name.includes(searchTerm) || 
+                                      email.includes(searchTerm) || 
+                                      phone.includes(searchTerm) || 
+                                      uid.includes(searchTerm) || 
+                                      country.includes(searchTerm);
+
+                if (!matchesSearch) return false;
+
+                if (statusFilter === 'verified') return b.emailVerified === true || b.verified === true;
+                if (statusFilter === 'unverified') return !(b.emailVerified === true || b.verified === true);
+                if (statusFilter === 'active') return b.active === true || b.active === 'true';
+                if (statusFilter === 'inactive') return b.active === false || b.active === 'false';
+
+                return true;
+            });
+
+            currentPage = 1;
+            renderPagination();
+        }
+
+        document.getElementById('searchInput').addEventListener('input', applyFiltersAndSearch);
+        document.getElementById('filterStatus').addEventListener('change', applyFiltersAndSearch);
+        document.getElementById('itemsPerPage').addEventListener('change', (e) => {
+            rowsPerPage = parseInt(e.target.value);
+            currentPage = 1;
+            renderPagination();
+        });
+
+        // ================= PAGINATION & RENDERING =================
+        function renderPagination() {
+            const totalItems = filteredBuyers.length;
+            const totalPages = Math.ceil(totalItems / rowsPerPage) || 1;
+            if (currentPage > totalPages) currentPage = totalPages;
+
+            const startIdx = (currentPage - 1) * rowsPerPage;
+            const endIdx = Math.min(startIdx + rowsPerPage, totalItems);
+            const paginatedData = filteredBuyers.slice(startIdx, endIdx);
+
+            renderTable(paginatedData);
+            renderMobileCards(paginatedData);
+
+            // Update Pagination Info
+            document.getElementById('paginationInfo').innerHTML = `Showing <span class="font-semibold text-gray-700">${totalItems > 0 ? startIdx + 1 : 0}</span> to <span class="font-semibold text-gray-700">${endIdx}</span> of <span class="font-semibold text-gray-700">${totalItems}</span> buyers`;
+
+            // Update Pagination Controls
+            const controls = document.getElementById('paginationControls');
+            controls.innerHTML = '';
+
+            // Previous Button
+            const prevBtn = document.createElement('button');
+            prevBtn.className = `px-3 py-1.5 rounded-lg text-xs font-medium border ${currentPage === 1 ? 'bg-gray-50 text-gray-300 border-gray-100 cursor-not-allowed' : 'bg-white text-gray-700 border-gray-200 hover:bg-gray-50'}`;
+            prevBtn.textContent = 'Previous';
+            prevBtn.disabled = currentPage === 1;
+            prevBtn.onclick = () => { if (currentPage > 1) { currentPage--; renderPagination(); } };
+            controls.appendChild(prevBtn);
+
+            for (let i = 1; i <= totalPages; i++) {
+                if (i === 1 || i === totalPages || (i >= currentPage - 1 && i <= currentPage + 1)) {
+                    const pageBtn = document.createElement('button');
+                    pageBtn.className = `px-3 py-1.5 rounded-lg text-xs font-medium border ${i === currentPage ? 'bg-primary text-white border-primary shadow-sm' : 'bg-white text-gray-700 border-gray-200 hover:bg-gray-50'}`;
+                    pageBtn.textContent = i;
+                    pageBtn.onclick = () => { currentPage = i; renderPagination(); };
+                    controls.appendChild(pageBtn);
+                }
+            }
+
+            // Next Button
+            const nextBtn = document.createElement('button');
+            nextBtn.className = `px-3 py-1.5 rounded-lg text-xs font-medium border ${currentPage === totalPages || totalPages === 0 ? 'bg-gray-50 text-gray-300 border-gray-100 cursor-not-allowed' : 'bg-white text-gray-700 border-gray-200 hover:bg-gray-50'}`;
+            nextBtn.textContent = 'Next';
+            nextBtn.disabled = currentPage === totalPages || totalPages === 0;
+            nextBtn.onclick = () => { if (currentPage < totalPages) { currentPage++; renderPagination(); } };
+            controls.appendChild(nextBtn);
+        }
+
+        // ================= RENDER DESKTOP TABLE =================
+        function renderTable(buyers) {
+            const tbody = document.getElementById('buyersTableBody');
+            const emptyState = document.getElementById('emptyState');
+            tbody.innerHTML = '';
+
+            if (buyers.length === 0) {
+                emptyState.classList.remove('hidden');
+                return;
+            }
+            emptyState.classList.add('hidden');
+
+            buyers.forEach(b => {
+                const name = b.name || 'Unnamed Buyer';
+                const email = b.email || 'N/A';
+                const phone = b.phone || 'N/A';
+                const country = b.country || 'N/A';
+                const uid = b.uid || b.id || 'N/A';
+                const shortUid = uid !== 'N/A' && uid.length > 8 ? uid.substring(0, 8) + '...' : uid;
+                const isActive = b.active === true || b.active === 'true';
+                const isVerified = b.emailVerified === true || b.verified === true;
+                
+                let createdDateStr = 'N/A';
+                if (b.createdAt) {
+                    let d = b.createdAt.toDate ? b.createdAt.toDate() : new Date(b.createdAt);
+                    createdDateStr = d.toLocaleDateString() + ' ' + d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                }
+
+                tbody.innerHTML += `
+                    <tr class="hover:bg-gray-50/80 transition-colors group">
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="flex items-center space-x-3 cursor-pointer" onclick="openDetails('${uid}')">
+                                <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-primary to-orange-400 text-white font-bold flex items-center justify-center text-xs shadow-sm">
+                                    ${name.charAt(0).toUpperCase()}
+                                </div>
+                                <div>
+                                    <span class="text-sm font-bold text-gray-900 block group-hover:text-primary transition-colors">${name}</span>
+                                    <span class="text-xs text-gray-400 font-mono">UID: ${shortUid}</span>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="flex items-center space-x-2">
+                                <span class="text-sm text-gray-600 truncate max-w-[180px]">${email}</span>
+                                ${email !== 'N/A' ? `<button onclick="copyToClipboard('${email}')" class="text-gray-400 hover:text-primary"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"/></svg></button>` : ''}
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="flex items-center space-x-2">
+                                <span class="text-sm text-gray-600">${phone}</span>
+                                ${phone !== 'N/A' ? `<button onclick="copyToClipboard('${phone}')" class="text-gray-400 hover:text-primary"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"/></svg></button>` : ''}
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">${country}</td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="flex items-center space-x-1 font-mono text-xs text-gray-500">
+                                <span>${shortUid}</span>
+                                <button onclick="copyToClipboard('${uid}')" class="text-gray-400 hover:text-primary"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"/></svg></button>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <span class="px-2.5 py-1 rounded-full text-xs font-semibold ${isActive ? 'bg-emerald-50 text-emerald-600' : 'bg-gray-100 text-gray-600'}">
+                                ${isActive ? 'Active' : 'Inactive'}
+                            </span>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <span class="px-2.5 py-1 rounded-full text-xs font-semibold ${isVerified ? 'bg-blue-50 text-blue-600' : 'bg-amber-50 text-amber-600'}">
+                                ${isVerified ? 'Verified' : 'Unverified'}
+                            </span>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-xs text-gray-500">${createdDateStr}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                            <div class="flex items-center justify-end space-x-2">
+                                <button onclick="openDetails('${uid}')" class="p-1.5 rounded-lg bg-gray-50 text-gray-600 hover:bg-gray-100 hover:text-primary transition-colors" title="View">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                                </button>
+                                <button onclick="openEditModalFromId('${uid}')" class="p-1.5 rounded-lg bg-orange-50 text-primary hover:bg-orange-100 transition-colors" title="Edit">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+                                </button>
+                                <button onclick="openDeleteModal('${uid}')" class="p-1.5 rounded-lg bg-red-50 text-red-600 hover:bg-red-100 transition-colors" title="Delete">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+
+        // ================= RENDER MOBILE CARDS =================
+        function renderMobileCards(buyers) {
+            const container = document.getElementById('buyersCardContainer');
+            container.innerHTML = '';
+
+            buyers.forEach(b => {
+                const name = b.name || 'Unnamed Buyer';
+                const email = b.email || 'N/A';
+                const phone = b.phone || 'N/A';
+                const country = b.country || 'N/A';
+                const uid = b.uid || b.id || 'N/A';
+                const isActive = b.active === true || b.active === 'true';
+                const isVerified = b.emailVerified === true || b.verified === true;
+
+                container.innerHTML += `
+                    <div class="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm space-y-3">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-primary to-orange-400 text-white font-bold flex items-center justify-center text-sm shadow-sm">
+                                    ${name.charAt(0).toUpperCase()}
+                                </div>
+                                <div>
+                                    <h4 class="text-sm font-bold text-gray-900">${name}</h4>
+                                    <span class="text-xs text-gray-400 font-mono">${country}</span>
+                                </div>
+                            </div>
+                            <div class="flex items-center space-x-2">
+                                <span class="px-2.5 py-0.5 rounded-full text-[10px] font-semibold ${isActive ? 'bg-emerald-50 text-emerald-600' : 'bg-gray-100 text-gray-600'}">
+                                    ${isActive ? 'Active' : 'Inactive'}
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="text-xs space-y-1 text-gray-600 border-t border-b border-gray-50 py-2">
+                            <p class="truncate"><strong class="text-gray-400">Email:</strong> ${email}</p>
+                            <p><strong class="text-gray-400">Phone:</strong> ${phone}</p>
+                            <p class="font-mono text-[11px] text-gray-400 truncate">UID: ${uid}</p>
+                        </div>
+
+                        <div class="flex items-center justify-between pt-1">
+                            <span class="px-2.5 py-0.5 rounded-full text-[10px] font-semibold ${isVerified ? 'bg-blue-50 text-blue-600' : 'bg-amber-50 text-amber-600'}">
+                                ${isVerified ? 'Verified' : 'Unverified'}
+                            </span>
+                            <div class="flex items-center space-x-2">
+                                <button onclick="openDetails('${uid}')" class="px-3 py-1 bg-gray-100 text-gray-700 text-xs font-medium rounded-lg">View</button>
+                                <button onclick="openEditModalFromId('${uid}')" class="px-3 py-1 bg-orange-50 text-primary text-xs font-medium rounded-lg">Edit</button>
+                                <button onclick="openDeleteModal('${uid}')" class="px-3 py-1 bg-red-50 text-red-600 text-xs font-medium rounded-lg">Delete</button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        // ================= BUYER DETAILS MODAL LOGIC =================
+        window.openDetails = function(uid) {
+            const buyer = allBuyers.find(b => (b.uid === uid || b.id === uid));
+            if (!buyer) return;
+
+            const name = buyer.name || 'N/A';
+            const email = buyer.email || 'N/A';
+            const phone = buyer.phone || 'N/A';
+            const country = buyer.country || 'N/A';
+            const buyerUid = buyer.uid || buyer.id || 'N/A';
+            const isActive = buyer.active === true || buyer.active === 'true';
+            const isVerified = buyer.emailVerified === true || buyer.verified === true;
+
+            let createdAtStr = 'N/A';
+            if (buyer.createdAt) {
+                let d = buyer.createdAt.toDate ? buyer.createdAt.toDate() : new Date(buyer.createdAt);
+                createdAtStr = d.toLocaleString();
+            }
+
+            let updatedAtStr = 'N/A';
+            if (buyer.updatedAt) {
+                let d = buyer.updatedAt.toDate ? buyer.updatedAt.toDate() : new Date(buyer.updatedAt);
+                updatedAtStr = d.toLocaleString();
+            }
+
+            const modalBody = document.getElementById('detailsModalBody');
+            modalBody.innerHTML = `
+                <div class="flex items-center space-x-4 bg-gray-50 p-4 rounded-2xl">
+                    <div class="w-14 h-14 rounded-2xl bg-gradient-to-tr from-primary to-orange-400 text-white font-bold flex items-center justify-center text-xl shadow-md">
+                        ${name.charAt(0).toUpperCase()}
+                    </div>
+                    <div>
+                        <h4 class="text-base font-bold text-gray-900">${name}</h4>
+                        <p class="text-xs text-gray-500 font-mono">UID: ${buyerUid}</p>
+                    </div>
+                </div>
+
+                <div class="space-y-3">
+                    <h5 class="text-xs font-bold text-gray-400 uppercase tracking-wider">Contact Information</h5>
+                    <div class="bg-gray-50 p-4 rounded-2xl space-y-2 text-sm">
+                        <div class="flex items-center justify-between">
+                            <span class="text-gray-500">Email:</span>
+                            <div class="flex items-center space-x-2">
+                                <span class="font-medium text-gray-800">${email}</span>
+                                <button onclick="copyToClipboard('${email}')" class="text-primary hover:text-primaryHover"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"/></svg></button>
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-gray-500">Phone:</span>
+                            <div class="flex items-center space-x-2">
+                                <span class="font-medium text-gray-800">${phone}</span>
+                                <button onclick="copyToClipboard('${phone}')" class="text-primary hover:text-primaryHover"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"/></svg></button>
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-gray-500">Country:</span>
+                            <span class="font-medium text-gray-800">${country}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="space-y-3">
+                    <h5 class="text-xs font-bold text-gray-400 uppercase tracking-wider">Account Information</h5>
+                    <div class="bg-gray-50 p-4 rounded-2xl space-y-2 text-sm">
+                        <div class="flex items-center justify-between">
+                            <span class="text-gray-500">Status:</span>
+                            <span class="px-2 py-0.5 rounded-full text-xs font-semibold ${isActive ? 'bg-emerald-50 text-emerald-600' : 'bg-gray-100 text-gray-600'}">${isActive ? 'Active' : 'Inactive'}</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-gray-500">Verification:</span>
+                            <span class="px-2 py-0.5 rounded-full text-xs font-semibold ${isVerified ? 'bg-blue-50 text-blue-600' : 'bg-amber-50 text-amber-600'}">${isVerified ? 'Verified' : 'Unverified'}</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-gray-500">Created At:</span>
+                            <span class="font-medium text-gray-800 text-xs">${createdAtStr}</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-gray-500">Updated At:</span>
+                            <span class="font-medium text-gray-800 text-xs">${updatedAtStr}</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            const modal = document.getElementById('detailsModal');
+            const content = document.getElementById('detailsModalContent');
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                content.classList.remove('scale-95', 'opacity-0');
+                content.classList.add('scale-100', 'opacity-100');
+            }, 10);
+        }
+
+        window.closeDetailsModal = function() {
+            const modal = document.getElementById('detailsModal');
+            const content = document.getElementById('detailsModalContent');
+            content.classList.remove('scale-100', 'opacity-100');
+            content.classList.add('scale-95', 'opacity-0');
+            setTimeout(() => modal.classList.add('hidden'), 200);
+        }
+
+        // ================= EDIT BUYER MODAL LOGIC =================
+        window.openEditModalFromId = function(uid) {
+            const buyer = allBuyers.find(b => (b.uid === uid || b.id === uid));
+            if (!buyer) return;
+
+            document.getElementById('editUid').value = buyer.id || buyer.uid;
+            document.getElementById('editName').value = buyer.name || '';
+            document.getElementById('editPhone').value = buyer.phone || '';
+            document.getElementById('editCountry').value = buyer.country || '';
+            document.getElementById('editActiveStatus').value = (buyer.active === true || buyer.active === 'true') ? 'true' : 'false';
+
+            const modal = document.getElementById('editModal');
+            const content = document.getElementById('editModalContent');
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                content.classList.remove('scale-95', 'opacity-0');
+                content.classList.add('scale-100', 'opacity-100');
+            }, 10);
+        }
+
+        window.closeEditModal = function() {
+            const modal = document.getElementById('editModal');
+            const content = document.getElementById('editModalContent');
+            content.classList.remove('scale-100', 'opacity-100');
+            content.classList.add('scale-95', 'opacity-0');
+            setTimeout(() => modal.classList.add('hidden'), 200);
+        }
+
+        document.getElementById('editForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const docId = document.getElementById('editUid').value;
+            const name = document.getElementById('editName').value;
+            const phone = document.getElementById('editPhone').value;
+            const country = document.getElementById('editCountry').value;
+            const active = document.getElementById('editActiveStatus').value === 'true';
+
+            const saveBtn = document.getElementById('saveEditBtn');
+            saveBtn.disabled = true;
+            saveBtn.innerHTML = `<svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg><span>সংরক্ষণ হচ্ছে...</span>`;
+
+            try {
+                // Preserving UID & Email safety rule: only editable fields updated
+                await updateDoc(doc(db, 'buyers', docId), { 
+                    name, 
+                    phone, 
+                    country, 
+                    active,
+                    updatedAt: new Date()
+                });
+                
+                showToast('বায়্যারের তথ্য সফলভাবে আপডেট করা হয়েছে');
+                closeEditModal();
+                loadBuyers();
+            } catch (error) {
+                console.error("Error updating buyer:", error);
+                showToast('আপডেট করতে সমস্যা হয়েছে। আবার চেষ্টা করুন।', 'error');
+            } finally {
+                saveBtn.disabled = false;
+                saveBtn.innerHTML = `<span>সংরক্ষণ করুন</span>`;
+            }
+        });
+
+        // ================= DELETE BUYER LOGIC =================
+        window.openDeleteModal = function(uid) {
+            document.getElementById('deleteTargetUid').value = uid;
+            const modal = document.getElementById('deleteModal');
+            const content = document.getElementById('deleteModalContent');
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                content.classList.remove('scale-95', 'opacity-0');
+                content.classList.add('scale-100', 'opacity-100');
+            }, 10);
+        }
+
+        window.closeDeleteModal = function() {
+            const modal = document.getElementById('deleteModal');
+            const content = document.getElementById('deleteModalContent');
+            content.classList.remove('scale-100', 'opacity-100');
+            content.classList.add('scale-95', 'opacity-0');
+            setTimeout(() => modal.classList.add('hidden'), 200);
+        }
+
+        document.getElementById('confirmDeleteBtn').addEventListener('click', async () => {
+            const uid = document.getElementById('deleteTargetUid').value;
+            const deleteBtn = document.getElementById('confirmDeleteBtn');
+            deleteBtn.disabled = true;
+            deleteBtn.textContent = 'ডিলিট হচ্ছে...';
+
+            try {
+                await deleteDoc(doc(db, 'buyers', uid));
+                showToast('বায়্যার সফলভাবে ডিলিট করা হয়েছে।');
+                closeDeleteModal();
+                loadBuyers();
+            } catch (error) {
+                console.error("Error deleting buyer:", error);
+                showToast('ডিলিট করতে সমস্যা হয়েছে।', 'error');
+            } finally {
+                deleteBtn.disabled = false;
+                deleteBtn.textContent = 'ডিলিট করুন';
+            }
+        });
+
+        // ================= LOGOUT HANDLING =================
+        function handleLogout() {
+            signOut(auth).then(() => {
+                window.location.href = 'login.html';
+            }).catch((error) => {
+                console.error("Logout error:", error);
+                showToast('লগআউট করতে সমস্যা হয়েছে', 'error');
+            });
+        }
+
+        document.getElementById('sidebarLogout').addEventListener('click', handleLogout);
+        document.getElementById('headerLogout').addEventListener('click', handleLogout);
+
+        // ================= UI INTERACTION HELPERS =================
+        const sidebar = document.getElementById('sidebar');
+        const sidebarOverlay = document.getElementById('sidebarOverlay');
+        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+        const profileDropdownBtn = document.getElementById('profileDropdownBtn');
+        const profileDropdownMenu = document.getElementById('profileDropdownMenu');
+
+        mobileMenuBtn.addEventListener('click', () => {
+            sidebar.classList.toggle('-translate-x-full');
+            sidebarOverlay.classList.toggle('hidden');
+        });
+
+        sidebarOverlay.addEventListener('click', () => {
+            sidebar.classList.add('-translate-x-full');
+            sidebarOverlay.classList.add('hidden');
+        });
+
+        profileDropdownBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            profileDropdownMenu.classList.toggle('hidden');
+        });
+
+        window.addEventListener('click', () => {
+            if (!profileDropdownMenu.classList.contains('hidden')) {
+                profileDropdownMenu.classList.add('hidden');
+            }
+        });
+    </script>
+</body>
+</html>
