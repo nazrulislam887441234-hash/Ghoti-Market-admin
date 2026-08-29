@@ -740,9 +740,6 @@
     const auth = getAuth(app);
     const db = getFirestore(app);
 
-    // IMGBB API Key Constant
-    const IMGBB_API_KEY = "cbc05b6d6230ba1ed478e618ec5e7383";
-
     // DOM Elements
     const authOverlay = document.getElementById('authOverlay');
     const adminEmailDisplay = document.getElementById('adminEmailDisplay');
@@ -862,6 +859,20 @@
       }
     }
 
+    // Fetch ImgBB API Key dynamically from api_keys collection
+    async function fetchImgBBApiKey() {
+      const q = query(
+        collection(db, "api_keys"), 
+        where("status", "==", "active"),
+        where("email", "==", "support@ghotimarket.com")
+      );
+      const snapshot = await getDocs(q);
+      if (snapshot.empty) {
+        throw new Error("API_KEY_NOT_FOUND");
+      }
+      return snapshot.docs[0].data().apiKey;
+    }
+
     // Slug Generator Logic with Bengali Unicode Support
     function generateSlug(text) {
       return text
@@ -979,12 +990,12 @@
       variantGroupContainer.appendChild(groupCard);
     }
 
-    // IMGBB Upload Function
-    async function uploadImageToIMGBB(file) {
+    // IMGBB Upload Function with Dynamic API Key Fetching
+    async function uploadImageToIMGBB(file, apiKey) {
       const formData = new FormData();
       formData.append('image', file);
 
-      const response = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, {
+      const response = await fetch(`https://api.imgbb.com/1/upload?key=${apiKey}`, {
         method: 'POST',
         body: formData
       });
@@ -1046,9 +1057,12 @@
         return;
       }
 
-      setLoading(true, "স্লাগ যাচাই করা হচ্ছে...");
+      setLoading(true, "API কী এবং স্লাগ যাচাই করা হচ্ছে...");
 
       try {
+        // Fetch active ImgBB API key from api_keys collection
+        const apiKey = await fetchImgBBApiKey();
+
         // Duplicate Slug Check in reseller_product
         const slugQuery = query(collection(db, "reseller_product"), where("slug", "==", slug));
         const slugSnapshot = await getDocs(slugQuery);
@@ -1056,11 +1070,11 @@
           throw new Error("DUPLICATE_SLUG");
         }
 
-        // Upload Images to IMGBB
+        // Upload Images to IMGBB using fetched API key
         setLoading(true, "ছবি আপলোড হচ্ছে...");
         const imageUrls = [];
         for (let i = 0; i < selectedImageFiles.length; i++) {
-          const url = await uploadImageToIMGBB(selectedImageFiles[i]);
+          const url = await uploadImageToIMGBB(selectedImageFiles[i], apiKey);
           imageUrls.push(url);
         }
 
@@ -1133,7 +1147,9 @@
         setLoading(false);
         let errorMessage = "কিছু একটা সমস্যা হয়েছে। কিছুক্ষণ পরে আবার চেষ্টা করুন।";
 
-        if (err.message === "DUPLICATE_SLUG") {
+        if (err.message === "API_KEY_NOT_FOUND") {
+          errorMessage = "api_keys কালেকশনে কোনো সক্রিয় API key পাওয়া যায়নি।";
+        } else if (err.message === "DUPLICATE_SLUG") {
           errorMessage = "এই স্লাগটি ইতোমধ্যে ব্যবহার করা হয়েছে। অন্য একটি স্লাগ ব্যবহার করুন।";
         } else if (err.message === "IMGBB_UPLOAD_FAILED") {
           errorMessage = "IMGBB error: ছবি আপলোড করা যায়নি। API Key পরীক্ষা করুন।";
