@@ -974,8 +974,8 @@
     const auth = getAuth(app);
     const db = getFirestore(app);
 
-    // IMGBB API Key Constant
-    const IMGBB_API_KEY = "cbc05b6d6230ba1ed478e618ec5e7383";
+    // Dynamic IMGBB API Key Variable
+    let IMGBB_API_KEY = "";
 
     // DOM Elements
     const authOverlay = document.getElementById('authOverlay');
@@ -1088,8 +1088,22 @@
     });
 
     async function initializeData() {
+      await loadApiKey();
       await loadCategories();
       await loadProducts();
+    }
+
+    async function loadApiKey() {
+      try {
+        const q = query(collection(db, "api_keys"), where("status", "==", "active"));
+        const snapshot = await getDocs(q);
+        if (!snapshot.empty) {
+          const apiDoc = snapshot.docs[0].data();
+          IMGBB_API_KEY = apiDoc.apiKey || "";
+        }
+      } catch (err) {
+        console.error("API Key fetch error:", err);
+      }
     }
 
     async function loadCategories() {
@@ -1306,14 +1320,11 @@
         // Populate Advanced Variants
         editVariantGroupContainer.innerHTML = '';
         if (product.variants && Array.isArray(product.variants)) {
-          // Check if variants uses new grouped format or old flat format
           if (product.variants.length > 0 && product.variants[0].options) {
-            // New Group Format
             product.variants.forEach(group => {
               addEditVariantGroupCard(group.name, group.options);
             });
           } else {
-            // Old Flat Format - convert to group format for backward compatibility
             const groupedMap = new Map();
             product.variants.forEach(v => {
               const gName = v.name || "Default";
@@ -1471,6 +1482,9 @@
 
     // IMGBB Upload Helper
     async function uploadImageToIMGBB(file) {
+      if (!IMGBB_API_KEY) {
+        throw new Error("IMGBB_API_KEY_MISSING");
+      }
       const formData = new FormData();
       formData.append('image', file);
 
@@ -1606,6 +1620,8 @@
           errMsg = "এই স্লাগটি ইতোমধ্যে অন্য একটি পণ্যে ব্যবহার করা হয়েছে। অন্য স্লাগ দিন।";
         } else if (err.message === "IMGBB_UPLOAD_FAILED") {
           errMsg = "IMGBB-তে ছবি আপলোড করতে ব্যর্থ হয়েছে।";
+        } else if (err.message === "IMGBB_API_KEY_MISSING") {
+          errMsg = "active স্ট্যাটাসসহ কোনো IMGBB API key পাওয়া যায়নি।";
         }
         showError(errMsg);
       }
