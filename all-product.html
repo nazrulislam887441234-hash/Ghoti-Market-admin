@@ -514,7 +514,7 @@ window.showToast = function(message, type = 'success') {
     setTimeout(() => {
         toast.style.opacity = '0';
         setTimeout(() => toast.remove(), 300);
-    }, 4000); // সময় একটু বাড়িয়ে দেওয়া হলো যাতে পড়ার সুযোগ থাকে
+    }, 4000);
 }
 
 async function initApp() {
@@ -709,6 +709,7 @@ function renderProducts(products, append = false) {
             <div class="p-actions">
                 <button class="btn btn-secondary btn-sm" onclick="openViewModal('${escapeHTML(p.id)}')"><i class="fas fa-eye"></i></button>
                 <button class="btn btn-primary btn-sm" onclick="openEditModal('${escapeHTML(p.id)}')"><i class="fas fa-edit"></i></button>
+                <button class="btn btn-success btn-sm" onclick="copyProductJSON('${escapeHTML(p.id)}')" title="Copy JSON"><i class="fas fa-copy"></i></button>
                 <button class="btn btn-danger btn-sm" onclick="confirmDeleteOne('${escapeHTML(p.id)}')"><i class="fas fa-trash"></i></button>
             </div>
         `;
@@ -790,6 +791,55 @@ function updateSelectedCount() {
     document.getElementById('selectedCountText').innerText = `Selected: ${checked.length}`;
 }
 
+window.copyProductJSON = async function(id) {
+    try {
+        const snap = await getDoc(doc(db, "products", id));
+        if(!snap.exists()) return showToast("Product পাওয়া যায়নি", "error");
+        
+        const data = snap.data();
+        const exportData = { id: snap.id, ...data };
+        
+        if(exportData.createdAt && typeof exportData.createdAt.toDate === 'function') {
+            exportData.createdAt = exportData.createdAt.toDate().toISOString();
+        }
+        if(exportData.updatedAt && typeof exportData.updatedAt.toDate === 'function') {
+            exportData.updatedAt = exportData.updatedAt.toDate().toISOString();
+        }
+
+        const jsonString = JSON.stringify(exportData, null, 2);
+        
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            await navigator.clipboard.writeText(jsonString);
+            showToast("প্রোডাক্টের JSON সফলভাবে কপি করা হয়েছে!");
+        } else {
+            const textArea = document.createElement("textarea");
+            textArea.value = jsonString;
+            textArea.style.position = "fixed";
+            textArea.style.top = "0";
+            textArea.style.left = "0";
+            textArea.style.opacity = "0";
+            document.body.appendChild(textArea);
+            textArea.focus();
+            textArea.select();
+            try {
+                const successful = document.execCommand('copy');
+                if (successful) {
+                    showToast("প্রোডাক্টের JSON সফলভাবে কপি করা হয়েছে!");
+                } else {
+                    throw new Error("execCommand failed");
+                }
+            } catch (err) {
+                console.error('Fallback copy error', err);
+                showToast("JSON কপি করা সম্ভব হয়নি", "error");
+            }
+            document.body.removeChild(textArea);
+        }
+    } catch(err) {
+        console.error(err);
+        showToast("JSON কপি করতে সমস্যা হয়েছে: " + err.message, "error");
+    }
+}
+
 window.openEditModal = async function(id) {
     try {
         const snap = await getDoc(doc(db, "products", id));
@@ -815,7 +865,31 @@ window.openEditModal = async function(id) {
 
         editingKeywords = p.keywords || [];
         editingImages = (p.images || []).map(url => ({ url, file: null }));
-        editingVariants = p.variants || [];
+        
+        // Robust parser supporting object-based working format, legacy strings format, and extraPrices array format seamlessly
+        editingVariants = (p.variants || []).map(v => {
+            let valuesList = [];
+            if (v.values && Array.isArray(v.values)) {
+                valuesList = v.values.map((item, idx) => {
+                    if (typeof item === 'object' && item !== null) {
+                        return {
+                            value: item.value || '',
+                            extraPrice: Number(item.extraPrice) || 0
+                        };
+                    } else {
+                        const extraPrice = (v.extraPrices && typeof v.extraPrices[idx] !== 'undefined') ? Number(v.extraPrices[idx]) : 0;
+                        return {
+                            value: String(item || ''),
+                            extraPrice: Number(extraPrice) || 0
+                        };
+                    }
+                });
+            }
+            return {
+                name: v.name || '',
+                values: valuesList
+            };
+        });
 
         renderEditKeywords();
         renderEditImages();
@@ -926,10 +1000,10 @@ function renderEditVariants() {
                 <button type="button" class="btn btn-danger btn-sm" onclick="removeVariant(${vIdx})"><i class="fas fa-trash"></i></button>
             </div>
             <div id="vValues_${vIdx}">
-                ${(v.values || []).map((val, valIdx) => `
+                ${(v.values || []).map((item, valIdx) => `
                     <div style="display:flex; gap:5px; margin-bottom:5px;">
-                        <input type="text" placeholder="Value" value="${escapeHTML(val)}" onchange="updateVariantVal(${vIdx}, ${valIdx}, this.value)" style="flex:1;">
-                        <input type="number" placeholder="Price" value="${v.extraPrices?.[valIdx] || 0}" onchange="updateVariantPrice(${vIdx}, ${valIdx}, this.value)" style="width:70px;" min="0">
+                        <input type="text" placeholder="Value" value="${escapeHTML(item.value || '')}" onchange="updateVariantVal(${vIdx}, ${valIdx}, this.value)" style="flex:1;">
+                        <input type="number" placeholder="Price" value="${item.extraPrice || 0}" onchange="updateVariantPrice(${vIdx}, ${valIdx}, this.value)" style="width:70px;" min="0">
                         <button type="button" class="btn btn-danger btn-sm" onclick="removeVariantVal(${vIdx}, ${valIdx})">&times;</button>
                     </div>
                 `).join('')}
@@ -941,21 +1015,19 @@ function renderEditVariants() {
 
 window.addVariantBtn = document.getElementById('addVariantBtn');
 document.getElementById('addVariantBtn').onclick = () => {
-    editingVariants.push({ name: '', values: [''], extraPrices: [0] });
+    editingVariants.push({ name: '', values: [{ value: '', extraPrice: 0 }] });
     renderEditVariants();
 }
 window.removeVariant = (vIdx) => { editingVariants.splice(vIdx, 1); renderEditVariants(); }
 window.updateVariantName = (vIdx, val) => { editingVariants[vIdx].name = val; }
-window.updateVariantVal = (vIdx, valIdx, val) => { editingVariants[vIdx].values[valIdx] = val; }
-window.updateVariantPrice = (vIdx, valIdx, val) => { editingVariants[vIdx].extraPrices[valIdx] = Number(val); }
+window.updateVariantVal = (vIdx, valIdx, val) => { editingVariants[vIdx].values[valIdx].value = val; }
+window.updateVariantPrice = (vIdx, valIdx, val) => { editingVariants[vIdx].values[valIdx].extraPrice = Number(val) || 0; }
 window.addVariantVal = (vIdx) => {
-    editingVariants[vIdx].values.push('');
-    editingVariants[vIdx].extraPrices.push(0);
+    editingVariants[vIdx].values.push({ value: '', extraPrice: 0 });
     renderEditVariants();
 }
 window.removeVariantVal = (vIdx, valIdx) => {
     editingVariants[vIdx].values.splice(valIdx, 1);
-    editingVariants[vIdx].extraPrices.splice(valIdx, 1);
     renderEditVariants();
 }
 
@@ -994,6 +1066,15 @@ document.getElementById('editForm').onsubmit = async (e) => {
         const oldPrice = Number(document.getElementById('editOldPrice').value) || 0;
         const affiliateDiscount = Number(document.getElementById('editAffiliateDiscount').value) || 0;
 
+        // Ensure variants save strictly in the exact requested working object structure
+        const formattedVariants = editingVariants.map(v => ({
+            name: v.name || '',
+            values: (v.values || []).map(item => ({
+                value: String(item.value || ''),
+                extraPrice: Number(item.extraPrice) || 0
+            }))
+        }));
+
         const updateData = {
             name: document.getElementById('editName').value.trim(),
             slug: slug,
@@ -1008,7 +1089,7 @@ document.getElementById('editForm').onsubmit = async (e) => {
             affiliate: affiliateStatus,
             affiliateDiscount: affiliateStatus === 'ON' ? affiliateDiscount : 0,
             keywords: editingKeywords,
-            variants: editingVariants,
+            variants: formattedVariants,
             images: finalImages.slice(0, 2),
             active: document.getElementById('editActive').checked,
             updatedAt: serverTimestamp()
@@ -1021,7 +1102,6 @@ document.getElementById('editForm').onsubmit = async (e) => {
         loadGlobalStats();
     } catch(err) {
         console.error("Detailed Update Error:", err);
-        // এখন আসল এরর মেসেজটি টোস্টে দেখাবে যাতে বোঝা যায় সমস্যা কোথায় (যেমন: Firestore Permission, Network, বা ImgBB API)
         showToast("Error: " + (err.message || err), "error");
     } finally {
         saveBtn.disabled = false;
@@ -1085,7 +1165,6 @@ document.getElementById('bulkDeleteBtn').onclick = async () => {
     yesBtn.onclick = async () => {
         try {
             const batch = writeBatch(db);
-            selected.push(...[]); // Safe dummy reference
             selected.forEach(id => {
                 batch.delete(doc(db, "products", id));
             });
