@@ -1,0 +1,1494 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GHOTI MARKET - Affiliate Banner Management</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+        :root {
+            --primary: #FF6B35;
+            --primary-hover: #E85A24;
+            --primary-light: #FFF1EB;
+            --primary-soft: #FFF7F3;
+            --bg: #F6F7F9;
+            --surface: #FFFFFF;
+            --text: #111827;
+            --muted: #64748B;
+            --border: #E5E7EB;
+            --success: #10B981;
+            --danger: #EF4444;
+            --warning: #F59E0B;
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 16px;
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --transition: all 0.2s ease-in-out;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            line-height: 1.5;
+            -webkit-font-smoothing: antialiased;
+            min-height: 100vh;
+        }
+
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--bg);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #CBD5E1;
+            border-radius: 9999px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--muted);
+        }
+
+        /* Utility Classes */
+        .hidden { display: none !important; }
+        .flex { display: flex; }
+        .flex-col { flex-direction: column; }
+        .items-center { align-items: center; }
+        .justify-between { justify-content: space-between; }
+        .justify-center { justify-content: center; }
+        .gap-2 { gap: 8px; }
+        .gap-3 { gap: 12px; }
+        .gap-4 { gap: 16px; }
+        .w-full { width: 100%; }
+
+        /* Global Loader */
+        #global-loader {
+            position: fixed;
+            inset: 0;
+            background: var(--surface);
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+        }
+
+        .spinner {
+            width: 32px;
+            height: 32px;
+            border: 4px solid var(--border);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Login View */
+        .login-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+        }
+
+        .login-card {
+            max-width: 400px;
+            width: 100%;
+            background: var(--surface);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow-sm);
+            padding: 32px;
+        }
+
+        .login-header {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+        .login-header h1 {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--text);
+            letter-spacing: -0.025em;
+        }
+
+        .login-header p {
+            font-size: 13px;
+            color: var(--muted);
+            margin-top: 4px;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--muted);
+            margin-bottom: 6px;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px 16px;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border);
+            font-size: 14px;
+            color: var(--text);
+            background: var(--surface);
+            transition: var(--transition);
+            outline: none;
+        }
+
+        .form-input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px var(--primary-light);
+        }
+
+        .password-wrapper {
+            position: relative;
+        }
+
+        .password-toggle {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: var(--muted);
+            cursor: pointer;
+            padding: 4px;
+        }
+
+        .password-toggle:hover {
+            color: var(--text);
+        }
+
+        .error-msg {
+            font-size: 12px;
+            color: var(--danger);
+            font-weight: 500;
+            margin-bottom: 12px;
+        }
+
+        .btn-primary {
+            width: 100%;
+            padding: 12px 16px;
+            background: var(--primary);
+            color: white;
+            font-weight: 600;
+            border-radius: var(--radius-md);
+            border: none;
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-hover);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+
+        /* Admin Layout */
+        .admin-view {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        header.admin-header {
+            height: 64px;
+            background: var(--surface);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 24px;
+            position: sticky;
+            top: 0;
+            z-index: 20;
+        }
+
+        .brand-box {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .brand-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: var(--radius-sm);
+            background: var(--primary-light);
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .brand-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--text);
+            letter-spacing: -0.01em;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .admin-badge {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--bg);
+            padding: 6px 12px;
+            border-radius: 9999px;
+            border: 1px solid var(--border);
+        }
+
+        .admin-badge span {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        .btn-logout {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            border-radius: var(--radius-sm);
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--danger);
+            background: transparent;
+            border: 1px solid #FEE2E2;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .btn-logout:hover {
+            background: #FEF2F2;
+        }
+
+        /* Main Content */
+        main.admin-main {
+            flex: 1;
+            max-width: 1280px;
+            width: 100%;
+            margin: 0 auto;
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        /* Dashboard Statistics Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(1, 1fr);
+            gap: 16px;
+        }
+
+        @media (min-width: 640px) {
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+
+        @media (min-width: 1024px) {
+            .stats-grid { grid-template-columns: repeat(5, 1fr); }
+        }
+
+        .stat-card {
+            background: var(--surface);
+            padding: 20px;
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow-sm);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .stat-label {
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--muted);
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--text);
+            margin-top: 8px;
+        }
+
+        .stat-value.active { color: var(--success); }
+        .stat-value.inactive { color: var(--warning); }
+        .stat-value.primary { color: var(--primary); }
+
+        .server-box-status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 8px;
+        }
+
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #CBD5E1;
+        }
+        .status-dot.active { background: var(--success); }
+        .status-dot.inactive { background: var(--danger); }
+
+        .server-selector-container {
+            margin-top: 12px;
+        }
+
+        .form-select {
+            width: 100%;
+            padding: 8px 12px;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--border);
+            font-size: 12px;
+            background: var(--bg);
+            outline: none;
+            color: var(--text);
+        }
+
+        /* Toolbar */
+        .toolbar {
+            background: var(--surface);
+            padding: 16px;
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow-sm);
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        @media (min-width: 640px) {
+            .toolbar {
+                flex-direction: row;
+                align-items: center;
+                justify-content: space-between;
+            }
+        }
+
+        .toolbar-left {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            width: 100%;
+        }
+
+        @media (min-width: 640px) {
+            .toolbar-left {
+                flex-direction: row;
+                align-items: center;
+                width: auto;
+            }
+        }
+
+        .search-box {
+            position: relative;
+            flex: 1;
+        }
+
+        @media (min-width: 640px) {
+            .search-box { width: 320px; }
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--muted);
+            width: 16px;
+            height: 16px;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 10px 14px 10px 38px;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border);
+            font-size: 13px;
+            outline: none;
+            transition: var(--transition);
+        }
+
+        .search-input:focus {
+            border-color: var(--primary);
+        }
+
+        .filter-select {
+            padding: 10px 16px;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border);
+            font-size: 13px;
+            background: var(--surface);
+            outline: none;
+            color: var(--text);
+        }
+
+        /* Banner Grid */
+        .banners-grid {
+            display: grid;
+            grid-template-columns: repeat(1, 1fr);
+            gap: 20px;
+        }
+
+        @media (min-width: 640px) {
+            .banners-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+
+        @media (min-width: 1024px) {
+            .banners-grid { grid-template-columns: repeat(3, 1fr); }
+        }
+
+        @media (min-width: 1280px) {
+            .banners-grid { grid-template-columns: repeat(4, 1fr); }
+        }
+
+        .banner-card {
+            background: var(--surface);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow-sm);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: var(--transition);
+        }
+
+        .banner-card:hover {
+            box-shadow: var(--shadow-md);
+        }
+
+        .banner-image-container {
+            height: 160px;
+            background: var(--bg);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 12px;
+            position: relative;
+            cursor: pointer;
+        }
+
+        .banner-image-container img {
+            max-height: 100%;
+            max-width: 100%;
+            object-fit: contain;
+            border-radius: 6px;
+        }
+
+        .banner-overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(0,0,0,0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 12px;
+            font-weight: 600;
+            opacity: 0;
+            transition: var(--transition);
+        }
+
+        .banner-image-container:hover .banner-overlay {
+            opacity: 1;
+        }
+
+        .banner-body {
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .banner-meta {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .badge {
+            font-size: 10px;
+            font-weight: 600;
+            text-transform: uppercase;
+            padding: 2px 8px;
+            border-radius: 9999px;
+        }
+
+        .badge.active {
+            background: #ECFDF5;
+            color: var(--success);
+        }
+
+        .badge.inactive {
+            background: #FEF3C7;
+            color: var(--warning);
+        }
+
+        .banner-date {
+            font-size: 11px;
+            color: var(--muted);
+        }
+
+        .banner-link {
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--primary);
+            text-decoration: none;
+            display: block;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .banner-link:hover {
+            text-decoration: underline;
+        }
+
+        .banner-footer {
+            padding: 12px 16px;
+            background: var(--bg);
+            border-top: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        /* Toggle Switch */
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 36px;
+            height: 20px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            inset: 0;
+            background-color: var(--border);
+            transition: .3s;
+            border-radius: 20px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 16px;
+            width: 16px;
+            left: 2px;
+            bottom: 2px;
+            background-color: white;
+            transition: .3s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: var(--primary);
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(16px);
+        }
+
+        .card-actions {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .btn-icon {
+            padding: 6px;
+            border-radius: var(--radius-sm);
+            background: transparent;
+            border: none;
+            color: var(--muted);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .btn-icon:hover {
+            color: var(--text);
+            background: var(--surface);
+        }
+
+        .btn-icon.delete:hover {
+            color: var(--danger);
+        }
+
+        /* Empty State */
+        .empty-state {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 48px 16px;
+            background: var(--surface);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border);
+        }
+
+        .empty-state p {
+            font-size: 13px;
+            color: var(--muted);
+            margin-top: 8px;
+        }
+
+        /* Modals */
+        .modal-backdrop {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(2px);
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s ease;
+        }
+
+        .modal-backdrop.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .modal-content {
+            background: var(--surface);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow-lg);
+            width: 100%;
+            max-width: 480px;
+            max-height: 90vh;
+            overflow-y: auto;
+            transform: scale(0.95);
+            transition: transform 0.2s ease;
+        }
+
+        .modal-backdrop.active .modal-content {
+            transform: scale(1);
+        }
+
+        .modal-header {
+            padding: 20px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .modal-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--text);
+        }
+
+        .modal-body {
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .modal-footer {
+            padding: 16px 20px;
+            border-top: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 12px;
+            background: var(--bg);
+        }
+
+        .dropzone {
+            border: 2px dashed var(--border);
+            border-radius: var(--radius-md);
+            padding: 24px;
+            text-align: center;
+            cursor: pointer;
+            transition: var(--transition);
+            position: relative;
+        }
+
+        .dropzone:hover {
+            border-color: var(--primary);
+        }
+
+        .dropzone input {
+            position: absolute;
+            inset: 0;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        .preview-box {
+            position: relative;
+            max-height: 160px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .preview-box img {
+            max-height: 150px;
+            max-width: 100%;
+            object-fit: contain;
+            border-radius: var(--radius-sm);
+        }
+
+        .btn-secondary {
+            padding: 10px 16px;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border);
+            background: var(--surface);
+            color: var(--muted);
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .btn-secondary:hover {
+            background: var(--bg);
+            color: var(--text);
+        }
+
+        .btn-danger {
+            padding: 10px 16px;
+            border-radius: var(--radius-md);
+            border: none;
+            background: var(--danger);
+            color: white;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .btn-danger:hover {
+            background: #DC2626;
+        }
+
+        /* Toast Notification */
+        .toast {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            z-index: 1000;
+            background: var(--text);
+            color: white;
+            padding: 12px 20px;
+            border-radius: var(--radius-md);
+            font-size: 13px;
+            font-weight: 500;
+            box-shadow: var(--shadow-lg);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .toast.active {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .toast.error {
+            background: var(--danger);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Global Loading Screen -->
+    <div id="global-loader">
+        <div class="spinner"></div>
+        <p style="font-size: 13px; font-weight: 500; color: var(--muted);">অ্যাডমিন প্যানেল লোড হচ্ছে...</p>
+    </div>
+
+    <!-- Login View -->
+    <div id="login-view" class="login-container hidden">
+        <div class="login-card">
+            <div class="login-header">
+                <h1>GHOTI MARKET</h1>
+                <p>অ্যাডমিন লগইন</p>
+            </div>
+            <form id="login-form">
+                <div class="form-group">
+                    <label class="form-label">ইমেইল</label>
+                    <input type="email" id="login-email" required placeholder="support@ghotimarket.com" class="form-input">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">পাসওয়ার্ড</label>
+                    <div class="password-wrapper">
+                        <input type="password" id="login-password" required placeholder="••••••••" class="form-input">
+                        <button type="button" id="toggle-password" class="password-toggle" aria-label="Toggle Password">
+                            <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                        </button>
+                    </div>
+                </div>
+                <div id="login-error" class="error-msg hidden"></div>
+                <button type="submit" id="login-btn" class="btn-primary">
+                    <span>লগইন করুন</span>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Admin Panel View -->
+    <div id="admin-view" class="admin-view hidden">
+        <!-- Header -->
+        <header class="admin-header">
+            <div class="brand-box">
+                <div class="brand-icon">
+                    <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z"/></svg>
+                </div>
+                <h1 class="brand-title">GHOTI MARKET — Affiliate Banner Management</h1>
+            </div>
+            <div class="header-actions">
+                <div class="admin-badge">
+                    <svg width="14" height="14" style="color: var(--primary);" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+                    <span id="admin-email-display">support@ghotimarket.com</span>
+                </div>
+                <button id="logout-btn" class="btn-logout">
+                    <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+                    <span>লগআউট</span>
+                </button>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="admin-main">
+            <!-- Statistics Grid -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <span class="stat-label">মোট ব্যানার</span>
+                    <h3 id="stat-total" class="stat-value">0</h3>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-label">Active Banner</span>
+                    <h3 id="stat-active" class="stat-value active">0</h3>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-label">Inactive Banner</span>
+                    <h3 id="stat-inactive" class="stat-value inactive">0</h3>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-label">Active API Key</span>
+                    <h3 id="stat-apikeys" class="stat-value primary">0</h3>
+                </div>
+                <div class="stat-card" style="justify-content: space-between;">
+                    <div>
+                        <span class="stat-label">API Server Status</span>
+                        <div id="server-status-box" class="server-box-status">
+                            <span class="status-dot"></span>
+                            <span style="font-size: 13px; font-weight: 600;">যাচাই করা হচ্ছে...</span>
+                        </div>
+                    </div>
+                    <div id="server-selector-container" class="server-selector-container hidden">
+                        <select id="server-selector" class="form-select"></select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Toolbar -->
+            <div class="toolbar">
+                <div class="toolbar-left">
+                    <div class="search-box">
+                        <svg class="search-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                        <input type="text" id="search-input" placeholder="ব্যানার খুঁজুন..." class="search-input">
+                    </div>
+                    <select id="filter-status" class="filter-select">
+                        <option value="all">সব ব্যানার</option>
+                        <option value="active">Active</option>
+                        <option value="inactive">Inactive</option>
+                    </select>
+                </div>
+                <button onclick="openAddBannerModal()" class="btn-primary" style="width: auto;">
+                    <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                    <span>নতুন ব্যানার যুক্ত করুন</span>
+                </button>
+            </div>
+
+            <!-- Banners Grid -->
+            <div id="banners-grid" class="banners-grid"></div>
+        </main>
+    </div>
+
+    <!-- Add/Edit Modal -->
+    <div id="banner-modal" class="modal-backdrop">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modal-title" class="modal-title">নতুন Affiliate Banner</h3>
+                <button onclick="closeAddBannerModal()" class="btn-icon">
+                    <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+            </div>
+            <form id="banner-form">
+                <input type="hidden" id="banner-id">
+                <div class="modal-body">
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label class="form-label">Banner Image</label>
+                        <div class="dropzone">
+                            <input type="file" id="banner-file" accept="image/jpeg,image/png,image/webp">
+                            <div id="upload-placeholder" style="display: flex; flex-direction: column; align-items: center; gap: 8px;">
+                                <svg width="28" height="28" style="color: var(--muted);" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                                <span style="font-size: 12px; color: var(--muted);">ছবি নির্বাচন করুন (JPG, PNG, WEBP)</span>
+                            </div>
+                            <div id="image-preview-container" class="preview-box hidden">
+                                <img id="image-preview" alt="Preview">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label class="form-label">Click Link</label>
+                        <input type="url" id="banner-link" required placeholder="https://ghotimarket.com/product/123" class="form-input">
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <label class="switch">
+                            <input type="checkbox" id="banner-active" checked>
+                            <span class="slider"></span>
+                        </label>
+                        <span style="font-size: 13px; font-weight: 500;">Active Status</span>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" onclick="closeAddBannerModal()" class="btn-secondary">বাতিল</button>
+                    <button type="submit" id="save-banner-btn" class="btn-primary" style="width: auto;">সংরক্ষণ করুন</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Preview Modal -->
+    <div id="preview-modal" class="modal-backdrop">
+        <div class="modal-content" style="max-width: 600px;">
+            <div class="modal-header">
+                <h3 class="modal-title">Banner Preview</h3>
+                <button onclick="closePreviewModal()" class="btn-icon">
+                    <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+            </div>
+            <div class="modal-body" style="align-items: center;">
+                <div style="background: var(--bg); width: 100%; padding: 16px; border-radius: var(--radius-md); display: flex; justify-content: center; border: 1px solid var(--border);">
+                    <img id="preview-modal-img" style="max-height: 300px; max-width: 100%; object-fit: contain; border-radius: 6px;" alt="Banner Preview">
+                </div>
+                <div style="width: 100%;">
+                    <span class="form-label">Click Link:</span>
+                    <p id="preview-modal-link" style="font-size: 13px; font-weight: 600; color: var(--text); word-break: break-all; margin-top: 4px;"></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Modal -->
+    <div id="delete-modal" class="modal-backdrop">
+        <div class="modal-content" style="max-width: 360px; text-align: center;">
+            <div class="modal-body" style="align-items: center; padding: 24px;">
+                <div style="width: 48px; height: 48px; border-radius: 50%; background: #FEF2F2; color: var(--danger); display: flex; align-items: center; justify-content: center; margin-bottom: 4px;">
+                    <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                </div>
+                <h3 style="font-size: 16px; font-weight: 700; color: var(--text);">ব্যানার মুছে ফেলবেন?</h3>
+                <p style="font-size: 12px; color: var(--muted); margin-top: 4px;">এই কাজটি পূর্বাবস্থায় ফেরানো যাবে না।</p>
+                <div style="display: flex; gap: 10px; width: 100%; margin-top: 16px;">
+                    <button type="button" onclick="closeDeleteModal()" class="btn-secondary" style="flex: 1;">বাতিল</button>
+                    <button type="button" id="confirm-delete-btn" class="btn-danger" style="flex: 1;">মুছে ফেলুন</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast">
+        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+        <span id="toast-msg"></span>
+    </div>
+
+    <!-- Application Script -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+        import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+        import { getFirestore, collection, addDoc, getDocs, query, orderBy, where, doc, updateDoc, deleteDoc, serverTimestamp, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+        const firebaseConfig = {
+  apiKey: "AIzaSyBUhNhYvuo_FTvZ5RZR6Gn-4hsUY21S0XE",
+  authDomain: "ghotimarket.firebaseapp.com",
+  databaseURL: "https://ghotimarket-default-rtdb.firebaseio.com",
+  projectId: "ghotimarket",
+  storageBucket: "ghotimarket.firebasestorage.app",
+  messagingSenderId: "481257644093",
+  appId: "1:481257644093:web:0dfc3699d6b3c86afeca54",
+  measurementId: "G-4SR8V2EKC1"
+};
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        let allBanners = [];
+        let activeServers = [];
+        let selectedApiKey = null;
+        let deleteTargetId = null;
+        let unsubscribeBanners = null;
+
+        onAuthStateChanged(auth, async (user) => {
+            const loader = document.getElementById('global-loader');
+            loader.classList.add('hidden');
+            if (user) {
+                if (user.email === "support@ghotimarket.com") {
+                    document.getElementById('login-view').classList.add('hidden');
+                    document.getElementById('admin-view').classList.remove('hidden');
+                    document.getElementById('admin-email-display').innerText = user.email;
+                    initializeAdminPanel();
+                } else {
+                    await signOut(auth);
+                    showToast("আপনার Admin Access নেই।", true);
+                    document.getElementById('login-view').classList.remove('hidden');
+                    document.getElementById('admin-view').classList.add('hidden');
+                }
+            } else {
+                if (unsubscribeBanners) {
+                    unsubscribeBanners();
+                    unsubscribeBanners = null;
+                }
+                document.getElementById('login-view').classList.remove('hidden');
+                document.getElementById('admin-view').classList.add('hidden');
+            }
+        });
+
+        document.getElementById('login-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('login-email').value.trim();
+            const password = document.getElementById('login-password').value;
+            const errorBox = document.getElementById('login-error');
+            const loginBtn = document.getElementById('login-btn');
+
+            errorBox.classList.add('hidden');
+            loginBtn.disabled = true;
+            loginBtn.innerHTML = `<span>লগইন হচ্ছে...</span>`;
+
+            try {
+                if (email !== "support@ghotimarket.com") {
+                    throw new Error("আপনার Admin Access নেই।");
+                }
+                const userCred = await signInWithEmailAndPassword(auth, email, password);
+                if (userCred.user.email !== "support@ghotimarket.com") {
+                    await signOut(auth);
+                    throw new Error("আপনার Admin Access নেই।");
+                }
+            } catch (error) {
+                errorBox.innerText = "লগইন ব্যর্থ হয়েছে। সঠিক ইমেইল ও পাসওয়ার্ড প্রদান করুন।";
+                errorBox.classList.remove('hidden');
+                loginBtn.disabled = false;
+                loginBtn.innerHTML = `<span>লগইন করুন</span>`;
+            }
+        });
+
+        document.getElementById('logout-btn').addEventListener('click', async () => {
+            await signOut(auth);
+        });
+
+        document.getElementById('toggle-password').addEventListener('click', () => {
+            const passInput = document.getElementById('login-password');
+            passInput.type = passInput.type === 'password' ? 'text' : 'password';
+        });
+
+        function initializeAdminPanel() {
+            loadApiServers();
+            loadBannersRealtime();
+        }
+
+        async function loadApiServers() {
+            const statusBox = document.getElementById('server-status-box');
+            const selectorContainer = document.getElementById('server-selector-container');
+            const selector = document.getElementById('server-selector');
+
+            try {
+                const q = query(collection(db, "api_keys"), where("status", "==", "active"));
+                const snapshot = await getDocs(q);
+                activeServers = [];
+                snapshot.forEach(docSnap => {
+                    activeServers.push({ id: docSnap.id, ...docSnap.data() });
+                });
+
+                document.getElementById('stat-apikeys').innerText = activeServers.length;
+
+                if (activeServers.length > 0) {
+                    selectedApiKey = activeServers[0].apiKey;
+                    statusBox.innerHTML = `
+                        <span class="status-dot active"></span>
+                        <span style="font-size: 13px; font-weight: 600;">${activeServers[0].name || 'Server1'} Active</span>
+                    `;
+
+                    if (activeServers.length > 1) {
+                        selectorContainer.classList.remove('hidden');
+                        selector.innerHTML = "";
+                        activeServers.forEach(server => {
+                            selector.innerHTML += `<option value="${server.apiKey}">${server.name || 'Server'}</option>`;
+                        });
+                        selector.onchange = (e) => {
+                            selectedApiKey = e.target.value;
+                        };
+                    }
+                } else {
+                    statusBox.innerHTML = `
+                        <span class="status-dot inactive"></span>
+                        <span style="font-size: 13px; font-weight: 600;">Active API Server পাওয়া যায়নি</span>
+                    `;
+                }
+            } catch (error) {
+                statusBox.innerHTML = `
+                    <span class="status-dot inactive"></span>
+                    <span style="font-size: 13px; font-weight: 600;">ডাটা লোড ত্রুটি</span>
+                `;
+            }
+        }
+
+        function loadBannersRealtime() {
+            if (unsubscribeBanners) unsubscribeBanners();
+            const bannersQuery = query(collection(db, "affiliate_banner"), orderBy("createdAt", "desc"));
+            unsubscribeBanners = onSnapshot(bannersQuery, (snapshot) => {
+                allBanners = [];
+                snapshot.forEach(docSnap => {
+                    allBanners.push({ id: docSnap.id, ...docSnap.data() });
+                });
+                updateStatistics();
+                renderBanners();
+            }, (error) => {
+                showToast("ডাটা লোড করা যায়নি। আবার চেষ্টা করুন।", true);
+            });
+        }
+
+        function updateStatistics() {
+            const total = allBanners.length;
+            const active = allBanners.filter(b => b.active).length;
+            const inactive = total - active;
+
+            document.getElementById('stat-total').innerText = total;
+            document.getElementById('stat-active').innerText = active;
+            document.getElementById('stat-inactive').innerText = inactive;
+        }
+
+        function renderBanners() {
+            const grid = document.getElementById('banners-grid');
+            const searchVal = document.getElementById('search-input').value.toLowerCase();
+            const filterVal = document.getElementById('filter-status').value;
+
+            let filtered = allBanners.filter(b => {
+                const matchSearch = (b.clickLink && b.clickLink.toLowerCase().includes(searchVal)) || b.id.toLowerCase().includes(searchVal);
+                let matchFilter = true;
+                if (filterVal === 'active') matchFilter = b.active === true;
+                if (filterVal === 'inactive') matchFilter = b.active === false;
+                return matchSearch && matchFilter;
+            });
+
+            grid.innerHTML = "";
+            if (filtered.length === 0) {
+                grid.innerHTML = `
+                    <div class="empty-state">
+                        <svg width="36" height="36" style="color: var(--muted); margin: 0 auto;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                        <p style="font-weight: 600; color: var(--text);">কোনো Affiliate Banner পাওয়া যায়নি।</p>
+                        <p>নতুন banner যুক্ত করে শুরু করুন।</p>
+                    </div>
+                `;
+                return;
+            }
+
+            filtered.forEach(banner => {
+                const dateStr = banner.createdAt?.toDate ? banner.createdAt.toDate().toLocaleDateString('bn-BD', { day: 'numeric', month: 'long', year: 'numeric' }) : 'তারিখ নেই';
+                
+                grid.innerHTML += `
+                    <div class="banner-card">
+                        <div>
+                            <div class="banner-image-container" onclick="openPreviewModal('${banner.imageLink}', '${banner.clickLink}')">
+                                <img src="${banner.imageLink}" alt="Banner" loading="lazy" onerror="this.onerror=null;this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'100\' height=\'100\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'%2364748B\' stroke-width=\'1\'><rect width=\'18\' height=\'18\' x=\'3\' y=\'3\' rx=\'2\'/><circle cx=\'9\' cy=\'9\' r=\'2\'/><path d=\'m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21\'/></svg>';">
+                                <div class="banner-overlay">
+                                    <span>Preview</span>
+                                </div>
+                            </div>
+                            <div class="banner-body">
+                                <div class="banner-meta">
+                                    <span class="badge ${banner.active ? 'active' : 'inactive'}">${banner.active ? 'Active' : 'Inactive'}</span>
+                                    <span class="banner-date">${dateStr}</span>
+                                </div>
+                                <a href="${banner.clickLink}" target="_blank" rel="noopener noreferrer" class="banner-link" title="${banner.clickLink}">${banner.clickLink}</a>
+                            </div>
+                        </div>
+                        <div class="banner-footer">
+                            <label class="switch">
+                                <input type="checkbox" ${banner.active ? 'checked' : ''} onchange="toggleBannerStatus('${banner.id}', ${!banner.active})">
+                                <span class="slider"></span>
+                            </label>
+                            <div class="card-actions">
+                                <button onclick="openEditBannerModal('${banner.id}')" class="btn-icon" title="Edit" aria-label="Edit">
+                                    <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+                                </button>
+                                <button onclick="promptDeleteBanner('${banner.id}')" class="btn-icon delete" title="Delete" aria-label="Delete">
+                                    <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        document.getElementById('search-input').addEventListener('input', renderBanners);
+        document.getElementById('filter-status').addEventListener('change', renderBanners);
+
+        window.openAddBannerModal = function() {
+            if (!selectedApiKey) {
+                showToast("কোনো Active API Key পাওয়া যায়নি।", true);
+                return;
+            }
+            document.getElementById('modal-title').innerText = "নতুন Affiliate Banner";
+            document.getElementById('banner-id').value = "";
+            document.getElementById('banner-link').value = "";
+            document.getElementById('banner-active').checked = true;
+            document.getElementById('banner-file').value = "";
+            document.getElementById('image-preview').src = "";
+            document.getElementById('image-preview-container').classList.add('hidden');
+            document.getElementById('upload-placeholder').style.display = "flex";
+            document.getElementById('save-banner-btn').innerText = "সংরক্ষণ করুন";
+            document.getElementById('banner-modal').classList.add('active');
+            document.body.style.overflow = "hidden";
+        }
+
+        window.openEditBannerModal = function(id) {
+            const banner = allBanners.find(b => b.id === id);
+            if (!banner) return;
+            document.getElementById('modal-title').innerText = "ব্যানার সম্পাদনা";
+            document.getElementById('banner-id').value = banner.id;
+            document.getElementById('banner-link').value = banner.clickLink;
+            document.getElementById('banner-active').checked = banner.active;
+            document.getElementById('banner-file').value = "";
+            document.getElementById('image-preview').src = banner.imageLink;
+            document.getElementById('image-preview-container').classList.remove('hidden');
+            document.getElementById('upload-placeholder').style.display = "none";
+            document.getElementById('save-banner-btn').innerText = "আপডেট করুন";
+            document.getElementById('banner-modal').classList.add('active');
+            document.body.style.overflow = "hidden";
+        }
+
+        window.closeAddBannerModal = function() {
+            document.getElementById('banner-modal').classList.remove('active');
+            document.body.style.overflow = "auto";
+        }
+
+        window.openPreviewModal = function(imgUrl, linkUrl) {
+            document.getElementById('preview-modal-img').src = imgUrl;
+            document.getElementById('preview-modal-link').innerText = linkUrl;
+            document.getElementById('preview-modal').classList.add('active');
+            document.body.style.overflow = "hidden";
+        }
+
+        window.closePreviewModal = function() {
+            document.getElementById('preview-modal').classList.remove('active');
+            document.body.style.overflow = "auto";
+        }
+
+        document.getElementById('banner-file').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const validTypes = ['image/jpeg', 'image/png', 'image/webp'];
+                if (!validTypes.includes(file.type)) {
+                    showToast("সঠিক Banner Image নির্বাচন করুন (JPG, PNG, WEBP)", true);
+                    return;
+                }
+                const reader = new FileReader();
+                reader.onload = function(evt) {
+                    document.getElementById('image-preview').src = evt.target.result;
+                    document.getElementById('image-preview-container').classList.remove('hidden');
+                    document.getElementById('upload-placeholder').style.display = "none";
+                }
+                reader.readAsDataURL(file);
+            }
+        });
+
+        document.getElementById('banner-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const bannerId = document.getElementById('banner-id').value;
+            const clickLink = document.getElementById('banner-link').value.trim();
+            const active = document.getElementById('banner-active').checked;
+            const fileInput = document.getElementById('banner-file');
+            const saveBtn = document.getElementById('save-banner-btn');
+
+            if (!clickLink.startsWith('http://') && !clickLink.startsWith('https://')) {
+                showToast("সঠিক Click Link প্রদান করুন।", true);
+                return;
+            }
+
+            saveBtn.disabled = true;
+            saveBtn.innerText = "ব্যানার আপলোড হচ্ছে...";
+
+            try {
+                let imageUrl = bannerId ? allBanners.find(b => b.id === bannerId).imageLink : "";
+
+                if (fileInput.files[0]) {
+                    if (!selectedApiKey) throw new Error("API Key missing");
+                    const formData = new FormData();
+                    formData.append('image', fileInput.files[0]);
+
+                    const uploadRes = await fetch(`https://api.imgbb.com/1/upload?key=${selectedApiKey}`, {
+                        method: 'POST',
+                        body: formData
+                    });
+                    const uploadData = await uploadRes.json();
+                    if (uploadData && uploadData.success) {
+                        imageUrl = uploadData.data.url;
+                    } else {
+                        throw new Error("Image upload failed");
+                    }
+                }
+
+                if (!imageUrl) {
+                    throw new Error("Image required");
+                }
+
+                if (bannerId) {
+                    await updateDoc(doc(db, "affiliate_banner", bannerId), {
+                        imageLink: imageUrl,
+                        clickLink: clickLink,
+                        active: active,
+                        updatedAt: serverTimestamp()
+                    });
+                    showToast("ব্যানার সফলভাবে আপডেট হয়েছে।");
+                } else {
+                    await addDoc(collection(db, "affiliate_banner"), {
+                        imageLink: imageUrl,
+                        clickLink: clickLink,
+                        active: active,
+                        createdAt: serverTimestamp(),
+                        updatedAt: serverTimestamp(),
+                        createdBy: auth.currentUser.email
+                    });
+                    showToast("ব্যানার সফলভাবে যুক্ত হয়েছে।");
+                }
+
+                closeAddBannerModal();
+            } catch (error) {
+                showToast("কাজটি সম্পন্ন করা যায়নি। আবার চেষ্টা করুন।", true);
+            } finally {
+                saveBtn.disabled = false;
+                saveBtn.innerText = "সংরক্ষণ করুন";
+            }
+        });
+
+        window.toggleBannerStatus = async function(id, newStatus) {
+            try {
+                await updateDoc(doc(db, "affiliate_banner", id), {
+                    active: newStatus,
+                    updatedAt: serverTimestamp()
+                });
+                showToast("স্ট্যাটাস সফলভাবে পরিবর্তিত হয়েছে।");
+            } catch (error) {
+                showToast("কাজটি সম্পন্ন করা যায়নি।", true);
+            }
+        }
+
+        window.promptDeleteBanner = function(id) {
+            deleteTargetId = id;
+            document.getElementById('delete-modal').classList.add('active');
+            document.body.style.overflow = "hidden";
+        }
+
+        window.closeDeleteModal = function() {
+            deleteTargetId = null;
+            document.getElementById('delete-modal').classList.remove('active');
+            document.body.style.overflow = "auto";
+        }
+
+        document.getElementById('confirm-delete-btn').addEventListener('click', async () => {
+            if (!deleteTargetId) return;
+            const btn = document.getElementById('confirm-delete-btn');
+            btn.disabled = true;
+            btn.innerText = "মুছে ফেলা হচ্ছে...";
+
+            try {
+                await deleteDoc(doc(db, "affiliate_banner", deleteTargetId));
+                showToast("ব্যানার সফলভাবে মুছে ফেলা হয়েছে।");
+                closeDeleteModal();
+            } catch (error) {
+                showToast("কাজটি সম্পন্ন করা যায়নি।", true);
+            } finally {
+                btn.disabled = false;
+                btn.innerText = "মুছে ফেলুন";
+            }
+        });
+
+        window.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                closeAddBannerModal();
+                closePreviewModal();
+                closeDeleteModal();
+            }
+        });
+
+        window.showToast = function(msg, isError = false) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toast-msg').innerText = msg;
+            toast.className = `toast active ${isError ? 'error' : ''}`;
+            setTimeout(() => {
+                toast.classList.remove('active');
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
