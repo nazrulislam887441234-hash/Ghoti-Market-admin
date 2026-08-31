@@ -286,12 +286,14 @@
             top: 0;
             z-index: 900;
             box-shadow: var(--shadow-sm);
+            gap: 20px;
         }
 
         .header-left {
             display: flex;
             align-items: center;
             gap: 16px;
+            flex-shrink: 0;
         }
 
         .mobile-toggle {
@@ -318,10 +320,54 @@
             gap: 10px;
         }
 
+        /* Professional Header Search Bar */
+        .header-search-container {
+            flex: 1;
+            max-width: 450px;
+            position: relative;
+        }
+
+        .header-search-box {
+            display: flex;
+            align-items: center;
+            background: var(--bg-body);
+            border: 1px solid var(--border-color);
+            border-radius: 30px;
+            padding: 6px 16px;
+            transition: var(--transition);
+        }
+
+        .header-search-box:focus-within {
+            background: #FFFFFF;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(248, 86, 6, 0.15);
+        }
+
+        .header-search-box i {
+            color: var(--text-muted);
+            font-size: 15px;
+            margin-right: 10px;
+        }
+
+        .header-search-input {
+            border: none;
+            background: transparent;
+            outline: none;
+            font-size: 14px;
+            color: var(--text-main);
+            width: 100%;
+            font-family: 'Hind Siliguri', sans-serif;
+        }
+
+        .header-search-input::placeholder {
+            color: var(--text-light);
+        }
+
         .header-right {
             display: flex;
             align-items: center;
             gap: 16px;
+            flex-shrink: 0;
         }
 
         .header-icon-btn {
@@ -717,9 +763,23 @@
             .content-container {
                 padding: 20px;
             }
+            .header-search-container {
+                max-width: 250px;
+            }
         }
 
         @media (max-width: 768px) {
+            .top-header {
+                flex-wrap: wrap;
+                height: auto;
+                padding: 12px 16px;
+                gap: 12px;
+            }
+            .header-search-container {
+                order: 3;
+                max-width: 100%;
+                width: 100%;
+            }
             .stats-grid {
                 grid-template-columns: 1fr;
                 gap: 16px;
@@ -849,6 +909,16 @@
                     <i class="fas fa-people-arrows"></i>
                     <span>Affiliate</span>
                 </a>
+                <!-- Added Affiliate Transection Card Link in Sidebar Menu -->
+                <a href="https://admin.ghotimarket.com/affiliate-transection" class="nav-item">
+                    <i class="fas fa-file-invoice-dollar"></i>
+                    <span>Affiliate Transection</span>
+                </a>
+                <!-- Added Affiliate Banner Card Link in Sidebar Menu -->
+                <a href="https://admin.ghotimarket.com/affiliate-banner" class="nav-item">
+                    <i class="fas fa-image"></i>
+                    <span>Affiliate Banner</span>
+                </a>
 
                 <!-- Reseller Management System (Sidebar) -->
                 <div class="menu-category">Reseller System</div>
@@ -954,6 +1024,14 @@
                 </div>
             </div>
 
+            <!-- Professional Search Bar (Desktop & Mobile Friendly) -->
+            <div class="header-search-container">
+                <div class="header-search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="dashboardSearchInput" class="header-search-input" placeholder="টুলস বা অপশন সার্চ করুন (उदा: Affiliate, Product, Order)...">
+                </div>
+            </div>
+
             <div class="header-right">
                 <div class="header-icon-btn" title="System Notifications">
                     <i class="fas fa-bell"></i>
@@ -1016,9 +1094,37 @@
                 </div>
             </div>
 
-            <div class="actions-grid">
+            <div class="actions-grid" id="actionCardsGrid">
+                <!-- Affiliate Transection Card (Added Here) -->
+                <a href="https://admin.ghotimarket.com/affiliate-transection" class="action-card" data-keywords="affiliate transection transaction payment commission history আফিলিয়েট ট্রানজেকশন লেনদেন">
+                    <div class="action-card-top">
+                        <div class="action-icon">
+                            <i class="fas fa-file-invoice-dollar"></i>
+                        </div>
+                        <div class="action-arrow"><i class="fas fa-chevron-right"></i></div>
+                    </div>
+                    <div class="action-card-bottom">
+                        <div class="action-title">Affiliate Transection</div>
+                        <div class="action-desc">Track affiliate payment history</div>
+                    </div>
+                </a>
+
+                <!-- Affiliate Banner Card (Added Here) -->
+                <a href="https://admin.ghotimarket.com/affiliate-banner" class="action-card" data-keywords="affiliate banner promo marketing image advertisement আফিলিয়েট ব্যানার বিজ্ঞাপন">
+                    <div class="action-card-top">
+                        <div class="action-icon">
+                            <i class="fas fa-image"></i>
+                        </div>
+                        <div class="action-arrow"><i class="fas fa-chevron-right"></i></div>
+                    </div>
+                    <div class="action-card-bottom">
+                        <div class="action-title">Affiliate Banner</div>
+                        <div class="action-desc">Manage affiliate marketing banners</div>
+                    </div>
+                </a>
+
                 <!-- Popular Products Card -->
-                <a href="https://admin.ghotimarket.com/popular" class="action-card">
+                <a href="https://admin.ghotimarket.com/popular" class="action-card" data-keywords="popular products trending items পপুলার প্রোডাক্টস জনপ্রিয় পণ্য">
                     <div class="action-card-top">
                         <div class="action-icon">
                             <i class="fas fa-fire"></i>
@@ -1032,7 +1138,7 @@
                 </a>
 
                 <!-- Click Tracker Card -->
-                <a href="https://admin.ghotimarket.com/click" class="action-card">
+                <a href="https://admin.ghotimarket.com/click" class="action-card" data-keywords="click tracker analytics traffic traffic click click tracker ক্লিক ট্র্যাকার">
                     <div class="action-card-top">
                         <div class="action-icon">
                             <i class="fas fa-arrow-pointer"></i>
@@ -1045,7 +1151,7 @@
                     </div>
                 </a>
 
-                <a href="https://admin.ghotimarket.com/upload" class="action-card">
+                <a href="https://admin.ghotimarket.com/upload" class="action-card" data-keywords="upload product add new item product upload আপলোড প্রোডাক্ট পণ্য">
                     <div class="action-card-top">
                         <div class="action-icon"><i class="fas fa-cloud-upload-alt"></i></div>
                         <div class="action-arrow"><i class="fas fa-chevron-right"></i></div>
@@ -1056,7 +1162,7 @@
                     </div>
                 </a>
 
-                <a href="https://admin.ghotimarket.com/all-product" class="action-card">
+                <a href="https://admin.ghotimarket.com/all-product" class="action-card" data-keywords="all products catalog items store products অল প্রোডাক্টস সমস্ত পণ্য">
                     <div class="action-card-top">
                         <div class="action-icon"><i class="fas fa-boxes"></i></div>
                         <div class="action-arrow"><i class="fas fa-chevron-right"></i></div>
@@ -1067,7 +1173,7 @@
                     </div>
                 </a>
 
-                <a href="https://admin.ghotimarket.com/all-seller" class="action-card">
+                <a href="https://admin.ghotimarket.com/all-seller" class="action-card" data-keywords="seller management vendors shop owners সেলার ম্যানেজমেন্ট বিক্রেতা">
                     <div class="action-card-top">
                         <div class="action-icon"><i class="fas fa-users-cog"></i></div>
                         <div class="action-arrow"><i class="fas fa-chevron-right"></i></div>
@@ -1078,8 +1184,8 @@
                     </div>
                 </a>
 
-                <!-- New Added: All Buyers Management -->
-                <a href="https://admin.ghotimarket.com/buyers" class="action-card">
+                <!-- All Buyers Management -->
+                <a href="https://admin.ghotimarket.com/buyers" class="action-card" data-keywords="buyers customers users all buyers management ক্রেতা গ্রাহক">
                     <div class="action-card-top">
                         <div class="action-icon"><i class="fas fa-users"></i></div>
                         <div class="action-arrow"><i class="fas fa-chevron-right"></i></div>
@@ -1090,8 +1196,8 @@
                     </div>
                 </a>
 
-                <!-- New Added: Cart Item All buyers -->
-                <a href="https://admin.ghotimarket.com/cart" class="action-card">
+                <!-- Cart Item All buyers -->
+                <a href="https://admin.ghotimarket.com/cart" class="action-card" data-keywords="cart item all buyers shopping basket কার트 আইটেম">
                     <div class="action-card-top">
                         <div class="action-icon"><i class="fas fa-shopping-cart"></i></div>
                         <div class="action-arrow"><i class="fas fa-chevron-right"></i></div>
@@ -1102,7 +1208,7 @@
                     </div>
                 </a>
 
-                <a href="https://admin.ghotimarket.com/slug" class="action-card">
+                <a href="https://admin.ghotimarket.com/slug" class="action-card" data-keywords="product slug seo links url customize প্রোডাক্ট স্লাগ লিংক">
                     <div class="action-card-top">
                         <div class="action-icon"><i class="fas fa-link"></i></div>
                         <div class="action-arrow"><i class="fas fa-chevron-right"></i></div>
@@ -1113,7 +1219,7 @@
                     </div>
                 </a>
 
-                <a href="https://admin.ghotimarket.com/subscription" class="action-card">
+                <a href="https://admin.ghotimarket.com/subscription" class="action-card" data-keywords="subscription packages plans membership সাবস্ক্রিপশন প্ল্যান">
                     <div class="action-card-top">
                         <div class="action-icon"><i class="fas fa-crown"></i></div>
                         <div class="action-arrow"><i class="fas fa-chevron-right"></i></div>
@@ -1124,7 +1230,7 @@
                     </div>
                 </a>
 
-                <a href="https://admin.ghotimarket.com/nid-verify" class="action-card">
+                <a href="https://admin.ghotimarket.com/nid-verify" class="action-card" data-keywords="nid verify national id verification এনআইডি ভেরিফাই পরিচয়পত্র">
                     <div class="action-card-top">
                         <div class="action-icon"><i class="fas fa-id-card"></i></div>
                         <div class="action-arrow"><i class="fas fa-chevron-right"></i></div>
@@ -1135,7 +1241,7 @@
                     </div>
                 </a>
 
-                <a href="https://admin.ghotimarket.com/banner" class="action-card">
+                <a href="https://admin.ghotimarket.com/banner" class="action-card" data-keywords="banner management hero homepage banners ব্যানার ম্যানেজমেন্ট">
                     <div class="action-card-top">
                         <div class="action-icon"><i class="fas fa-images"></i></div>
                         <div class="action-arrow"><i class="fas fa-chevron-right"></i></div>
@@ -1146,7 +1252,7 @@
                     </div>
                 </a>
 
-                <a href="https://admin.ghotimarket.com/basic-tools" class="action-card">
+                <a href="https://admin.ghotimarket.com/basic-tools" class="action-card" data-keywords="basic tools utilities configuration বেসিক টুলস সেটিংস">
                     <div class="action-card-top">
                         <div class="action-icon"><i class="fas fa-tools"></i></div>
                         <div class="action-arrow"><i class="fas fa-chevron-right"></i></div>
@@ -1157,7 +1263,7 @@
                     </div>
                 </a>
 
-                <a href="https://admin.ghotimarket.com/admin-category" class="action-card">
+                <a href="https://admin.ghotimarket.com/admin-category" class="action-card" data-keywords="category taxonomy product categories ক্যাটাগরি">
                     <div class="action-card-top">
                         <div class="action-icon"><i class="fas fa-layer-group"></i></div>
                         <div class="action-arrow"><i class="fas fa-chevron-right"></i></div>
@@ -1168,7 +1274,7 @@
                     </div>
                 </a>
 
-                <a href="https://admin.ghotimarket.com/review" class="action-card">
+                <a href="https://admin.ghotimarket.com/review" class="action-card" data-keywords="product reviews ratings customer feedback রিভিউ রেটিং">
                     <div class="action-card-top">
                         <div class="action-icon"><i class="fas fa-star"></i></div>
                         <div class="action-arrow"><i class="fas fa-chevron-right"></i></div>
@@ -1179,7 +1285,7 @@
                     </div>
                 </a>
 
-                <a href="https://admin.ghotimarket.com/admin-order" class="action-card">
+                <a href="https://admin.ghotimarket.com/admin-order" class="action-card" data-keywords="orders customer orders fulfill tracking অর্ডার্স অর্ডার">
                     <div class="action-card-top">
                         <div class="action-icon"><i class="fas fa-shopping-cart"></i></div>
                         <div class="action-arrow"><i class="fas fa-chevron-right"></i></div>
@@ -1190,7 +1296,7 @@
                     </div>
                 </a>
 
-                <a href="https://admin.ghotimarket.com/seller-banner" class="action-card">
+                <a href="https://admin.ghotimarket.com/seller-banner" class="action-card" data-keywords="seller banner promotional banners for shops সেলার ব্যানার">
                     <div class="action-card-top">
                         <div class="action-icon"><i class="fas fa-photo-film"></i></div>
                         <div class="action-arrow"><i class="fas fa-chevron-right"></i></div>
@@ -1201,7 +1307,7 @@
                     </div>
                 </a>
 
-                <a href="https://admin.ghotimarket.com/admin-notification" class="action-card">
+                <a href="https://admin.ghotimarket.com/admin-notification" class="action-card" data-keywords="notifications push alerts system notice নোটিফিকেশন">
                     <div class="action-card-top">
                         <div class="action-icon"><i class="fas fa-bell"></i></div>
                         <div class="action-arrow"><i class="fas fa-chevron-right"></i></div>
@@ -1212,7 +1318,7 @@
                     </div>
                 </a>
 
-                <a href="https://admin.ghotimarket.com/imgbb-api" class="action-card">
+                <a href="https://admin.ghotimarket.com/imgbb-api" class="action-card" data-keywords="imgbb api image hosting keys ইমেজবিবি এপিআই">
                     <div class="action-card-top">
                         <div class="action-icon"><i class="fas fa-key"></i></div>
                         <div class="action-arrow"><i class="fas fa-chevron-right"></i></div>
@@ -1223,7 +1329,7 @@
                     </div>
                 </a>
 
-                <a href="https://admin.ghotimarket.com/affiliate" class="action-card">
+                <a href="https://admin.ghotimarket.com/affiliate" class="action-card" data-keywords="affiliate partner program commission আফিলিয়েট প্রোগ্রাম">
                     <div class="action-card-top">
                         <div class="action-icon"><i class="fas fa-people-arrows"></i></div>
                         <div class="action-arrow"><i class="fas fa-chevron-right"></i></div>
@@ -1234,7 +1340,7 @@
                     </div>
                 </a>
 
-                <a href="https://admin.ghotimarket.com/offer-banner" class="action-card">
+                <a href="https://admin.ghotimarket.com/offer-banner" class="action-card" data-keywords="offer banner campaigns discounts অফার ব্যানার ডিসকাউন্ট">
                     <div class="action-card-top">
                         <div class="action-icon"><i class="fas fa-tags"></i></div>
                         <div class="action-arrow"><i class="fas fa-chevron-right"></i></div>
@@ -1245,7 +1351,7 @@
                     </div>
                 </a>
 
-                <a href="https://admin.ghotimarket.com/admin-balance" class="action-card">
+                <a href="https://admin.ghotimarket.com/admin-balance" class="action-card" data-keywords="add balance bkash redot facet deposit ব্যালেন্স যোগ">
                     <div class="action-card-top">
                         <div class="action-icon"><i class="fas fa-wallet"></i></div>
                         <div class="action-arrow"><i class="fas fa-chevron-right"></i></div>
@@ -1256,7 +1362,7 @@
                     </div>
                 </a>
 
-                <a href="https://admin.ghotimarket.com/balance-request" class="action-card">
+                <a href="https://admin.ghotimarket.com/balance-request" class="action-card" data-keywords="balance request withdrawal deposit request ডিপোজিট রিকোয়েস্ট">
                     <div class="action-card-top">
                         <div class="action-icon"><i class="fas fa-hand-holding-usd"></i></div>
                         <div class="action-arrow"><i class="fas fa-chevron-right"></i></div>
@@ -1267,7 +1373,7 @@
                     </div>
                 </a>
 
-                <a href="https://admin.ghotimarket.com/upload-post" class="action-card">
+                <a href="https://admin.ghotimarket.com/upload-post" class="action-card" data-keywords="upload post publish platform news নিউজ পোস্ট আপলোড">
                     <div class="action-card-top">
                         <div class="action-icon"><i class="fas fa-file-circle-plus"></i></div>
                         <div class="action-arrow"><i class="fas fa-chevron-right"></i></div>
@@ -1278,7 +1384,7 @@
                     </div>
                 </a>
 
-                <a href="https://admin.ghotimarket.com/product-transfer" class="action-card">
+                <a href="https://admin.ghotimarket.com/product-transfer" class="action-card" data-keywords="product transfer seller change পণ্য ট্রান্সফার">
                     <div class="action-card-top">
                         <div class="action-icon"><i class="fas fa-exchange-alt"></i></div>
                         <div class="action-arrow"><i class="fas fa-chevron-right"></i></div>
@@ -1289,7 +1395,7 @@
                     </div>
                 </a>
 
-                <a href="https://admin.ghotimarket.com/discount" class="action-card">
+                <a href="https://admin.ghotimarket.com/discount" class="action-card" data-keywords="discount coupons store vouchers ডিসকাউন্ট কুপন">
                     <div class="action-card-top">
                         <div class="action-icon"><i class="fas fa-percent"></i></div>
                         <div class="action-arrow"><i class="fas fa-chevron-right"></i></div>
@@ -1309,9 +1415,9 @@
                 </div>
             </div>
 
-            <div class="actions-grid">
+            <div class="actions-grid" id="resellerCardsGrid">
                 <!-- 1. Banner -->
-                <a href="https://admin.ghotimarket.com/reseller/banner" class="action-card">
+                <a href="https://admin.ghotimarket.com/reseller/banner" class="action-card" data-keywords="reseller banner promotional banners রিসেলার ব্যানার">
                     <div class="action-card-top">
                         <div class="action-icon"><i class="fas fa-images"></i></div>
                         <div class="action-arrow"><i class="fas fa-chevron-right"></i></div>
@@ -1323,7 +1429,7 @@
                 </a>
 
                 <!-- 2. All Reseller Manage -->
-                <a href="https://admin.ghotimarket.com/reseller/all-reseller" class="action-card">
+                <a href="https://admin.ghotimarket.com/reseller/all-reseller" class="action-card" data-keywords="all resellers manage view registered resellers সমস্ত রিসেলার">
                     <div class="action-card-top">
                         <div class="action-icon"><i class="fas fa-users-cog"></i></div>
                         <div class="action-arrow"><i class="fas fa-chevron-right"></i></div>
@@ -1335,7 +1441,7 @@
                 </a>
 
                 <!-- 3. Create Category & Manage -->
-                <a href="https://admin.ghotimarket.com/reseller/category" class="action-card">
+                <a href="https://admin.ghotimarket.com/reseller/category" class="action-card" data-keywords="category manage reseller categories ক্যাটাগরি ম্যানেজ">
                     <div class="action-card-top">
                         <div class="action-icon"><i class="fas fa-layer-group"></i></div>
                         <div class="action-arrow"><i class="fas fa-chevron-right"></i></div>
@@ -1347,7 +1453,7 @@
                 </a>
 
                 <!-- 4. Notification -->
-                <a href="https://admin.ghotimarket.com/reseller/notification" class="action-card">
+                <a href="https://admin.ghotimarket.com/reseller/notification" class="action-card" data-keywords="reseller notification announcements রিসেলার নোটিফিকেশন">
                     <div class="action-card-top">
                         <div class="action-icon"><i class="fas fa-bell"></i></div>
                         <div class="action-arrow"><i class="fas fa-chevron-right"></i></div>
@@ -1359,7 +1465,7 @@
                 </a>
 
                 <!-- 5. Orders -->
-                <a href="https://admin.ghotimarket.com/reseller/order" class="action-card">
+                <a href="https://admin.ghotimarket.com/reseller/order" class="action-card" data-keywords="reseller orders track fulfill reseller orders রিসেলার অর্ডার">
                     <div class="action-card-top">
                         <div class="action-icon"><i class="fas fa-shopping-cart"></i></div>
                         <div class="action-arrow"><i class="fas fa-chevron-right"></i></div>
@@ -1371,7 +1477,7 @@
                 </a>
 
                 <!-- 6. Product edit & Manage -->
-                <a href="https://admin.ghotimarket.com/reseller/product-edit" class="action-card">
+                <a href="https://admin.ghotimarket.com/reseller/product-edit" class="action-card" data-keywords="product edit manage modify reseller listings রিসেলার প্রোডাক্ট এডিট">
                     <div class="action-card-top">
                         <div class="action-icon"><i class="fas fa-edit"></i></div>
                         <div class="action-arrow"><i class="fas fa-chevron-right"></i></div>
@@ -1383,7 +1489,7 @@
                 </a>
 
                 <!-- 7. Upload Product -->
-                <a href="https://admin.ghotimarket.com/reseller/upload-product" class="action-card">
+                <a href="https://admin.ghotimarket.com/reseller/upload-product" class="action-card" data-keywords="upload reseller product add items catalog রিসেলার আপলোড">
                     <div class="action-card-top">
                         <div class="action-icon"><i class="fas fa-cloud-upload-alt"></i></div>
                         <div class="action-arrow"><i class="fas fa-chevron-right"></i></div>
@@ -1395,7 +1501,7 @@
                 </a>
 
                 <!-- 8. Withdraw Request -->
-                <a href="https://admin.ghotimarket.com/reseller/withdraw" class="action-card">
+                <a href="https://admin.ghotimarket.com/reseller/withdraw" class="action-card" data-keywords="withdraw requests payouts reseller wallet রিসেলার উইথড্র">
                     <div class="action-card-top">
                         <div class="action-icon"><i class="fas fa-wallet"></i></div>
                         <div class="action-arrow"><i class="fas fa-chevron-right"></i></div>
@@ -1460,7 +1566,7 @@
         </footer>
     </div>
 
-    <!-- Interactive Sidebar JavaScript -->
+    <!-- Interactive Sidebar & Fuzzy Smart Search JavaScript -->
     <script>
         const mobileToggleBtn = document.getElementById('mobileToggleBtn');
         const sidebarCloseBtn = document.getElementById('sidebarCloseBtn');
@@ -1482,6 +1588,62 @@
         if(mobileToggleBtn) mobileToggleBtn.addEventListener('click', openSidebar);
         if(sidebarCloseBtn) sidebarCloseBtn.addEventListener('click', closeSidebar);
         if(sidebarOverlay) sidebarOverlay.addEventListener('click', closeSidebar);
+
+        // Professional Smart Fuzzy Search Implementation (Handles typos/misspellings)
+        const searchInput = document.getElementById('dashboardSearchInput');
+        
+        function calculateSimilarity(str1, str2) {
+            let matches = 0;
+            let length = Math.max(str1.length, str2.length);
+            if (length === 0) return 1.0;
+            for (let i = 0; i < str1.length; i++) {
+                if (str2.includes(str1[i])) matches++;
+            }
+            return matches / length;
+        }
+
+        if (searchInput) {
+            searchInput.addEventListener('input', function(e) {
+                const query = e.target.value.toLowerCase().trim();
+                const allCards = document.querySelectorAll('.action-card');
+                const sidebarNavItems = document.querySelectorAll('.sidebar-menu .nav-item');
+
+                if (query === '') {
+                    allCards.forEach(card => card.style.display = 'flex');
+                    sidebarNavItems.forEach(item => item.style.display = 'flex');
+                    return;
+                }
+
+                // Filter Dashboard Action Cards
+                allCards.forEach(card => {
+                    const title = card.querySelector('.action-title').textContent.toLowerCase();
+                    const desc = card.querySelector('.action-desc').textContent.toLowerCase();
+                    const keywords = card.getAttribute('data-keywords') || '';
+                    
+                    // Check exact inclusions or flexible matching for typos/partial queries
+                    const isMatch = title.includes(query) || 
+                                    desc.includes(query) || 
+                                    keywords.includes(query) || 
+                                    calculateSimilarity(query, title) > 0.4;
+
+                    if (isMatch) {
+                        card.style.display = 'flex';
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+
+                // Filter Sidebar Items as well
+                sidebarNavItems.forEach(item => {
+                    const text = item.textContent.toLowerCase();
+                    if (text.includes(query) || calculateSimilarity(query, text) > 0.4) {
+                        item.style.display = 'flex';
+                    } else {
+                        item.style.display = 'none';
+                    }
+                });
+            });
+        }
     </script>
 
     <!-- Unaltered Firebase Logic & SDKs -->
