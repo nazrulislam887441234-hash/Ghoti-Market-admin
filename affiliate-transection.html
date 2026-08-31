@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GHOTI MARKET - Admin Transaction Panel</title>
+    <style>
+        :root {
+            --primary: #FF6B35;
+            --primary-hover: #e55a24;
+            --primary-light: #FFF2EC;
+            --primary-border: #FFD2C2;
+            --bg: #F8FAFC;
+            --card: #FFFFFF;
+            --text: #1E293B;
+            --muted: #64748B;
+            --border: #E2E8F0;
+            --radius: 12px;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+            --shadow-lg: 0 10px 25px -5px rgba(255, 107, 53, 0.12);
+            --success: #10B981;
+            --success-bg: rgba(16, 185, 129, 0.1);
+            --error: #EF4444;
+            --error-bg: rgba(239, 68, 68, 0.1);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            transition: background-color 0.2s, border-color 0.2s;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        /* Login Overlay */
+        .auth-overlay {
+            position: fixed;
+            inset: 0;
+            background: var(--bg);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            padding: 20px;
+        }
+
+        .auth-card {
+            background: var(--card);
+            padding: 32px;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-lg);
+            border: 1px solid var(--border);
+            width: 100%;
+            max-width: 400px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .auth-card h2 {
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--text);
+            text-align: center;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .form-group label {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--muted);
+            text-transform: uppercase;
+        }
+
+        .form-control {
+            padding: 12px 16px;
+            border: 1.5px solid var(--border);
+            border-radius: 8px;
+            font-size: 14px;
+            background: var(--bg);
+            color: var(--text);
+            outline: none;
+        }
+
+        .form-control:focus {
+            border-color: var(--primary);
+            background: var(--card);
+            box-shadow: 0 0 0 3px var(--primary-light);
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: #fff;
+            border: none;
+            padding: 12px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-hover);
+        }
+
+        .auth-error {
+            color: var(--error);
+            font-size: 12px;
+            text-align: center;
+            font-weight: 500;
+        }
+
+        /* Main Panel Layout */
+        .admin-app {
+            display: none;
+            max-width: 1300px;
+            margin: 0 auto;
+            animation: fadeIn 0.4s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--card);
+            padding: 20px 28px;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            margin-bottom: 24px;
+            border: 1px solid var(--border);
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .header-brand h1 {
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        .header-brand p {
+            color: var(--muted);
+            font-size: 12px;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .btn-action {
+            background: var(--primary-light);
+            color: var(--primary);
+            border: 1px solid var(--primary-border);
+            padding: 10px 16px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 13px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+        }
+
+        .btn-action:hover {
+            background: var(--primary);
+            color: #fff;
+        }
+
+        .btn-danger-action {
+            background: var(--error-bg);
+            color: var(--error);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+        }
+
+        .btn-danger-action:hover {
+            background: var(--error);
+            color: #fff;
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .stat-card {
+            background: var(--card);
+            padding: 20px;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .stat-title {
+            font-size: 12px;
+            color: var(--muted);
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .stat-value {
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--text);
+            margin-top: 4px;
+        }
+
+        /* Toolbar */
+        .toolbar {
+            background: var(--card);
+            padding: 16px 20px;
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow);
+            margin-bottom: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .search-wrapper {
+            position: relative;
+            width: 100%;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1.5px solid var(--border);
+            border-radius: 8px;
+            font-size: 14px;
+            background: var(--bg);
+            color: var(--text);
+            outline: none;
+        }
+
+        .search-input:focus {
+            border-color: var(--primary);
+            background: var(--card);
+            box-shadow: 0 0 0 3px var(--primary-light);
+        }
+
+        /* Table */
+        .table-container {
+            background: var(--card);
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow);
+            overflow-x: auto;
+            margin-bottom: 40px;
+        }
+
+        .txn-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+            text-align: left;
+            min-width: 900px;
+        }
+
+        .txn-table th {
+            background: var(--bg);
+            color: var(--muted);
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 11px;
+            letter-spacing: 0.5px;
+            padding: 14px 16px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .txn-table td {
+            padding: 14px 16px;
+            border-bottom: 1px solid var(--border);
+            color: var(--text);
+        }
+
+        .txn-table tr:hover {
+            background: rgba(255, 107, 53, 0.015);
+        }
+
+        .badge-credit { background: var(--success-bg); color: var(--success); padding: 4px 10px; border-radius: 6px; font-weight: 600; font-size: 12px; }
+        .badge-withdraw { background: var(--error-bg); color: var(--error); padding: 4px 10px; border-radius: 6px; font-weight: 600; font-size: 12px; }
+
+        .action-btns {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn-icon {
+            padding: 6px 10px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            border: 1px solid var(--border);
+            background: var(--bg);
+        }
+
+        .btn-icon:hover { border-color: var(--primary); color: var(--primary); }
+        .btn-icon.delete:hover { border-color: var(--error); color: var(--error); background: var(--error-bg); }
+
+        /* Modal Overlay */
+        .modal {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.5);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            padding: 20px;
+        }
+
+        .modal-card {
+            background: var(--card);
+            padding: 24px;
+            border-radius: var(--radius);
+            width: 100%;
+            max-width: 450px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .modal-card h3 { font-size: 18px; font-weight: 700; }
+        
+        .state-box {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 48px 20px;
+            text-align: center;
+            font-weight: 500;
+            color: var(--muted);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Admin Login Screen -->
+    <div class="auth-overlay" id="authOverlay">
+        <div class="auth-card">
+            <h2>Admin Portal Login</h2>
+            <div class="form-group">
+                <label>Admin Email</label>
+                <input type="email" id="adminEmailInput" class="form-control" value="support@ghotimarket.com" readonly>
+            </div>
+            <div class="form-group">
+                <label>Password</label>
+                <input type="password" id="adminPasswordInput" class="form-control" placeholder="Enter admin password">
+            </div>
+            <div class="auth-error" id="authErrorMsg"></div>
+            <button class="btn-primary" id="loginBtn">Login to Admin Panel</button>
+        </div>
+    </div>
+
+    <!-- Admin Dashboard Application -->
+    <div class="admin-app" id="adminApp">
+        <header>
+            <div class="header-brand">
+                <h1>GHOTI MARKET - Admin Panel</h1>
+                <p>Global Transaction Management & Affiliate Control</p>
+            </div>
+            <div class="header-right">
+                <button class="btn-action" id="refreshBtn">Refresh Data</button>
+                <button class="btn-action btn-danger-action" id="logoutBtn">Logout</button>
+            </div>
+        </header>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <span class="stat-title">Total System Transactions</span>
+                <div class="stat-value" id="statTotalCount">0</div>
+            </div>
+            <div class="stat-card">
+                <span class="stat-title">Total Credit Issued</span>
+                <div class="stat-value" style="color: var(--success);" id="statTotalCredit">৳ 0.00</div>
+            </div>
+            <div class="stat-card">
+                <span class="stat-title">Total Withdrawals Processed</span>
+                <div class="stat-value" style="color: var(--error);" id="statTotalWithdraw">৳ 0.00</div>
+            </div>
+        </div>
+
+        <div class="toolbar">
+            <div class="search-wrapper">
+                <input type="text" id="searchInput" class="search-input" placeholder="Search by User UID, Admin Email, or Notes...">
+            </div>
+        </div>
+
+        <div class="table-container">
+            <table class="txn-table">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>User UID</th>
+                        <th>Type</th>
+                        <th>Amount</th>
+                        <th>Old Balance</th>
+                        <th>New Balance</th>
+                        <th>Note & Admin</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="adminTableBody">
+                    <!-- Dynamic rows inserted here -->
+                </tbody>
+            </table>
+        </div>
+        <div id="emptyStateContainer"></div>
+    </div>
+
+    <!-- Edit Transaction Modal -->
+    <div class="modal" id="editModal">
+        <div class="modal-card">
+            <h3>Edit Transaction Note</h3>
+            <input type="hidden" id="editTxnId">
+            <div class="form-group">
+                <label>Admin Note / Details</label>
+                <textarea id="editNoteInput" class="form-control" rows="3"></textarea>
+            </div>
+            <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 10px;">
+                <button class="btn-action" id="cancelEditBtn" style="background:var(--bg)">Cancel</button>
+                <button class="btn-primary" id="saveEditBtn">Save Changes</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase SDK Setup -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getFirestore, collection, getDocs, doc, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBUhNhYvuo_FTvZ5RZR6Gn-4hsUY21S0XE",
+            authDomain: "ghotimarket.firebaseapp.com",
+            databaseURL: "https://ghotimarket-default-rtdb.firebaseio.com",
+            projectId: "ghotimarket",
+            storageBucket: "ghotimarket.firebasestorage.app",
+            messagingSenderId: "481257644093",
+            appId: "1:481257644093:web:0dfc3699d6b3c86afeca54",
+            measurementId: "G-4SR8V2EKC1"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        let allTransactions = [];
+
+        const formatCurrency = (n) => '৳ ' + (Number(n) || 0).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+        const formatDate = (timestamp) => {
+            if (!timestamp) return 'N/A';
+            try {
+                const date = timestamp.toDate ? timestamp.toDate() : new Date(timestamp.seconds * 1000);
+                return new Intl.DateTimeFormat('en-GB', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit', hour12: true }).format(date);
+            } catch (e) { return 'N/A'; }
+        };
+
+        // Auth State Observation
+        onAuthStateChanged(auth, (user) => {
+            const authOverlay = document.getElementById('authOverlay');
+            const adminApp = document.getElementById('adminApp');
+
+            if (user && user.email === 'support@ghotimarket.com') {
+                authOverlay.style.display = 'none';
+                adminApp.style.display = 'block';
+                fetchAllTransactions();
+            } else {
+                if (user) signOut(auth);
+                authOverlay.style.display = 'flex';
+                adminApp.style.display = 'none';
+            }
+        });
+
+        // Login Handler
+        document.getElementById('loginBtn').onclick = async () => {
+            const pass = document.getElementById('adminPasswordInput').value;
+            const errorEl = document.getElementById('authErrorMsg');
+            errorEl.textContent = '';
+
+            try {
+                await signInWithEmailAndPassword(auth, 'support@ghotimarket.com', pass);
+            } catch (err) {
+                errorEl.textContent = 'Invalid Password or Unauthorized access.';
+            }
+        };
+
+        // Logout Handler
+        document.getElementById('logoutBtn').onclick = () => signOut(auth);
+
+        // Fetch All Transactions globally from 'afl_transection'
+        async function fetchAllTransactions() {
+            try {
+                const querySnapshot = await getDocs(collection(db, 'afl_transection'));
+                allTransactions = [];
+                querySnapshot.forEach((docSnap) => {
+                    allTransactions.push({ id: docSnap.id, ...docSnap.data() });
+                });
+
+                // Sort descending by date
+                allTransactions.sort((a, b) => (b.createAt?.seconds || 0) - (a.createAt?.seconds || 0));
+                renderDashboard(allTransactions);
+            } catch (err) {
+                console.error("Error fetching transactions:", err);
+                alert("Failed to load global transaction records.");
+            }
+        }
+
+        function renderDashboard(list) {
+            const tbody = document.getElementById('adminTableBody');
+            const emptyContainer = document.getElementById('emptyStateContainer');
+            tbody.innerHTML = '';
+            emptyContainer.innerHTML = '';
+
+            let totalCredit = 0;
+            let totalWithdraw = 0;
+
+            allTransactions.forEach(t => {
+                const amt = Number(t.amount) || 0;
+                if (t.type === 'credit') totalCredit += amt;
+                else if (t.type === 'withdraw') totalWithdraw += amt;
+            });
+
+            document.getElementById('statTotalCount').textContent = allTransactions.length;
+            document.getElementById('statTotalCredit').textContent = formatCurrency(totalCredit);
+            document.getElementById('statTotalWithdraw').textContent = formatCurrency(totalWithdraw);
+
+            if (list.length === 0) {
+                emptyContainer.innerHTML = `<div class="state-box">No transactions found in the system.</div>`;
+                return;
+            }
+
+            list.forEach(t => {
+                const isCredit = t.type === 'credit';
+                const badgeClass = isCredit ? 'badge-credit' : 'badge-withdraw';
+                const sign = isCredit ? '+' : '-';
+
+                tbody.innerHTML += `
+                    <tr>
+                        <td>${formatDate(t.createAt)}</td>
+                        <td style="font-family: monospace; font-size: 11px;">${t.uid || 'N/A'}</td>
+                        <td><span class="${badgeClass}">${t.type}</span></td>
+                        <td style="font-weight: 700;">${sign}${formatCurrency(t.amount)}</td>
+                        <td>${formatCurrency(t.oldbalance)}</td>
+                        <td>${formatCurrency(t.currentBalace)}</td>
+                        <td>
+                            <div>${t.note || 'N/A'}</div>
+                            <div style="font-size: 11px; color: var(--muted);">Admin: ${t.admin || 'N/A'}</div>
+                        </td>
+                        <td>
+                            <div class="action-btns">
+                                <button class="btn-icon" onclick="openEditModal('${t.id}', '${encodeURIComponent(t.note || '')}')">Edit</button>
+                                <button class="btn-icon delete" onclick="deleteTransaction('${t.id}')">Delete</button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+
+        // Search Engine
+        document.getElementById('searchInput').oninput = (e) => {
+            const query = e.target.value.toLowerCase().trim();
+            const filtered = allTransactions.filter(t => 
+                (t.uid || '').toLowerCase().includes(query) ||
+                (t.note || '').toLowerCase().includes(query) ||
+                (t.admin || '').toLowerCase().includes(query) ||
+                String(t.amount || '').includes(query)
+            );
+            renderDashboard(filtered);
+        };
+
+        // Delete Handler
+        window.deleteTransaction = async (id) => {
+            if (confirm("Are you sure you want to permanently delete this transaction record?")) {
+                try {
+                    await deleteDoc(doc(db, 'afl_transection', id));
+                    allTransactions = allTransactions.filter(t => t.id !== id);
+                    renderDashboard(allTransactions);
+                } catch (err) {
+                    alert("Delete failed: " + err.message);
+                }
+            }
+        };
+
+        // Edit Handler Functions
+        window.openEditModal = (id, encodedNote) => {
+            document.getElementById('editTxnId').value = id;
+            document.getElementById('editNoteInput').value = decodeURIComponent(encodedNote);
+            document.getElementById('editModal').style.display = 'flex';
+        };
+
+        document.getElementById('cancelEditBtn').onclick = () => {
+            document.getElementById('editModal').style.display = 'none';
+        };
+
+        document.getElementById('saveEditBtn').onclick = async () => {
+            const id = document.getElementById('editTxnId').value;
+            const newNote = document.getElementById('editNoteInput').value;
+
+            try {
+                const txnRef = doc(db, 'afl_transection', id);
+                await updateDoc(txnRef, { note: newNote });
+                
+                // Update local array
+                const item = allTransactions.find(t => t.id === id);
+                if (item) item.note = newNote;
+
+                document.getElementById('editModal').style.display = 'none';
+                renderDashboard(allTransactions);
+            } catch (err) {
+                alert("Update failed: " + err.message);
+            }
+        };
+
+        document.getElementById('refreshBtn').onclick = fetchAllTransactions;
+    </script>
+</body>
+</html>
