@@ -1,189 +1,706 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Admin Login | Ghoti Market</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Login | GHOTI MARKET</title>
+    <meta name="description" content="Secure GHOTI MARKET administrator login portal.">
+    <meta name="robots" content="noindex,nofollow">
 
-  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
 
-  <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: #0f172a;
-      display: flex; justify-content: center; align-items: center;
-      height: 100vh; overflow: hidden;
-    }
-    .box {
-      background: #1e293b; padding: 40px; border-radius: 12px;
-      width: 100%; max-width: 350px;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.3); text-align: center;
-    }
-    .logo {
-      width: 80px; height: 80px; margin: 0 auto 20px;
-      background: #22c55e; border-radius: 16px;
-      display: flex; align-items: center; justify-content: center;
-      font-weight: bold; font-size: 24px; color: #0f172a;
-    }
-    .logo img { width: 100%; height: 100%; object-fit: contain; border-radius: 16px; }
-    h2 { color: white; margin-bottom: 25px; }
-    input {
-      width: 100%; padding: 12px; margin-bottom: 15px;
-      border: 1px solid #334155; border-radius: 6px;
-      background: #0f172a; color: white; outline: none;
-    }
-    input:focus { border-color: #22c55e; }
-    button {
-      width: 100%; padding: 12px; background: #22c55e;
-      border: none; color: white; border-radius: 6px;
-      font-weight: bold; cursor: pointer; transition: background 0.3s;
-    }
-    button:hover:not(:disabled) { background: #16a34a; }
-    button:disabled { background: #475569; cursor: not-allowed; }
-    .error { color: #ef4444; font-size: 14px; margin-top: 15px; min-height: 20px; }
-    .info { color: #22c55e; font-size: 12px; margin-top: 10px; }
-  </style>
+    <style>
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        :root {
+            --primary: #FF6B35;
+            --secondary: #F97316;
+            --dark: #0F172A;
+            --card: #111827;
+            --input-bg: #0B1220;
+            --text-main: #FFFFFF;
+            --text-muted: #94A3B8;
+            --error: #EF4444;
+            --success: #22C55E;
+            --border-color: rgba(255, 107, 53, 0.2);
+            --border-focus: #FF6B35;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--dark);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow-x: hidden;
+            padding: 20px;
+        }
+
+        /* Subtle Background Effects */
+        body::before {
+            content: '';
+            position: absolute;
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, rgba(255, 107, 53, 0.15) 0%, rgba(15, 23, 42, 0) 70%);
+            top: -150px;
+            right: -150px;
+            z-index: 0;
+        }
+
+        body::after {
+            content: '';
+            position: absolute;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(249, 115, 22, 0.1) 0%, rgba(15, 23, 42, 0) 70%);
+            bottom: -150px;
+            left: -150px;
+            z-index: 0;
+        }
+
+        .login-container {
+            width: 100%;
+            max-width: 400px;
+            background: var(--card);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 35px 30px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 0 20px rgba(255, 107, 53, 0.1);
+            backdrop-filter: blur(10px);
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Logo Section */
+        .logo-wrapper {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .logo-box {
+            width: 78px;
+            height: 78px;
+            background: var(--input-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 15px rgba(255, 107, 53, 0.2);
+            overflow: hidden;
+        }
+
+        .logo-box img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            padding: 10px;
+        }
+
+        .logo-fallback {
+            font-weight: 800;
+            font-size: 14px;
+            color: var(--primary);
+            text-align: center;
+            letter-spacing: 1px;
+        }
+
+        /* Header Typography */
+        .portal-header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .portal-header h1 {
+            font-size: 20px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
+            color: var(--text-main);
+        }
+
+        .portal-header h2 {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--primary);
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin-bottom: 8px;
+        }
+
+        .portal-header p {
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        /* Form Controls */
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--text-muted);
+            margin-bottom: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .input-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .input-icon {
+            position: absolute;
+            left: 14px;
+            width: 18px;
+            height: 18px;
+            fill: var(--text-muted);
+            pointer-events: none;
+        }
+
+        .form-input {
+            width: 100%;
+            background-color: var(--input-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 12px 14px 12px 45px;
+            color: var(--text-main);
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--border-focus);
+            box-shadow: 0 0 0 3px rgba(255, 107, 53, 0.15);
+        }
+
+        .form-input:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .toggle-password {
+            position: absolute;
+            right: 14px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 0;
+            display: flex;
+            align-items: center;
+        }
+
+        .toggle-password svg {
+            width: 18px;
+            height: 18px;
+            fill: var(--text-muted);
+            transition: fill 0.2s;
+        }
+
+        .toggle-password:hover svg {
+            fill: var(--text-main);
+        }
+
+        /* Submit Button */
+        .btn-submit {
+            width: 100%;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: #FFFFFF;
+            border: none;
+            border-radius: 12px;
+            padding: 13px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            box-shadow: 0 4px 12px rgba(255, 107, 53, 0.3);
+            transition: all 0.2s ease;
+            margin-top: 22px;
+        }
+
+        .btn-submit:hover:not(:disabled) {
+            filter: brightness(1.1);
+            box-shadow: 0 6px 16px rgba(255, 107, 53, 0.4);
+        }
+
+        .btn-submit:active:not(:disabled) {
+            transform: scale(0.98);
+        }
+
+        .btn-submit:disabled {
+            background: #334155;
+            color: var(--text-muted);
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
+        .btn-submit svg {
+            width: 18px;
+            height: 18px;
+            fill: currentColor;
+        }
+
+        /* Security Badge */
+        .security-badge {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            margin-top: 20px;
+            font-size: 11px;
+            color: var(--text-muted);
+            letter-spacing: 0.3px;
+        }
+
+        .security-badge svg {
+            width: 14px;
+            height: 14px;
+            fill: var(--success);
+        }
+
+        /* Alert / Status Messages */
+        .alert-box {
+            padding: 10px 14px;
+            border-radius: 8px;
+            font-size: 12px;
+            margin-bottom: 16px;
+            display: none;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .alert-box.error {
+            background-color: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            color: #FCA5A5;
+            display: flex;
+        }
+
+        .alert-box.success {
+            background-color: rgba(34, 197, 94, 0.1);
+            border: 1px solid rgba(34, 197, 94, 0.3);
+            color: #86EFAC;
+            display: flex;
+        }
+
+        .alert-box svg {
+            width: 16px;
+            height: 16px;
+            flex-shrink: 0;
+            fill: currentColor;
+        }
+
+        /* Locked View Styles */
+        .locked-container {
+            text-align: center;
+            display: none;
+        }
+
+        .locked-icon-wrapper {
+            width: 64px;
+            height: 64px;
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 16px auto;
+        }
+
+        .locked-icon-wrapper svg {
+            width: 32px;
+            height: 32px;
+            fill: var(--error);
+        }
+
+        .locked-container h2 {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-main);
+            margin-bottom: 8px;
+        }
+
+        .locked-container p {
+            font-size: 13px;
+            color: var(--text-muted);
+            line-height: 1.5;
+            margin-bottom: 12px;
+        }
+
+        /* Spinner Animation */
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .spinner {
+            animation: spin 1s linear infinite;
+        }
+    </style>
 </head>
-
 <body>
 
-<div class="box">
-  <div class="logo">
-    <img src="https://ghotimarket.com/logo.png" alt="GHOTI MARKET Logo">
-  </div>
+    <div class="login-container">
+        <div class="logo-wrapper">
+            <div class="logo-box">
+                <img src="https://ghotimarket.com/logo.png" alt="GHOTI MARKET Logo" id="logoImg" onerror="this.style.display='none'; document.getElementById('logoFallback').style.display='block';">
+                <div id="logoFallback" class="logo-fallback" style="display: none;">GHOTI</div>
+            </div>
+        </div>
 
-  <h2>Admin Login</h2>
+        <div class="portal-header">
+            <h2>GHOTI MARKET</h2>
+            <h1>Admin Portal</h1>
+            <p>Secure administrator access</p>
+        </div>
 
-  <input type="email" id="email" placeholder="Email Address">
-  <input type="password" id="password" placeholder="Password">
+        <div id="alertBox" class="alert-box">
+            <svg viewBox="0 0 24 24" id="alertIcon"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
+            <span id="alertText"></span>
+        </div>
 
-  <button type="button" id="loginBtn" onclick="login()">Login</button>
+        <form id="loginForm" autocomplete="on">
+            <div class="form-group">
+                <label class="form-label" for="email">Admin Email</label>
+                <div class="input-wrapper">
+                    <svg class="input-icon" viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-4V6l8 5 8-4v2z"/></svg>
+                    <input type="email" id="email" class="form-input" placeholder="support@ghotimarket.com" autocomplete="email" required>
+                </div>
+            </div>
 
-  <p class="error" id="error"></p>
-  <p class="info" id="info"></p>
-</div>
+            <div class="form-group">
+                <label class="form-label" for="password">Password</label>
+                <div class="input-wrapper">
+                    <svg class="input-icon" viewBox="0 0 24 24"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg>
+                    <input type="password" id="password" class="form-input" placeholder="••••••••••••" autocomplete="current-password" required>
+                    <button type="button" id="togglePasswordBtn" class="toggle-password" aria-label="Show password">
+                        <svg id="eyeIcon" viewBox="0 0 24 24"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
+                    </button>
+                </div>
+            </div>
 
-<script>
-  const firebaseConfig = {
-    apiKey: "AIzaSyBUhNhYvuo_FTvZ5RZR6Gn-4hsUY21S0XE",
-    authDomain: "ghotimarket.firebaseapp.com",
-    projectId: "ghotimarket",
-    databaseURL: "https://ghotimarket-default-rtdb.firebaseio.com",
-    storageBucket: "ghotimarket.firebasestorage.app",
-    messagingSenderId: "481257644093",
-    appId: "1:481257644093:web:0dfc3699d6b3c86afeca54",
-    measurementId: "G-4SR8V2EKC1"
-  };
+            <button type="submit" id="submitBtn" class="btn-submit">
+                <svg viewBox="0 0 24 24" id="btnIcon"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>
+                <span id="btnText">Sign In to Admin Panel</span>
+            </button>
+        </form>
 
-  firebase.initializeApp(firebaseConfig);
-  const auth = firebase.auth();
+        <div id="lockedScreen" class="locked-container">
+            <div class="locked-icon-wrapper">
+                <svg viewBox="0 0 24 24"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg>
+            </div>
+            <h2>Device Locked</h2>
+            <p>This browser has been permanently locked after multiple unsuccessful administrator login attempts. Administrator access is unavailable on this browser.</p>
+            <p style="font-size: 11px; color: #64748B; margin-top: 10px;">Note: Browser-side security state persists until site data/localStorage is cleared.</p>
+        </div>
 
-  // সিকিউরিটি Key
-  const ADMIN_EMAIL = "support@ghotimarket.com";
-  const DEVICE_ID = 'gm_device_' + btoa(navigator.userAgent + navigator.language).substring(0,20);
-  
-  let pageLoadTime = Date.now();
-  const loginBtn = document.getElementById("loginBtn");
-  const errorEl = document.getElementById("error");
-  const infoEl = document.getElementById("info");
+        <div class="security-badge">
+            <svg viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm-2 16l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z"/></svg>
+            <span>Protected Admin Access</span>
+        </div>
+    </div>
 
-  // পেজ লোডেই চেক
-  initSecurity();
+    <script>
+        /* LIMITATION NOTE: 
+           Browser-side device locking cannot provide hardware-level permanent bans. 
+           The lock persists until the browser's site data/localStorage is cleared or the browser profile changes. 
+           Firebase Authentication remains the actual authentication mechanism.
+        */
 
-  function initSecurity(){
-    const isBanned = localStorage.getItem(DEVICE_ID + '_banned');
-    const attempts = parseInt(localStorage.getItem(DEVICE_ID + '_attempts') || 0);
-    
-    if(isBanned === 'true'){
-      lockDeviceForever("This device is permanently banned.");
-      return;
-    }
-    
-    if(attempts >= 3){
-      lockDeviceForever("Too many failed attempts. Device banned.");
-      return;
-    }
-    
-    // লগইন থাকলে ডাইরেক্ট হোমে
-    auth.onAuthStateChanged((user) => {
-      if (user && user.email === ADMIN_EMAIL) {
-        window.location.href = "home.html";
-      } else if(user) {
-        auth.signOut(); // অন্য কেউ লগইন থাকলে লগআউট
-      }
-    });
-  }
+        // Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyBUhNhYvuo_FTvZ5RZR6Gn-4hsUY21S0XE",
+            authDomain: "ghotimarket.firebaseapp.com",
+            projectId: "ghotimarket",
+            databaseURL: "https://ghotimarket-default-rtdb.firebaseio.com",
+            storageBucket: "ghotimarket.firebasestorage.app",
+            messagingSenderId: "481257644093",
+            appId: "1:481257644093:web:0dfc3699d6b3c86afeca54",
+            measurementId: "G-4SR8V2EKC1"
+        };
 
-  function lockDeviceForever(msg){
-    loginBtn.disabled = true;
-    document.getElementById("email").disabled = true;
-    document.getElementById("password").disabled = true;
-    errorEl.innerText = msg;
-    infoEl.innerText = "Contact Admin to unban this device.";
-    localStorage.setItem(DEVICE_ID + '_banned', 'true');
-  }
+        // Initialize Firebase
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
+        const auth = firebase.auth();
 
-  function login() {
-    const email = document.getElementById("email").value.trim();
-    const password = document.getElementById("password").value;
+        const ADMIN_EMAIL = "support@ghotimarket.com";
 
-    errorEl.innerText = ""; infoEl.innerText = "";
+        // Generate Stable Device Identifier Hash
+        function generateDeviceId() {
+            const rawData = [
+                navigator.userAgent || '',
+                navigator.language || '',
+                navigator.platform || '',
+                screen.width || 0,
+                screen.height || 0,
+                window.devicePixelRatio || 1,
+                Intl.DateTimeFormat().resolvedOptions().timeZone || ''
+            ].join('|');
 
-    // রুল 1: 5 সেকেন্ড বট প্রটেকশন
-    if (Date.now() - pageLoadTime < 5000) {
-      errorEl.innerText = "Wait 5 seconds. Bot activity detected!";
-      banDevice();
-      return;
-    }
+            let hash = 0;
+            for (let i = 0; i < rawData.length; i++) {
+                const char = rawData.charCodeAt(i);
+                hash = ((hash << 5) - hash) + char;
+                hash |= 0; 
+            }
+            return 'dev_' + Math.abs(hash).toString(36);
+        }
 
-    // রুল 2: শুধু Admin Email ই allow
-    if(email !== ADMIN_EMAIL){
-      errorEl.innerText = "Access Denied! Only Admin can login.";
-      addAttempt();
-      return;
-    }
+        const DEVICE_ID = generateDeviceId();
+        const STORAGE_KEY = `gm_admin_security_${DEVICE_ID}`;
+        const CHECKSUM_KEY = `${STORAGE_KEY}_chk`;
 
-    if (!email || !password) {
-      errorEl.innerText = "Please enter email and password!";
-      return;
-    }
+        // Simple Checksum generator for tampering detection
+        function generateChecksum(str) {
+            let hash = 0;
+            for (let i = 0; i < str.length; i++) {
+                hash = (hash << 5) - hash + str.charCodeAt(i);
+                hash |= 0;
+            }
+            return hash.toString(36);
+        }
 
-    loginBtn.disabled = true;
-    errorEl.innerText = "Processing...";
+        // Load and Verify Security State from localStorage
+        function loadSecurityState() {
+            try {
+                const rawState = localStorage.getItem(STORAGE_KEY);
+                const storedChecksum = localStorage.getItem(CHECKSUM_KEY);
 
-    auth.signInWithEmailAndPassword(email, password)
-      .then((userCredential) => {
-        // সফল হলে সব রিসেট
-        localStorage.removeItem(DEVICE_ID + '_attempts');
-        infoEl.innerText = "Login Successful! Redirecting...";
-        window.location.href = "home.html";
-      })
-      .catch((error) => {
-        addAttempt();
-        errorEl.innerText = "Invalid credentials!";
-        loginBtn.disabled = false;
-      });
-  }
+                if (!rawState) {
+                    return { attempts: 0, banned: false, bannedAt: 0, version: 1 };
+                }
 
-  function addAttempt(){
-    let attempts = parseInt(localStorage.getItem(DEVICE_ID + '_attempts') || 0);
-    attempts++;
-    localStorage.setItem(DEVICE_ID + '_attempts', attempts);
-    
-    if(attempts >= 3){
-      banDevice();
-    } else {
-      infoEl.innerText = `Attempt ${attempts}/3. After 3 fails device will be banned.`;
-    }
-  }
+                // Verify Integrity Checksum
+                if (storedChecksum !== generateChecksum(rawState)) {
+                    return { attempts: 3, banned: true, bannedAt: Date.now(), version: 1 }; // Tampered state handling
+                }
 
-  function banDevice(){
-    localStorage.setItem(DEVICE_ID + '_banned', 'true');
-    lockDeviceForever("Device Permanently Banned!");
-  }
-</script>
+                return JSON.parse(rawState);
+            } catch (e) {
+                return { attempts: 3, banned: true, bannedAt: Date.now(), version: 1 };
+            }
+        }
 
+        // Save Security State with Integrity Checksum
+        function saveSecurityState(state) {
+            try {
+                const rawState = JSON.stringify(state);
+                localStorage.setItem(STORAGE_KEY, rawState);
+                localStorage.setItem(CHECKSUM_KEY, generateChecksum(rawState));
+            } catch (e) {
+                console.error("Storage error", e);
+            }
+        }
+
+        // DOM Elements
+        const loginForm = document.getElementById('loginForm');
+        const lockedScreen = document.getElementById('lockedScreen');
+        const emailInput = document.getElementById('email');
+        const passwordInput = document.getElementById('password');
+        const submitBtn = document.getElementById('submitBtn');
+        const btnText = document.getElementById('btnText');
+        const btnIcon = document.getElementById('btnIcon');
+        const alertBox = document.getElementById('alertBox');
+        const alertText = document.getElementById('alertText');
+        const alertIcon = document.getElementById('alertIcon');
+        const togglePasswordBtn = document.getElementById('togglePasswordBtn');
+        const eyeIcon = document.getElementById('eyeIcon');
+
+        // UI Feedback Helper
+        function showAlert(message, type = 'error') {
+            alertText.textContent = message;
+            alertBox.className = `alert-box ${type}`;
+            if (type === 'error') {
+                alertIcon.innerHTML = '<path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>';
+            } else {
+                alertIcon.innerHTML = '<path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>';
+            }
+        }
+
+        function hideAlert() {
+            alertBox.className = 'alert-box';
+        }
+
+        // Show Locked View
+        function showLockedScreen() {
+            loginForm.style.display = 'none';
+            lockedScreen.style.display = 'block';
+            hideAlert();
+        }
+
+        // Password Show/Hide Toggle
+        let isPasswordVisible = false;
+        togglePasswordBtn.addEventListener('click', () => {
+            isPasswordVisible = !isPasswordVisible;
+            passwordInput.type = isPasswordVisible ? 'text' : 'password';
+            togglePasswordBtn.setAttribute('aria-label', isPasswordVisible ? 'Hide password' : 'Show password');
+            
+            if (isPasswordVisible) {
+                eyeIcon.innerHTML = '<path d="M12 7c2.76 0 5 2.24 5 5 0 .65-.13 1.26-.36 1.83l2.92 2.92c1.51-1.26 2.7-2.89 3.43-4.75-1.73-4.39-6-7.5-11-7.5-1.4 0-2.74.25-3.98.7l2.16 2.16C10.74 7.13 11.35 7 12 7zM2 4.27l2.28 2.28.46.46C3.08 8.3 1.78 10.02 1 12c1.73 4.39 6 7.5 11 7.5 1.55 0 3.03-.3 4.38-.84l.42.42L19.73 22 21 20.73 3.27 3 2 4.27zM7.53 9.8l1.55 1.55c-.05.21-.08.43-.08.65 0 1.66 1.34 3 3 3 .22 0 .44-.03.65-.08l1.55 1.55c-.67.33-1.41.53-2.2.53-2.76 0-5-2.24-5-5 0-.79.2-1.53.53-2.2zm4.31-.78l3.15 3.15.02-.12c0-1.66-1.34-3-3-3l-.17.02z"/>';
+            } else {
+                eyeIcon.innerHTML = '<path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/>';
+            }
+        });
+
+        // Initialize Page Check on Load
+        window.addEventListener('DOMContentLoaded', () => {
+            const securityState = loadSecurityState();
+
+            if (securityState.banned) {
+                showLockedScreen();
+                return;
+            }
+
+            // Check Firebase Auth State
+            auth.onAuthStateChanged((user) => {
+                if (user) {
+                    if (user.email && user.email.trim().toLowerCase() === ADMIN_EMAIL.toLowerCase()) {
+                        // Already logged in as Admin and not locked
+                        window.location.href = "home.html";
+                    } else {
+                        // Logged in with wrong account
+                        auth.signOut();
+                    }
+                }
+            });
+        });
+
+        // Handle Form Submission & Login Logic
+        let isAuthenticating = false;
+
+        loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            if (isAuthenticating) return;
+
+            let securityState = loadSecurityState();
+            if (securityState.banned) {
+                showLockedScreen();
+                return;
+            }
+
+            const rawEmail = emailInput.value.trim();
+            const password = passwordInput.value;
+
+            if (!rawEmail || !password) {
+                showAlert("Please enter both email and password.");
+                return;
+            }
+
+            const normalizedEmail = rawEmail.toLowerCase();
+
+            // Strict Client-Side Email Guard before Firebase Call
+            if (normalizedEmail !== ADMIN_EMAIL.toLowerCase()) {
+                handleFailedAttempt(securityState, "Access denied. Only the authorized administrator account can sign in.");
+                return;
+            }
+
+            isAuthenticating = true;
+            submitBtn.disabled = true;
+            emailInput.disabled = true;
+            passwordInput.disabled = true;
+            togglePasswordBtn.disabled = true;
+            
+            btnIcon.innerHTML = '<path class="spinner" d="M12 4V2A10 10 0 0 0 2 12h2a8 8 0 0 1 8-8z"/>';
+            btnText.textContent = "Authenticating...";
+            hideAlert();
+
+            try {
+                const userCredential = await auth.signInWithEmailAndPassword(normalizedEmail, password);
+                const user = userCredential.user;
+
+                if (!user || !user.email || user.email.trim().toLowerCase() !== ADMIN_EMAIL.toLowerCase()) {
+                    await auth.signOut();
+                    handleFailedAttempt(loadSecurityState(), "Access denied. Unauthorized account session.");
+                    return;
+                }
+
+                // Successful Authentication & Authorization
+                securityState.attempts = 0; // Reset attempts on success, but keep banned status untouched if ever flagged
+                saveSecurityState(securityState);
+
+                showAlert("Authentication successful. Redirecting to Admin Panel...", "success");
+                btnText.textContent = "Redirecting...";
+
+                setTimeout(() => {
+                    window.location.href = "home.html";
+                }, 1000);
+
+            } catch (error) {
+                isAuthenticating = false;
+                submitBtn.disabled = false;
+                emailInput.disabled = false;
+                passwordInput.disabled = false;
+                togglePasswordBtn.disabled = false;
+                btnIcon.innerHTML = '<path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/>';
+                btnText.textContent = "Sign In to Admin Panel";
+
+                let friendlyMsg = getFriendlyFirebaseError(error.code);
+                handleFailedAttempt(loadSecurityState(), friendlyMsg);
+            }
+        });
+
+        // Failed Attempt Handler & Lock Trigger
+        function handleFailedAttempt(securityState, customMessage) {
+            securityState.attempts = (securityState.attempts || 0) + 1;
+
+            if (securityState.attempts >= 3) {
+                securityState.banned = true;
+                securityState.bannedAt = Date.now();
+                saveSecurityState(securityState);
+                showLockedScreen();
+                return;
+            }
+
+            saveSecurityState(securityState);
+            showAlert(`${customMessage} Attempt ${securityState.attempts} of 3.`);
+            isAuthenticating = false;
+            submitBtn.disabled = false;
+            emailInput.disabled = false;
+            passwordInput.disabled = false;
+            togglePasswordBtn.disabled = false;
+            btnText.textContent = "Sign In to Admin Panel";
+            btnIcon.innerHTML = '<path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/>';
+        }
+
+        // Map Firebase Error Codes to User-Friendly Messages
+        function getFriendlyFirebaseError(code) {
+            switch (code) {
+                case 'auth/invalid-credential':
+                case 'auth/wrong-password':
+                case 'auth/user-not-found':
+                    return "Invalid email or password.";
+                case 'auth/user-disabled':
+                    return "This administrator account has been disabled.";
+                case 'auth/too-many-requests':
+                    return "Too many login requests. Please try again later.";
+                case 'auth/network-request-failed':
+                    return "Network error. Please check your internet connection.";
+                default:
+                    return "Invalid email or password.";
+            }
+        }
+    </script>
 </body>
 </html>
