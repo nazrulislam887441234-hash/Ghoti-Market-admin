@@ -1,0 +1,1001 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GHOTI MARKET - Owner Panel</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #FF6B35;
+            --primary-hover: #E85A24;
+            --secondary: #FFA500;
+            --dark: #111827;
+            --bg: #F8FAFC;
+            --card-bg: #FFFFFF;
+            --text-main: #1E293B;
+            --text-muted: #64748B;
+            --border: #E2E8F0;
+            --success: #16A34A;
+            --danger: #DC2626;
+            --danger-hover: #B91C1C;
+            --radius: 8px;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+            --transition: all 0.2s ease-in-out;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', 'Hind Siliguri', sans-serif;
+            background-color: var(--bg);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            line-height: 1.5;
+        }
+
+        /* Utility Classes */
+        .hidden { display: none !important; }
+        .flex { display: flex; }
+        .items-center { align-items: center; }
+        .justify-between { justify-content: space-between; }
+        .gap-2 { gap: 0.5rem; }
+        .gap-4 { gap: 1rem; }
+
+        /* Buttons */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            padding: 0.625rem 1.25rem;
+            font-size: 0.875rem;
+            font-weight: 600;
+            border-radius: var(--radius);
+            border: none;
+            cursor: pointer;
+            transition: var(--transition);
+            text-decoration: none;
+        }
+
+        .btn-primary {
+            background-color: var(--primary);
+            color: #FFFFFF;
+        }
+        .btn-primary:hover {
+            background-color: var(--primary-hover);
+        }
+
+        .btn-outline {
+            background-color: transparent;
+            border: 1px solid var(--border);
+            color: var(--text-main);
+        }
+        .btn-outline:hover {
+            background-color: var(--border);
+        }
+
+        .btn-danger {
+            background-color: var(--danger);
+            color: #FFFFFF;
+        }
+        .btn-danger:hover {
+            background-color: var(--danger-hover);
+        }
+
+        .btn-sm {
+            padding: 0.375rem 0.75rem;
+            font-size: 0.75rem;
+        }
+
+        /* Inputs & Forms */
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+        .form-label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            color: var(--text-main);
+        }
+        .form-control {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            font-size: 0.875rem;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            outline: none;
+            transition: var(--transition);
+            background-color: #FFFFFF;
+            color: var(--text-main);
+        }
+        .form-control:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(255, 107, 53, 0.15);
+        }
+
+        /* Login Screen */
+        #login-view {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1.5rem;
+        }
+        .login-card {
+            background: var(--card-bg);
+            padding: 2.5rem;
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            width: 100%;
+            max-width: 420px;
+            border: 1px solid var(--border);
+        }
+        .brand-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        .brand-logo-icon {
+            width: 48px;
+            height: 48px;
+            background-color: rgba(255, 107, 53, 0.1);
+            color: var(--primary);
+            border-radius: 12px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1rem;
+        }
+        .brand-header h1 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--dark);
+        }
+        .brand-header p {
+            font-size: 0.875rem;
+            color: var(--text-muted);
+            margin-top: 0.25rem;
+        }
+        .password-wrapper {
+            position: relative;
+        }
+        .password-toggle {
+            position: absolute;
+            right: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: var(--text-muted);
+        }
+
+        /* Dashboard View */
+        #dashboard-view {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        .header {
+            background-color: var(--card-bg);
+            border-bottom: 1px solid var(--border);
+            padding: 1rem 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        .header-brand {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        .header-brand h2 {
+            font-size: 1.125rem;
+            font-weight: 700;
+            color: var(--dark);
+        }
+        .header-brand span {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            display: block;
+        }
+        .header-user {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+        .user-email {
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--text-main);
+        }
+
+        /* Main Content */
+        .main-content {
+            padding: 2rem;
+            max-width: 1280px;
+            width: 100%;
+            margin: 0 auto;
+            flex: 1;
+        }
+
+        /* Actions Bar */
+        .actions-bar {
+            background: var(--card-bg);
+            padding: 1rem 1.5rem;
+            border-radius: var(--radius) var(--radius) 0 0;
+            border: 1px solid var(--border);
+            border-bottom: none;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        .search-box {
+            position: relative;
+            flex: 1;
+            max-width: 320px;
+        }
+        .search-box input {
+            width: 100%;
+            padding: 0.625rem 1rem 0.625rem 2.5rem;
+            font-size: 0.875rem;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            outline: none;
+            background: var(--bg);
+        }
+        .search-icon {
+            position: absolute;
+            left: 0.75rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+        }
+
+        /* Table Design */
+        .table-responsive {
+            background: var(--card-bg);
+            border-radius: 0 0 var(--radius) var(--radius);
+            border: 1px solid var(--border);
+            overflow-x: auto;
+            box-shadow: var(--shadow);
+            margin-bottom: 2rem;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+            font-size: 0.875rem;
+        }
+        th, td {
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid var(--border);
+        }
+        th {
+            background-color: #F1F5F9;
+            font-weight: 600;
+            color: var(--dark);
+        }
+        tr:last-child td {
+            border-bottom: none;
+        }
+        .truncate-uid {
+            max-width: 180px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: inline-block;
+            vertical-align: middle;
+        }
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.25rem 0.75rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+            border-radius: 9999px;
+        }
+        .badge-success { background-color: rgba(22, 163, 74, 0.1); color: var(--success); }
+        .badge-danger { background-color: rgba(220, 38, 38, 0.1); color: var(--danger); }
+        .badge-role { background-color: rgba(59, 130, 246, 0.1); color: #2563EB; }
+
+        /* Modals */
+        .modal-backdrop {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(17, 24, 39, 0.6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s ease;
+        }
+        .modal-backdrop.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        .modal-content {
+            background: var(--card-bg);
+            border-radius: 12px;
+            width: 100%;
+            max-width: 480px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+            transform: translateY(20px);
+            transition: transform 0.2s ease;
+            overflow: hidden;
+        }
+        .modal-backdrop.active .modal-content {
+            transform: translateY(0);
+        }
+        .modal-header {
+            padding: 1.25rem 1.5rem;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .modal-header h3 {
+            font-size: 1.125rem;
+            font-weight: 700;
+            color: var(--dark);
+        }
+        .modal-close {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: var(--text-muted);
+        }
+        .modal-body {
+            padding: 1.5rem;
+        }
+        .modal-footer {
+            padding: 1rem 1.5rem;
+            background-color: #F8FAFC;
+            border-top: 1px solid var(--border);
+            display: flex;
+            justify-content: flex-end;
+            gap: 0.75rem;
+        }
+
+        /* Toast Container */
+        #toast-container {
+            position: fixed;
+            bottom: 1.5rem;
+            right: 1.5rem;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+        .toast {
+            background: var(--dark);
+            color: #FFFFFF;
+            padding: 0.875rem 1.25rem;
+            border-radius: var(--radius);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 0.875rem;
+            animation: slideIn 0.3s ease forwards;
+            max-width: 360px;
+        }
+        .toast.success { background-color: var(--success); }
+        .toast.error { background-color: var(--danger); }
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        /* Loading & Empty States */
+        .loading-state, .empty-state {
+            text-align: center;
+            padding: 3rem 1.5rem;
+            color: var(--text-muted);
+        }
+        .spinner {
+            width: 32px;
+            height: 32px;
+            border: 3px solid var(--border);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin: 0 auto 1rem auto;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 768px) {
+            .header { padding: 1rem; }
+            .main-content { padding: 1rem; }
+            .actions-bar { flex-direction: column; align-items: stretch; }
+            .search-box { max-width: 100%; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Toast Notifications Container -->
+    <div id="toast-container"></div>
+
+    <!-- 1. OWNER LOGIN VIEW -->
+    <div id="login-view">
+        <div class="login-card">
+            <div class="brand-header">
+                <div class="brand-logo-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+                </div>
+                <h1>GHOTI MARKET</h1>
+                <p>Owner Panel Login</p>
+            </div>
+            <form id="login-form">
+                <div class="form-group">
+                    <label class="form-label" for="login-email">ইমেইল এড্রেস</label>
+                    <input type="email" id="login-email" class="form-control" placeholder="support@ghotimarket.com" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="login-password">পাসওয়ার্ড</label>
+                    <div class="password-wrapper">
+                        <input type="password" id="login-password" class="form-control" placeholder="••••••••" required>
+                        <button type="button" id="toggle-password" class="password-toggle">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                        </button>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%;" id="login-btn">
+                    লগইন করুন
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- 2. OWNER DASHBOARD VIEW -->
+    <div id="dashboard-view" class="hidden">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-brand">
+                <div style="background-color: rgba(255, 107, 53, 0.1); color: var(--primary); padding: 8px; border-radius: 8px; display:flex; align-items:center;">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+                </div>
+                <div>
+                    <h2>GHOTI MARKET</h2>
+                    <span>Owner Panel</span>
+                </div>
+            </div>
+            <div class="header-user">
+                <span id="owner-email-display" class="user-email"></span>
+                <button id="logout-btn" class="btn btn-outline btn-sm">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+                    লগআউট
+                </button>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Actions Bar -->
+            <div class="actions-bar">
+                <div class="search-box">
+                    <span class="search-icon">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                    </span>
+                    <input type="text" id="search-input" placeholder="ইমেইল বা UID দিয়ে খুঁজুন...">
+                </div>
+                <div class="flex gap-2">
+                    <button id="refresh-btn" class="btn btn-outline" title="রিফ্রেশ করুন">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+                    </button>
+                    <button id="open-add-modal-btn" class="btn btn-primary">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                        নতুন অ্যাডমিন যোগ করুন
+                    </button>
+                </div>
+            </div>
+
+            <!-- Admin Table -->
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ইমেইল</th>
+                            <th>UID</th>
+                            <th>রোল</th>
+                            <th>স্ট্যাটাস</th>
+                            <th style="text-align: right;">অ্যাকশন</th>
+                        </tr>
+                    </thead>
+                    <tbody id="admin-table-body">
+                        <!-- Dynamic Rows -->
+                    </tbody>
+                </table>
+                <div id="table-loading" class="loading-state">
+                    <div class="spinner"></div>
+                    <p>ডাটা লোড হচ্ছে...</p>
+                </div>
+                <div id="table-empty" class="empty-state hidden">
+                    <p>কোনো অ্যাডমিন পাওয়া যায়নি।</p>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- 3. MODALS -->
+
+    <!-- Add Admin Modal -->
+    <div id="add-modal" class="modal-backdrop">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>নতুন অ্যাডমিন যোগ করুন</h3>
+                <button class="modal-close close-modal-btn">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                </button>
+            </div>
+            <form id="add-admin-form">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label class="form-label">অ্যাডমিন ইমেইল (Document ID)</label>
+                        <input type="email" id="add-email" class="form-control" placeholder="admin@example.com" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Firebase Auth UID</label>
+                        <input type="text" id="add-uid" class="form-control" placeholder="firebaseAuthUID123" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">রোল</label>
+                        <input type="text" class="form-control" value="admin" disabled style="background-color: #F1F5F9; color: var(--text-muted);">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">স্ট্যাটাস</label>
+                        <input type="text" class="form-control" value="True" disabled style="background-color: #F1F5F9; color: var(--text-muted);">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline close-modal-btn">বাতিল</button>
+                    <button type="submit" class="btn btn-primary">সংরক্ষণ করুন</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Edit Admin Modal -->
+    <div id="edit-modal" class="modal-backdrop">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>অ্যাডমিন তথ্য সম্পাদনা</h3>
+                <button class="modal-close close-modal-btn">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                </button>
+            </div>
+            <form id="edit-admin-form">
+                <input type="hidden" id="edit-old-email">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label class="form-label">অ্যাডমিন ইমেইল</label>
+                        <input type="email" id="edit-email" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Firebase Auth UID</label>
+                        <input type="text" id="edit-uid" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">রোল</label>
+                        <input type="text" class="form-control" value="admin" disabled style="background-color: #F1F5F9; color: var(--text-muted);">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">স্ট্যাটাস</label>
+                        <select id="edit-active" class="form-control">
+                            <option value="true">Active</option>
+                            <option value="false">Inactive</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline close-modal-btn">বাতিল</button>
+                    <button type="submit" class="btn btn-primary">আপডেট করুন</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div id="delete-modal" class="modal-backdrop">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>অ্যাডমিন মুছে ফেলুন</h3>
+                <button class="modal-close close-modal-btn">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                </button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="delete-doc-email">
+                <p>আপনি কি সত্যিই এই অ্যাডমিনকে মুছে ফেলতে চান?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline close-modal-btn">বাতিল</button>
+                <button type="button" id="confirm-delete-btn" class="btn btn-danger">মুছে ফেলুন</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase Script Logic -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { 
+            getAuth, 
+            signInWithEmailAndPassword, 
+            signOut, 
+            onAuthStateChanged 
+        } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { 
+            getFirestore, 
+            collection, 
+            doc, 
+            setDoc, 
+            getDocs, 
+            deleteDoc, 
+            updateDoc, 
+            serverTimestamp 
+        } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        // ================= FIREBASE CONFIG =================
+        const firebaseConfig = {
+  apiKey: "AIzaSyBUhNhYvuo_FTvZ5RZR6Gn-4hsUY21S0XE",
+  authDomain: "ghotimarket.firebaseapp.com",
+  databaseURL: "https://ghotimarket-default-rtdb.firebaseio.com",
+  projectId: "ghotimarket",
+  storageBucket: "ghotimarket.firebasestorage.app",
+  messagingSenderId: "481257644093",
+  appId: "1:481257644093:web:0dfc3699d6b3c86afeca54",
+  measurementId: "G-4SR8V2EKC1"
+};
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        // Allowed Owner Emails
+        const ALLOWED_OWNERS = [
+            "support@ghotimarket.com",
+            "nazrulislam887441234@gmail.com"
+        ];
+
+        let allAdminsData = [];
+
+        // DOM Element References
+        const loginView = document.getElementById('login-view');
+        const dashboardView = document.getElementById('dashboard-view');
+        const loginForm = document.getElementById('login-form');
+        const loginEmailInput = document.getElementById('login-email');
+        const loginPasswordInput = document.getElementById('login-password');
+        const togglePasswordBtn = document.getElementById('toggle-password');
+        const logoutBtn = document.getElementById('logout-btn');
+        const ownerEmailDisplay = document.getElementById('owner-email-display');
+        
+        const adminTableBody = document.getElementById('admin-table-body');
+        const tableLoading = document.getElementById('table-loading');
+        const tableEmpty = document.getElementById('table-empty');
+        const searchInput = document.getElementById('search-input');
+        const refreshBtn = document.getElementById('refresh-btn');
+
+        const addModal = document.getElementById('add-modal');
+        const editModal = document.getElementById('edit-modal');
+        const deleteModal = document.getElementById('delete-modal');
+        const openAddModalBtn = document.getElementById('open-add-modal-btn');
+        const addAdminForm = document.getElementById('add-admin-form');
+        const editAdminForm = document.getElementById('edit-admin-form');
+        const confirmDeleteBtn = document.getElementById('confirm-delete-btn');
+
+        // ================= TOAST NOTIFICATION =================
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            
+            let iconSvg = type === 'success' 
+                ? '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>'
+                : '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>';
+
+            toast.innerHTML = `${iconSvg} <span>${message}</span>`;
+            container.appendChild(toast);
+
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transition = 'opacity 0.3s ease';
+                setTimeout(() => toast.remove(), 300);
+            }, 3500);
+        }
+
+        // ================= AUTHENTICATION & SESSIONS =================
+        togglePasswordBtn.addEventListener('click', () => {
+            const type = loginPasswordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+            loginPasswordInput.setAttribute('type', type);
+        });
+
+        loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = loginEmailInput.value.trim().toLowerCase();
+            const password = loginPasswordInput.value;
+
+            if (!ALLOWED_OWNERS.includes(email)) {
+                showToast("এই অ্যাকাউন্টের Owner Panel ব্যবহারের অনুমতি নেই।", "error");
+                return;
+            }
+
+            try {
+                const userCred = await signInWithEmailAndPassword(auth, email, password);
+                const userEmail = (userCred.user.email || "").trim().toLowerCase();
+                if (!ALLOWED_OWNERS.includes(userEmail)) {
+                    await signOut(auth);
+                    showToast("Access Denied: অনুমোদিত ওনার নয়।", "error");
+                }
+            } catch (err) {
+                console.error("Login Error:", err);
+                showToast("ইমেইল অথবা পাসওয়ার্ড সঠিক নয়।", "error");
+            }
+        });
+
+        async function logoutOwner() {
+            try {
+                await signOut(auth);
+                showToast("সফলভাবে লগআউট করা হয়েছে।", "success");
+            } catch (err) {
+                console.error("Logout error:", err);
+            }
+        }
+        logoutBtn.addEventListener('click', logoutOwner);
+
+        onAuthStateChanged(auth, async (user) => {
+            if (!user) {
+                dashboardView.classList.add('hidden');
+                loginView.classList.remove('hidden');
+                allAdminsData = [];
+                return;
+            }
+
+            const email = (user.email || "").trim().toLowerCase();
+
+            if (!ALLOWED_OWNERS.includes(email)) {
+                await signOut(auth);
+                dashboardView.classList.add('hidden');
+                loginView.classList.remove('hidden');
+                showToast("Access Denied: অনুমোদনহীন ইমেইল।", "error");
+                allAdminsData = [];
+                return;
+            }
+
+            ownerEmailDisplay.textContent = user.email;
+            loginView.classList.add('hidden');
+            dashboardView.classList.remove('hidden');
+            await loadAdmins();
+        });
+
+        // ================= FIRESTORE CRUD =================
+        async function loadAdmins() {
+            tableLoading.classList.remove('hidden');
+            tableEmpty.classList.add('hidden');
+            adminTableBody.innerHTML = '';
+
+            try {
+                const currentUser = auth.currentUser;
+
+                if (!currentUser) {
+                    throw new Error("Owner is not authenticated.");
+                }
+
+                const currentEmail = (currentUser.email || "").trim().toLowerCase();
+
+                if (!ALLOWED_OWNERS.includes(currentEmail)) {
+                    throw new Error("Current user is not an authorized Owner.");
+                }
+
+                const querySnapshot = await getDocs(collection(db, "admins"));
+                allAdminsData = [];
+                querySnapshot.forEach((docSnap) => {
+                    allAdminsData.push({ id: docSnap.id, ...docSnap.data() });
+                });
+                renderAdminTable(allAdminsData);
+            } catch (err) {
+                console.error("Error reading admins:", err);
+                console.error("Error code:", err.code);
+                console.error("Error message:", err.message);
+
+                if (err.code === "permission-denied") {
+                    showToast("Firestore Permission Denied! Firebase Rules এবং Project ID চেক করুন।", "error");
+                } else {
+                    showToast("অ্যাডমিন লিস্ট লোড করা সম্ভব হয়নি: " + (err.message || "Unknown error"), "error");
+                }
+            } finally {
+                tableLoading.classList.add('hidden');
+            }
+        }
+
+        refreshBtn.addEventListener('click', loadAdmins);
+
+        function renderAdminTable(data) {
+            adminTableBody.innerHTML = '';
+            if (data.length === 0) {
+                tableEmpty.classList.remove('hidden');
+                return;
+            }
+            tableEmpty.classList.add('hidden');
+
+            data.forEach((admin) => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td><strong>${escapeHtml(admin.email)}</strong></td>
+                    <td><span class="truncate-uid" title="${escapeHtml(admin.uid)}">${escapeHtml(admin.uid)}</span></td>
+                    <td><span class="badge badge-role">${escapeHtml(admin.role || 'admin')}</span></td>
+                    <td>
+                        <span class="badge ${admin.active ? 'badge-success' : 'badge-danger'}">
+                            ${admin.active ? 'Active' : 'Inactive'}
+                        </span>
+                    </td>
+                    <td style="text-align: right;">
+                        <button class="btn btn-outline btn-sm" onclick="openEditModal('${escapeHtml(admin.email)}', '${escapeHtml(admin.uid)}', ${admin.active})">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                        </button>
+                        <button class="btn btn-danger btn-sm" onclick="openDeleteModal('${escapeHtml(admin.email)}')">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>
+                        </button>
+                    </td>
+                `;
+                adminTableBody.appendChild(tr);
+            });
+        }
+
+        // Search Filter
+        searchInput.addEventListener('input', (e) => {
+            const query = e.target.value.toLowerCase().trim();
+            const filtered = allAdminsData.filter(item => 
+                (item.email && item.email.toLowerCase().includes(query)) || 
+                (item.uid && item.uid.toLowerCase().includes(query))
+            );
+            renderAdminTable(filtered);
+        });
+
+        // Add Admin
+        addAdminForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('add-email').value.trim().toLowerCase();
+            const uid = document.getElementById('add-uid').value.trim();
+
+            if (!email || !uid) {
+                showToast("সব ফিল্ড পূরণ করা আবশ্যক।", "error");
+                return;
+            }
+
+            try {
+                const adminDocRef = doc(db, "admins", email);
+                await setDoc(adminDocRef, {
+                    email: email,
+                    uid: uid,
+                    role: "admin",
+                    active: true,
+                    createdAt: serverTimestamp(),
+                    updatedAt: serverTimestamp()
+                });
+                showToast("Admin সফলভাবে তৈরি হয়েছে।", "success");
+                closeAllModals();
+                addAdminForm.reset();
+                await loadAdmins();
+            } catch (err) {
+                console.error("Error adding admin:", err);
+                showToast("Admin তৈরি করা সম্ভব হয়নি।", "error");
+            }
+        });
+
+        // Edit Admin Modal Trigger
+        window.openEditModal = function(email, uid, active) {
+            document.getElementById('edit-old-email').value = email;
+            document.getElementById('edit-email').value = email;
+            document.getElementById('edit-uid').value = uid;
+            document.getElementById('edit-active').value = active.toString();
+            editModal.classList.add('active');
+        };
+
+        // Update Admin
+        editAdminForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const oldEmail = document.getElementById('edit-old-email').value.trim().toLowerCase();
+            const newEmail = document.getElementById('edit-email').value.trim().toLowerCase();
+            const newUID = document.getElementById('edit-uid').value.trim();
+            const activeStatus = document.getElementById('edit-active').value === 'true';
+
+            try {
+                if (oldEmail !== newEmail) {
+                    await deleteDoc(doc(db, "admins", oldEmail));
+                    await setDoc(doc(db, "admins", newEmail), {
+                        email: newEmail,
+                        uid: newUID,
+                        role: "admin",
+                        active: activeStatus,
+                        updatedAt: serverTimestamp()
+                    });
+                } else {
+                    await updateDoc(doc(db, "admins", oldEmail), {
+                        uid: newUID,
+                        role: "admin",
+                        active: activeStatus,
+                        updatedAt: serverTimestamp()
+                    });
+                }
+                showToast("Admin তথ্য সফলভাবে আপডেট হয়েছে।", "success");
+                closeAllModals();
+                await loadAdmins();
+            } catch (err) {
+                console.error("Error updating admin:", err);
+                showToast("Admin আপডেট করা সম্ভব হয়নি।", "error");
+            }
+        });
+
+        // Delete Admin Modal Trigger
+        window.openDeleteModal = function(email) {
+            document.getElementById('delete-doc-email').value = email;
+            deleteModal.classList.add('active');
+        };
+
+        confirmDeleteBtn.addEventListener('click', async () => {
+            const email = document.getElementById('delete-doc-email').value.trim().toLowerCase();
+            try {
+                await deleteDoc(doc(db, "admins", email));
+                showToast("Admin সফলভাবে মুছে ফেলা হয়েছে।", "success");
+                closeAllModals();
+                await loadAdmins();
+            } catch (err) {
+                console.error("Error deleting admin:", err);
+                showToast("Admin মুছে ফেলা সম্ভব হয়নি।", "error");
+            }
+        });
+
+        // ================= MODAL CONTROLS =================
+        openAddModalBtn.addEventListener('click', () => {
+            addAdminForm.reset();
+            addModal.classList.add('active');
+        });
+
+        document.querySelectorAll('.close-modal-btn').forEach(btn => {
+            btn.addEventListener('click', closeAllModals);
+        });
+
+        document.querySelectorAll('.modal-backdrop').forEach(backdrop => {
+            backdrop.addEventListener('click', (e) => {
+                if (e.target === backdrop) closeAllModals();
+            });
+        });
+
+        window.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') closeAllModals();
+        });
+
+        function closeAllModals() {
+            addModal.classList.remove('active');
+            editModal.classList.remove('active');
+            deleteModal.classList.remove('active');
+        }
+
+        function escapeHtml(str) {
+            return String(str || '').replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+        }
+    </script>
+</body>
+</html>
