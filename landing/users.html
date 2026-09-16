@@ -1,0 +1,1418 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ghoti Landing Page - Advanced Users & Admin Management</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #FF6B00;
+            --primary-dark: #E05E00;
+            --primary-light: #FFF4EE;
+            --secondary: #1A1D20;
+            --bg-color: #F4F6F9;
+            --card-bg: #FFFFFF;
+            --text-main: #1A1D20;
+            --text-muted: #718096;
+            --border-color: #E2E8F0;
+            --success-bg: #DEF7EC;
+            --success-text: #03543F;
+            --danger-bg: #FDE8E8;
+            --danger-text: #9B1C1C;
+            --warning-bg: #FEF3C7;
+            --warning-text: #92400E;
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.05), 0 1px 2px rgba(0,0,0,0.1);
+            --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -1px rgba(0,0,0,0.03);
+            --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.08), 0 4px 6px -2px rgba(0,0,0,0.04);
+            --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* Utility classes */
+        .hidden { display: none !important; }
+        .flex { display: flex; }
+        .items-center { align-items: center; }
+        .justify-between { justify-content: space-between; }
+        .gap-2 { gap: 0.5rem; }
+        .gap-4 { gap: 1rem; }
+
+        /* Header */
+        header {
+            background-color: var(--card-bg);
+            border-bottom: 1px solid var(--border-color);
+            padding: 1rem 2.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: var(--shadow-sm);
+            backdrop-filter: blur(8px);
+            background-color: rgba(255, 255, 255, 0.95);
+        }
+
+        .brand-container {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .brand-logo {
+            height: 42px;
+            object-fit: contain;
+        }
+
+        .brand-title h1 {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--text-main);
+            letter-spacing: -0.5px;
+        }
+
+        .brand-title p {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .user-nav {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .user-info {
+            text-align: right;
+        }
+
+        .user-email {
+            font-size: 0.875rem;
+            font-weight: 700;
+            color: var(--secondary);
+        }
+
+        .role-badge {
+            display: inline-flex;
+            align-items: center;
+            font-size: 0.7rem;
+            font-weight: 800;
+            padding: 0.2rem 0.6rem;
+            border-radius: 20px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .role-badge.owner {
+            background: linear-gradient(135deg, #FF6B00, #FF8C00);
+            color: #FFF;
+            box-shadow: 0 2px 4px rgba(255, 107, 0, 0.2);
+        }
+
+        .role-badge.admin {
+            background-color: #EDF2F7;
+            color: #2D3748;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            padding: 0.6rem 1.25rem;
+            font-size: 0.875rem;
+            font-weight: 600;
+            border-radius: 8px;
+            border: 1px solid transparent;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .btn-primary {
+            background-color: var(--primary);
+            color: #FFF;
+            box-shadow: 0 2px 4px rgba(255, 107, 0, 0.2);
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-1px);
+        }
+
+        .btn-outline {
+            background-color: #FFF;
+            border-color: var(--border-color);
+            color: var(--text-main);
+        }
+
+        .btn-outline:hover {
+            background-color: var(--bg-color);
+            border-color: var(--text-muted);
+        }
+
+        .btn-danger {
+            background-color: #E53E3E;
+            color: #FFF;
+            box-shadow: 0 2px 4px rgba(229, 62, 62, 0.2);
+        }
+
+        .btn-danger:hover {
+            background-color: #C53030;
+        }
+
+        /* Main Container */
+        .main-container {
+            max-width: 1400px;
+            width: 100%;
+            margin: 2.5rem auto;
+            padding: 0 2rem;
+            flex: 1;
+        }
+
+        /* Statistics Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2.5rem;
+        }
+
+        .stat-card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: var(--shadow-sm);
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            position: relative;
+            overflow: hidden;
+            transition: var(--transition);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-md);
+            border-color: #CBD5E0;
+        }
+
+        .stat-card::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background-color: var(--primary);
+        }
+
+        .stat-title {
+            font-size: 0.875rem;
+            color: var(--text-muted);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--secondary);
+            letter-spacing: -1px;
+        }
+
+        /* Controls Section */
+        .controls-section {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1.25rem 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: var(--shadow-sm);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .search-box {
+            position: relative;
+            flex: 1;
+            min-width: 300px;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 0.7rem 1rem 0.7rem 2.75rem;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 0.95rem;
+            outline: none;
+            transition: var(--transition);
+            background-color: #FAFAFB;
+        }
+
+        .search-box input:focus {
+            border-color: var(--primary);
+            background-color: #FFF;
+            box-shadow: 0 0 0 4px rgba(255, 107, 0, 0.1);
+        }
+
+        .search-box svg {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            fill: var(--text-muted);
+            width: 18px;
+            height: 18px;
+        }
+
+        .filter-sort-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .select-control {
+            padding: 0.7rem 1.25rem;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            background-color: #FAFAFB;
+            font-size: 0.95rem;
+            font-weight: 500;
+            color: var(--text-main);
+            outline: none;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .select-control:focus {
+            border-color: var(--primary);
+            background-color: #FFF;
+            box-shadow: 0 0 0 4px rgba(255, 107, 0, 0.1);
+        }
+
+        /* Data Table Layout */
+        .table-container {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: var(--shadow-sm);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+
+        th, td {
+            padding: 1.15rem 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 0.9rem;
+        }
+
+        th {
+            background-color: #F8FAFC;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 0.8px;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        tbody tr {
+            transition: var(--transition);
+        }
+
+        tbody tr:hover {
+            background-color: rgba(255, 107, 0, 0.015);
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.3rem 0.75rem;
+            border-radius: 30px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 0.3px;
+        }
+
+        .badge-success {
+            background-color: var(--success-bg);
+            color: var(--success-text);
+        }
+
+        .badge-danger {
+            background-color: var(--danger-bg);
+            color: var(--danger-text);
+        }
+
+        .badge-warning {
+            background-color: var(--warning-bg);
+            color: var(--warning-text);
+        }
+
+        .action-btns {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .icon-btn {
+            background: #F8FAFC;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 0.45rem;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+        }
+
+        .icon-btn svg {
+            width: 16px;
+            height: 16px;
+            fill: var(--text-muted);
+        }
+
+        .icon-btn:hover {
+            background-color: #EDF2F7;
+            border-color: #CBD5E0;
+            transform: translateY(-1px);
+        }
+
+        .icon-btn.btn-view:hover svg { fill: #3182CE; }
+        .icon-btn.btn-edit:hover svg { fill: #D69E2E; }
+        .icon-btn.btn-delete:hover svg { fill: #E53E3E; }
+
+        /* Mobile Card View (Hidden on Desktop) */
+        .mobile-cards-container {
+            display: none;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .mobile-card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1.25rem;
+            box-shadow: var(--shadow-sm);
+            display: flex;
+            flex-direction: column;
+            gap: 0.85rem;
+        }
+
+        .mobile-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 0.75rem;
+        }
+
+        .mobile-card-body {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .mobile-card-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 0.5rem;
+            border-top: 1px solid var(--border-color);
+            padding-top: 0.75rem;
+            margin-top: 0.25rem;
+        }
+
+        /* States Container */
+        .state-container {
+            padding: 5rem 2rem;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+            background: var(--card-bg);
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-sm);
+            margin-top: 1rem;
+        }
+
+        .spinner {
+            width: 44px;
+            height: 44px;
+            border: 3px solid var(--border-color);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 0.8s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .state-icon svg {
+            width: 52px;
+            height: 52px;
+            fill: #CBD5E0;
+        }
+
+        .state-text {
+            font-size: 1rem;
+            font-weight: 500;
+            color: var(--text-muted);
+        }
+
+        /* Modal System */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(26, 29, 32, 0.6);
+            backdrop-filter: blur(4px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: var(--transition);
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal-card {
+            background-color: var(--card-bg);
+            border-radius: 16px;
+            width: 100%;
+            max-width: 560px;
+            margin: 1rem;
+            box-shadow: var(--shadow-lg);
+            transform: translateY(20px) scale(0.98);
+            transition: var(--transition);
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+        }
+
+        .modal-overlay.active .modal-card {
+            transform: translateY(0) scale(1);
+        }
+
+        .modal-header {
+            padding: 1.25rem 1.75rem;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #FAFAFB;
+        }
+
+        .modal-header h3 {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: var(--secondary);
+        }
+
+        .modal-close-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 0.25rem;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-close-btn svg {
+            width: 20px;
+            height: 20px;
+            fill: var(--text-muted);
+        }
+
+        .modal-close-btn:hover svg { fill: var(--text-main); }
+
+        .modal-body {
+            padding: 1.75rem;
+            max-height: 70vh;
+            overflow-y: auto;
+        }
+
+        .modal-footer {
+            padding: 1.25rem 1.75rem;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            justify-content: flex-end;
+            gap: 0.75rem;
+            background-color: #FAFAFB;
+        }
+
+        /* Form Controls inside Modal */
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: var(--secondary);
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 0.7rem 1rem;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 0.95rem;
+            outline: none;
+            transition: var(--transition);
+            background-color: #FAFAFB;
+        }
+
+        .form-control:focus {
+            border-color: var(--primary);
+            background-color: #FFF;
+            box-shadow: 0 0 0 4px rgba(255, 107, 0, 0.1);
+        }
+
+        .form-control:disabled {
+            background-color: #EDF2F7;
+            cursor: not-allowed;
+            color: var(--text-muted);
+        }
+
+        .form-text-warning {
+            font-size: 0.775rem;
+            color: #C05621;
+            background-color: #FFFAF0;
+            border: 1px solid #FEEBC8;
+            padding: 0.5rem 0.75rem;
+            border-radius: 6px;
+            margin-top: 0.4rem;
+            font-weight: 500;
+        }
+
+        /* Toast Notifications */
+        .toast-container {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            z-index: 2000;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .toast {
+            background-color: var(--card-bg);
+            color: var(--text-main);
+            border: 1px solid var(--border-color);
+            padding: 1rem 1.25rem;
+            border-radius: 10px;
+            box-shadow: var(--shadow-lg);
+            display: flex;
+            align-items: center;
+            gap: 0.85rem;
+            font-size: 0.9rem;
+            font-weight: 600;
+            min-width: 320px;
+            animation: slideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        .toast.success { border-left: 5px solid #38A169; }
+        .toast.error { border-left: 5px solid #E53E3E; }
+
+        .toast svg {
+            width: 20px;
+            height: 20px;
+            flex-shrink: 0;
+        }
+
+        .toast.success svg { fill: #38A169; }
+        .toast.error svg { fill: #E53E3E; }
+
+        /* Access Denied View */
+        .access-denied-wrapper {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem;
+            background-color: var(--bg-color);
+        }
+
+        .access-denied-card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 3rem 2.5rem;
+            text-align: center;
+            max-width: 480px;
+            width: 100%;
+            box-shadow: var(--shadow-md);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1.25rem;
+        }
+
+        .access-denied-card svg {
+            width: 64px;
+            height: 64px;
+            fill: #E53E3E;
+            background-color: var(--danger-bg);
+            padding: 12px;
+            border-radius: 50%;
+        }
+
+        .access-denied-card h2 {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--secondary);
+        }
+
+        .access-denied-card p {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+
+        /* Responsive Breakpoints */
+        @media (max-width: 768px) {
+            .table-container { display: none; }
+            .mobile-cards-container { display: flex; }
+            header { padding: 1rem 1.25rem; }
+            .main-container { padding: 0 1rem; margin: 1.5rem auto; }
+            .controls-section { flex-direction: column; align-items: stretch; }
+            .filter-sort-group { width: 100%; justify-content: space-between; }
+            .select-control { flex: 1; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Access Denied Screen (Initially Hidden) -->
+    <div id="accessDeniedScreen" class="access-denied-wrapper hidden">
+        <div class="access-denied-card">
+            <svg viewBox="0 0 24 24"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg>
+            <h2>Access Denied</h2>
+            <p>You are not authorized to view this page. Only the Owner and verified active Admins are permitted to access this panel.</p>
+            <button class="btn btn-primary" onclick="redirectToLogin()">Go to Login</button>
+        </div>
+    </div>
+
+    <!-- Main Dashboard Container -->
+    <div id="dashboardContainer" class="hidden">
+        <!-- Header -->
+        <header>
+            <div class="brand-container">
+                <img src="https://ghotimarket.com/logo/landing.png" alt="Ghoti Landing Logo" class="brand-logo" onerror="this.style.display='none'">
+                <div class="brand-title">
+                    <h1>Ghoti Landing Page</h1>
+                    <p>Landing Users Management</p>
+                </div>
+            </div>
+            <div class="user-nav">
+                <div class="user-info">
+                    <div id="userEmailDisplay" class="user-email">user@ghotimarket.com</div>
+                    <div id="userRoleBadge" class="role-badge owner">OWNER</div>
+                </div>
+                <button class="btn btn-outline" id="logoutBtn" title="Logout">
+                    <svg viewBox="0 0 24 24" width="16" height="16"><path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/></svg>
+                    Logout
+                </button>
+            </div>
+        </header>
+
+        <!-- Content Body -->
+        <div class="main-container">
+            <!-- Statistics -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <span class="stat-title">Total Users</span>
+                    <span class="stat-value" id="statTotal">0</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-title">Active Users</span>
+                    <span class="stat-value" id="statActive">0</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-title">Verified Users</span>
+                    <span class="stat-value" id="statVerified">0</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-title">Inactive Users</span>
+                    <span class="stat-value" id="statInactive">0</span>
+                </div>
+            </div>
+
+            <!-- Controls (Search, Filter, Sort) -->
+            <div class="controls-section">
+                <div class="search-box">
+                    <svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+                    <input type="text" id="searchInput" placeholder="Search users by name, phone, email, UID...">
+                </div>
+                <div class="filter-sort-group">
+                    <select id="filterSelect" class="select-control">
+                        <option value="all">All Users</option>
+                        <option value="active">Active</option>
+                        <option value="inactive">Inactive</option>
+                        <option value="verified">Verified</option>
+                        <option value="unverified">Unverified</option>
+                    </select>
+                    <select id="sortSelect" class="select-control">
+                        <option value="newest">Newest First</option>
+                        <option value="oldest">Oldest First</option>
+                        <option value="name-asc">Name A-Z</option>
+                        <option value="name-desc">Name Z-A</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Table Section (Desktop) -->
+            <div class="table-container" id="tableContainer">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Phone</th>
+                            <th>Email</th>
+                            <th>UID</th>
+                            <th>Active</th>
+                            <th>Verified</th>
+                            <th>Created At</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="usersTableBody">
+                        <!-- Populated by JS -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Mobile Card View Section -->
+            <div class="mobile-cards-container" id="mobileCardsContainer">
+                <!-- Populated by JS -->
+            </div>
+
+            <!-- States Container (Loading, Empty, Error) -->
+            <div id="stateContainer" class="state-container hidden">
+                <div id="stateSpinner" class="spinner"></div>
+                <div id="stateIcon" class="state-icon hidden">
+                    <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14z"/></svg>
+                </div>
+                <div id="stateText" class="state-text">Loading users...</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modals -->
+    <!-- View User Modal -->
+    <div class="modal-overlay" id="viewModal">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3>User Details</h3>
+                <button class="modal-close-btn" onclick="closeModal('viewModal')">
+                    <svg viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+                </button>
+            </div>
+            <div class="modal-body" id="viewModalBody">
+                <!-- Populated dynamically -->
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" onclick="closeModal('viewModal')">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit User Modal -->
+    <div class="modal-overlay" id="editModal">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3>Edit Landing User</h3>
+                <button class="modal-close-btn" onclick="closeModal('editModal')">
+                    <svg viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="editUserForm" onsubmit="handleEditSubmit(event)">
+                    <input type="hidden" id="editDocId">
+                    <div class="form-group">
+                        <label for="editName">Name</label>
+                        <input type="text" id="editName" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editPhone">Phone</label>
+                        <input type="text" id="editPhone" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editEmail">Email</label>
+                        <input type="email" id="editEmail" class="form-control" required>
+                        <div class="form-text-warning">Warning: Changing email here does not modify Firebase Auth credentials.</div>
+                    </div>
+                    <div class="form-group">
+                        <label for="editUid">UID (Read-Only)</label>
+                        <input type="text" id="editUid" class="form-control" disabled>
+                    </div>
+                    <div class="form-group">
+                        <label for="editActive">Active Status</label>
+                        <select id="editActive" class="select-control" style="width: 100%;">
+                            <option value="true">Active</option>
+                            <option value="false">Inactive</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="editVerified">Verification Status</label>
+                        <select id="editVerified" class="select-control" style="width: 100%;">
+                            <option value="true">Verified</option>
+                            <option value="false">Unverified</option>
+                        </select>
+                    </div>
+                    <div style="display: flex; justify-content: flex-end; gap: 0.75rem; margin-top: 1.5rem;">
+                        <button type="button" class="btn btn-outline" onclick="closeModal('editModal')">Cancel</button>
+                        <button type="submit" class="btn btn-primary" id="saveEditBtn">Save Changes</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div class="modal-overlay" id="deleteModal">
+        <div class="modal-card" style="max-width: 420px;">
+            <div class="modal-header">
+                <h3>Delete User?</h3>
+                <button class="modal-close-btn" onclick="closeModal('deleteModal')">
+                    <svg viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p id="deleteModalText" style="margin-bottom: 1rem; font-size: 0.95rem; line-height: 1.5; color: var(--text-muted);">Are you sure you want to permanently delete this user? This action cannot be undone.</p>
+                <input type="hidden" id="deleteDocId">
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" onclick="closeModal('deleteModal')">Cancel</button>
+                <button class="btn btn-danger" id="confirmDeleteBtn" onclick="executeDelete()">Delete</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notifications Container -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- Firebase SDKs -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getFirestore, collection, getDocs, doc, getDoc, updateDoc, deleteDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBUhNhYvuo_FTvZ5RZR6Gn-4hsUY21S0XE",
+            authDomain: "ghotimarket.firebaseapp.com",
+            databaseURL: "https://ghotimarket-default-rtdb.firebaseio.com",
+            projectId: "ghotimarket",
+            storageBucket: "ghotimarket.firebasestorage.app",
+            messagingSenderId: "481257644093",
+            appId: "1:481257644093:web:0dfc3699d6b3c86afeca54",
+            measurementId: "G-4SR8V2EKC1"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        const OWNER_EMAILS = ["nazrulislam887441234@gmail.com", "support@ghotimarket.com"];
+        let allLandingUsers = [];
+        let currentRole = null;
+
+        const accessDeniedScreen = document.getElementById("accessDeniedScreen");
+        const dashboardContainer = document.getElementById("dashboardContainer");
+        const userEmailDisplay = document.getElementById("userEmailDisplay");
+        const userRoleBadge = document.getElementById("userRoleBadge");
+        const logoutBtn = document.getElementById("logoutBtn");
+        const searchInput = document.getElementById("searchInput");
+        const filterSelect = document.getElementById("filterSelect");
+        const sortSelect = document.getElementById("sortSelect");
+        const usersTableBody = document.getElementById("usersTableBody");
+        const mobileCardsContainer = document.getElementById("mobileCardsContainer");
+        const stateContainer = document.getElementById("stateContainer");
+        const stateSpinner = document.getElementById("stateSpinner");
+        const stateIcon = document.getElementById("stateIcon");
+        const stateText = document.getElementById("stateText");
+
+        // Auth State Observer with Email-based Admin verification
+        onAuthStateChanged(auth, async (user) => {
+            if (!user) {
+                redirectToLogin();
+                return;
+            }
+
+            const email = user.email ? user.email.trim().toLowerCase() : "";
+            
+            // 1. Check Owner Access
+            if (email && OWNER_EMAILS.includes(email)) {
+                currentRole = "OWNER";
+                setupDashboard(user.email, "OWNER");
+                loadLandingUsers();
+                return;
+            }
+
+            // 2. Check Admin Access from 'admins' collection using EMAIL as Document ID
+            try {
+                if (email) {
+                    const adminDocRef = doc(db, "admins", email);
+                    const adminSnap = await getDoc(adminDocRef);
+
+                    if (adminSnap.exists()) {
+                        const adminData = adminSnap.data();
+                        const isValidAdmin = 
+                            adminData.email && adminData.email.trim().toLowerCase() === email &&
+                            adminData.role === "admin" &&
+                            adminData.active === true;
+
+                        if (isValidAdmin) {
+                            currentRole = "ADMIN";
+                            setupDashboard(user.email, "ADMIN");
+                            loadLandingUsers();
+                            return;
+                        }
+                    }
+                }
+            } catch (error) {
+                console.error("Authorization check error:", error);
+            }
+
+            // 3. Deny Access
+            showAccessDenied();
+        });
+
+        window.redirectToLogin = function() {
+            window.location.href = "login.html";
+        };
+
+        function showAccessDenied() {
+            dashboardContainer.classList.add("hidden");
+            accessDeniedScreen.classList.remove("hidden");
+        }
+
+        function setupDashboard(email, role) {
+            accessDeniedScreen.classList.add("hidden");
+            dashboardContainer.classList.remove("hidden");
+            userEmailDisplay.textContent = email;
+            userRoleBadge.textContent = role;
+            userRoleBadge.className = role === "OWNER" ? "role-badge owner" : "role-badge admin";
+        }
+
+        logoutBtn.addEventListener("click", async () => {
+            try {
+                await signOut(auth);
+                window.location.href = "login.html";
+            } catch (error) {
+                showToast("Failed to logout. Please try again.", "error");
+            }
+        });
+
+        async function loadLandingUsers() {
+            showLoadingState("Loading users...");
+            try {
+                const querySnapshot = await getDocs(collection(db, "landing_users"));
+                allLandingUsers = [];
+                querySnapshot.forEach((docSnap) => {
+                    allLandingUsers.push({
+                        id: docSnap.id,
+                        ...docSnap.data()
+                    });
+                });
+
+                if (allLandingUsers.length === 0) {
+                    showEmptyState("No landing users found.");
+                } else {
+                    hideStates();
+                    updateStatistics();
+                    renderUsers(filterAndSortUsers());
+                }
+            } catch (error) {
+                console.error("Error loading landing users:", error);
+                showErrorState("Unable to load users. Please try again.");
+            }
+        }
+
+        function updateStatistics() {
+            const total = allLandingUsers.length;
+            const active = allLandingUsers.filter(u => u.active === true).length;
+            const verified = allLandingUsers.filter(u => u.verified === true).length;
+            const inactive = total - active;
+
+            document.getElementById("statTotal").textContent = total;
+            document.getElementById("statActive").textContent = active;
+            document.getElementById("statVerified").textContent = verified;
+            document.getElementById("statInactive").textContent = inactive;
+        }
+
+        function filterAndSortUsers() {
+            const searchTerm = searchInput.value.toLowerCase().trim();
+            const filterValue = filterSelect.value;
+            const sortValue = sortSelect.value;
+
+            let result = allLandingUsers.filter(user => {
+                const name = (user.name || "").toLowerCase();
+                const phone = (user.phone || "").toLowerCase();
+                const email = (user.email || "").toLowerCase();
+                const uid = (user.uid || "").toLowerCase();
+
+                const matchesSearch = name.includes(searchTerm) || 
+                                      phone.includes(searchTerm) || 
+                                      email.includes(searchTerm) || 
+                                      uid.includes(searchTerm);
+
+                if (!matchesSearch) return false;
+
+                if (filterValue === "active") return user.active === true;
+                if (filterValue === "inactive") return user.active === false;
+                if (filterValue === "verified") return user.verified === true;
+                if (filterValue === "unverified") return user.verified === false;
+
+                return true;
+            });
+
+            result.sort((a, b) => {
+                let timeA = a.createdAt && typeof a.createdAt.toMillis === 'function' ? a.createdAt.toMillis() : 0;
+                let timeB = b.createdAt && typeof b.createdAt.toMillis === 'function' ? b.createdAt.toMillis() : 0;
+
+                if (sortValue === "newest") return timeB - timeA;
+                if (sortValue === "oldest") return timeA - timeB;
+                if (sortValue === "name-asc") return (a.name || "").localeCompare(b.name || "");
+                if (sortValue === "name-desc") return (b.name || "").localeCompare(a.name || "");
+                return 0;
+            });
+
+            return result;
+        }
+
+        function renderUsers(users) {
+            const tableBody = document.getElementById("usersTableBody");
+            const mobileCards = document.getElementById("mobileCardsContainer");
+            
+            tableBody.innerHTML = "";
+            mobileCards.innerHTML = "";
+
+            if (users.length === 0) {
+                showEmptyState("No users match your criteria.");
+                return;
+            }
+
+            hideStates();
+
+            users.forEach(user => {
+                const formattedDate = formatTimestamp(user.createdAt);
+                const activeBadge = user.active 
+                    ? `<span class="badge badge-success" style="cursor:pointer;" onclick="toggleStatus('${user.id}', 'active', false)" title="Click to set Inactive">Active</span>` 
+                    : `<span class="badge badge-danger" style="cursor:pointer;" onclick="toggleStatus('${user.id}', 'active', true)" title="Click to set Active">Inactive</span>`;
+                
+                const verifiedBadge = user.verified 
+                    ? `<span class="badge badge-success" style="cursor:pointer;" onclick="toggleStatus('${user.id}', 'verified', false)" title="Click to set Unverified">Verified</span>` 
+                    : `<span class="badge badge-warning" style="cursor:pointer;" onclick="toggleStatus('${user.id}', 'verified', true)" title="Click to set Verified">Unverified</span>`;
+
+                const tr = document.createElement("tr");
+                tr.innerHTML = `
+                    <td><strong>${escapeHtml(user.name || "N/A")}</strong></td>
+                    <td>${escapeHtml(user.phone || "N/A")}</td>
+                    <td>${escapeHtml(user.email || "N/A")}</td>
+                    <td><small style="font-family: monospace;">${escapeHtml(user.uid || "N/A")}</small></td>
+                    <td>${activeBadge}</td>
+                    <td>${verifiedBadge}</td>
+                    <td><small>${formattedDate}</small></td>
+                    <td>
+                        <div class="action-btns">
+                            <button class="icon-btn btn-view" onclick="openViewModal('${user.id}')" title="View User">
+                                <svg viewBox="0 0 24 24"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
+                            </button>
+                            <button class="icon-btn btn-edit" onclick="openEditModal('${user.id}')" title="Edit User">
+                                <svg viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
+                            </button>
+                            <button class="icon-btn btn-delete" onclick="openDeleteModal('${user.id}', '${escapeHtml(user.name || user.email || '')}')" title="Delete User">
+                                <svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
+                            </button>
+                        </div>
+                    </td>
+                `;
+                tableBody.appendChild(tr);
+
+                const card = document.createElement("div");
+                card.className = "mobile-card";
+                card.innerHTML = `
+                    <div class="mobile-card-header">
+                        <strong>${escapeHtml(user.name || "N/A")}</strong>
+                        <div style="display: flex; gap: 0.25rem;">${activeBadge} ${verifiedBadge}</div>
+                    </div>
+                    <div class="mobile-card-body">
+                        <div><strong>Phone:</strong> ${escapeHtml(user.phone || "N/A")}</div>
+                        <div><strong>Email:</strong> ${escapeHtml(user.email || "N/A")}</div>
+                        <div><strong>UID:</strong> <span style="font-family: monospace;">${escapeHtml(user.uid || "N/A")}</span></div>
+                        <div><strong>Created:</strong> ${formattedDate}</div>
+                    </div>
+                    <div class="mobile-card-footer">
+                        <button class="btn btn-outline" style="padding: 0.35rem 0.75rem; font-size: 0.8rem;" onclick="openViewModal('${user.id}')">View</button>
+                        <button class="btn btn-outline" style="padding: 0.35rem 0.75rem; font-size: 0.8rem;" onclick="openEditModal('${user.id}')">Edit</button>
+                        <button class="btn btn-danger" style="padding: 0.35rem 0.75rem; font-size: 0.8rem;" onclick="openDeleteModal('${user.id}', '${escapeHtml(user.name || user.email || '')}')">Delete</button>
+                    </div>
+                `;
+                mobileCards.appendChild(card);
+            });
+        }
+
+        searchInput.addEventListener("input", () => renderUsers(filterAndSortUsers()));
+        filterSelect.addEventListener("change", () => renderUsers(filterAndSortUsers()));
+        sortSelect.addEventListener("change", () => renderUsers(filterAndSortUsers()));
+
+        window.toggleStatus = async function(docId, field, newValue) {
+            try {
+                const userRef = doc(db, "landing_users", docId);
+                await updateDoc(userRef, {
+                    [field]: newValue,
+                    updatedAt: serverTimestamp()
+                });
+
+                const userIndex = allLandingUsers.findIndex(u => u.id === docId);
+                if (userIndex !== -1) {
+                    allLandingUsers[userIndex][field] = newValue;
+                }
+
+                updateStatistics();
+                renderUsers(filterAndSortUsers());
+                showToast("User status updated successfully.", "success");
+            } catch (error) {
+                console.error("Status update error:", error);
+                showToast("You do not have permission to perform this action.", "error");
+            }
+        };
+
+        window.openViewModal = function(docId) {
+            const user = allLandingUsers.find(u => u.id === docId);
+            if (!user) return;
+
+            const body = document.getElementById("viewModalBody");
+            body.innerHTML = `
+                <div style="display: flex; flex-direction: column; gap: 0.85rem; font-size: 0.95rem;">
+                    <div><strong>Name:</strong> ${escapeHtml(user.name || "N/A")}</div>
+                    <div><strong>Phone:</strong> ${escapeHtml(user.phone || "N/A")}</div>
+                    <div><strong>Email:</strong> ${escapeHtml(user.email || "N/A")}</div>
+                    <div><strong>UID:</strong> <span style="font-family: monospace;">${escapeHtml(user.uid || "N/A")}</span></div>
+                    <div><strong>Active Status:</strong> ${user.active ? "Active" : "Inactive"}</div>
+                    <div><strong>Verification Status:</strong> ${user.verified ? "Verified" : "Unverified"}</div>
+                    <div><strong>Created At:</strong> ${formatTimestamp(user.createdAt)}</div>
+                    <div><strong>Document ID:</strong> <span style="font-family: monospace;">${escapeHtml(user.id)}</span></div>
+                </div>
+            `;
+            openModal('viewModal');
+        };
+
+        window.openEditModal = function(docId) {
+            const user = allLandingUsers.find(u => u.id === docId);
+            if (!user) return;
+
+            document.getElementById("editDocId").value = user.id;
+            document.getElementById("editName").value = user.name || "";
+            document.getElementById("editPhone").value = user.phone || "";
+            document.getElementById("editEmail").value = user.email || "";
+            document.getElementById("editUid").value = user.uid || "";
+            document.getElementById("editActive").value = user.active ? "true" : "false";
+            document.getElementById("editVerified").value = user.verified ? "true" : "false";
+
+            openModal('editModal');
+        };
+
+        window.handleEditSubmit = async function(event) {
+            event.preventDefault();
+            const docId = document.getElementById("editDocId").value;
+            const name = document.getElementById("editName").value.trim();
+            const phone = document.getElementById("editPhone").value.trim();
+            const email = document.getElementById("editEmail").value.trim();
+            const active = document.getElementById("editActive").value === "true";
+            const verified = document.getElementById("editVerified").value === "true";
+
+            const saveBtn = document.getElementById("saveEditBtn");
+            saveBtn.disabled = true;
+            saveBtn.textContent = "Saving...";
+
+            try {
+                const userRef = doc(db, "landing_users", docId);
+                await updateDoc(userRef, {
+                    name, phone, email, active, verified,
+                    updatedAt: serverTimestamp()
+                });
+
+                const idx = allLandingUsers.findIndex(u => u.id === docId);
+                if (idx !== -1) {
+                    allLandingUsers[idx] = {
+                        ...allLandingUsers[idx],
+                        name, phone, email, active, verified
+                    };
+                }
+
+                closeModal('editModal');
+                updateStatistics();
+                renderUsers(filterAndSortUsers());
+                showToast("User updated successfully.", "success");
+            } catch (error) {
+                console.error("Edit error:", error);
+                showToast("You do not have permission to perform this action.", "error");
+            } finally {
+                saveBtn.disabled = false;
+                saveBtn.textContent = "Save Changes";
+            }
+        };
+
+        window.openDeleteModal = function(docId, identifier) {
+            document.getElementById("deleteDocId").value = docId;
+            document.getElementById("deleteModalText").innerHTML = `Are you sure you want to permanently delete user <strong>${escapeHtml(identifier)}</strong>? This action cannot be undone.`;
+            openModal('deleteModal');
+        };
+
+        window.executeDelete = async function() {
+            const docId = document.getElementById("deleteDocId").value;
+            const confirmBtn = document.getElementById("confirmDeleteBtn");
+            confirmBtn.disabled = true;
+            confirmBtn.textContent = "Deleting...";
+
+            try {
+                const userRef = doc(db, "landing_users", docId);
+                await deleteDoc(userRef);
+
+                allLandingUsers = allLandingUsers.filter(u => u.id !== docId);
+                closeModal('deleteModal');
+                updateStatistics();
+                renderUsers(filterAndSortUsers());
+                showToast("User deleted successfully.", "success");
+            } catch (error) {
+                console.error("Delete error:", error);
+                showToast("You do not have permission to perform this action.", "error");
+            } finally {
+                confirmBtn.disabled = false;
+                confirmBtn.textContent = "Delete";
+            }
+        };
+
+        window.openModal = function(modalId) {
+            document.getElementById(modalId).classList.add("active");
+        };
+
+        window.closeModal = function(modalId) {
+            document.getElementById(modalId).classList.remove("active");
+        };
+
+        function showToast(message, type = "success") {
+            const container = document.getElementById("toastContainer");
+            const toast = document.createElement("div");
+            toast.className = `toast ${type}`;
+            
+            const iconSvg = type === "success" 
+                ? '<svg viewBox="0 0 24 24"><path d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z"/></svg>'
+                : '<svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>';
+
+            toast.innerHTML = `${iconSvg} <span>${escapeHtml(message)}</span>`;
+            container.appendChild(toast);
+
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                setTimeout(() => toast.remove(), 300);
+            }, 3500);
+        }
+
+        function showLoadingState(text) {
+            stateContainer.classList.remove("hidden");
+            stateSpinner.classList.remove("hidden");
+            stateIcon.classList.add("hidden");
+            stateText.textContent = text;
+        }
+
+        function showEmptyState(text) {
+            stateContainer.classList.remove("hidden");
+            stateSpinner.classList.add("hidden");
+            stateIcon.classList.remove("hidden");
+            stateText.textContent = text;
+            document.getElementById("usersTableBody").innerHTML = "";
+            document.getElementById("mobileCardsContainer").innerHTML = "";
+        }
+
+        function showErrorState(text) {
+            stateContainer.classList.remove("hidden");
+            stateSpinner.classList.add("hidden");
+            stateIcon.classList.remove("hidden");
+            stateText.textContent = text;
+        }
+
+        function hideStates() {
+            stateContainer.classList.add("hidden");
+        }
+
+        function formatTimestamp(timestamp) {
+            if (!timestamp) return "N/A";
+            try {
+                const date = typeof timestamp.toDate === 'function' ? timestamp.toDate() : new Date(timestamp);
+                return date.toLocaleString('en-US', { 
+                    month: 'short', 
+                    day: 'numeric', 
+                    year: 'numeric', 
+                    hour: '2-digit', 
+                    minute: '2-digit' 
+                });
+            } catch (e) {
+                return "N/A";
+            }
+        }
+
+        function escapeHtml(str) {
+            return String(str)
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
+    </script>
+</body>
+</html>
