@@ -125,17 +125,6 @@
             object-fit: contain;
         }
 
-        .sidebar-brand-text {
-            color: #FFFFFF;
-            font-size: 18px;
-            font-weight: 800;
-            letter-spacing: -0.3px;
-        }
-
-        .sidebar-brand-text span {
-            color: var(--primary);
-        }
-
         .sidebar-close-btn {
             display: none;
             background: none;
@@ -858,6 +847,21 @@
                     <span>Dashboard</span>
                 </a>
 
+                <!-- Owner Only Sidebar Section -->
+                <div id="ownerSidebarSection" style="display: none;">
+                    <div class="menu-category">Owner Control</div>
+                    <a href="https://admin.ghotimarket.com/all-admin" class="nav-item">
+                        <i class="fas fa-user-shield"></i>
+                        <span>All Admins Management</span>
+                    </a>
+                </div>
+
+                <div class="menu-category">System Management</div>
+                <a href="https://admin.ghotimarket.com/landing/dashboard" class="nav-item">
+                    <i class="fas fa-globe"></i>
+                    <span>Landing System Management</span>
+                </a>
+
                 <div class="menu-category">Product Management</div>
                 <a href="https://admin.ghotimarket.com/popular" class="nav-item">
                     <i class="fas fa-fire"></i>
@@ -909,12 +913,10 @@
                     <i class="fas fa-people-arrows"></i>
                     <span>Affiliate</span>
                 </a>
-                <!-- Added Affiliate Transection Card Link in Sidebar Menu -->
                 <a href="https://admin.ghotimarket.com/affiliate-transection" class="nav-item">
                     <i class="fas fa-file-invoice-dollar"></i>
                     <span>Affiliate Transection</span>
                 </a>
-                <!-- Added Affiliate Banner Card Link in Sidebar Menu -->
                 <a href="https://admin.ghotimarket.com/affiliate-banner" class="nav-item">
                     <i class="fas fa-image"></i>
                     <span>Affiliate Banner</span>
@@ -1003,8 +1005,8 @@
                     <i class="fas fa-user-shield"></i>
                 </div>
                 <div class="admin-details">
-                    <div class="admin-name">Ghoti Admin</div>
-                    <div class="admin-role">Super Administrator</div>
+                    <div class="admin-name" id="sidebarAdminName">Ghoti Admin</div>
+                    <div class="admin-role" id="sidebarAdminRole">Checking...</div>
                 </div>
             </div>
         </div>
@@ -1024,11 +1026,11 @@
                 </div>
             </div>
 
-            <!-- Professional Search Bar (Desktop & Mobile Friendly) -->
+            <!-- Professional Search Bar -->
             <div class="header-search-container">
                 <div class="header-search-box">
                     <i class="fas fa-search"></i>
-                    <input type="text" id="dashboardSearchInput" class="header-search-input" placeholder="টুলস বা অপশন সার্চ করুন (उदा: Affiliate, Product, Order)...">
+                    <input type="text" id="dashboardSearchInput" class="header-search-input" placeholder="টুলস বা অপশন সার্চ করুন...">
                 </div>
             </div>
 
@@ -1038,11 +1040,11 @@
                     <span class="icon-badge"></span>
                 </div>
                 
-                <div class="admin-badge-container" title="Authorized Administrator">
+                <div class="admin-badge-container" title="Authorized Role">
                     <div class="admin-badge-avatar">
                         <i class="fas fa-shield-alt"></i>
                     </div>
-                    <span class="admin-badge-label">Admin</span>
+                    <span class="admin-badge-label" id="topBadgeLabel">Verifying...</span>
                 </div>
             </div>
         </header>
@@ -1095,7 +1097,36 @@
             </div>
 
             <div class="actions-grid" id="actionCardsGrid">
-                <!-- Affiliate Transection Card (Added Here) -->
+                
+                <!-- 1. All Admins Management Card (Visible Only to Owner) -->
+                <a href="https://admin.ghotimarket.com/all-admin" class="action-card" id="allAdminsCard" data-keywords="all admins management owner control এডমিন ম্যানেজমেন্ট" style="display: none;">
+                    <div class="action-card-top">
+                        <div class="action-icon">
+                            <i class="fas fa-user-shield"></i>
+                        </div>
+                        <div class="action-arrow"><i class="fas fa-chevron-right"></i></div>
+                    </div>
+                    <div class="action-card-bottom">
+                        <div class="action-title">All Admins Management</div>
+                        <div class="action-desc">Manage system administrator accounts</div>
+                    </div>
+                </a>
+
+                <!-- 2. Landing System Management Card -->
+                <a href="https://admin.ghotimarket.com/landing/dashboard" class="action-card" data-keywords="landing system management dashboard ল্যান্ডিং সিস্টেম">
+                    <div class="action-card-top">
+                        <div class="action-icon">
+                            <i class="fas fa-globe"></i>
+                        </div>
+                        <div class="action-arrow"><i class="fas fa-chevron-right"></i></div>
+                    </div>
+                    <div class="action-card-bottom">
+                        <div class="action-title">Landing System Management</div>
+                        <div class="action-desc">Manage landing pages & configurations</div>
+                    </div>
+                </a>
+
+                <!-- Affiliate Transection Card -->
                 <a href="https://admin.ghotimarket.com/affiliate-transection" class="action-card" data-keywords="affiliate transection transaction payment commission history আফিলিয়েট ট্রানজেকশন লেনদেন">
                     <div class="action-card-top">
                         <div class="action-icon">
@@ -1109,7 +1140,7 @@
                     </div>
                 </a>
 
-                <!-- Affiliate Banner Card (Added Here) -->
+                <!-- Affiliate Banner Card -->
                 <a href="https://admin.ghotimarket.com/affiliate-banner" class="action-card" data-keywords="affiliate banner promo marketing image advertisement আফিলিয়েট ব্যানার বিজ্ঞাপন">
                     <div class="action-card-top">
                         <div class="action-icon">
@@ -1197,7 +1228,7 @@
                 </a>
 
                 <!-- Cart Item All buyers -->
-                <a href="https://admin.ghotimarket.com/cart" class="action-card" data-keywords="cart item all buyers shopping basket কার트 আইটেম">
+                <a href="https://admin.ghotimarket.com/cart" class="action-card" data-keywords="cart item all buyers shopping basket কারট আইটেম">
                     <div class="action-card-top">
                         <div class="action-icon"><i class="fas fa-shopping-cart"></i></div>
                         <div class="action-arrow"><i class="fas fa-chevron-right"></i></div>
@@ -1407,7 +1438,7 @@
                 </a>
             </div>
 
-            <!-- Reseller Management System Section (Separate Cards Grid) -->
+            <!-- Reseller Management System Section -->
             <div class="section-header" style="margin-top: 40px;">
                 <div class="section-title-text">
                     <i class="fas fa-store-alt"></i>
@@ -1416,7 +1447,6 @@
             </div>
 
             <div class="actions-grid" id="resellerCardsGrid">
-                <!-- 1. Banner -->
                 <a href="https://admin.ghotimarket.com/reseller/banner" class="action-card" data-keywords="reseller banner promotional banners রিসেলার ব্যানার">
                     <div class="action-card-top">
                         <div class="action-icon"><i class="fas fa-images"></i></div>
@@ -1428,7 +1458,6 @@
                     </div>
                 </a>
 
-                <!-- 2. All Reseller Manage -->
                 <a href="https://admin.ghotimarket.com/reseller/all-reseller" class="action-card" data-keywords="all resellers manage view registered resellers সমস্ত রিসেলার">
                     <div class="action-card-top">
                         <div class="action-icon"><i class="fas fa-users-cog"></i></div>
@@ -1440,7 +1469,6 @@
                     </div>
                 </a>
 
-                <!-- 3. Create Category & Manage -->
                 <a href="https://admin.ghotimarket.com/reseller/category" class="action-card" data-keywords="category manage reseller categories ক্যাটাগরি ম্যানেজ">
                     <div class="action-card-top">
                         <div class="action-icon"><i class="fas fa-layer-group"></i></div>
@@ -1452,7 +1480,6 @@
                     </div>
                 </a>
 
-                <!-- 4. Notification -->
                 <a href="https://admin.ghotimarket.com/reseller/notification" class="action-card" data-keywords="reseller notification announcements রিসেলার নোটিফিকেশন">
                     <div class="action-card-top">
                         <div class="action-icon"><i class="fas fa-bell"></i></div>
@@ -1464,7 +1491,6 @@
                     </div>
                 </a>
 
-                <!-- 5. Orders -->
                 <a href="https://admin.ghotimarket.com/reseller/order" class="action-card" data-keywords="reseller orders track fulfill reseller orders রিসেলার অর্ডার">
                     <div class="action-card-top">
                         <div class="action-icon"><i class="fas fa-shopping-cart"></i></div>
@@ -1476,7 +1502,6 @@
                     </div>
                 </a>
 
-                <!-- 6. Product edit & Manage -->
                 <a href="https://admin.ghotimarket.com/reseller/product-edit" class="action-card" data-keywords="product edit manage modify reseller listings রিসেলার প্রোডাক্ট এডিট">
                     <div class="action-card-top">
                         <div class="action-icon"><i class="fas fa-edit"></i></div>
@@ -1488,7 +1513,6 @@
                     </div>
                 </a>
 
-                <!-- 7. Upload Product -->
                 <a href="https://admin.ghotimarket.com/reseller/upload-product" class="action-card" data-keywords="upload reseller product add items catalog রিসেলার আপলোড">
                     <div class="action-card-top">
                         <div class="action-icon"><i class="fas fa-cloud-upload-alt"></i></div>
@@ -1500,7 +1524,6 @@
                     </div>
                 </a>
 
-                <!-- 8. Withdraw Request -->
                 <a href="https://admin.ghotimarket.com/reseller/withdraw" class="action-card" data-keywords="withdraw requests payouts reseller wallet রিসেলার উইথড্র">
                     <div class="action-card-top">
                         <div class="action-icon"><i class="fas fa-wallet"></i></div>
@@ -1589,7 +1612,7 @@
         if(sidebarCloseBtn) sidebarCloseBtn.addEventListener('click', closeSidebar);
         if(sidebarOverlay) sidebarOverlay.addEventListener('click', closeSidebar);
 
-        // Professional Smart Fuzzy Search Implementation (Handles typos/misspellings)
+        // Professional Smart Fuzzy Search Implementation
         const searchInput = document.getElementById('dashboardSearchInput');
         
         function calculateSimilarity(str1, str2) {
@@ -1609,18 +1632,21 @@
                 const sidebarNavItems = document.querySelectorAll('.sidebar-menu .nav-item');
 
                 if (query === '') {
-                    allCards.forEach(card => card.style.display = 'flex');
+                    allCards.forEach(card => {
+                        // Keep owner card hidden for regular admins during reset
+                        if(card.id === 'allAdminsCard' && card.getAttribute('data-is-owner') !== 'true') return;
+                        card.style.display = 'flex';
+                    });
                     sidebarNavItems.forEach(item => item.style.display = 'flex');
                     return;
                 }
 
-                // Filter Dashboard Action Cards
                 allCards.forEach(card => {
+                    if(card.style.display === 'none' && card.id === 'allAdminsCard') return;
                     const title = card.querySelector('.action-title').textContent.toLowerCase();
                     const desc = card.querySelector('.action-desc').textContent.toLowerCase();
                     const keywords = card.getAttribute('data-keywords') || '';
                     
-                    // Check exact inclusions or flexible matching for typos/partial queries
                     const isMatch = title.includes(query) || 
                                     desc.includes(query) || 
                                     keywords.includes(query) || 
@@ -1633,7 +1659,6 @@
                     }
                 });
 
-                // Filter Sidebar Items as well
                 sidebarNavItems.forEach(item => {
                     const text = item.textContent.toLowerCase();
                     if (text.includes(query) || calculateSimilarity(query, text) > 0.4) {
@@ -1646,24 +1671,75 @@
         }
     </script>
 
-    <!-- Unaltered Firebase Logic & SDKs -->
+    <!-- Firebase Authentication & Role Verification Script -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getFirestore, collection, getCountFromServer } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getFirestore, collection, getCountFromServer, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
         import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
         
         const firebaseConfig = { apiKey: "AIzaSyBUhNhYvuo_FTvZ5RZR6Gn-4hsUY21S0XE", projectId: "ghotimarket" };
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
         const auth = getAuth(app);
+
+        const ownerEmails = ["nazrulislam887441234@gmail.com", "support@ghotimarket.com"];
         
-        onAuthStateChanged(auth, (user) => {
-            if (user && user.email === "support@ghotimarket.com") {
+        onAuthStateChanged(auth, async (user) => {
+            if (!user) {
+                window.location.href = "index.html";
+                return;
+            }
+
+            const userEmail = user.email;
+
+            if (ownerEmails.includes(userEmail)) {
+                // Owner Logged In: Full access instantly granted with 0 checks
+                setOwnerUI(userEmail);
                 loadStats();
             } else {
-                window.location.href = "index.html"; 
+                // Regular Admin Check in Firestore collection `admins/{email}`
+                try {
+                    const adminDocRef = doc(db, "admins", userEmail);
+                    const adminSnap = await getDoc(adminDocRef);
+
+                    if (adminSnap.exists() && adminSnap.data().active === true) {
+                        setAdminUI(userEmail);
+                        loadStats();
+                    } else {
+                        alert("Access Denied! You are not an authorized administrator.");
+                        await auth.signOut();
+                        window.location.href = "index.html";
+                    }
+                } catch (error) {
+                    console.error("Admin verification error:", error);
+                    window.location.href = "index.html";
+                }
             }
         });
+
+        function setOwnerUI(email) {
+            document.getElementById('topBadgeLabel').innerText = "Owner";
+            document.getElementById('sidebarAdminRole').innerText = "System Owner";
+            document.getElementById('sidebarAdminName').innerText = email.split('@')[0];
+            
+            // Show Owner Exclusive Card & Sidebar Section
+            const ownerCard = document.getElementById('allAdminsCard');
+            ownerCard.style.display = 'flex';
+            ownerCard.setAttribute('data-is-owner', 'true');
+            document.getElementById('ownerSidebarSection').style.display = 'block';
+        }
+
+        function setAdminUI(email) {
+            document.getElementById('topBadgeLabel').innerText = "Admin";
+            document.getElementById('sidebarAdminRole').innerText = "Administrator";
+            document.getElementById('sidebarAdminName').innerText = email.split('@')[0];
+            
+            // Hide Owner Card & Sidebar Section for standard Admin
+            const ownerCard = document.getElementById('allAdminsCard');
+            ownerCard.style.display = 'none';
+            ownerCard.setAttribute('data-is-owner', 'false');
+            document.getElementById('ownerSidebarSection').style.display = 'none';
+        }
 
         async function loadStats() {
             try {
