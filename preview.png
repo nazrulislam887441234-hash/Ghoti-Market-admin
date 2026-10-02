@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ghoti NID Preview 🔒</title>
+<style>
+  body{font-family:system-ui;background:#0f172a;color:white;display:flex;flex-direction:column;align-items:center;padding:20px}
+  .box{background:#1e293b;padding:20px;border-radius:12px;width:100%;max-width:500px}
+  input{width:100%;padding:12px;border-radius:8px;border:none;margin:10px 0;box-sizing:border-box}
+  button{width:100%;padding:12px;background:#3b82f6;color:white;border:none;border-radius:8px;font-weight:bold;cursor:pointer}
+  img{max-width:100%;margin-top:15px;border-radius:8px;display:none}
+  #status{margin-top:10px;font-size:14px}
+</style>
+</head>
+<body>
+  <div class="box">
+    <h2>🔒 Ghoti Secure Preview</h2>
+    <p style="font-size:13px;color:#94a3b8">শুধু admin/seller থেকে দেখা যাবে</p>
+    <input id="urlInput" type="text" value="https://image.ghotimarket.com/1790933391882-32119.png" placeholder="Image link paste করুন">
+    <button onclick="loadImage()">Preview দেখুন</button>
+    <div id="status"></div>
+    <img id="previewImg">
+  </div>
+
+<script>
+function loadImage(){
+  const url = document.getElementById('urlInput').value.trim();
+  const img = document.getElementById('previewImg');
+  const status = document.getElementById('status');
+  if(!url){ status.textContent = "লিংক দিন"; return; }
+  status.textContent = "লোড হচ্ছে...";
+  img.style.display = "none";
+  img.src = url + "?t=" + Date.now(); // cache bust
+  img.onload = () => {
+    status.textContent = "✅ Loaded - Secure View";
+    img.style.display = "block";
+  }
+  img.onerror = () => {
+    status.textContent = "❌ 403 Forbidden - Admin/Seller এর বাইরে থেকে Block!";
+  }
+}
+window.onload = loadImage;
+</script>
+</body>
+</html>
