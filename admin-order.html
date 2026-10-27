@@ -218,7 +218,8 @@ function renderStats(){
     month: allOrders.filter(o=>o.createdAt?.toDate().getMonth()===now.getMonth()).length,
     sales: allOrders.reduce((a,b)=>a+(b.grandTotal||0),0),
     delivery: allOrders.reduce((a,b)=>a+(b.deliveryCharge||0),0),
-    affiliateCount: allOrders.filter(o=>o.affiliateApplied === true).length
+    affiliateCount: allOrders.filter(o=>o.affiliateApplied === true).length,
+    freeDeliveryCount: allOrders.filter(o=>o.deliveryCharge === 0 || o.deliveryCharge === '0' || o.freeDelivery === true || o.deliveryCharge === null).length
   }
   stats.revenue = stats.sales + stats.delivery;
 
@@ -235,6 +236,7 @@ function renderStats(){
     <div class="stat-card"><h4>Total Sales</h4><h2>৳${stats.sales}</h2></div>
     <div class="stat-card"><h4>Delivery Charge</h4><h2>৳${stats.delivery}</h2></div>
     <div class="stat-card"><h4>Total Revenue</h4><h2>৳${stats.revenue}</h2></div>
+    <div class="stat-card"><h4>Free Delivery</h4><h2>${stats.freeDeliveryCount}</h2></div>  
   `;
 }
 
@@ -280,6 +282,7 @@ function renderOrders(){
     const date = o.createdAt?.toDate().toLocaleString('bn-BD') || 'N/A';
     const updatedDate = o.updatedAt?.toDate().toLocaleString('bn-BD') || 'N/A';
     const isAffiliate = o.affiliateApplied === true;
+    const isFreeDelivery = o.deliveryCharge === 0 || o.deliveryCharge === '0' || o.freeDelivery === true || o.deliveryCharge === null;  
     const items = getItemsList(o);
 
     const itemsHtml = items.map(item => `
@@ -305,6 +308,7 @@ function renderOrders(){
           </div>
           <div>
             ${isAffiliate ? '<span class="badge badge-affiliate"><i class="fas fa-handshake"></i> Affiliate Order</span>' : ''}
+            ${isFreeDelivery ? '<span class="badge" style="background:#D1FAE5;color:#065F46;border:1px solid #A7F3D0;margin-left:5px;"><i class="fas fa-truck"></i> FREE DELIVERY</span>' : ''}
           </div>
         </div>
 
@@ -327,7 +331,7 @@ function renderOrders(){
             </div>
           ` : ''}
 
-          <div class="meta"><b>Delivery Charge:</b> ৳${o.deliveryCharge || 0} | <b>Grand Total: ৳${o.grandTotal || 0}</b></div>
+          <div class="meta"><b>Delivery Charge:</b> ${isFreeDelivery ? '<span style="color:#10B981;font-weight:800;">৳0 (FREE DELIVERY)</span>' : `৳${o.deliveryCharge || 0}`} | <b>Grand Total: ৳${o.grandTotal || 0}</b></div>
           <div class="meta">Payment: ${o.paymentMethod || 'N/A'} - <span class="badge badge-${o.paymentStatus}">${o.paymentStatus || 'Unpaid'}</span></div>
           <div class="meta">Status: <span class="badge badge-${o.orderStatus}">${o.orderStatus || 'Pending'}</span> | Delivery Status: ${o.deliveryStatus || 'New'}</div>
           <div class="meta"><b>Order Date:</b> ${date} | <b>Updated Date:</b> ${updatedDate}</div>
@@ -376,6 +380,7 @@ window.viewOrder = (id) => {
   const date = o.createdAt?.toDate ? o.createdAt.toDate().toLocaleString('bn-BD') : 'N/A';
   const updatedDate = o.updatedAt?.toDate ? o.updatedAt.toDate().toLocaleString('bn-BD') : 'N/A';
   const isAffiliate = o.affiliateApplied === true;
+  const isFreeDeliveryModal = o.deliveryCharge === 0 || o.deliveryCharge === '0' || o.freeDelivery === true || o.deliveryCharge === null;
   const items = getItemsList(o);
 
   const modalItemsHtml = items.map(item => {
@@ -406,7 +411,12 @@ window.viewOrder = (id) => {
       <h2 style="margin-bottom:10px; color:var(--primary); text-align:center;"><i class="fas fa-box"></i> Order Items</h2>
       ${modalItemsHtml}
     </div>
-
+    ${isFreeDeliveryModal ? `
+      <div style="background:#ECFDF5; border:1px dashed #10B981; padding:12px; border-radius:12px; margin-bottom:15px; text-align:center; font-weight:800; color:#065F46;">
+        🚚 FREE DELIVERY - এই অর্ডারে কোনো ডেলিভারি চার্জ নেই! ৳0
+      </div>
+    ` : ''}
+ 
     <div style="background:#FFF4EC; padding:12px; border-radius:12px; margin-bottom:15px; display:flex; justify-content:space-between; align-items:center;">
       <div>
         <p style="font-size:13px; color:var(--muted);">Track ID</p>
