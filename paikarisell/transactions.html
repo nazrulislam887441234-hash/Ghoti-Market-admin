@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>সকল সাপ্লায়ারের লেনদেন — PAIKARI SELL Admin</title>
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="https://paikarisell.ghotimarket.com/photo/favicon.png">
+    
+    <!-- Google Fonts: Hind Siliguri -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="transactions.css">
+</head>
+<body>
+
+    <!-- Header Section -->
+    <header class="app-header">
+        <div class="header-container">
+            <div class="logo-area">
+                <a href="https://paikarisell.ghotimarket.com">
+                    <img src="https://paikarisell.ghotimarket.com/photo/logo.png" alt="PAIKARI SELL Logo" class="brand-logo">
+                </a>
+            </div>
+            <div class="header-actions">
+                <div id="userBadgeArea" class="user-badge-area">
+                    <span id="userEmailDisplay" class="user-email-badge">যাচাই করা হচ্ছে...</span>
+                    <span id="roleBadge" class="role-badge">---</span>
+                </div>
+                <button id="refreshBtn" class="action-btn" title="রিফ্রেশ করুন">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"></polyline><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path></svg>
+                    <span>রিফ্রেশ</span>
+                </button>
+                <a href="/dashboard" class="action-btn dashboard-link" title="ড্যাশবোর্ডে ফিরে যান">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+                    <span>ড্যাশবোর্ড</span>
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="container">
+            <!-- Page Title Section -->
+            <div class="page-title-wrapper">
+                <div class="title-icon">
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                </div>
+                <div>
+                    <h1 class="page-title">সকল সাপ্লায়ারের লেনদেন</h1>
+                    <p class="page-subtitle">সব সাপ্লায়ারের ব্যালেন্স লেনদেনের ইতিহাস ও বিবরণ</p>
+                </div>
+            </div>
+
+            <!-- Transaction List Container -->
+            <div id="transactionsContainer" class="transactions-container">
+                <!-- Initial Loading Skeletons -->
+                <div class="skeleton-card">
+                    <div class="skeleton-line title"></div>
+                    <div class="skeleton-line subtitle"></div>
+                    <div class="skeleton-line amount"></div>
+                </div>
+                <div class="skeleton-card">
+                    <div class="skeleton-line title"></div>
+                    <div class="skeleton-line subtitle"></div>
+                    <div class="skeleton-line amount"></div>
+                </div>
+                <div class="skeleton-card">
+                    <div class="skeleton-line title"></div>
+                    <div class="skeleton-line subtitle"></div>
+                    <div class="skeleton-line amount"></div>
+                </div>
+            </div>
+
+            <!-- Infinite Scroll Sentinel / Bottom Loading Indicator -->
+            <div id="loadMoreIndicator" class="load-more-indicator" style="display: none;">
+                <div class="spinner"></div>
+                <span>আরও লেনদেন লোড হচ্ছে...</span>
+            </div>
+
+            <!-- End of List Message -->
+            <div id="endOfListMessage" class="end-of-list-message" style="display: none;">
+                সব লেনদেন দেখানো হয়েছে।
+            </div>
+
+            <!-- Empty State -->
+            <div id="emptyState" class="empty-state" style="display: none;">
+                <div class="empty-icon">
+                    <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="12" y1="18" x2="12" y2="12"></line><line x1="9" y1="15" x2="15" y2="15"></line></svg>
+                </div>
+                <h3>এখনো কোনো লেনদেন নেই</h3>
+                <p>সাপ্লায়ারদের কোনো ব্যালেন্স লেনদেন হলে এখানে তার সম্পূর্ণ বিবরণ দেখতে পারবেন।</p>
+            </div>
+
+            <!-- Error State -->
+            <div id="errorState" class="error-state" style="display: none;">
+                <div class="error-icon">
+                    <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+                </div>
+                <h3>তথ্য লোড করতে সমস্যা হয়েছে</h3>
+                <p id="errorMessageText">লেনদেনের তথ্য লোড করা যায়নি। অনুগ্রহ করে আবার চেষ্টা করুন।</p>
+                <button id="retryBtn" class="retry-btn">আবার চেষ্টা করুন</button>
+            </div>
+        </div>
+    </main>
+
+    <!-- Toast Notification Container -->
+    <div id="toast" class="toast">UID সফলভাবে কপি হয়েছে</div>
+
+    <!-- External JavaScript (Module) -->
+    <script type="module" src="transactions.js"></script>
+</body>
+</html>
