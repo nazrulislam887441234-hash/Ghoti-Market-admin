@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ব্যালেন্স রিকোয়েস্ট ম্যানেজমেন্ট — PAIKARI SELL</title>
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="https://paikarisell.ghotimarket.com/photo/favicon.png">
+    
+    <!-- Google Fonts: Hind Siliguri -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#FF6B35',
+                        secondary: '#FF6A00',
+                        accent: '#FFA500',
+                        dark: '#171717',
+                        bgCustom: '#FFF8F4',
+                        borderCustom: '#E5E7EB'
+                    },
+                    fontFamily: {
+                        sans: ['"Hind Siliguri"', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-bgCustom text-dark font-sans min-h-screen flex flex-col antialiased">
+
+    <!-- Access Denied Page (Hidden by default) -->
+    <div id="accessDeniedPage" class="hidden fixed inset-0 z-50 bg-bgCustom flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-xl p-8 max-w-md w-full text-center border border-borderCustom">
+            <div class="w-16 h-16 bg-red-100 text-red-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 5.636l-12.728 12.728m0-12.728l12.728 12.728"></path></svg>
+            </div>
+            <h2 class="text-2xl font-bold text-dark mb-2">অ্যাক্সেস ডিনাইড (Access Denied)</h2>
+            <p class="text-gray-600 mb-6">আপনার এই পেজে প্রবেশ করার অনুমতি নেই। শুধুমাত্র অনুমোদিত Owner বা Adminগণ এই প্যানেলটি ব্যবহার করতে পারবেন।</p>
+            <button onclick="handleLogout()" class="w-full bg-primary text-white py-3 rounded-xl font-semibold hover:bg-secondary transition-all">লগআউট করুন</button>
+        </div>
+    </div>
+
+    <!-- Main Admin Panel Wrapper -->
+    <div id="adminPanelWrapper" class="flex-1 flex flex-col">
+        
+        <!-- Header -->
+        <header class="bg-white border-b border-borderCustom sticky top-0 z-30 shadow-sm">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+                <!-- Logo & Title -->
+                <div class="flex items-center space-x-4">
+                    <img src="https://paikarisell.ghotimarket.com/photo/logo.png" alt="PAIKARI SELL" class="h-10 w-auto object-contain">
+                    <div class="hidden sm:block h-8 w-px bg-borderCustom"></div>
+                    <div>
+                        <h1 class="text-xl font-bold text-dark">ব্যালেন্স রিকোয়েস্ট ম্যানেজমেন্ট</h1>
+                        <p class="text-xs text-gray-500">PAIKARI SELL Admin Panel</p>
+                    </div>
+                </div>
+
+                <!-- User Info & Actions -->
+                <div class="flex items-center space-x-3 sm:space-x-4">
+                    <div class="hidden md:block text-right">
+                        <p id="headerUserEmail" class="text-sm font-semibold text-dark">-</p>
+                        <span id="headerUserRole" class="inline-block px-2 py-0.5 text-xs font-medium bg-orange-100 text-primary rounded-full">-</span>
+                    </div>
+                    <button id="refreshBtn" title="Refresh" class="p-2.5 rounded-xl border border-borderCustom hover:bg-bgCustom text-gray-700 transition-all flex items-center justify-center">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+                    </button>
+                    <button onclick="handleLogout()" title="Logout" class="flex items-center space-x-2 bg-red-50 text-red-600 px-4 py-2.5 rounded-xl font-semibold hover:bg-red-100 transition-all">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+                        <span class="hidden sm:inline">লগআউট</span>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            
+            <!-- Search & Filter Section -->
+            <div class="bg-white rounded-2xl p-4 sm:p-6 shadow-sm border border-borderCustom mb-8 flex flex-col md:flex-row gap-4 items-center justify-between">
+                <div class="w-full md:w-96 relative">
+                    <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-400">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                    </span>
+                    <input type="text" id="searchInput" placeholder="UID, Email, Tranx ID বা Sender Number দিয়ে খুঁজুন..." class="w-full pl-10 pr-4 py-3 rounded-xl border border-borderCustom focus:outline-none focus:border-primary text-sm transition-all">
+                </div>
+                <div class="w-full md:w-auto flex items-center space-x-2 overflow-x-auto pb-2 md:pb-0">
+                    <button class="filter-btn active-filter px-4 py-2.5 rounded-xl text-sm font-semibold bg-primary text-white transition-all whitespace-nowrap" data-filter="all">সকল রিকোয়েস্ট</button>
+                    <button class="filter-btn px-4 py-2.5 rounded-xl text-sm font-semibold bg-gray-100 text-gray-600 hover:bg-gray-200 transition-all whitespace-nowrap" data-filter="pending">Pending</button>
+                </div>
+            </div>
+
+            <!-- Request Cards Grid Container -->
+            <div id="requestGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Loading Skeletons Initially -->
+                <div class="bg-white rounded-2xl p-6 border border-borderCustom animate-pulse">
+                    <div class="h-4 bg-gray-200 rounded w-1/3 mb-4"></div>
+                    <div class="space-y-3">
+                        <div class="h-3 bg-gray-200 rounded w-3/4"></div>
+                        <div class="h-3 bg-gray-200 rounded w-1/2"></div>
+                        <div class="h-6 bg-gray-200 rounded w-full my-4"></div>
+                    </div>
+                </div>
+                <div class="bg-white rounded-2xl p-6 border border-borderCustom animate-pulse hidden md:block">
+                    <div class="h-4 bg-gray-200 rounded w-1/3 mb-4"></div>
+                    <div class="space-y-3">
+                        <div class="h-3 bg-gray-200 rounded w-3/4"></div>
+                        <div class="h-3 bg-gray-200 rounded w-1/2"></div>
+                        <div class="h-6 bg-gray-200 rounded w-full my-4"></div>
+                    </div>
+                </div>
+                <div class="bg-white rounded-2xl p-6 border border-borderCustom animate-pulse hidden lg:block">
+                    <div class="h-4 bg-gray-200 rounded w-1/3 mb-4"></div>
+                    <div class="space-y-3">
+                        <div class="h-3 bg-gray-200 rounded w-3/4"></div>
+                        <div class="h-3 bg-gray-200 rounded w-1/2"></div>
+                        <div class="h-6 bg-gray-200 rounded w-full my-4"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Empty State (Hidden by default) -->
+            <div id="emptyState" class="hidden text-center py-16">
+                <div class="w-20 h-20 bg-orange-50 text-primary rounded-full flex items-center justify-center mx-auto mb-4">
+                    <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path></svg>
+                </div>
+                <h3 class="text-lg font-bold text-dark mb-1">বর্তমানে কোনো ব্যালেন্স রিকোয়েস্ট নেই</h3>
+                <p class="text-sm text-gray-500">নতুন কোনো রিকোয়েস্ট এলে এখানে স্বয়ংক্রিয়ভাবে প্রদর্শিত হবে।</p>
+            </div>
+
+            <!-- Load More Button -->
+            <div id="loadMoreContainer" class="mt-12 text-center hidden">
+                <button id="loadMoreBtn" class="bg-white border-2 border-primary text-primary px-8 py-3 rounded-xl font-semibold hover:bg-primary hover:text-white transition-all shadow-sm">
+                    আরও রিকোয়েস্ট লোড করুন
+                </button>
+            </div>
+
+        </main>
+    </div>
+
+    <!-- Balance Confirmation Modal -->
+    <div id="confirmModal" class="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm hidden items-center justify-center p-4">
+        <div class="bg-white rounded-3xl shadow-2xl max-w-lg w-full p-6 sm:p-8 border border-borderCustom transform transition-all">
+            <div class="flex items-center justify-between mb-6 pb-4 border-b border-borderCustom">
+                <h3 class="text-xl font-bold text-dark">ব্যালেন্স যুক্ত করার আগে যাচাই করুন</h3>
+                <button onclick="closeModal()" class="text-gray-400 hover:text-dark p-1 rounded-lg">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+            </div>
+
+            <div class="space-y-4 mb-6">
+                <div class="bg-bgCustom p-4 rounded-2xl space-y-2 text-sm border border-borderCustom">
+                    <div class="flex justify-between"><span class="text-gray-500">Supplier UID:</span> <span id="modalUid" class="font-mono font-medium text-dark">-</span></div>
+                    <div class="flex justify-between"><span class="text-gray-500">Supplier Email:</span> <span id="modalEmail" class="font-medium text-dark">-</span></div>
+                    <div class="flex justify-between"><span class="text-gray-500">Transaction ID:</span> <span id="modalTranx" class="font-mono font-medium text-primary">-</span></div>
+                    <div class="flex justify-between"><span class="text-gray-500">Sender Number:</span> <span id="modalSender" class="font-medium text-dark">-</span></div>
+                    <div class="flex justify-between"><span class="text-gray-500">Payment Method:</span> <span id="modalMethod" class="font-medium text-dark">-</span></div>
+                </div>
+
+                <!-- Editable Amount Input -->
+                <div>
+                    <label class="block text-sm font-semibold text-dark mb-2">কত টাকা ব্যালেন্স যুক্ত করবেন?</label>
+                    <input type="number" id="editableAmountInput" step="0.01" placeholder="টাকার পরিমাণ লিখুন" class="w-full px-4 py-3 rounded-xl border border-borderCustom focus:outline-none focus:border-primary font-bold text-lg text-primary">
+                </div>
+
+                <!-- Live Calculation Box -->
+                <div class="bg-orange-50 border border-orange-200 p-4 rounded-2xl space-y-1.5 text-sm">
+                    <div class="flex justify-between text-gray-600">
+                        <span>আগের ব্যালেন্স:</span>
+                        <span id="calcOldBalance" class="font-semibold">৳0.00</span>
+                    </div>
+                    <div class="flex justify-between text-gray-600">
+                        <span>অনুমোদিত টাকা:</span>
+                        <span id="calcApprovedAmount" class="font-semibold text-primary">৳0.00</span>
+                    </div>
+                    <div class="pt-2 border-t border-orange-200 flex justify-between text-base font-bold text-dark">
+                        <span>নতুন ব্যালেন্স:</span>
+                        <span id="calcNewBalance" class="text-secondary">৳0.00</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Modal Action Buttons -->
+            <div class="flex items-center space-x-4">
+                <button onclick="closeModal()" class="w-1/2 bg-gray-100 text-gray-700 py-3 rounded-xl font-semibold hover:bg-gray-200 transition-all">বাতিল</button>
+                <button id="confirmAcceptBtn" class="w-1/2 bg-primary text-white py-3 rounded-xl font-semibold hover:bg-secondary transition-all shadow-md shadow-primary/20">নিশ্চিত করুন</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification Container -->
+    <div id="toastContainer" class="fixed bottom-6 right-6 z-50 space-y-3 pointer-events-none"></div>
+
+    <!-- JavaScript Application Logic -->
+    <script type="module" src="balance-request.js"></script>
+</body>
+</html>
