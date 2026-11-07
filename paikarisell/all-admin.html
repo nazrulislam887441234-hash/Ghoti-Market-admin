@@ -1,0 +1,1449 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PAIKARI SELL — Owner Panel (Admin Management)</title>
+  <link rel="icon" href="https://paikarisell.ghotimarket.com/photo/favicon.png" type="image/png">
+  
+  <!-- Google Fonts: Hind Siliguri -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --primary: #FF6B35;
+      --secondary: #FF6A00;
+      --accent: #FFA500;
+      --bg-color: #FFF8F4;
+      --card-bg: #FFFFFF;
+      --text-main: #2D3748;
+      --text-muted: #718096;
+      --border-color: #FFE0D3;
+      --success: #10B981;
+      --danger: #EF4444;
+      --shadow-sm: 0 2px 4px rgba(255, 107, 53, 0.05);
+      --shadow-md: 0 4px 12px rgba(255, 107, 53, 0.1);
+      --shadow-lg: 0 10px 25px rgba(255, 107, 53, 0.15);
+      --radius: 12px;
+      --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Hind Siliguri', sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* SVG Base Styling */
+    .icon {
+      width: 20px;
+      height: 20px;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      display: inline-block;
+      vertical-align: middle;
+    }
+
+    /* Header */
+    header {
+      background: #FFFFFF;
+      border-bottom: 2px solid var(--border-color);
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .header-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 12px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand img {
+      height: 42px;
+      object-fit: contain;
+    }
+
+    .brand-title h1 {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--primary);
+      line-height: 1.1;
+    }
+
+    .brand-title span {
+      font-size: 0.825rem;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    .user-profile {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .owner-badge {
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      color: #FFF;
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 20px;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      box-shadow: 0 2px 6px rgba(255, 107, 53, 0.3);
+    }
+
+    .user-email {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--text-main);
+      max-width: 200px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .btn-logout {
+      background: transparent;
+      border: 1.5px solid var(--border-color);
+      color: var(--text-muted);
+      padding: 8px 14px;
+      border-radius: var(--radius);
+      cursor: pointer;
+      font-size: 0.875rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: var(--transition);
+    }
+
+    .btn-logout:hover {
+      background: #FFF0EB;
+      color: var(--primary);
+      border-color: var(--primary);
+    }
+
+    /* Main Container */
+    main {
+      max-width: 1200px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 24px 20px;
+      flex: 1;
+    }
+
+    /* Stats Grid */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 16px;
+      margin-bottom: 28px;
+    }
+
+    .stat-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius);
+      padding: 20px;
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      transition: var(--transition);
+    }
+
+    .stat-card:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+      border-color: var(--accent);
+    }
+
+    .stat-icon {
+      width: 52px;
+      height: 52px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #FFF3ED;
+      color: var(--primary);
+    }
+
+    .stat-icon.active {
+      background: #ECFDF5;
+      color: var(--success);
+    }
+
+    .stat-icon.inactive {
+      background: #FEF2F2;
+      color: var(--danger);
+    }
+
+    .stat-icon.latest {
+      background: #FFFBEB;
+      color: var(--accent);
+    }
+
+    .stat-info h3 {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      font-weight: 600;
+      margin-bottom: 2px;
+    }
+
+    .stat-info p {
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    /* Controls Header */
+    .section-header {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+
+    .section-title {
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      color: #FFF;
+      border: none;
+      padding: 10px 20px;
+      border-radius: var(--radius);
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 4px 12px rgba(255, 107, 53, 0.25);
+      transition: var(--transition);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 16px rgba(255, 107, 53, 0.35);
+    }
+
+    .btn-primary:active {
+      transform: translateY(0);
+    }
+
+    /* Search & Filters */
+    .filter-bar {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius);
+      padding: 14px 18px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .search-box {
+      flex: 1;
+      min-width: 260px;
+      position: relative;
+    }
+
+    .search-box input {
+      width: 100%;
+      padding: 10px 14px 10px 40px;
+      border: 1.5px solid var(--border-color);
+      border-radius: var(--radius);
+      font-size: 0.9rem;
+      outline: none;
+      transition: var(--transition);
+      background: #FFF8F5;
+    }
+
+    .search-box input:focus {
+      border-color: var(--primary);
+      background: #FFF;
+      box-shadow: 0 0 0 3px rgba(255, 107, 53, 0.15);
+    }
+
+    .search-box .icon {
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-muted);
+    }
+
+    .filter-tabs {
+      display: flex;
+      gap: 6px;
+      background: #FFF0EB;
+      padding: 4px;
+      border-radius: var(--radius);
+    }
+
+    .tab-btn {
+      border: none;
+      background: transparent;
+      padding: 6px 14px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      border-radius: 8px;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .tab-btn.active {
+      background: #FFF;
+      color: var(--primary);
+      box-shadow: var(--shadow-sm);
+    }
+
+    /* Data Table & Grid Layout */
+    .admin-list-container {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-sm);
+      overflow: hidden;
+    }
+
+    .table-wrapper {
+      width: 100%;
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+    }
+
+    th, td {
+      padding: 14px 20px;
+      border-bottom: 1px solid #FFEBE3;
+      font-size: 0.9rem;
+    }
+
+    th {
+      background: #FFF5F0;
+      color: var(--text-muted);
+      font-weight: 700;
+      text-transform: uppercase;
+      font-size: 0.75rem;
+      letter-spacing: 0.5px;
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    tr:hover td {
+      background: #FFFBF9;
+    }
+
+    .uid-badge {
+      font-family: monospace;
+      background: #F3F4F6;
+      padding: 4px 8px;
+      border-radius: 6px;
+      font-size: 0.825rem;
+      color: #4B5563;
+      word-break: break-all;
+    }
+
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 700;
+    }
+
+    .status-badge.active {
+      background: #ECFDF5;
+      color: var(--success);
+      border: 1px solid #A7F3D0;
+    }
+
+    .status-badge.inactive {
+      background: #FEF2F2;
+      color: var(--danger);
+      border: 1px solid #FECACA;
+    }
+
+    .status-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: currentColor;
+    }
+
+    .action-btns {
+      display: flex;
+      gap: 8px;
+    }
+
+    .btn-icon {
+      border: none;
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: var(--transition);
+      background: #FFF0EB;
+      color: var(--primary);
+    }
+
+    .btn-icon:hover {
+      background: var(--primary);
+      color: #FFF;
+    }
+
+    .btn-icon.delete {
+      background: #FEF2F2;
+      color: var(--danger);
+    }
+
+    .btn-icon.delete:hover {
+      background: var(--danger);
+      color: #FFF;
+    }
+
+    /* States Styling (Skeleton, Empty, Error) */
+    .state-container {
+      padding: 48px 20px;
+      text-align: center;
+    }
+
+    .state-icon {
+      width: 64px;
+      height: 64px;
+      margin: 0 auto 16px;
+      color: var(--text-muted);
+      opacity: 0.5;
+    }
+
+    .state-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+
+    .state-desc {
+      font-size: 0.875rem;
+      color: var(--text-muted);
+      margin-bottom: 16px;
+    }
+
+    .btn-secondary {
+      background: #FFF;
+      border: 1.5px solid var(--border-color);
+      color: var(--text-main);
+      padding: 8px 16px;
+      border-radius: var(--radius);
+      font-size: 0.875rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: var(--transition);
+    }
+
+    .btn-secondary:hover {
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+
+    /* Skeleton Loading */
+    .skeleton-line {
+      height: 16px;
+      background: linear-gradient(90deg, #FFEBE3 25%, #FFF5F0 50%, #FFEBE3 75%);
+      background-size: 200% 100%;
+      animation: skeleton-loading 1.5s infinite;
+      border-radius: 4px;
+      margin-bottom: 8px;
+    }
+
+    @keyframes skeleton-loading {
+      0% { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
+    }
+
+    /* Modals */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.4);
+      backdrop-filter: blur(4px);
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      opacity: 0;
+      visibility: hidden;
+      transition: var(--transition);
+    }
+
+    .modal-overlay.active {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .modal-card {
+      background: var(--card-bg);
+      border-radius: var(--radius);
+      width: 100%;
+      max-width: 480px;
+      box-shadow: var(--shadow-lg);
+      transform: translateY(20px);
+      transition: var(--transition);
+      overflow: hidden;
+    }
+
+    .modal-overlay.active .modal-card {
+      transform: translateY(0);
+    }
+
+    .modal-header {
+      padding: 18px 24px;
+      border-bottom: 1px solid #FFEBE3;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: #FFF8F5;
+    }
+
+    .modal-header h3 {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    .modal-close {
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      color: var(--text-muted);
+      padding: 4px;
+      border-radius: 6px;
+    }
+
+    .modal-close:hover {
+      color: var(--danger);
+      background: #FEF2F2;
+    }
+
+    .modal-body {
+      padding: 24px;
+    }
+
+    .form-group {
+      margin-bottom: 18px;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 0.875rem;
+      font-weight: 600;
+      margin-bottom: 6px;
+      color: var(--text-main);
+    }
+
+    .form-control {
+      width: 100%;
+      padding: 10px 14px;
+      border: 1.5px solid var(--border-color);
+      border-radius: var(--radius);
+      font-size: 0.9rem;
+      outline: none;
+      transition: var(--transition);
+    }
+
+    .form-control:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(255, 107, 53, 0.15);
+    }
+
+    .form-control[readonly] {
+      background: #F3F4F6;
+      color: #6B7280;
+      cursor: not-allowed;
+    }
+
+    .form-help {
+      font-size: 0.775rem;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    .radio-group {
+      display: flex;
+      gap: 16px;
+      margin-top: 6px;
+    }
+
+    .radio-label {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      font-weight: 500;
+    }
+
+    .modal-footer {
+      padding: 16px 24px;
+      border-top: 1px solid #FFEBE3;
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      background: #FFF8F5;
+    }
+
+    /* Toast Notification */
+    .toast-container {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      z-index: 200;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .toast {
+      background: #333;
+      color: #FFF;
+      padding: 12px 18px;
+      border-radius: var(--radius);
+      font-size: 0.9rem;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      box-shadow: var(--shadow-lg);
+      animation: toast-in 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .toast.success { background: #10B981; }
+    .toast.error { background: #EF4444; }
+
+    @keyframes toast-in {
+      from { transform: translateY(100%); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    /* Auth Fullscreen Screen */
+    .auth-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: var(--bg-color);
+      z-index: 999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .auth-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius);
+      padding: 32px;
+      width: 100%;
+      max-width: 400px;
+      text-align: center;
+      box-shadow: var(--shadow-lg);
+    }
+
+    .auth-card img {
+      height: 54px;
+      margin-bottom: 16px;
+    }
+
+    .auth-card h2 {
+      font-size: 1.3rem;
+      color: var(--primary);
+      margin-bottom: 8px;
+    }
+
+    .auth-card p {
+      font-size: 0.875rem;
+      color: var(--text-muted);
+      margin-bottom: 24px;
+    }
+
+    .spinner {
+      width: 20px;
+      height: 20px;
+      border: 2px solid rgba(255,255,255,0.3);
+      border-top-color: #FFF;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* Rules Tab Banner */
+    .rules-banner {
+      background: #FFF3ED;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius);
+      padding: 16px;
+      margin-bottom: 20px;
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+    }
+
+    .rules-banner pre {
+      background: #2D3748;
+      color: #F7FAFC;
+      padding: 12px;
+      border-radius: 8px;
+      font-size: 0.775rem;
+      overflow-x: auto;
+      margin-top: 8px;
+      font-family: monospace;
+    }
+
+    @media (max-width: 768px) {
+      .header-container { flex-direction: column; align-items: flex-start; }
+      .user-profile { width: 100%; justify-content: space-between; border-top: 1px solid #FFEBE3; padding-top: 10px; }
+      .filter-bar { flex-direction: column; align-items: stretch; }
+      .filter-tabs { width: 100%; justify-content: center; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Fullscreen Auth Screen -->
+  <div id="authScreen" class="auth-overlay">
+    <div class="auth-card">
+      <img src="https://paikarisell.ghotimarket.com/photo/logo.png" alt="PAIKARI SELL Logo">
+      <h2>Owner Panel Login</h2>
+      <p>অ্যাডমিন ম্যানেজমেন্ট সিস্টেমে প্রবেশের জন্য লগইন করুন</p>
+      
+      <form id="loginForm">
+        <div class="form-group" style="text-align: left;">
+          <label>Owner Email</label>
+          <input type="email" id="loginEmail" class="form-control" placeholder="nazrulislam887441234@gmail.com" required>
+        </div>
+        <div class="form-group" style="text-align: left;">
+          <label>Password</label>
+          <input type="password" id="loginPassword" class="form-control" placeholder="••••••••" required>
+        </div>
+        <button type="submit" id="loginBtn" class="btn-primary" style="width: 100%; justify-content: center;">
+          <span>লগইন করুন</span>
+        </button>
+      </form>
+      <div id="authError" style="color: var(--danger); font-size: 0.85rem; margin-top: 12px; display: none;"></div>
+    </div>
+  </div>
+
+  <!-- Header -->
+  <header>
+    <div class="header-container">
+      <div class="brand">
+        <img src="https://paikarisell.ghotimarket.com/photo/logo.png" alt="PAIKARI SELL Logo">
+        <div class="brand-title">
+          <h1>Owner Panel</h1>
+          <span>অ্যাডমিন ম্যানেজমেন্ট সিস্টেম</span>
+        </div>
+      </div>
+      
+      <div class="user-profile">
+        <span class="owner-badge">
+          <svg class="icon" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          Owner
+        </span>
+        <span class="user-email" id="ownerEmailLabel">loading...</span>
+        <button id="logoutBtn" class="btn-logout">
+          <svg class="icon" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+          লগআউট
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main>
+
+    <!-- Firestore Security Rules Deployment Notice -->
+    <div class="rules-banner">
+      <svg class="icon" style="color: var(--primary); width: 24px; height: 24px; flex-shrink: 0;" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      <div>
+        <strong style="font-size: 0.9rem; color: var(--text-main);">Firestore Security Rules Instructions:</strong>
+        <p style="font-size: 0.825rem; color: var(--text-muted);">নিচের Security Rules টি আপনার Firebase Console-এর Firestore Rules ট্যাবে আপডেট করুন যাতে শুধুমাত্র অনুমোদিত Owner এক্সেস পান:</p>
+        <pre>
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function isOwner() {
+      return request.auth != null && 
+        (request.auth.token.email.toLowerCase() == "nazrulislam887441234@gmail.com" || 
+         request.auth.token.email.toLowerCase() == "support@ghotimarket.com");
+    }
+    match /admins/{adminUid} {
+      allow read, create, update, delete: if isOwner();
+      allow read: if request.auth != null && request.auth.uid == adminUid;
+    }
+  }
+}</pre>
+      </div>
+    </div>
+
+    <!-- Stats Grid -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-icon">
+          <svg class="icon" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        </div>
+        <div class="stat-info">
+          <h3>মোট Admin</h3>
+          <p id="statTotalAdmin">-</p>
+        </div>
+      </div>
+      
+      <div class="stat-card">
+        <div class="stat-icon active">
+          <svg class="icon" viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+        </div>
+        <div class="stat-info">
+          <h3>Active Admin</h3>
+          <p id="statActiveAdmin">-</p>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon inactive">
+          <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+        </div>
+        <div class="stat-info">
+          <h3>Inactive Admin</h3>
+          <p id="statInactiveAdmin">-</p>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon latest">
+          <svg class="icon" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+        </div>
+        <div class="stat-info">
+          <h3>সর্বশেষ তৈরি</h3>
+          <p id="statLatestDate" style="font-size: 0.95rem;">-</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section Header & Add Btn -->
+    <div class="section-header">
+      <div class="section-title">
+        <svg class="icon" style="color: var(--primary);" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+        অ্যাডমিন তালিকা
+      </div>
+      <button id="openAddModalBtn" class="btn-primary">
+        <svg class="icon" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        নতুন Admin তৈরি করুন
+      </button>
+    </div>
+
+    <!-- Search & Filter Controls -->
+    <div class="filter-bar">
+      <div class="search-box">
+        <svg class="icon" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="text" id="searchInput" placeholder="Email অথবা UID দিয়ে খুঁজুন...">
+      </div>
+      <div class="filter-tabs">
+        <button class="tab-btn active" data-filter="all">সব Admin</button>
+        <button class="tab-btn" data-filter="active">Active</button>
+        <button class="tab-btn" data-filter="inactive">Inactive</button>
+      </div>
+    </div>
+
+    <!-- Admin List Container -->
+    <div class="admin-list-container">
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>Admin Email</th>
+              <th>Document ID / UID</th>
+              <th>তৈরির তারিখ</th>
+              <th>Status</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody id="adminTableBody">
+            <!-- Skeleton Rows initially injected by JS -->
+          </tbody>
+        </table>
+      </div>
+      <div id="stateMessage"></div>
+    </div>
+
+  </main>
+
+  <!-- Create Admin Modal -->
+  <div id="addModal" class="modal-overlay">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>নতুন Admin তৈরি করুন</h3>
+        <button class="modal-close closeModalBtn">
+          <svg class="icon" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+      <form id="addAdminForm">
+        <div class="modal-body">
+          <div class="form-group">
+            <label>Firebase Auth UID (Document ID)</label>
+            <input type="text" id="addUid" class="form-control" placeholder="যেমন: 8Xz99K0lmPa..." required>
+            <div class="form-help">Admin-এর Firebase Auth UID অবশ্যই হুবহু প্রদান করতে হবে।</div>
+          </div>
+          <div class="form-group">
+            <label>Admin Email</label>
+            <input type="email" id="addEmail" class="form-control" placeholder="admin@example.com" required>
+          </div>
+          <div class="form-group">
+            <label>Account Status</label>
+            <div class="radio-group">
+              <label class="radio-label">
+                <input type="radio" name="addStatus" value="true" checked> Active
+              </label>
+              <label class="radio-label">
+                <input type="radio" name="addStatus" value="false"> Inactive
+              </label>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn-secondary closeModalBtn">বাতিল করুন</button>
+          <button type="submit" id="saveAdminBtn" class="btn-primary">
+            <span>Admin তৈরি করুন</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Edit Admin Modal -->
+  <div id="editModal" class="modal-overlay">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>Admin তথ্য এডিট করুন</h3>
+        <button class="modal-close closeModalBtn">
+          <svg class="icon" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+      <form id="editAdminForm">
+        <input type="hidden" id="editUidHidden">
+        <div class="modal-body">
+          <div class="form-group">
+            <label>Document ID / UID (Read Only)</label>
+            <input type="text" id="editUid" class="form-control" readonly>
+          </div>
+          <div class="form-group">
+            <label>Admin Email</label>
+            <input type="email" id="editEmail" class="form-control" required>
+          </div>
+          <div class="form-group">
+            <label>Account Status</label>
+            <div class="radio-group">
+              <label class="radio-label">
+                <input type="radio" name="editStatus" id="editStatusActive" value="true"> Active
+              </label>
+              <label class="radio-label">
+                <input type="radio" name="editStatus" id="editStatusInactive" value="false"> Inactive
+              </label>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn-secondary closeModalBtn">বাতিল করুন</button>
+          <button type="submit" id="updateAdminBtn" class="btn-primary">
+            <span>আপডেট করুন</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Delete Confirmation Modal -->
+  <div id="deleteModal" class="modal-overlay">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 style="color: var(--danger);">Admin ডিলিট নিশ্চিতকরণ</h3>
+        <button class="modal-close closeModalBtn">
+          <svg class="icon" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p style="margin-bottom: 12px; font-weight: 600;">আপনি কি নিশ্চিতভাবে এই Admin-কে ডিলিট করতে চান?</p>
+        <div style="background: #FEF2F2; padding: 12px; border-radius: 8px; border: 1px solid #FECACA;">
+          <div style="font-size: 0.875rem;"><strong>Email:</strong> <span id="deleteTargetEmail">-</span></div>
+          <div style="font-size: 0.8rem; color: var(--text-muted);" class="uid-badge" id="deleteTargetUid">-</div>
+        </div>
+        <p style="font-size: 0.775rem; color: var(--text-muted); margin-top: 10px;">* দ্রষ্টব্য: এটি শুধুমাত্র Firestore-এর "admins" কালেকশন থেকে ডিলিট করবে।</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn-secondary closeModalBtn">বাতিল করুন</button>
+        <button type="button" id="confirmDeleteBtn" class="btn-primary" style="background: var(--danger);">
+          <span>Admin ডিলিট করুন</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Dynamic Toast Container -->
+  <div id="toastContainer" class="toast-container"></div>
+
+  <!-- Firebase ESM Imports & Controller Logic -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
+    import { 
+      getAuth, 
+      signInWithEmailAndPassword, 
+      signOut, 
+      onAuthStateChanged 
+    } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-auth.js";
+    import { 
+      getFirestore, 
+      collection, 
+      doc, 
+      getDoc, 
+      getDocs, 
+      setDoc, 
+      updateDoc, 
+      deleteDoc, 
+      serverTimestamp,
+      query,
+      orderBy 
+    } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
+
+  const firebaseConfig = {
+  apiKey: "AIzaSyDCIRWmozT0XcEXuXtQ6RDiDo6vtT1T9mU",
+  authDomain: "paikarisell-ghotimarket.firebaseapp.com",
+  projectId: "paikarisell-ghotimarket",
+  storageBucket: "paikarisell-ghotimarket.firebasestorage.app",
+  messagingSenderId: "464086432830",
+  appId: "1:464086432830:web:a10fdd9884954e380e656f",
+  measurementId: "G-E3HR2F9TC5"
+};
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    // Allowlisted Owner Emails
+    const ALLOWED_OWNER_EMAILS = [
+      "nazrulislam887441234@gmail.com",
+      "support@ghotimarket.com"
+    ];
+
+    // State Variables
+    let allAdmins = [];
+    let currentFilter = 'all';
+    let searchQuery = '';
+    let targetDeleteUid = null;
+
+    // Toast Function
+    function showToast(message, type = 'success') {
+      const toast = document.createElement('div');
+      toast.className = `toast ${type}`;
+      toast.innerHTML = `
+        <svg class="icon" viewBox="0 0 24 24">${type === 'success' ? '<polyline points="20 6 9 17 4 12"/>' : '<circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/>'}</svg>
+        <span>${message}</span>
+      `;
+      document.getElementById('toastContainer').appendChild(toast);
+      setTimeout(() => toast.remove(), 3500);
+    }
+
+    // Modal Manager
+    function openModal(id) { document.getElementById(id).classList.add('active'); }
+    function closeModal(id) { document.getElementById(id).classList.remove('active'); }
+
+    document.querySelectorAll('.closeModalBtn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const modal = e.target.closest('.modal-overlay');
+        if (modal) modal.classList.remove('active');
+      });
+    });
+
+    // Authentication Checks
+    onAuthStateChanged(auth, (user) => {
+      const authScreen = document.getElementById('authScreen');
+      if (user) {
+        const normalizedEmail = (user.email || '').trim().toLowerCase();
+        if (ALLOWED_OWNER_EMAILS.includes(normalizedEmail)) {
+          authScreen.style.display = 'none';
+          document.getElementById('ownerEmailLabel').textContent = user.email;
+          fetchAdminList();
+        } else {
+          authScreen.style.display = 'flex';
+          document.getElementById('authError').style.display = 'block';
+          document.getElementById('authError').textContent = 'Access Denied: শুধুমাত্র Owner এক্সেস নিতে পারবেন।';
+          signOut(auth);
+        }
+      } else {
+        authScreen.style.display = 'flex';
+        document.getElementById('ownerEmailLabel').textContent = '';
+      }
+    });
+
+    // Login Form Handler
+    document.getElementById('loginForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const email = document.getElementById('loginEmail').value.trim();
+      const password = document.getElementById('loginPassword').value;
+      const btn = document.getElementById('loginBtn');
+      const errBox = document.getElementById('authError');
+
+      btn.disabled = true;
+      btn.innerHTML = `<div class="spinner"></div>`;
+      errBox.style.display = 'none';
+
+      try {
+        await signInWithEmailAndPassword(auth, email, password);
+      } catch (err) {
+        errBox.style.display = 'block';
+        errBox.textContent = `লগইন ব্যর্থ: ${err.message}`;
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = `<span>লগইন করুন</span>`;
+      }
+    });
+
+    // Logout Handler
+    document.getElementById('logoutBtn').addEventListener('click', () => {
+      signOut(auth);
+    });
+
+    // Fetch Admin List from Firestore
+    async function fetchAdminList() {
+      const tbody = document.getElementById('adminTableBody');
+      const stateMsg = document.getElementById('stateMessage');
+      
+      // Render Skeleton
+      tbody.innerHTML = Array(3).fill(0).map(() => `
+        <tr>
+          <td><div class="skeleton-line" style="width: 140px;"></div></td>
+          <td><div class="skeleton-line" style="width: 180px;"></div></td>
+          <td><div class="skeleton-line" style="width: 100px;"></div></td>
+          <td><div class="skeleton-line" style="width: 70px;"></div></td>
+          <td><div class="skeleton-line" style="width: 60px;"></div></td>
+        </tr>
+      `).join('');
+      stateMsg.innerHTML = '';
+
+      try {
+        const q = query(collection(db, 'admins'), orderBy('createdAt', 'desc'));
+        const snapshot = await getDocs(q);
+        
+        allAdmins = [];
+        snapshot.forEach(docSnap => {
+          allAdmins.push({ id: docSnap.id, ...docSnap.data() });
+        });
+
+        updateStatistics();
+        renderFilteredAdmins();
+      } catch (err) {
+        console.error("Firestore Error:", err);
+        tbody.innerHTML = '';
+        stateMsg.innerHTML = `
+          <div class="state-container">
+            <svg class="icon state-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            <div class="state-title">ডেটা লোড করতে ব্যর্থ হয়েছে</div>
+            <div class="state-desc">${err.message}</div>
+            <button class="btn-secondary" id="retryBtn">
+              <svg class="icon" viewBox="0 0 24 24"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+              পুনরায় চেষ্টা করুন
+            </button>
+          </div>
+        `;
+        document.getElementById('retryBtn')?.addEventListener('click', fetchAdminList);
+      }
+    }
+
+    // Update Statistics Bar
+    function updateStatistics() {
+      const total = allAdmins.length;
+      const activeCount = allAdmins.filter(a => a.active === true).length;
+      const inactiveCount = allAdmins.filter(a => a.active === false).length;
+      
+      document.getElementById('statTotalAdmin').textContent = total;
+      document.getElementById('statActiveAdmin').textContent = activeCount;
+      document.getElementById('statInactiveAdmin').textContent = inactiveCount;
+
+      if (total > 0 && allAdmins[0].createdAt) {
+        const dateObj = allAdmins[0].createdAt.toDate ? allAdmins[0].createdAt.toDate() : new Date();
+        document.getElementById('statLatestDate').textContent = dateObj.toLocaleDateString('bn-BD', {
+          day: 'numeric', month: 'short', year: 'numeric'
+        });
+      } else {
+        document.getElementById('statLatestDate').textContent = 'N/A';
+      }
+    }
+
+    // Render Filtered Table Data
+    function renderFilteredAdmins() {
+      const tbody = document.getElementById('adminTableBody');
+      const stateMsg = document.getElementById('stateMessage');
+
+      let filtered = allAdmins.filter(admin => {
+        const matchSearch = (admin.email || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
+                            (admin.uid || admin.id || '').toLowerCase().includes(searchQuery.toLowerCase());
+        
+        if (currentFilter === 'active') return matchSearch && admin.active === true;
+        if (currentFilter === 'inactive') return matchSearch && admin.active === false;
+        return matchSearch;
+      });
+
+      if (filtered.length === 0) {
+        tbody.innerHTML = '';
+        stateMsg.innerHTML = `
+          <div class="state-container">
+            <svg class="icon state-icon" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <div class="state-title">কোনো Admin পাওয়া যায়নি</div>
+            <div class="state-desc">নতুন Admin তৈরি করুন অথবা ফিল্টার পরিবর্তন করুন।</div>
+          </div>
+        `;
+        return;
+      }
+
+      stateMsg.innerHTML = '';
+      tbody.innerHTML = filtered.map(admin => {
+        const createdDate = admin.createdAt?.toDate ? 
+          admin.createdAt.toDate().toLocaleDateString('bn-BD', { day: 'numeric', month: 'short', year: 'numeric' }) : 'প্রসেসিং...';
+        
+        const isActive = admin.active === true;
+
+        return `
+          <tr>
+            <td style="font-weight: 600;">${admin.email || 'N/A'}</td>
+            <td><span class="uid-badge">${admin.uid || admin.id}</span></td>
+            <td>${createdDate}</td>
+            <td>
+              <span class="status-badge ${isActive ? 'active' : 'inactive'}">
+                <span class="status-dot"></span>
+                ${isActive ? 'Active' : 'Inactive'}
+              </span>
+            </td>
+            <td>
+              <div class="action-btns">
+                <button class="btn-icon edit-btn" data-id="${admin.id}" title="এডিট করুন">
+                  <svg class="icon" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                </button>
+                <button class="btn-icon delete delete-btn" data-id="${admin.id}" data-email="${admin.email}" title="ডিলিট করুন">
+                  <svg class="icon" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>
+                </button>
+              </div>
+            </td>
+          </tr>
+        `;
+      }).join('');
+
+      // Attach Event Listeners to Action Buttons
+      document.querySelectorAll('.edit-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          const id = e.currentTarget.getAttribute('data-id');
+          const admin = allAdmins.find(a => a.id === id);
+          if (admin) {
+            document.getElementById('editUidHidden').value = admin.id;
+            document.getElementById('editUid').value = admin.uid || admin.id;
+            document.getElementById('editEmail').value = admin.email || '';
+            if (admin.active) {
+              document.getElementById('editStatusActive').checked = true;
+            } else {
+              document.getElementById('editStatusInactive').checked = true;
+            }
+            openModal('editModal');
+          }
+        });
+      });
+
+      document.querySelectorAll('.delete-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          targetDeleteUid = e.currentTarget.getAttribute('data-id');
+          const email = e.currentTarget.getAttribute('data-email');
+          document.getElementById('deleteTargetUid').textContent = targetDeleteUid;
+          document.getElementById('deleteTargetEmail').textContent = email;
+          openModal('deleteModal');
+        });
+      });
+    }
+
+    // Search and Filter Listeners
+    document.getElementById('searchInput').addEventListener('input', (e) => {
+      searchQuery = e.target.value;
+      renderFilteredAdmins();
+    });
+
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        e.target.classList.add('active');
+        currentFilter = e.target.getAttribute('data-filter');
+        renderFilteredAdmins();
+      });
+    });
+
+    // Create Admin Form Logic
+    document.getElementById('openAddModalBtn').addEventListener('click', () => {
+      document.getElementById('addAdminForm').reset();
+      openModal('addModal');
+    });
+
+    document.getElementById('addAdminForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const uid = document.getElementById('addUid').value.trim();
+      const email = document.getElementById('addEmail').value.trim();
+      const active = document.querySelector('input[name="addStatus"]:checked').value === 'true';
+      const submitBtn = document.getElementById('saveAdminBtn');
+
+      if (!uid || !email) {
+        showToast('Document ID এবং Email পুরণ করা বাধ্যতামূলক', 'error');
+        return;
+      }
+
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = `<div class="spinner"></div>`;
+
+      try {
+        const docRef = doc(db, 'admins', uid);
+        const existingDoc = await getDoc(docRef);
+
+        if (existingDoc.exists()) {
+          showToast('এই Document ID/UID আগে থেকেই বিদ্যমান!', 'error');
+          return;
+        }
+
+        await setDoc(docRef, {
+          uid: uid,
+          email: email,
+          active: active,
+          createdAt: serverTimestamp()
+        });
+
+        showToast('নতুন Admin সফলভাবে তৈরি হয়েছে!');
+        closeModal('addModal');
+        fetchAdminList();
+      } catch (err) {
+        showToast(`তৈরি করতে ব্যর্থ: ${err.message}`, 'error');
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = `<span>Admin তৈরি করুন</span>`;
+      }
+    });
+
+    // Edit Admin Form Logic
+    document.getElementById('editAdminForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const docId = document.getElementById('editUidHidden').value;
+      const email = document.getElementById('editEmail').value.trim();
+      const active = document.querySelector('input[name="editStatus"]:checked').value === 'true';
+      const submitBtn = document.getElementById('updateAdminBtn');
+
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = `<div class="spinner"></div>`;
+
+      try {
+        const docRef = doc(db, 'admins', docId);
+        await updateDoc(docRef, {
+          email: email,
+          active: active
+        });
+
+        showToast('Admin তথ্য সফলভাবে আপডেট হয়েছে!');
+        closeModal('editModal');
+        fetchAdminList();
+      } catch (err) {
+        showToast(`আপডেট ব্যর্থ: ${err.message}`, 'error');
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = `<span>আপডেট করুন</span>`;
+      }
+    });
+
+    // Delete Admin Action
+    document.getElementById('confirmDeleteBtn').addEventListener('click', async () => {
+      if (!targetDeleteUid) return;
+      const btn = document.getElementById('confirmDeleteBtn');
+
+      btn.disabled = true;
+      btn.innerHTML = `<div class="spinner"></div>`;
+
+      try {
+        await deleteDoc(doc(db, 'admins', targetDeleteUid));
+        showToast('Admin সফলভাবে ডিলিট করা হয়েছে!');
+        closeModal('deleteModal');
+        fetchAdminList();
+      } catch (err) {
+        showToast(`ডিলিট করতে ব্যর্থ: ${err.message}`, 'error');
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = `<span>Admin ডিলিট করুন</span>`;
+        targetDeleteUid = null;
+      }
+    });
+  </script>
+</body>
+</html>
