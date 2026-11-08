@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PAIKARI SELL - Banner Management Panel</title>
+    <link rel="icon" type="image/png" href="https://paikarisell.ghotimarket.com/photo/favicon.png">
+    <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#FF6B35',
+                        secondary: '#FF6A00',
+                        accent: '#FFA500',
+                        bgCustom: '#FFF8F4',
+                        cardBg: '#FFFFFF',
+                        txtColor: '#171717'
+                    },
+                    fontFamily: {
+                        hind: ['Hind Siliguri', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { font-family: 'Hind Siliguri', sans-serif; background-color: #FFF8F4; color: #171717; }
+        .skeleton { animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: .5; } }
+    </style>
+</head>
+<body class="bg-bgCustom text-txtColor min-h-screen flex flex-col">
+
+    <!-- Auth & API Guard Loader / Access Denied Screen -->
+    <div id="authGuardScreen" class="fixed inset-0 z-50 bg-bgCustom flex flex-col items-center justify-center p-4">
+        <div class="bg-cardBg p-8 rounded-2xl shadow-xl max-w-md w-full text-center border border-orange-100">
+            <img src="https://paikarisell.ghotimarket.com/photo/logo.png" alt="Logo" class="h-16 mx-auto mb-4 object-contain">
+            <h2 id="authStatusTitle" class="text-2xl font-bold text-primary mb-2">যাচাই করা হচ্ছে...</h2>
+            <p id="authStatusDesc" class="text-gray-600 text-sm mb-6">দয়া করে অপেক্ষা করুন, আপনার অ্যাডমিন পারমিশন যাচাই করা হচ্ছে।</p>
+            <div id="authSpinner" class="flex justify-center">
+                <svg class="animate-spin h-8 w-8 text-primary" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+            </div>
+            <div id="accessDeniedActions" class="hidden mt-4 space-x-2">
+                <a href="/login" class="inline-block bg-primary text-white px-6 py-2 rounded-xl font-semibold shadow hover:bg-secondary transition">লগইন পেজে যান</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Banner Management Layout -->
+    <div id="dashboardLayout" class="hidden flex-1 flex flex-col">
+        <!-- Header -->
+        <header class="bg-cardBg border-b border-orange-100 shadow-sm sticky top-0 z-30">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+                <div class="flex items-center space-x-3">
+                    <img src="https://paikarisell.ghotimarket.com/photo/logo.png" alt="PAIKARI SELL" class="h-12 w-auto object-contain">
+                    <div>
+                        <h1 class="text-xl font-bold text-primary leading-tight">Banner Management System</h1>
+                        <p class="text-xs text-gray-500">PAIKARI SELL Owner & Admin Panel</p>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <a href="/admin" class="flex items-center bg-orange-50 hover:bg-orange-100 text-primary px-4 py-2 rounded-xl text-sm font-medium border border-orange-200 transition">
+                        <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+                        ড্যাশবোর্ডে ফিরুন
+                    </a>
+                </div>
+            </div>
+        </header>
+
+        <!-- Container -->
+        <main class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-1 w-full space-y-8">
+            
+            <!-- Upload Section -->
+            <div class="bg-cardBg rounded-2xl shadow-sm border border-orange-100 p-6 sm:p-8">
+                <h2 class="text-lg font-bold text-txtColor mb-2 flex items-center">
+                    <svg class="w-5 h-5 mr-2 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                    নতুন ব্যানার আপলোড করুন
+                </h2>
+                <p class="text-xs text-gray-500 mb-6">নির্ধারিত সাইজ: ৯৮১ × ৩৬৩ পিক্সেল (Ratio 981:363)। ফরম্যাট: PNG, JPG, JPEG, WebP।</p>
+
+                <form id="bannerUploadForm" class="space-y-6">
+                    <div id="dropZone" class="border-2 border-dashed border-orange-200 rounded-2xl p-6 text-center bg-bgCustom hover:bg-orange-50/50 transition cursor-pointer relative flex flex-col items-center justify-center min-h-[220px]">
+                        <input type="file" id="bannerFile" accept="image/png, image/jpeg, image/jpg, image/webp" class="absolute inset-0 opacity-0 cursor-pointer w-full h-full">
+                        
+                        <div id="uploadPlaceholder" class="flex flex-col items-center space-y-3">
+                            <div class="w-14 h-14 bg-orange-100 text-primary rounded-full flex items-center justify-center">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg>
+                            </div>
+                            <div>
+                                <p class="text-sm font-semibold text-gray-700">ফাইল নির্বাচন করতে ক্লিক করুন অথবা ড্র্যাগ করুন</p>
+                                <p class="text-xs text-gray-400 mt-1">PNG, JPG, JPEG বা WebP (সর্বোচ্চ ৫ মেগাবাইট)</p>
+                            </div>
+                            <button type="button" class="bg-primary text-white text-xs font-semibold px-4 py-2 rounded-xl shadow">ব্যানার নির্বাচন করুন</button>
+                        </div>
+
+                        <div id="previewContainer" class="hidden w-full flex flex-col items-center space-y-4">
+                            <div class="relative w-full max-w-2xl aspect-[981/363] rounded-xl overflow-hidden shadow-md border border-orange-200 bg-gray-900 flex items-center justify-center">
+                                <img id="imagePreview" src="" alt="Banner Preview" class="w-full h-full object-contain">
+                                <button type="button" id="removeImageBtn" class="absolute top-3 right-3 bg-black/60 hover:bg-black/80 text-white p-2 rounded-full transition">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                                </button>
+                            </div>
+                            <div id="fileInfoText" class="text-xs text-gray-600 font-medium"></div>
+                            <div id="ratioWarning" class="hidden text-xs text-amber-700 bg-amber-50 border border-amber-200 px-3 py-1.5 rounded-lg">
+                                সতর্কতা: ব্যানারের অনুপাত ৯৮১:৩৬৩ পিক্সেল হওয়া বাঞ্ছনীয়।
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-600 mb-1">ব্যানারে ক্লিক করলে কোথায় যাবে? (ঐচ্ছিক)</label>
+                        <input type="text" id="clickLinkInput" placeholder="https://example.com অথবা /page" class="w-full py-3 px-4 bg-bgCustom border border-orange-200 rounded-xl text-sm focus:ring-2 focus:ring-primary focus:outline-none transition">
+                    </div>
+
+                    <div class="flex justify-end">
+                        <button type="submit" id="uploadSubmitBtn" disabled class="bg-gray-300 text-gray-500 font-semibold px-8 py-3.5 rounded-xl shadow transition flex items-center space-x-2 cursor-not-allowed">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
+                            <span id="uploadBtnText">ব্যানার আপলোড করুন</span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Existing Banners List Section -->
+            <div class="bg-cardBg rounded-2xl shadow-sm border border-orange-100 p-6 sm:p-8">
+                <h2 class="text-lg font-bold text-txtColor mb-6 flex items-center">
+                    <svg class="w-5 h-5 mr-2 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+                    আপলোড করা ব্যানারসমূহ
+                </h2>
+
+                <div id="bannerGrid" class="grid grid-cols-1 md:grid-cols-2 gap-6"></div>
+
+                <div id="skeletonContainer" class="grid grid-cols-1 md:grid-cols-2 gap-6 hidden">
+                    <div class="bg-white rounded-2xl p-4 border border-gray-100 shadow-sm skeleton h-64"></div>
+                    <div class="bg-white rounded-2xl p-4 border border-gray-100 shadow-sm skeleton h-64"></div>
+                </div>
+
+                <div id="emptyState" class="hidden text-center py-12 text-gray-500 text-sm">
+                    কোনো ব্যানার আপলোড করা হয়নি।
+                </div>
+
+                <div id="loadMoreContainer" class="text-center mt-8 hidden">
+                    <button id="loadMoreBtn" class="bg-primary hover:bg-secondary text-white font-semibold px-6 py-2.5 rounded-xl shadow transition">আরও দেখুন</button>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <!-- Edit Banner Modal -->
+    <div id="editModal" class="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm hidden flex items-center justify-center p-4">
+        <div class="bg-cardBg rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-orange-100 transform transition-all">
+            <h3 class="text-xl font-bold text-txtColor mb-4 flex items-center">
+                <svg class="w-5 h-5 mr-2 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                ব্যানার এডিট করুন
+            </h3>
+            
+            <form id="editBannerForm" class="space-y-4">
+                <input type="hidden" id="editBannerId">
+                <div>
+                    <label class="block text-xs font-semibold text-gray-600 mb-2">বর্তমান ছবি:</label>
+                    <div class="aspect-[981/363] rounded-xl overflow-hidden bg-gray-900 border border-orange-200 mb-2">
+                        <img id="editImagePreview" src="" alt="Preview" class="w-full h-full object-contain">
+                    </div>
+                    <label class="block text-xs font-semibold text-gray-600 mb-1">নতুন ছবি পরিবর্তন করতে চাইলে সিলেক্ট করুন (ঐচ্ছিক):</label>
+                    <input type="file" id="editBannerFile" accept="image/png, image/jpeg, image/jpg, image/webp" class="w-full text-xs text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-orange-50 file:text-primary hover:file:bg-orange-100">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-gray-600 mb-1">ক্লিক লিংক:</label>
+                    <input type="text" id="editClickLinkInput" placeholder="https://example.com অথবা /page" class="w-full py-2.5 px-4 bg-bgCustom border border-orange-200 rounded-xl text-sm focus:ring-2 focus:ring-primary focus:outline-none transition">
+                </div>
+
+                <div class="flex justify-end space-x-3 pt-4 border-t border-orange-100">
+                    <button type="button" id="editModalCancelBtn" class="px-5 py-2.5 rounded-xl border border-gray-300 text-gray-700 hover:bg-gray-50 font-medium text-sm transition">বাতিল</button>
+                    <button type="submit" id="editSubmitBtn" class="px-6 py-2.5 rounded-xl bg-primary hover:bg-secondary text-white font-medium text-sm shadow transition">আপডেট করুন</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Custom Confirmation Modal -->
+    <div id="confirmModal" class="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm hidden flex items-center justify-center p-4">
+        <div class="bg-cardBg rounded-2xl max-w-md w-full p-6 shadow-2xl border border-orange-100 transform transition-all">
+            <h3 id="modalTitle" class="text-xl font-bold text-txtColor mb-2">নিশ্চিত করুন</h3>
+            <p id="modalDesc" class="text-gray-600 text-sm mb-6">আপনি কি এই ব্যানারটি ডিলিট করতে চান?</p>
+            <div class="flex justify-end space-x-3">
+                <button type="button" id="modalCancelBtn" class="px-5 py-2.5 rounded-xl border border-gray-300 text-gray-700 hover:bg-gray-50 font-medium text-sm transition">বাতিল</button>
+                <button type="button" id="modalConfirmBtn" class="px-5 py-2.5 rounded-xl bg-red-600 hover:bg-red-700 text-white font-medium text-sm shadow transition">ডিলিট করুন</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification Container -->
+    <div id="toastContainer" class="fixed bottom-5 right-5 z-50 flex flex-col space-y-3 pointer-events-none"></div>
+
+    <!-- Firebase SDK & Core Application Script -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { getFirestore, doc, getDocFromServer, collection, query, orderBy, limit, startAfter, getDocs, addDoc, updateDoc, deleteDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDCIRWmozT0XcEXuXtQ6RDiDo6vtT1T9mU",
+            authDomain: "paikarisell-ghotimarket.firebaseapp.com",
+            projectId: "paikarisell-ghotimarket",
+            storageBucket: "paikarisell-ghotimarket.firebasestorage.app",
+            messagingSenderId: "464086432830",
+            appId: "1:464086432830:web:a10fdd9884954e380e656f",
+            measurementId: "G-E3HR2F9TC5"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        const OWNER_EMAILS = ["nazrulislam887441234@gmail.com", "support@ghotimarket.com"];
+        let imgbbApiKey = "";
+        let selectedFile = null;
+        let lastVisibleDoc = null;
+        let isUploading = false;
+
+        const authGuardScreen = document.getElementById('authGuardScreen');
+        const dashboardLayout = document.getElementById('dashboardLayout');
+        const authStatusTitle = document.getElementById('authStatusTitle');
+        const authStatusDesc = document.getElementById('authStatusDesc');
+        const authSpinner = document.getElementById('authSpinner');
+        const accessDeniedActions = document.getElementById('accessDeniedActions');
+
+        function showToast(message, type = 'success') {
+            const toastContainer = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = `pointer-events-auto flex items-center px-4 py-3 rounded-xl shadow-lg text-white text-sm font-medium transition transform translate-y-2 opacity-0 ${type === 'success' ? 'bg-emerald-600' : 'bg-red-600'}`;
+            toast.innerHTML = `
+                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    ${type === 'success' ? '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>' : '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>'}
+                </svg>
+                <span>${message}</span>
+            `;
+            toastContainer.appendChild(toast);
+            setTimeout(() => { toast.classList.remove('translate-y-2', 'opacity-0'); }, 50);
+            setTimeout(() => {
+                toast.classList.add('translate-y-2', 'opacity-0');
+                setTimeout(() => toast.remove(), 300);
+            }, 3500);
+        }
+
+        onAuthStateChanged(auth, async (user) => {
+            if (!user) {
+                window.location.href = '/login';
+                return;
+            }
+
+            try {
+                const email = (user.email || '').toLowerCase().trim();
+                let isOwner = OWNER_EMAILS.includes(email);
+                let isAdmin = false;
+
+                if (!isOwner) {
+                    const adminDocRef = doc(db, "admins", user.uid);
+                    const adminSnap = await getDocFromServer(adminDocRef);
+                    if (adminSnap.exists()) {
+                        const data = adminSnap.data();
+                        if (data.uid === user.uid && data.active === true) {
+                            isAdmin = true;
+                        }
+                    }
+                }
+
+                if (!isOwner && !isAdmin) {
+                    authStatusTitle.innerText = "অ্যাক্সেস ডিনাইড (Access Denied)";
+                    authStatusDesc.innerText = "আপনার এই ব্যানার ম্যানেজমেন্ট প্যানেলটি ব্যবহার করার অনুমতি নেই।";
+                    authSpinner.classList.add('hidden');
+                    accessDeniedActions.classList.remove('hidden');
+                    return;
+                }
+
+                const apiQuery = query(collection(db, "imgbb_api"), orderBy("createdAt", "desc"), limit(1));
+                const apiSnap = await getDocs(apiQuery);
+
+                if (apiSnap.empty) {
+                    authStatusTitle.innerText = "ImgBB API Key পাওয়া যায়নি";
+                    authStatusDesc.innerText = "অনুগ্রহ করে ডাটাবেসে ImgBB API Key কনফিগার করুন।";
+                    authSpinner.classList.add('hidden');
+                    return;
+                }
+
+                imgbbApiKey = apiSnap.docs[0].data().apiKey;
+                if (!imgbbApiKey) {
+                    throw "API Key is empty!";
+                }
+
+                authGuardScreen.classList.add('hidden');
+                dashboardLayout.classList.remove('hidden');
+                loadBanners(true);
+
+            } catch (error) {
+                console.error("Initialization error:", error);
+                authStatusTitle.innerText = "ত্রুটি সংঘটিত হয়েছে";
+                authStatusDesc.innerText = "অনুমোদন বা API Key লোড করার সময় সমস্যা হয়েছে।";
+                authSpinner.classList.add('hidden');
+            }
+        });
+
+        const bannerFile = document.getElementById('bannerFile');
+        const uploadPlaceholder = document.getElementById('uploadPlaceholder');
+        const previewContainer = document.getElementById('previewContainer');
+        const imagePreview = document.getElementById('imagePreview');
+        const fileInfoText = document.getElementById('fileInfoText');
+        const ratioWarning = document.getElementById('ratioWarning');
+        const uploadSubmitBtn = document.getElementById('uploadSubmitBtn');
+
+        bannerFile.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            if (file.size > 5 * 1024 * 1024) {
+                showToast("ফাইলের সাইজ ৫ এমবি এর কম হতে হবে।", "error");
+                return;
+            }
+
+            selectedFile = file;
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                imagePreview.src = event.target.result;
+                
+                const img = new Image();
+                img.onload = () => {
+                    const width = img.naturalWidth;
+                    const height = img.naturalHeight;
+                    fileInfoText.innerText = `ফাইল: ${file.name} | রেজোলিউশন: ${width} × ${height} পিক্সেল`;
+
+                    const ratio = width / height;
+                    const expectedRatio = 981 / 363;
+                    if (Math.abs(ratio - expectedRatio) > 0.05) {
+                        ratioWarning.classList.remove('hidden');
+                    } else {
+                        ratioWarning.classList.add('hidden');
+                    }
+                };
+                img.src = event.target.result;
+
+                uploadPlaceholder.classList.add('hidden');
+                previewContainer.classList.remove('hidden');
+                uploadSubmitBtn.disabled = false;
+                uploadSubmitBtn.classList.remove('bg-gray-300', 'text-gray-500', 'cursor-not-allowed');
+                uploadSubmitBtn.classList.add('bg-primary', 'hover:bg-secondary', 'text-white');
+            };
+            reader.readAsDataURL(file);
+        });
+
+        document.getElementById('removeImageBtn').addEventListener('click', () => {
+            selectedFile = null;
+            bannerFile.value = '';
+            imagePreview.src = '';
+            previewContainer.classList.add('hidden');
+            uploadPlaceholder.classList.remove('hidden');
+            ratioWarning.classList.add('hidden');
+            uploadSubmitBtn.disabled = true;
+            uploadSubmitBtn.classList.add('bg-gray-300', 'text-gray-500', 'cursor-not-allowed');
+            uploadSubmitBtn.classList.remove('bg-primary', 'hover:bg-secondary', 'text-white');
+        });
+
+        const bannerUploadForm = document.getElementById('bannerUploadForm');
+        bannerUploadForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            if (!selectedFile || isUploading) return;
+
+            isUploading = true;
+            uploadSubmitBtn.disabled = true;
+            document.getElementById('uploadBtnText').innerText = "আপলোড হচ্ছে...";
+
+            try {
+                const timestamp = Date.now();
+                const sanitizedName = selectedFile.name.replace(/[^a-zA-Z0-9_.-]/g, '_');
+                const newFileName = `${timestamp}-${sanitizedName}`;
+
+                const formData = new FormData();
+                formData.append('image', selectedFile);
+                formData.append('name', newFileName);
+
+                const imgbbResponse = await fetch(`https://api.imgbb.com/1/upload?key=${imgbbApiKey}`, {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const imgbbResult = await imgbbResponse.json();
+                if (!imgbbResult.success) {
+                    throw "ImgBB আপলোড ব্যর্থ হয়েছে। আবার চেষ্টা করুন।";
+                }
+
+                const imageUrl = imgbbResult.data.url;
+                const clickLink = document.getElementById('clickLinkInput').value.trim();
+                
+                const bannerPayload = {
+                    bannerLink: imageUrl, // Filename updated from imageLink to bannerLink
+                    createdAt: serverTimestamp()
+                };
+
+                if (clickLink) {
+                    if (clickLink.startsWith('http://') || clickLink.startsWith('javascript:') || clickLink.startsWith('data:')) {
+                        throw "অবৈধ ক্লিক লিংক। শুধুমাত্র https:// অথবা অভ্যন্তরীণ / লিংক গ্রহণযোগ্য।";
+                    }
+                    bannerPayload.clickLink = clickLink;
+                }
+
+                await addDoc(collection(db, "banners"), bannerPayload);
+
+                showToast("ব্যানার সফলভাবে আপলোড ও সংরক্ষণ করা হয়েছে।");
+                document.getElementById('removeImageBtn').click();
+                document.getElementById('clickLinkInput').value = '';
+                loadBanners(true);
+
+            } catch (err) {
+                console.error("Upload error:", err);
+                showToast("ত্রুটি: " + err, "error");
+            } finally {
+                isUploading = false;
+                uploadSubmitBtn.disabled = false;
+                document.getElementById('uploadBtnText').innerText = "ব্যানার আপলোড করুন";
+            }
+        });
+
+        async function loadBanners(reset = false) {
+            const bannerGrid = document.getElementById('bannerGrid');
+            const skeletonContainer = document.getElementById('skeletonContainer');
+            const emptyState = document.getElementById('emptyState');
+            const loadMoreContainer = document.getElementById('loadMoreContainer');
+
+            if (reset) {
+                bannerGrid.innerHTML = '';
+                skeletonContainer.classList.remove('hidden');
+                emptyState.classList.add('hidden');
+                lastVisibleDoc = null;
+            }
+
+            try {
+                let q = query(collection(db, "banners"), orderBy("createdAt", "desc"), limit(10));
+                if (lastVisibleDoc && !reset) {
+                    q = query(collection(db, "banners"), orderBy("createdAt", "desc"), startAfter(lastVisibleDoc), limit(10));
+                }
+
+                const querySnapshot = await getDocs(q);
+                skeletonContainer.classList.add('hidden');
+
+                if (querySnapshot.empty && reset) {
+                    emptyState.classList.remove('hidden');
+                    loadMoreContainer.classList.add('hidden');
+                    return;
+                }
+
+                lastVisibleDoc = querySnapshot.docs[querySnapshot.docs.length - 1] || null;
+
+                querySnapshot.forEach((docSnap) => {
+                    const data = docSnap.data();
+                    const bannerId = docSnap.id;
+                    renderBannerCard(bannerId, data);
+                });
+
+                if (querySnapshot.docs.length < 10) {
+                    loadMoreContainer.classList.add('hidden');
+                } else {
+                    loadMoreContainer.classList.remove('hidden');
+                }
+
+            } catch (err) {
+                console.error("Error loading banners:", err);
+                skeletonContainer.classList.add('hidden');
+            }
+        }
+
+        function renderBannerCard(id, banner) {
+            const bannerGrid = document.getElementById('bannerGrid');
+            const card = document.createElement('div');
+            card.className = "bg-bgCustom rounded-2xl p-4 border border-orange-100 flex flex-col justify-between shadow-sm";
+            card.setAttribute('data-id', id);
+
+            const dateStr = banner.createdAt?.toDate ? banner.createdAt.toDate().toLocaleString('bn-BD') : "এখনই";
+            const bannerUrl = banner.bannerLink || banner.imageLink || ''; // Fallback for safety
+
+            card.innerHTML = `
+                <div>
+                    <div class="aspect-[981/363] rounded-xl overflow-hidden bg-gray-900 mb-3 border border-orange-200">
+                        <img src="${bannerUrl}" alt="Banner" class="w-full h-full object-contain">
+                    </div>
+                    <div class="space-y-1 text-xs text-gray-600 mb-3">
+                        <p class="truncate"><b>লিংক:</b> <a href="${bannerUrl}" target="_blank" class="text-primary underline">${bannerUrl}</a></p>
+                        <p><b>ক্লিক লিংক:</b> ${banner.clickLink || 'কোনো ক্লিক লিংক দেওয়া হয়নি'}</p>
+                        <p class="text-[10px] text-gray-400">তৈরি: ${dateStr}</p>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-2 pt-3 border-t border-orange-200">
+                    <button onclick="openEditModal('${id}', '${bannerUrl}', '${banner.clickLink || ''}')" class="flex-1 bg-cardBg hover:bg-orange-100 text-primary border border-orange-200 py-2 rounded-xl text-xs font-semibold transition">
+                        এডিট
+                    </button>
+                    <button onclick="navigator.clipboard.writeText('${bannerUrl}'); showToast('ইমেজ URL কপি করা হয়েছে!');" class="bg-cardBg hover:bg-orange-100 text-primary border border-orange-200 px-3 py-2 rounded-xl text-xs font-semibold transition">
+                        কপি URL
+                    </button>
+                    <button onclick="confirmDeleteBanner('${id}')" class="bg-red-50 hover:bg-red-100 text-red-600 border border-red-200 px-3 py-2 rounded-xl text-xs font-semibold transition">
+                        ডিলিট
+                    </button>
+                </div>
+            `;
+            bannerGrid.appendChild(card);
+        }
+
+        document.getElementById('loadMoreBtn').addEventListener('click', () => loadBanners(false));
+
+        // Edit Banner Logic
+        const editModal = document.getElementById('editModal');
+        const editBannerForm = document.getElementById('editBannerForm');
+        const editBannerId = document.getElementById('editBannerId');
+        const editImagePreview = document.getElementById('editImagePreview');
+        const editBannerFile = document.getElementById('editBannerFile');
+        const editClickLinkInput = document.getElementById('editClickLinkInput');
+        const editSubmitBtn = document.getElementById('editSubmitBtn');
+
+        window.openEditModal = (id, currentImageUrl, currentClickLink) => {
+            editBannerId.value = id;
+            editImagePreview.src = currentImageUrl;
+            editClickLinkInput.value = currentClickLink !== 'undefined' ? currentClickLink : '';
+            editBannerFile.value = '';
+            editModal.classList.remove('hidden');
+        };
+
+        document.getElementById('editModalCancelBtn').addEventListener('click', () => {
+            editModal.classList.add('hidden');
+        });
+
+        editBannerForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const id = editBannerId.value;
+            if (!id) return;
+
+            editSubmitBtn.disabled = true;
+            editSubmitBtn.innerText = "আপডেট হচ্ছে...";
+
+            try {
+                let bannerUrl = editImagePreview.src;
+                const newFile = editBannerFile.files[0];
+
+                if (newFile) {
+                    if (newFile.size > 5 * 1024 * 1024) {
+                        throw "ফাইলের সাইজ ৫ এমবি এর কম হতে হবে।";
+                    }
+
+                    const timestamp = Date.now();
+                    const sanitizedName = newFile.name.replace(/[^a-zA-Z0-9_.-]/g, '_');
+                    const newFileName = `${timestamp}-${sanitizedName}`;
+
+                    const formData = new FormData();
+                    formData.append('image', newFile);
+                    formData.append('name', newFileName);
+
+                    const imgbbResponse = await fetch(`https://api.imgbb.com/1/upload?key=${imgbbApiKey}`, {
+                        method: 'POST',
+                        body: formData
+                    });
+
+                    const imgbbResult = await imgbbResponse.json();
+                    if (!imgbbResult.success) {
+                        throw "ImgBB নতুন ছবি আপলোড ব্যর্থ হয়েছে।";
+                    }
+                    bannerUrl = imgbbResult.data.url;
+                }
+
+                const clickLink = editClickLinkInput.value.trim();
+                const updatePayload = {
+                    bannerLink: bannerUrl
+                };
+
+                if (clickLink) {
+                    if (clickLink.startsWith('http://') || clickLink.startsWith('javascript:') || clickLink.startsWith('data:')) {
+                        throw "অবغৈধ ক্লিক লিংক।";
+                    }
+                    updatePayload.clickLink = clickLink;
+                } else {
+                    updatePayload.clickLink = "";
+                }
+
+                await updateDoc(doc(db, "banners", id), updatePayload);
+
+                showToast("ব্যানার সফলভাবে আপডেট করা হয়েছে।");
+                editModal.classList.add('hidden');
+                loadBanners(true);
+
+            } catch (err) {
+                console.error("Update error:", err);
+                showToast("ত্রুটি: " + err, "error");
+            } finally {
+                editSubmitBtn.disabled = false;
+                editSubmitBtn.innerText = "আপডেট করুন";
+            }
+        });
+
+        // Delete Banner Modal Handler
+        let bannerToDeleteId = null;
+        const confirmModal = document.getElementById('confirmModal');
+
+        window.confirmDeleteBanner = (id) => {
+            bannerToDeleteId = id;
+            confirmModal.classList.remove('hidden');
+        };
+
+        document.getElementById('modalCancelBtn').addEventListener('click', () => {
+            confirmModal.classList.add('hidden');
+            bannerToDeleteId = null;
+        });
+
+        document.getElementById('modalConfirmBtn').addEventListener('click', async () => {
+            if (!bannerToDeleteId) return;
+            confirmModal.classList.add('hidden');
+
+            try {
+                await deleteDoc(doc(db, "banners", bannerToDeleteId));
+                showToast("ব্যানার সফলভাবে ডিলিট করা হয়েছে।");
+                loadBanners(true);
+            } catch (err) {
+                showToast("ডিলিট করতে সমস্যা হয়েছে।", "error");
+            } finally {
+                bannerToDeleteId = null;
+            }
+        });
+    </script>
+</body>
+</html>
