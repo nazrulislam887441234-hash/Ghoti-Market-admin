@@ -1,0 +1,1245 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PAIKARI SELL — সাপ্লায়ার লেনদেন ম্যানেজমেন্ট</title>
+    
+    <!-- Favicon & Icons -->
+    <link rel="icon" type="image/png" href="https://paikarisell.ghotimarket.com/photo/favicon.png">
+    
+    <!-- Google Fonts: Hind Siliguri -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            primary: '#FF6B35',
+                            secondary: '#FF6A00',
+                            accent: '#FFA500',
+                            dark: '#171717',
+                            bg: '#FFF8F4',
+                            white: '#FFFFFF',
+                            border: '#E5E7EB',
+                            lightOrange: '#FFF1E8',
+                            hoverOrange: '#E05A2B'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Hind Siliguri', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            font-family: 'Hind Siliguri', sans-serif;
+            background-color: #FFF8F4;
+            color: #171717;
+        }
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #FFF8F4;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #FF6B35;
+            border-radius: 9999px;
+        }
+        .skeleton {
+            background: linear-gradient(90deg, #F3F4F6 25%, #E5E7EB 50%, #F3F4F6 75%);
+            background-size: 200% 100%;
+            animation: skeleton-loading 1.5s infinite;
+        }
+        @keyframes skeleton-loading {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+        .modal-backdrop {
+            background-color: rgba(23, 23, 23, 0.6);
+            backdrop-filter: blur(4px);
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col bg-brand-bg text-brand-dark antialiased">
+
+    <!-- Toast Notification Container -->
+    <div id="toast-container" class="fixed top-5 right-5 z-50 flex flex-col gap-3 max-w-sm w-full pointer-events-none"></div>
+
+    <!-- Main Loader Screen -->
+    <div id="auth-loader" class="fixed inset-0 z-50 bg-brand-bg flex flex-col items-center justify-center gap-4">
+        <div class="relative w-16 h-16">
+            <div class="w-16 h-16 rounded-full border-4 border-brand-primary/20 border-t-brand-primary animate-spin"></div>
+            <img src="https://paikarisell.ghotimarket.com/photo/favicon.png" alt="Logo" class="w-8 h-8 absolute inset-0 m-auto object-contain">
+        </div>
+        <p class="text-sm font-semibold text-gray-600 animate-pulse">অনুমতি ও অ্যাকাউন্টের স্থিতি যাচাই করা হচ্ছে...</p>
+    </div>
+
+    <!-- Access Denied Screen (Hidden by default) -->
+    <div id="access-denied-screen" class="hidden min-h-screen flex items-center justify-center p-4">
+        <div class="max-w-md w-full bg-white rounded-2xl shadow-xl border border-red-200 p-8 text-center">
+            <div class="w-16 h-16 bg-red-100 text-red-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                </svg>
+            </div>
+            <h2 class="text-2xl font-bold text-gray-900 mb-2">অ্যাক্সেস প্রত্যাখ্যান করা হয়েছে</h2>
+            <p class="text-gray-600 text-sm mb-6">আপনার এই পেজটিতে প্রবেশ করার প্রয়োজনীয় অ্যাডমিন বা ওনার অনুমতি নেই। অনুগ্রহ করে উপযুক্ত অ্যাকাউন্ট নিয়ে লগইন করুন।</p>
+            <div class="flex gap-3 justify-center">
+                <button id="btn-denied-logout" class="px-5 py-2.5 bg-brand-primary hover:bg-brand-hoverOrange text-white font-medium rounded-xl transition shadow-md">
+                    লগআউট করুন
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content Container (Hidden until Auth Verified) -->
+    <div id="app-container" class="hidden flex-1 flex flex-col">
+
+        <!-- Header / Navigation Bar -->
+        <header class="bg-white border-b border-brand-border sticky top-0 z-30 shadow-sm">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between gap-4">
+                
+                <!-- Logo & Page Title -->
+                <div class="flex items-center gap-3">
+                    <a href="/dashboard" class="flex items-center gap-3 group">
+                        <img src="https://paikarisell.ghotimarket.com/photo/logo.png" alt="PAIKARI SELL Logo" class="h-10 sm:h-12 w-auto object-contain transition transform group-hover:scale-105" onerror="this.onerror=null; this.src='https://placehold.co/150x50/FF6B35/FFFFFF?text=PAIKARI+SELL';">
+                    </a>
+                    <div class="h-8 w-px bg-gray-200 hidden sm:block"></div>
+                    <div class="hidden sm:block">
+                        <h1 class="text-lg sm:text-xl font-bold text-gray-900 leading-tight">সাপ্লায়ার লেনদেন ম্যানেজমেন্ট</h1>
+                        <p class="text-xs text-gray-500">সাপ্লায়ারদের লেনদেন দেখুন ও পরিচালনা করুন</p>
+                    </div>
+                </div>
+
+                <!-- Small screen title -->
+                <div class="sm:hidden flex-1 text-center">
+                    <h1 class="text-base font-bold text-gray-900">লেনদেন ম্যানেজমেন্ট</h1>
+                </div>
+
+                <!-- User Meta & Actions -->
+                <div class="flex items-center gap-2 sm:gap-4">
+                    <div class="hidden md:flex flex-col items-end">
+                        <span id="user-email" class="text-xs font-semibold text-gray-800">user@paikarisell.com</span>
+                        <span id="user-role-badge" class="mt-0.5 px-2 py-0.5 text-[10px] font-bold rounded-full bg-brand-lightOrange text-brand-primary border border-brand-primary/20">
+                            অ্যাডমিন
+                        </span>
+                    </div>
+
+                    <a href="/dashboard" class="flex items-center gap-1.5 px-3 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs sm:text-sm font-medium rounded-xl transition">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 00-1-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+                        </svg>
+                        <span class="hidden sm:inline">ড্যাশবোর্ড</span>
+                    </a>
+
+                    <button id="btn-refresh" title="রিফ্রেশ করুন" class="p-2 text-gray-600 hover:text-brand-primary hover:bg-brand-lightOrange rounded-xl transition border border-gray-200">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                        </svg>
+                    </button>
+                    
+                    <button id="btn-logout" title="লগআউট" class="p-2 text-red-600 hover:bg-red-50 rounded-xl transition border border-red-100">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Body Workspace -->
+        <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+
+            <!-- Security Rules Tab Bar (Toggleable Info Drawer for Admin Rules) -->
+            <div class="bg-amber-50 border border-amber-200 rounded-2xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-sm">
+                <div class="flex items-center gap-3">
+                    <div class="p-2 bg-amber-100 text-amber-700 rounded-xl">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+                        </svg>
+                    </div>
+                    <div>
+                        <h4 class="text-sm font-bold text-amber-900">Firestore সিকিউরিটি রুলস কনফিগারেশন</h4>
+                        <p class="text-xs text-amber-700">অনুমোদিত ওনার ও অ্যাডমিন সিকিউরিটি নিশ্চিত করতে এই রুলসগুলো ফায়ারবেসে যুক্ত করুন</p>
+                    </div>
+                </div>
+                <button id="btn-toggle-rules" class="px-3 py-1.5 bg-amber-600 hover:bg-amber-700 text-white text-xs font-semibold rounded-lg transition self-start sm:self-auto">
+                    রুলস দেখুন
+                </button>
+            </div>
+
+            <!-- Rules Drawer Box (Hidden by Default) -->
+            <div id="rules-drawer" class="hidden bg-gray-900 rounded-2xl p-5 border border-gray-800 text-gray-200 space-y-3">
+                <div class="flex justify-between items-center border-b border-gray-800 pb-3">
+                    <span class="text-xs font-mono text-brand-primary font-bold">firestore.rules</span>
+                    <button id="btn-copy-rules" class="px-3 py-1 bg-gray-800 hover:bg-gray-700 text-xs text-brand-primary font-medium rounded-md transition flex items-center gap-1.5 border border-gray-700">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+                        </svg>
+                        কপি রুলস
+                    </button>
+                </div>
+                <pre class="text-xs font-mono text-emerald-400 overflow-x-auto whitespace-pre p-2 bg-gray-950 rounded-lg" id="rules-code">
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Helper functions
+    function isOwner() {
+      return request.auth != null && 
+        (request.auth.token.email.trim().toLowerCase() == 'nazrulislam887441234@gmail.com' ||
+         request.auth.token.email.trim().toLowerCase() == 'support@ghotimarket.com');
+    }
+
+    function isActiveAdmin() {
+      return request.auth != null && 
+        exists(/databases/$(database)/documents/admins/$(request.auth.uid)) &&
+        get(/databases/$(database)/documents/admins/$(request.auth.uid)).data.uid == request.auth.uid &&
+        get(/databases/$(database)/documents/admins/$(request.auth.uid)).data.active == true;
+    }
+
+    function isOwnerOrAdmin() {
+      return isOwner() || isActiveAdmin();
+    }
+
+    // Admins Collection
+    match /admins/{adminUid} {
+      allow read: if request.auth != null;
+      allow write: if isOwner();
+    }
+
+    // Suppliers Collection
+    match /supplyers/{supplierUid} {
+      allow read: if request.auth != null;
+      allow write: if isOwnerOrAdmin();
+    }
+
+    // Transactions Collection
+    match /transactions/{transactionId} {
+      allow read: if isOwnerOrAdmin() || (request.auth != null && resource.data.uid == request.auth.uid);
+      allow create: if isOwnerOrAdmin();
+      allow update, delete: if isOwnerOrAdmin();
+    }
+  }
+}
+                </pre>
+            </div>
+
+            <!-- Supplier Search Card -->
+            <div class="bg-white rounded-2xl border border-brand-border p-5 sm:p-6 shadow-sm space-y-4">
+                <div class="flex items-center gap-2">
+                    <div class="w-2 h-6 bg-brand-primary rounded-full"></div>
+                    <h2 class="text-lg font-bold text-gray-900">সাপ্লায়ারের UID দিয়ে লেনদেন খুঁজুন</h2>
+                </div>
+                
+                <form id="search-form" class="flex flex-col sm:flex-row gap-3">
+                    <div class="relative flex-1">
+                        <label for="supplier-uid-input" class="sr-only">Supplier UID</label>
+                        <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-400">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                            </svg>
+                        </div>
+                        <input type="text" id="supplier-uid-input" required 
+                            placeholder="সাপ্লায়ারের UID লিখুন (যেমন: SUP109283)" 
+                            class="w-full pl-10 pr-10 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-primary focus:border-transparent transition">
+                        <button type="button" id="btn-clear-search" class="hidden absolute inset-y-0 right-0 pr-3.5 flex items-center text-gray-400 hover:text-gray-600">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="flex gap-2">
+                        <button type="submit" id="btn-search" class="flex-1 sm:flex-none px-6 py-3 bg-brand-primary hover:bg-brand-hoverOrange text-white font-semibold text-sm rounded-xl transition shadow-md flex items-center justify-center gap-2">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                            </svg>
+                            <span>সার্চ করুন</span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Supplier Information Card (Rendered dynamically) -->
+            <div id="supplier-info-wrapper" class="hidden">
+                <div class="bg-gradient-to-r from-brand-primary/10 via-brand-lightOrange to-white rounded-2xl border border-brand-primary/20 p-5 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 rounded-xl bg-brand-primary text-white flex items-center justify-center font-bold text-lg shadow-md shrink-0">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                            </svg>
+                        </div>
+                        <div>
+                            <span class="text-xs font-bold text-brand-primary uppercase tracking-wider">সাপ্লায়ার প্রোফাইল</span>
+                            <h3 id="supp-name" class="text-lg font-bold text-gray-900 leading-tight">লোড হচ্ছে...</h3>
+                            <p id="supp-email" class="text-xs text-gray-600">---</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-2 bg-white px-4 py-2 rounded-xl border border-gray-200 self-start md:self-auto">
+                        <span class="text-xs text-gray-500 font-medium">সাপ্লায়ার UID:</span>
+                        <code id="supp-uid-badge" class="text-xs font-mono font-bold text-brand-primary bg-brand-lightOrange px-2 py-0.5 rounded">---</code>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Transactions Section Header -->
+            <div id="transactions-section" class="space-y-4">
+                <div class="flex items-center justify-between">
+                    <h3 class="text-base font-bold text-gray-900 flex items-center gap-2">
+                        <svg class="w-5 h-5 text-brand-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+                        </svg>
+                        <span>লেনদেনের ইতিহাস</span>
+                    </h3>
+                    <span id="transaction-count-badge" class="text-xs font-medium text-gray-500 bg-gray-200 px-2.5 py-1 rounded-full">
+                        সার্চ করুন
+                    </span>
+                </div>
+
+                <!-- Initial Prompt / State before Search -->
+                <div id="initial-state" class="bg-white rounded-2xl border border-brand-border p-12 text-center shadow-sm">
+                    <div class="w-16 h-16 bg-brand-lightOrange text-brand-primary rounded-full flex items-center justify-center mx-auto mb-4">
+                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                        </svg>
+                    </div>
+                    <h4 class="text-lg font-bold text-gray-800 mb-1">সাপ্লায়ার UID ইনপুট দিন</h4>
+                    <p class="text-sm text-gray-500 max-w-sm mx-auto">নির্দিষ্ট সাপ্লায়ারের সমস্ত Transaction History ফিল্টার করতে উপরে UID লিখে সার্চ করুন।</p>
+                </div>
+
+                <!-- Skeleton Loading Cards -->
+                <div id="skeleton-container" class="hidden space-y-4">
+                    <script>
+                        for(let i=0; i<3; i++){
+                            document.write(`
+                                <div class="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm space-y-4">
+                                    <div class="flex justify-between items-center">
+                                        <div class="h-5 w-48 skeleton rounded"></div>
+                                        <div class="h-4 w-24 skeleton rounded"></div>
+                                    </div>
+                                    <div class="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                                        <div class="h-10 skeleton rounded-xl"></div>
+                                        <div class="h-10 skeleton rounded-xl"></div>
+                                        <div class="h-10 skeleton rounded-xl col-span-2 sm:col-span-1"></div>
+                                    </div>
+                                </div>
+                            `);
+                        }
+                    </script>
+                </div>
+
+                <!-- Empty State (No Transactions Found) -->
+                <div id="empty-state" class="hidden bg-white rounded-2xl border border-brand-border p-12 text-center shadow-sm">
+                    <div class="w-16 h-16 bg-gray-100 text-gray-400 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path>
+                        </svg>
+                    </div>
+                    <h4 class="text-lg font-bold text-gray-800 mb-1">কোনো লেনদেন পাওয়া যায়নি</h4>
+                    <p class="text-sm text-gray-500 max-w-sm mx-auto">এই সাপ্লায়ারের এখনো কোনো লেনদেনের রেকর্ড নেই।</p>
+                </div>
+
+                <!-- Error State -->
+                <div id="error-state" class="hidden bg-red-50 rounded-2xl border border-red-200 p-8 text-center shadow-sm">
+                    <div class="w-12 h-12 bg-red-100 text-red-600 rounded-full flex items-center justify-center mx-auto mb-3">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                    </div>
+                    <h4 class="text-base font-bold text-red-900 mb-1">লেনদেনের তথ্য লোড করা যায়নি</h4>
+                    <p class="text-xs text-red-600 mb-4">নেটওয়ার্ক অথবা অনুমতিজনিত সমস্যা হয়েছে। অনুগ্রহ করে আবার চেষ্টা করুন।</p>
+                    <button id="btn-retry-fetch" class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white text-xs font-semibold rounded-xl transition shadow">
+                        আবার চেষ্টা করুন
+                    </button>
+                </div>
+
+                <!-- Transaction Cards Grid / List -->
+                <div id="cards-container" class="space-y-4"></div>
+
+                <!-- Scroll Trigger Sentinel & Loading Spinner for Infinite Scroll -->
+                <div id="infinite-scroll-trigger" class="h-16 flex items-center justify-center hidden">
+                    <div id="scroll-spinner" class="flex items-center gap-2 text-xs font-semibold text-gray-500">
+                        <div class="w-5 h-5 rounded-full border-2 border-brand-primary/20 border-t-brand-primary animate-spin"></div>
+                        <span>আরও লেনদেন লোড করা হচ্ছে...</span>
+                    </div>
+                    <span id="end-of-list-msg" class="hidden text-xs text-gray-400 font-medium bg-gray-100 px-3 py-1 rounded-full">
+                        সব লেনদেন প্রদর্শিত হয়েছে
+                    </span>
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+    <!-- Edit Modal -->
+    <div id="edit-modal" class="fixed inset-0 z-50 hidden modal-backdrop flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-gray-100 space-y-5 transform transition-all">
+            <div class="flex justify-between items-center border-b border-gray-100 pb-3">
+                <div class="flex items-center gap-2 text-brand-primary">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                    </svg>
+                    <h3 class="text-base font-bold text-gray-900">লেনদেন এডিট করুন</h3>
+                </div>
+                <button type="button" id="btn-close-edit-modal" class="text-gray-400 hover:text-gray-600 p-1">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Financial Disclaimer Notice -->
+            <div class="bg-amber-50 border-l-4 border-amber-500 p-3 rounded-r-xl text-xs text-amber-800 space-y-1">
+                <p class="font-bold flex items-center gap-1">
+                    <svg class="w-4 h-4 shrink-0 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    আর্থিক সতর্কতা:
+                </p>
+                <p>Transaction History এডিট করলে সাপ্লায়ারের লাইভ বা মূল ব্যালেন্স স্বয়ংক্রিয়ভাবে পরিবর্তিত হবে না। এটি শুধুমাত্র অডিট ইতিহাস আপডেট করে।</p>
+            </div>
+
+            <form id="edit-form" class="space-y-4">
+                <input type="hidden" id="edit-doc-id">
+                
+                <div>
+                    <label class="block text-xs font-semibold text-gray-700 mb-1">Transaction Name (বিবরণ)</label>
+                    <input type="text" id="edit-name" required class="w-full px-3.5 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-primary">
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-700 mb-1">Previous Balance (৳)</label>
+                        <input type="number" step="0.01" id="edit-old-balance" required class="w-full px-3.5 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-primary">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-700 mb-1">Current Balance (৳)</label>
+                        <input type="number" step="0.01" id="edit-balance" required class="w-full px-3.5 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-primary">
+                    </div>
+                </div>
+
+                <div class="bg-gray-50 p-3 rounded-xl border border-gray-200 text-xs text-gray-600 space-y-1">
+                    <div><span class="font-medium">Supplier UID:</span> <span id="edit-read-uid" class="font-mono text-gray-900 font-bold">---</span></div>
+                    <div><span class="font-medium">Created Time:</span> <span id="edit-read-time" class="text-gray-900">---</span></div>
+                    <p class="text-[10px] text-gray-400 italic">UID এবং সময় অপরিবর্তনযোগ্য।</p>
+                </div>
+
+                <div class="flex gap-3 pt-2">
+                    <button type="button" id="btn-cancel-edit" class="flex-1 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-semibold rounded-xl transition">
+                        বাতিল
+                    </button>
+                    <button type="submit" id="btn-save-edit" class="flex-1 py-2.5 bg-brand-primary hover:bg-brand-hoverOrange text-white text-xs font-semibold rounded-xl transition shadow flex items-center justify-center gap-2">
+                        <span>সংরক্ষণ করুন</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div id="delete-modal" class="fixed inset-0 z-50 hidden modal-backdrop flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-gray-100 space-y-5 text-center">
+            <div class="w-14 h-14 bg-red-100 text-red-600 rounded-full flex items-center justify-center mx-auto">
+                <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                </svg>
+            </div>
+            
+            <div class="space-y-2">
+                <h3 class="text-lg font-bold text-gray-900">লেনদেনটি মুছে ফেলতে চান?</h3>
+                <p class="text-xs text-gray-600">আপনি কি নিশ্চিত যে এই Transaction History মুছে ফেলতে চান? এই কাজটি পূর্বাবস্থায় ফিরিয়ে নেওয়া যাবে না।</p>
+            </div>
+
+            <!-- Warning snippet -->
+            <div class="bg-red-50 border border-red-100 p-3 rounded-xl text-left text-xs text-red-700 space-y-1">
+                <p class="font-bold">সতর্কতা:</p>
+                <p>এটি শুধুমাত্র লেনদেনের ইতিহাস বা রেকর্ড ফাইল মুছে দেবে। এটি সাপ্লায়ারের আসল ব্যালেন্স বা `valid_transaction` তালিকা অটোমেটিক পরিবর্তন করে না।</p>
+            </div>
+
+            <input type="hidden" id="delete-doc-id">
+
+            <div class="flex gap-3 pt-2">
+                <button type="button" id="btn-cancel-delete" class="flex-1 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-semibold rounded-xl transition">
+                    বাতিল
+                </button>
+                <button type="button" id="btn-confirm-delete" class="flex-1 py-2.5 bg-red-600 hover:bg-red-700 text-white text-xs font-semibold rounded-xl transition shadow flex items-center justify-center gap-2">
+                    <span>ডিলিট নিশ্চিত করুন</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Firebase Modular SDK Script -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { 
+            getAuth, 
+            onAuthStateChanged, 
+            signOut 
+        } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { 
+            getFirestore, 
+            doc, 
+            getDoc, 
+            getDocFromServer,
+            collection, 
+            query, 
+            where, 
+            orderBy, 
+            limit, 
+            getDocsFromServer, 
+            startAfter, 
+            updateDoc, 
+            deleteDoc,
+            Timestamp
+        } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        // Firebase Configuration
+        const firebaseConfig = {
+  apiKey: "AIzaSyDCIRWmozT0XcEXuXtQ6RDiDo6vtT1T9mU",
+  authDomain: "paikarisell-ghotimarket.firebaseapp.com",
+  projectId: "paikarisell-ghotimarket",
+  storageBucket: "paikarisell-ghotimarket.firebasestorage.app",
+  messagingSenderId: "464086432830",
+  appId: "1:464086432830:web:a10fdd9884954e380e656f",
+  measurementId: "G-E3HR2F9TC5"
+};
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        // Owners List
+        const ownerEmails = [
+            "nazrulislam887441234@gmail.com",
+            "support@ghotimarket.com"
+        ];
+
+        // Global Application State
+        let currentUser = null;
+        let userRole = null; // 'Owner' or 'Admin'
+        let searchedSupplierUid = null;
+        let lastVisibleDoc = null;
+        let isFetchingTransactions = false;
+        let hasMoreTransactions = true;
+        let currentTransactionsList = [];
+        let scrollObserver = null;
+
+        // UI DOM Elements
+        const authLoader = document.getElementById('auth-loader');
+        const accessDeniedScreen = document.getElementById('access-denied-screen');
+        const appContainer = document.getElementById('app-container');
+        const userEmailEl = document.getElementById('user-email');
+        const userRoleBadgeEl = document.getElementById('user-role-badge');
+        
+        const searchForm = document.getElementById('search-form');
+        const supplierUidInput = document.getElementById('supplier-uid-input');
+        const btnClearSearch = document.getElementById('btn-clear-search');
+        
+        const supplierInfoWrapper = document.getElementById('supplier-info-wrapper');
+        const suppNameEl = document.getElementById('supp-name');
+        const suppEmailEl = document.getElementById('supp-email');
+        const suppUidBadgeEl = document.getElementById('supp-uid-badge');
+
+        const initialStateEl = document.getElementById('initial-state');
+        const skeletonContainer = document.getElementById('skeleton-container');
+        const emptyStateEl = document.getElementById('empty-state');
+        const errorStateEl = document.getElementById('error-state');
+        const cardsContainer = document.getElementById('cards-container');
+        const transactionCountBadge = document.getElementById('transaction-count-badge');
+        
+        const infiniteScrollTrigger = document.getElementById('infinite-scroll-trigger');
+        const scrollSpinner = document.getElementById('scroll-spinner');
+        const endOfListMsg = document.getElementById('end-of-list-msg');
+
+        // Modals DOM
+        const editModal = document.getElementById('edit-modal');
+        const editForm = document.getElementById('edit-form');
+        const editDocIdInput = document.getElementById('edit-doc-id');
+        const editNameInput = document.getElementById('edit-name');
+        const editOldBalanceInput = document.getElementById('edit-old-balance');
+        const editBalanceInput = document.getElementById('edit-balance');
+        const editReadUid = document.getElementById('edit-read-uid');
+        const editReadTime = document.getElementById('edit-read-time');
+
+        const deleteModal = document.getElementById('delete-modal');
+        const deleteDocIdInput = document.getElementById('delete-doc-id');
+        const btnConfirmDelete = document.getElementById('btn-confirm-delete');
+
+        // Toast Handler
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            
+            const isSuccess = type === 'success';
+            const bgColor = isSuccess ? 'bg-emerald-800' : 'bg-red-800';
+            const borderColor = isSuccess ? 'border-emerald-600' : 'border-red-600';
+            const iconSvg = isSuccess ? 
+                `<svg class="w-5 h-5 text-emerald-300 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>` :
+                `<svg class="w-5 h-5 text-red-300 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>`;
+
+            toast.className = `pointer-events-auto flex items-center justify-between gap-3 px-4 py-3 rounded-xl border ${bgColor} ${borderColor} text-white shadow-xl text-xs font-medium transition transform translate-y-2 opacity-0 duration-200`;
+            toast.innerHTML = `
+                <div class="flex items-center gap-2.5">
+                    ${iconSvg}
+                    <span>${message}</span>
+                </div>
+                <button type="button" class="text-gray-300 hover:text-white p-1">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+            `;
+
+            toast.querySelector('button').addEventListener('click', () => {
+                toast.remove();
+            });
+
+            container.appendChild(toast);
+            
+            // Trigger animation
+            setTimeout(() => {
+                toast.classList.remove('translate-y-2', 'opacity-0');
+            }, 10);
+
+            // Auto Remove
+            setTimeout(() => {
+                toast.classList.add('opacity-0', 'translate-y-2');
+                setTimeout(() => toast.remove(), 200);
+            }, 4000);
+        }
+
+        // Authentication & Authorization Pipeline
+        onAuthStateChanged(auth, async (user) => {
+            if (!user) {
+                // Redirect to login if not authenticated
+                window.location.href = "/login";
+                return;
+            }
+
+            currentUser = user;
+            const sanitizedEmail = (user.email || "").trim().toLowerCase();
+
+            // 1. Check if Owner
+            if (ownerEmails.includes(sanitizedEmail)) {
+                userRole = "Owner";
+                grantAccess();
+                return;
+            }
+
+            // 2. If not Owner, check Firestore admins/{user.uid}
+            try {
+                const adminDocRef = doc(db, "admins", user.uid);
+                const adminSnap = await getDoc(adminDocRef);
+
+                if (adminSnap.exists()) {
+                    const data = adminSnap.data();
+                    if (data && data.uid === user.uid && data.active === true) {
+                        userRole = "Admin";
+                        grantAccess();
+                        return;
+                    }
+                }
+                
+                // If snap does not meet criteria
+                denyAccess();
+            } catch (err) {
+                console.error("Admin verification error:", err);
+                denyAccess();
+            }
+        });
+
+        function grantAccess() {
+            authLoader.classList.add('hidden');
+            accessDeniedScreen.classList.add('hidden');
+            appContainer.classList.remove('hidden');
+
+            userEmailEl.textContent = currentUser.email;
+            userRoleBadgeEl.textContent = userRole === "Owner" ? "ওনার (Owner)" : "অ্যাডমিন (Admin)";
+            
+            setupIntersectionObserver();
+        }
+
+        function denyAccess() {
+            authLoader.classList.add('hidden');
+            appContainer.classList.add('hidden');
+            accessDeniedScreen.classList.remove('hidden');
+        }
+
+        // Logout Actions
+        document.getElementById('btn-logout').addEventListener('click', () => signOut(auth));
+        document.getElementById('btn-denied-logout').addEventListener('click', () => signOut(auth));
+
+        // Refresh Action
+        document.getElementById('btn-refresh').addEventListener('click', () => {
+            if (searchedSupplierUid) {
+                executeSupplierSearch(searchedSupplierUid);
+            } else {
+                showToast("অনুগ্রহ করে প্রথমে একটি Supplier UID সার্চ করুন।", "error");
+            }
+        });
+
+        // Toggle Rules Drawer
+        document.getElementById('btn-toggle-rules').addEventListener('click', () => {
+            const drawer = document.getElementById('rules-drawer');
+            const btn = document.getElementById('btn-toggle-rules');
+            if (drawer.classList.contains('hidden')) {
+                drawer.classList.remove('hidden');
+                btn.textContent = "রুলস লুকান";
+            } else {
+                drawer.classList.add('hidden');
+                btn.textContent = "রুলস দেখুন";
+            }
+        });
+
+        // Copy Rules Code
+        document.getElementById('btn-copy-rules').addEventListener('click', () => {
+            const codeText = document.getElementById('rules-code').innerText;
+            const textarea = document.createElement('textarea');
+            textarea.value = codeText;
+            document.body.appendChild(textarea);
+            textarea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textarea);
+            showToast("Firestore Security Rules সফলভাবে কপি করা হয়েছে!");
+        });
+
+        // Input Clear Button Toggle
+        supplierUidInput.addEventListener('input', (e) => {
+            if (e.target.value.trim().length > 0) {
+                btnClearSearch.classList.remove('hidden');
+            } else {
+                btnClearSearch.classList.add('hidden');
+            }
+        });
+
+        btnClearSearch.addEventListener('click', () => {
+            supplierUidInput.value = '';
+            btnClearSearch.classList.add('hidden');
+            resetSearchState();
+        });
+
+        // Search Form Submit
+        searchForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const inputUid = supplierUidInput.value.trim();
+            if (!inputUid) {
+                showToast("অনুগ্রহ করে একটি সঠিক Supplier UID প্রদান করুন", "error");
+                return;
+            }
+            executeSupplierSearch(inputUid);
+        });
+
+        // Search Logic
+        async function executeSupplierSearch(targetUid) {
+            resetSearchState();
+            searchedSupplierUid = targetUid;
+            
+            initialStateEl.classList.add('hidden');
+            skeletonContainer.classList.remove('hidden');
+
+            try {
+                // Verify Supplier Document from Firestore supplyers/{uid}
+                const suppDocRef = doc(db, "supplyers", targetUid);
+                const suppSnap = await getDocFromServer(suppDocRef);
+
+                if (!suppSnap.exists()) {
+                    skeletonContainer.classList.add('hidden');
+                    supplierInfoWrapper.classList.add('hidden');
+                    showToast("এই UID-এর কোনো সাপ্লায়ার পাওয়া যায়নি।", "error");
+                    emptyStateEl.classList.remove('hidden');
+                    return;
+                }
+
+                // Render Supplier Details
+                const suppData = suppSnap.data();
+                suppNameEl.textContent = suppData.name || "নাম পাওয়া যায়নি";
+                suppEmailEl.textContent = suppData.email || "ইমেইল অনুপস্থিত";
+                suppUidBadgeEl.textContent = targetUid;
+                supplierInfoWrapper.classList.remove('hidden');
+
+                // Load Initial Transactions Query
+                await fetchTransactionsPage(true);
+
+            } catch (error) {
+                console.error("Search Supplier Error:", error);
+                skeletonContainer.classList.add('hidden');
+                errorStateEl.classList.remove('hidden');
+                showToast("সাপ্লায়ার অনুসন্ধান বা লেনদেন লোড করতে সমস্যা হয়েছে", "error");
+            }
+        }
+
+        // Reset State when searching a new UID
+        function resetSearchState() {
+            searchedSupplierUid = null;
+            lastVisibleDoc = null;
+            isFetchingTransactions = false;
+            hasMoreTransactions = true;
+            currentTransactionsList = [];
+
+            cardsContainer.innerHTML = '';
+            supplierInfoWrapper.classList.add('hidden');
+            initialStateEl.classList.remove('hidden');
+            skeletonContainer.classList.add('hidden');
+            emptyStateEl.classList.add('hidden');
+            errorStateEl.classList.add('hidden');
+            infiniteScrollTrigger.classList.add('hidden');
+            endOfListMsg.classList.add('hidden');
+            scrollSpinner.classList.remove('hidden');
+            transactionCountBadge.textContent = "সার্চ করুন";
+        }
+
+        // Fetch Transactions Page (Cursor Pagination)
+        async function fetchTransactionsPage(isInitial = false) {
+            if (!searchedSupplierUid || isFetchingTransactions || !hasMoreTransactions) return;
+
+            isFetchingTransactions = true;
+            if (!isInitial) {
+                infiniteScrollTrigger.classList.remove('hidden');
+                scrollSpinner.classList.remove('hidden');
+                endOfListMsg.classList.add('hidden');
+            }
+
+            try {
+                let txQuery;
+                const txCollectionRef = collection(db, "transactions");
+
+                if (isInitial) {
+                    txQuery = query(
+                        txCollectionRef,
+                        where("uid", "==", searchedSupplierUid),
+                        orderBy("createdAt", "desc"),
+                        limit(20)
+                    );
+                } else {
+                    txQuery = query(
+                        txCollectionRef,
+                        where("uid", "==", searchedSupplierUid),
+                        orderBy("createdAt", "desc"),
+                        startAfter(lastVisibleDoc),
+                        limit(20)
+                    );
+                }
+
+                const querySnapshot = await getDocsFromServer(txQuery);
+
+                skeletonContainer.classList.add('hidden');
+
+                if (querySnapshot.empty) {
+                    if (isInitial) {
+                        emptyStateEl.classList.remove('hidden');
+                        transactionCountBadge.textContent = "০টি লেনদেন";
+                    } else {
+                        hasMoreTransactions = false;
+                        scrollSpinner.classList.add('hidden');
+                        endOfListMsg.classList.remove('hidden');
+                    }
+                    isFetchingTransactions = false;
+                    return;
+                }
+
+                const fetchedDocs = querySnapshot.docs;
+                lastVisibleDoc = fetchedDocs[fetchedDocs.length - 1];
+
+                if (fetchedDocs.length < 20) {
+                    hasMoreTransactions = false;
+                }
+
+                const newTransactions = fetchedDocs.map(docSnap => ({
+                    id: docSnap.id,
+                    docSnap: docSnap,
+                    ...docSnap.data()
+                }));
+
+                currentTransactionsList = isInitial ? newTransactions : [...currentTransactionsList, ...newTransactions];
+
+                // Update Header Badge
+                transactionCountBadge.textContent = `${currentTransactionsList.length}টি লেনদেন লোড হয়েছে`;
+
+                // Render Cards
+                renderCards(newTransactions, isInitial);
+
+                if (!hasMoreTransactions) {
+                    infiniteScrollTrigger.classList.remove('hidden');
+                    scrollSpinner.classList.add('hidden');
+                    endOfListMsg.classList.remove('hidden');
+                }
+
+            } catch (err) {
+                console.error("Fetch Transactions Error:", err);
+                skeletonContainer.classList.add('hidden');
+                if (isInitial) {
+                    errorStateEl.classList.remove('hidden');
+                } else {
+                    showToast("আরও লেনদেন লোড করতে ব্যর্থ হয়েছে", "error");
+                }
+            } finally {
+                isFetchingTransactions = false;
+            }
+        }
+
+        // Retry Fetch
+        document.getElementById('btn-retry-fetch').addEventListener('click', () => {
+            if (searchedSupplierUid) {
+                errorStateEl.classList.add('hidden');
+                fetchTransactionsPage(true);
+            }
+        });
+
+        // Render Cards into Container
+        function renderCards(transactionsList, clearExisting = false) {
+            if (clearExisting) {
+                cardsContainer.innerHTML = '';
+            }
+
+            transactionsList.forEach(tx => {
+                const cardNode = createTransactionCard(tx);
+                cardsContainer.appendChild(cardNode);
+            });
+
+            if (hasMoreTransactions) {
+                infiniteScrollTrigger.classList.remove('hidden');
+            }
+        }
+
+        // Helper: Format Currency
+        function formatCurrency(amount) {
+            const val = Number(amount) || 0;
+            return '৳' + val.toLocaleString('bn-BD', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        }
+
+        // Helper: Format Bangladesh Date & Time
+        function formatBDDateTime(timestamp) {
+            if (!timestamp) return 'তারিখ অনুপস্থিত';
+            
+            let dateObj;
+            if (timestamp instanceof Timestamp) {
+                dateObj = timestamp.toDate();
+            } else if (timestamp.seconds) {
+                dateObj = new Date(timestamp.seconds * 1000);
+            } else {
+                dateObj = new Date(timestamp);
+            }
+
+            return new Intl.DateTimeFormat('bn-BD', {
+                timeZone: 'Asia/Dhaka',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                hour: 'numeric',
+                minute: 'numeric',
+                second: 'numeric',
+                hour12: true
+            }).format(dateObj);
+        }
+
+        // Create Individual Transaction Card Element
+        function createTransactionCard(tx) {
+            const oldBal = Number(tx.oldBalance) || 0;
+            const curBal = Number(tx.balance) || 0;
+            const diff = curBal - oldBal;
+
+            let badgeMarkup = '';
+            let diffClass = '';
+            let diffSign = '';
+
+            if (curBal > oldBal) {
+                diffClass = 'text-emerald-600 bg-emerald-50 border-emerald-200';
+                diffSign = '+';
+                badgeMarkup = `
+                    <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold ${diffClass} border">
+                        <svg class="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
+                        </svg>
+                        <span>ব্যালেন্স বৃদ্ধি পেয়েছে (${diffSign}${formatCurrency(diff)})</span>
+                    </div>
+                `;
+            } else if (curBal < oldBal) {
+                diffClass = 'text-red-600 bg-red-50 border-red-200';
+                diffSign = '-';
+                badgeMarkup = `
+                    <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold ${diffClass} border">
+                        <svg class="w-4 h-4 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 17h8m0 0V9m0 8l-8-8-4 4-6-6"></path>
+                        </svg>
+                        <span>ব্যালেন্স কমেছে (${diffSign}${formatCurrency(Math.abs(diff))})</span>
+                    </div>
+                `;
+            } else {
+                diffClass = 'text-gray-600 bg-gray-100 border-gray-200';
+                badgeMarkup = `
+                    <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold ${diffClass} border">
+                        <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"></path>
+                        </svg>
+                        <span>ব্যালেন্স অপরিবর্তিত (৳০.০০)</span>
+                    </div>
+                `;
+            }
+
+            const card = document.createElement('div');
+            card.id = `tx-card-${tx.id}`;
+            card.className = "bg-white rounded-2xl border border-brand-border p-5 sm:p-6 shadow-sm hover:shadow-md transition space-y-4";
+            
+            card.innerHTML = `
+                <!-- Top Row: Name, Status Indicator & Action Buttons -->
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-gray-100 pb-3">
+                    <div class="space-y-1">
+                        <div class="flex items-center gap-2">
+                            <span class="w-2 h-2 rounded-full bg-brand-primary"></span>
+                            <h4 class="text-base font-bold text-gray-900 leading-tight">${escapeHtml(tx.name || 'অনামী লেনদেন')}</h4>
+                        </div>
+                        <div class="text-xs text-gray-500 flex items-center gap-1">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            <span>${formatBDDateTime(tx.createdAt)}</span>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center justify-between sm:justify-end gap-3">
+                        ${badgeMarkup}
+                        <div class="flex items-center gap-1">
+                            <button type="button" class="btn-edit-tx p-2 text-gray-500 hover:text-brand-primary hover:bg-brand-lightOrange rounded-xl transition" title="এডিট করুন" data-id="${tx.id}">
+                                <svg class="w-4 h-4 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                                </svg>
+                            </button>
+                            <button type="button" class="btn-delete-tx p-2 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-xl transition" title="ডিলিট করুন" data-id="${tx.id}">
+                                <svg class="w-4 h-4 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Balance Breakdown Grid -->
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-1">
+                    <div class="bg-gray-50 rounded-xl p-3 border border-gray-100">
+                        <span class="text-[11px] font-medium text-gray-500 block mb-0.5">আগের ব্যালেন্স</span>
+                        <span class="text-sm font-bold text-gray-800">${formatCurrency(oldBal)}</span>
+                    </div>
+                    <div class="bg-brand-lightOrange/50 rounded-xl p-3 border border-brand-primary/10">
+                        <span class="text-[11px] font-medium text-brand-primary block mb-0.5">লেনদেনের পর ব্যালেন্স</span>
+                        <span class="text-base font-extrabold text-brand-primary">${formatCurrency(curBal)}</span>
+                    </div>
+                    <div class="bg-gray-50 rounded-xl p-3 border border-gray-100 flex flex-col justify-center">
+                        <span class="text-[11px] font-medium text-gray-500 block mb-0.5">সাপ্লায়ার UID</span>
+                        <span class="text-xs font-mono font-bold text-gray-700">${escapeHtml(tx.uid || '---')}</span>
+                    </div>
+                </div>
+            `;
+
+            // Event Listeners for Edit & Delete
+            card.querySelector('.btn-edit-tx').addEventListener('click', () => openEditModal(tx.id));
+            card.querySelector('.btn-delete-tx').addEventListener('click', () => openDeleteModal(tx.id));
+
+            return card;
+        }
+
+        // HTML Escape Helper
+        function escapeHtml(str) {
+            return String(str)
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
+
+        // IntersectionObserver for Infinite Scroll
+        function setupIntersectionObserver() {
+            if (scrollObserver) scrollObserver.disconnect();
+
+            scrollObserver = new IntersectionObserver((entries) => {
+                if (entries[0].isIntersecting && !isFetchingTransactions && hasMoreTransactions && searchedSupplierUid) {
+                    fetchTransactionsPage(false);
+                }
+            }, {
+                root: null,
+                rootMargin: '100px',
+                threshold: 0.1
+            });
+
+            scrollObserver.observe(infiniteScrollTrigger);
+        }
+
+        // ------------------ EDIT TRANSACTION LOGIC ------------------ //
+        async function openEditModal(docId) {
+            try {
+                // Fetch latest doc from server before editing
+                const txRef = doc(db, "transactions", docId);
+                const snap = await getDocFromServer(txRef);
+
+                if (!snap.exists()) {
+                    showToast("নির্দিষ্ট Transaction Document টি ফায়ারবেসে পাওয়া যায়নি", "error");
+                    return;
+                }
+
+                const data = snap.data();
+                editDocIdInput.value = docId;
+                editNameInput.value = data.name || '';
+                editOldBalanceInput.value = data.oldBalance !== undefined ? data.oldBalance : 0;
+                editBalanceInput.value = data.balance !== undefined ? data.balance : 0;
+                editReadUid.textContent = data.uid || searchedSupplierUid;
+                editReadTime.textContent = formatBDDateTime(data.createdAt);
+
+                editModal.classList.remove('hidden');
+            } catch (err) {
+                console.error("Open Edit Modal Error:", err);
+                showToast("সার্ভার থেকে সর্বশেষ তথ্য রিড করতে ব্যর্থ হয়েছে", "error");
+            }
+        }
+
+        document.getElementById('btn-close-edit-modal').addEventListener('click', closeEditModal);
+        document.getElementById('btn-cancel-edit').addEventListener('click', closeEditModal);
+
+        function closeEditModal() {
+            editModal.classList.add('hidden');
+            editForm.reset();
+        }
+
+        editForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const docId = editDocIdInput.value;
+            const updatedName = editNameInput.value.trim();
+            const updatedOldBal = parseFloat(editOldBalanceInput.value);
+            const updatedBal = parseFloat(editBalanceInput.value);
+
+            if (!updatedName || isNaN(updatedOldBal) || isNaN(updatedBal)) {
+                showToast("অনুগ্রহ করে সকল সঠিক ফিল্ড ইনপুট দিন", "error");
+                return;
+            }
+
+            const btnSave = document.getElementById('btn-save-edit');
+            btnSave.disabled = true;
+            btnSave.innerHTML = `
+                <div class="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin"></div>
+                <span>আপডেট হচ্ছে...</span>
+            `;
+
+            try {
+                // Verify user authority again before update
+                if (!userRole) throw new Error("Unauthorized");
+
+                const txRef = doc(db, "transactions", docId);
+                
+                await updateDoc(txRef, {
+                    name: updatedName,
+                    oldBalance: updatedOldBal,
+                    balance: updatedBal
+                });
+
+                // Update local array item
+                const index = currentTransactionsList.findIndex(t => t.id === docId);
+                if (index !== -1) {
+                    currentTransactionsList[index].name = updatedName;
+                    currentTransactionsList[index].oldBalance = updatedOldBal;
+                    currentTransactionsList[index].balance = updatedBal;
+                    
+                    // Replace Card in DOM
+                    const oldCardNode = document.getElementById(`tx-card-${docId}`);
+                    if (oldCardNode) {
+                        const newCardNode = createTransactionCard(currentTransactionsList[index]);
+                        oldCardNode.replaceWith(newCardNode);
+                    }
+                }
+
+                closeEditModal();
+                showToast("লেনদেন তথ্য সফলভাবে আপডেট করা হয়েছে!");
+
+            } catch (err) {
+                console.error("Update Transaction Error:", err);
+                showToast("লেনদেন আপডেট করার অনুমতি নেই বা ত্রুটি ঘটেছে", "error");
+            } finally {
+                btnSave.disabled = false;
+                btnSave.innerHTML = `<span>সংরক্ষণ করুন</span>`;
+            }
+        });
+
+        // ------------------ DELETE TRANSACTION LOGIC ------------------ //
+        function openDeleteModal(docId) {
+            deleteDocIdInput.value = docId;
+            deleteModal.classList.remove('hidden');
+        }
+
+        document.getElementById('btn-cancel-delete').addEventListener('click', closeDeleteModal);
+
+        function closeDeleteModal() {
+            deleteModal.classList.add('hidden');
+            deleteDocIdInput.value = '';
+        }
+
+        btnConfirmDelete.addEventListener('click', async () => {
+            const docId = deleteDocIdInput.value;
+            if (!docId) return;
+
+            btnConfirmDelete.disabled = true;
+            btnConfirmDelete.innerHTML = `
+                <div class="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin"></div>
+                <span>ডিলিট হচ্ছে...</span>
+            `;
+
+            try {
+                // Re-verify doc from server
+                const txRef = doc(db, "transactions", docId);
+                const snap = await getDocFromServer(txRef);
+
+                if (!snap.exists()) {
+                    showToast("ডকুমেন্টটি আগেই মুছে ফেলা হয়েছে বা সার্ভারে পাওয়া যায়নি", "error");
+                    closeDeleteModal();
+                    return;
+                }
+
+                const docData = snap.data();
+                if (docData.uid !== searchedSupplierUid) {
+                    showToast("সিকিউরিটি সতর্কতা: লেনদেনের UID এর সাথে বৈসাদৃশ্য রয়েছে", "error");
+                    closeDeleteModal();
+                    return;
+                }
+
+                // Delete from Firestore
+                await deleteDoc(txRef);
+
+                // Remove from Local state & UI
+                currentTransactionsList = currentTransactionsList.filter(t => t.id !== docId);
+                const cardNode = document.getElementById(`tx-card-${docId}`);
+                if (cardNode) {
+                    cardNode.remove();
+                }
+
+                // Update count badge
+                transactionCountBadge.textContent = `${currentTransactionsList.length}টি লেনদেন লোড হয়েছে`;
+
+                if (currentTransactionsList.length === 0 && !hasMoreTransactions) {
+                    emptyStateEl.classList.remove('hidden');
+                }
+
+                closeDeleteModal();
+                showToast("লেনদেন হিস্ট্রি সফলভাবে ডিলিট করা হয়েছে");
+
+            } catch (err) {
+                console.error("Delete Transaction Error:", err);
+                showToast("লেনদেন ডিলিট করার অনুমতি নেই বা ত্রুটি ঘটেছে", "error");
+            } finally {
+                btnConfirmDelete.disabled = false;
+                btnConfirmDelete.innerHTML = `<span>ডিলিট নিশ্চিত করুন</span>`;
+            }
+        });
+
+    </script>
+</body>
+</html>
