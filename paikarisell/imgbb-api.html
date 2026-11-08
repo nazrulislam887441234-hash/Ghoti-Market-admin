@@ -1,0 +1,926 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PAIKARI SELL — IMGBB API KEY ম্যানেজমেন্ট</title>
+    <link rel="icon" id="appFavicon" href="https://paikarisell.ghotimarket.com/photo/favicon.png" type="image/png">
+    
+    <!-- Google Fonts: Hind Siliguri & Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#FFF8F4',
+                            100: '#FFEEDD',
+                            200: '#FFD4B8',
+                            300: '#FFAA7A',
+                            400: '#FFA500', // Accent
+                            500: '#FF6B35', // Primary
+                            600: '#FF6A00', // Secondary
+                            700: '#E04E1B',
+                            800: '#B8380E',
+                            900: '#8A2608',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Hind Siliguri', 'Inter', 'sans-serif'],
+                        mono: ['monospace']
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        body {
+            background-color: #FFF8F4;
+            font-family: 'Hind Siliguri', sans-serif;
+            color: #2D3748;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        /* Glassmorphism & Custom Shadow */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 107, 53, 0.15);
+            box-shadow: 0 10px 25px -5px rgba(255, 107, 53, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.03);
+        }
+
+        .glass-card:hover {
+            border-color: rgba(255, 107, 53, 0.35);
+            box-shadow: 0 20px 30px -10px rgba(255, 107, 53, 0.12), 0 10px 12px -5px rgba(0, 0, 0, 0.04);
+        }
+
+        /* Pulsing Skeleton Loader */
+        @keyframes pulseSkeleton {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.4; }
+        }
+        .skeleton {
+            animation: pulseSkeleton 1.6s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+            background: #FFEEDD;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #FFF8F4;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #FFD4B8;
+            border-radius: 9999px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #FF6B35;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between selection:bg-brand-500 selection:text-white">
+
+    <!-- Toast Notification Container -->
+    <div id="toastContainer" class="fixed top-5 right-5 z-50 flex flex-col gap-3 max-w-sm w-full pointer-events-none px-4 sm:px-0"></div>
+
+    <!-- MAIN APP CONTAINER -->
+    <div id="appContainer" class="w-full min-h-screen flex flex-col">
+        
+        <!-- INITIAL LOADING SCREEN -->
+        <div id="initialAuthLoader" class="fixed inset-0 bg-brand-50 flex flex-col items-center justify-center z-40">
+            <div class="relative w-20 h-20 mb-4">
+                <div class="absolute inset-0 rounded-full border-4 border-brand-200 border-t-brand-500 animate-spin"></div>
+                <img src="https://paikarisell.ghotimarket.com/photo/logo.png" alt="PAIKARI SELL Logo" class="w-12 h-12 absolute inset-0 m-auto object-contain" onerror="this.src='https://placehold.co/100x100/FF6B35/ffffff?text=PS'">
+            </div>
+            <p class="text-brand-600 font-semibold text-lg animate-pulse">অ্যাথেন্টিকেশন যাচাই করা হচ্ছে...</p>
+        </div>
+
+        <!-- AUTH LOGIN CONTAINER (Shown when logged out) -->
+        <div id="loginScreen" class="hidden min-h-screen flex items-center justify-center p-4">
+            <div class="glass-card max-w-md w-full p-8 rounded-3xl shadow-2xl border border-brand-200">
+                <div class="flex flex-col items-center mb-6 text-center">
+                    <img src="https://paikarisell.ghotimarket.com/photo/logo.png" alt="PAIKARI SELL" class="h-16 mb-3 object-contain" onerror="this.src='https://placehold.co/180x60/FF6B35/ffffff?text=PAIKARI+SELL'">
+                    <h1 class="text-2xl font-bold text-gray-800">প্যানেলে প্রবেশ করুন</h1>
+                    <p class="text-sm text-gray-500 mt-1">IMGBB API Key Management Admin Panel</p>
+                </div>
+                
+                <form id="loginForm" class="space-y-4" onsubmit="handleLogin(event)">
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-1">ইমেইল এড্রেস</label>
+                        <div class="relative">
+                            <input type="email" id="loginEmail" required placeholder="admin@paikarisell.com" class="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-200 focus:border-brand-500 focus:ring-2 focus:ring-brand-200 outline-none transition text-sm">
+                            <svg class="w-5 h-5 absolute left-3 top-3.5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207"/></svg>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-1">পাসওয়ার্ড</label>
+                        <div class="relative">
+                            <input type="password" id="loginPassword" required placeholder="••••••••" class="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-200 focus:border-brand-500 focus:ring-2 focus:ring-brand-200 outline-none transition text-sm">
+                            <svg class="w-5 h-5 absolute left-3 top-3.5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+                        </div>
+                    </div>
+                    <button type="submit" id="loginBtn" class="w-full bg-gradient-to-r from-brand-500 to-brand-600 hover:from-brand-600 hover:to-brand-700 text-white font-semibold py-3 px-4 rounded-xl shadow-lg shadow-brand-500/30 transition duration-200 flex items-center justify-center gap-2">
+                        <span>লগইন করুন</span>
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- ACCESS DENIED SCREEN (Shown when logged in user is unauthorized) -->
+        <div id="accessDeniedScreen" class="hidden min-h-screen flex items-center justify-center p-4">
+            <div class="glass-card max-w-md w-full p-8 rounded-3xl shadow-2xl text-center border border-red-200">
+                <div class="w-16 h-16 bg-red-100 text-red-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+                </div>
+                <h2 class="text-2xl font-bold text-gray-800 mb-2">এক্সেস অস্বীকৃত (Access Denied)</h2>
+                <p class="text-sm text-gray-600 mb-6" id="accessDeniedReason">আপনার একাউন্টটি এই ম্যানেজমেন্ট প্যানেল ব্যবহারের জন্য অনুমোদিত নয় অথবা নিষ্ক্রিয় করা আছে।</p>
+                <button onclick="handleLogout()" class="w-full bg-gray-800 hover:bg-gray-900 text-white font-semibold py-3 px-4 rounded-xl shadow transition duration-200 flex items-center justify-center gap-2">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+                    <span>অন্য একাউন্টে লগইন করুন</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- MAIN DASHBOARD PANEL -->
+        <div id="dashboardScreen" class="hidden flex-1 flex flex-col">
+            
+            <!-- 3. HEADER SECTION -->
+            <header class="sticky top-0 z-30 bg-white/80 backdrop-blur-md border-b border-brand-100 shadow-sm">
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex flex-wrap items-center justify-between gap-4">
+                    
+                    <!-- Branding & Title -->
+                    <div class="flex items-center gap-3">
+                        <img src="https://paikarisell.ghotimarket.com/photo/logo.png" alt="PAIKARI SELL Logo" class="h-10 sm:h-12 object-contain" onerror="this.src='https://placehold.co/140x50/FF6B35/ffffff?text=PAIKARI+SELL'">
+                        <div class="h-8 w-px bg-gray-200 hidden sm:block"></div>
+                        <div>
+                            <h1 class="text-lg sm:text-xl font-bold text-gray-800 leading-tight">IMGBB API KEY ম্যানেজমেন্ট</h1>
+                            <p class="text-xs text-brand-600 font-semibold hidden sm:block">PAIKARI SELL — Admin Portal</p>
+                        </div>
+                    </div>
+
+                    <!-- User Metadata & Logout -->
+                    <div class="flex items-center gap-3">
+                        <div class="flex flex-col items-end text-right">
+                            <span id="userRoleBadge" class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-brand-100 text-brand-700 uppercase tracking-wide">
+                                Owner
+                            </span>
+                            <span id="userEmailDisplay" class="text-xs text-gray-500 font-medium truncate max-w-[150px] sm:max-w-xs">--</span>
+                        </div>
+                        <button onclick="handleLogout()" title="লগআউট" class="p-2.5 rounded-xl text-gray-500 hover:text-brand-600 hover:bg-brand-50 transition border border-transparent hover:border-brand-200">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+                        </button>
+                    </div>
+
+                </div>
+            </header>
+
+            <!-- MAIN CONTENT AREA -->
+            <main class="max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8 flex-1 space-y-8">
+                
+                <!-- 4. ADD API KEY SECTION -->
+                <section class="glass-card p-6 sm:p-8 rounded-3xl relative overflow-hidden">
+                    <div class="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-brand-300/20 to-brand-500/5 rounded-bl-full pointer-events-none"></div>
+                    
+                    <div class="mb-5 flex items-center gap-2">
+                        <div class="w-8 h-8 rounded-lg bg-brand-100 flex items-center justify-center text-brand-600">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/></svg>
+                        </div>
+                        <h2 class="text-xl font-bold text-gray-800">নতুন IMGBB API Key যুক্ত করুন</h2>
+                    </div>
+
+                    <form id="addApiKeyForm" onsubmit="handleAddApiKey(event)" class="space-y-4 max-w-3xl">
+                        <div class="flex flex-col sm:flex-row gap-3">
+                            <div class="relative flex-1">
+                                <input type="password" id="newApiKeyInput" required placeholder="আপনার ImgBB API Key পেস্ট করুন (যেমন: 32 অক্ষরের কী)" class="w-full pl-4 pr-12 py-3.5 rounded-xl border border-gray-200 focus:border-brand-500 focus:ring-2 focus:ring-brand-200 outline-none transition font-mono text-sm bg-white">
+                                <button type="button" onclick="toggleInputVisibility('newApiKeyInput', this)" class="absolute right-3 top-3.5 text-gray-400 hover:text-gray-600 p-1">
+                                    <svg class="w-5 h-5 eye-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                                </button>
+                            </div>
+                            <button type="submit" id="saveApiKeyBtn" class="bg-gradient-to-r from-brand-500 to-brand-600 hover:from-brand-600 hover:to-brand-700 text-white font-semibold py-3.5 px-6 rounded-xl shadow-lg shadow-brand-500/25 transition duration-200 flex items-center justify-center gap-2 whitespace-nowrap">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"/></svg>
+                                <span>সংরক্ষণ করুন</span>
+                            </button>
+                        </div>
+                        <p class="text-xs text-gray-500 flex items-center gap-1">
+                            <svg class="w-4 h-4 text-brand-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                            নতুন API Key ডাটাবেসে সেভ করার পূর্বে স্বয়ংক্রিয়ভাবে ভ্যালিডেশন এবং ডুপ্লিকেট চেক করা হবে।
+                        </p>
+                    </form>
+                </section>
+
+                <!-- CONTROL BAR & METRICS -->
+                <section class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4">
+                    
+                    <!-- Metrics Badges -->
+                    <div class="flex items-center gap-3">
+                        <div class="bg-white border border-brand-200 px-4 py-2.5 rounded-2xl flex items-center gap-3 shadow-sm">
+                            <span class="text-xs font-semibold text-gray-500 uppercase tracking-wider">মোট API Key:</span>
+                            <span id="totalKeysCount" class="text-lg font-bold text-brand-600">0</span>
+                        </div>
+                        <div id="latestAddedBadge" class="hidden bg-emerald-50 border border-emerald-200 text-emerald-700 px-3 py-1.5 rounded-2xl text-xs font-medium flex items-center gap-1.5">
+                            <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                            <span>সর্বশেষ সংযোজিত চিহ্নিত</span>
+                        </div>
+                    </div>
+
+                    <!-- Search Input -->
+                    <div class="relative w-full sm:w-72">
+                        <input type="text" id="searchInput" oninput="handleSearch(event)" placeholder="Key এর অক্ষর দিয়ে খুঁজুন..." class="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-200 focus:border-brand-500 focus:ring-2 focus:ring-brand-200 outline-none transition text-sm bg-white">
+                        <svg class="w-5 h-5 absolute left-3 top-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                    </div>
+
+                </section>
+
+                <!-- 5. API KEY LIST / CARDS GRID -->
+                <section class="space-y-4">
+                    
+                    <!-- Skeleton Loader State -->
+                    <div id="skeletonContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <!-- Skeleton Card 1 -->
+                        <div class="glass-card p-6 rounded-3xl space-y-4">
+                            <div class="flex justify-between items-center">
+                                <div class="h-6 w-16 skeleton rounded-md"></div>
+                                <div class="h-4 w-24 skeleton rounded-md"></div>
+                            </div>
+                            <div class="h-10 skeleton rounded-xl w-full"></div>
+                            <div class="flex gap-2 pt-2">
+                                <div class="h-9 skeleton rounded-lg flex-1"></div>
+                                <div class="h-9 skeleton rounded-lg w-20"></div>
+                            </div>
+                        </div>
+                        <!-- Skeleton Card 2 -->
+                        <div class="glass-card p-6 rounded-3xl space-y-4">
+                            <div class="flex justify-between items-center">
+                                <div class="h-6 w-16 skeleton rounded-md"></div>
+                                <div class="h-4 w-24 skeleton rounded-md"></div>
+                            </div>
+                            <div class="h-10 skeleton rounded-xl w-full"></div>
+                            <div class="flex gap-2 pt-2">
+                                <div class="h-9 skeleton rounded-lg flex-1"></div>
+                                <div class="h-9 skeleton rounded-lg w-20"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Cards Container -->
+                    <div id="keysGrid" class="hidden grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+
+                    <!-- Empty State -->
+                    <div id="emptyState" class="hidden glass-card p-12 rounded-3xl text-center space-y-4 max-w-md mx-auto my-8">
+                        <div class="w-20 h-20 bg-brand-100 text-brand-500 rounded-full flex items-center justify-center mx-auto">
+                            <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"/></svg>
+                        </div>
+                        <h3 class="text-xl font-bold text-gray-800">কোনো API Key পাওয়া যায়নি</h3>
+                        <p class="text-sm text-gray-500">আপনার Firestore-এ কোনো ImgBB API Key সংরক্ষিত নেই। ওপরের ফরম ব্যবহার করে যোগ করুন।</p>
+                    </div>
+
+                    <!-- Error State -->
+                    <div id="errorState" class="hidden glass-card p-8 rounded-3xl text-center space-y-4 max-w-md mx-auto my-8 border border-red-200">
+                        <div class="w-16 h-16 bg-red-100 text-red-500 rounded-full flex items-center justify-center mx-auto">
+                            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                        </div>
+                        <h3 class="text-xl font-bold text-gray-800">ডেটা লোড করতে সমস্যা হয়েছে</h3>
+                        <p class="text-sm text-gray-500" id="errorMessageText">Firestore থেকে তথ্য সংগ্রহ করার সময় ত্রুটি ঘটেছে।</p>
+                        <button onclick="loadApiKeys()" class="bg-brand-500 hover:bg-brand-600 text-white font-semibold py-2.5 px-6 rounded-xl shadow transition duration-200 inline-flex items-center gap-2">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+                            <span>পুনরায় চেষ্টা করুন</span>
+                        </button>
+                    </div>
+
+                </section>
+
+                <!-- FIRESTORE SECURITY RULES REFERENCE SECTION -->
+                <section class="glass-card p-6 rounded-3xl space-y-3 bg-gradient-to-r from-orange-50/50 to-amber-50/50 border-orange-200">
+                    <div class="flex items-center justify-between cursor-pointer" onclick="toggleSecurityRulesHelp()">
+                        <div class="flex items-center gap-3">
+                            <div class="p-2 bg-brand-500 text-white rounded-lg">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-gray-800 text-sm sm:text-base">নিরাপত্তা নির্দেশনা: Firestore Security Rules</h3>
+                                <p class="text-xs text-gray-500">Owner ও Active Admin অ্যাক্সেস কন্ট্রোল রুলস</p>
+                            </div>
+                        </div>
+                        <svg id="rulesChevron" class="w-5 h-5 text-gray-400 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                    </div>
+                    
+                    <div id="securityRulesContent" class="hidden pt-3 border-t border-brand-200/50 space-y-2">
+                        <p class="text-xs text-gray-600">আপনার Firebase Console -> Firestore Database -> Rules সেকশনে নিচের রুলস নিশ্চিত করুন:</p>
+                        <pre class="bg-gray-900 text-gray-100 p-4 rounded-xl text-xs font-mono overflow-x-auto leading-relaxed selection:bg-brand-500 selection:text-white"><code>rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Helper function for Owner check
+    function isOwner() {
+      return request.auth != null && 
+        (request.auth.token.email.lower() == 'nazrulislam887441234@gmail.com' || 
+         request.auth.token.email.lower() == 'support@ghotimarket.com');
+    }
+    
+    // Helper function for Admin check
+    function isActiveAdmin() {
+      return request.auth != null && 
+        exists(/databases/$(database)/documents/admins/$(request.auth.uid)) &&
+        get(/databases/$(database)/documents/admins/$(request.auth.uid)).data.uid == request.auth.uid &&
+        get(/databases/$(database)/documents/admins/$(request.auth.uid)).data.active == true;
+    }
+
+    // Rules for ImgBB API collection
+    match /imgbb_api/{documentId} {
+      allow read, create, update, delete: if isOwner() || isActiveAdmin();
+    }
+    
+    // Admins collection rule
+    match /admins/{adminId} {
+      allow read: if request.auth != null;
+    }
+  }
+}</code></pre>
+                    </div>
+                </section>
+
+            </main>
+
+            <!-- FOOTER -->
+            <footer class="bg-white border-t border-brand-100 py-4 mt-auto">
+                <div class="max-w-7xl mx-auto px-4 text-center text-xs text-gray-500">
+                    &copy; 2026 PAIKARI SELL (ghotimarket.com). সর্বস্বত্ব সংরক্ষিত।
+                </div>
+            </footer>
+
+        </div>
+    </div>
+
+    <!-- 6. EDIT API KEY MODAL -->
+    <div id="editModal" class="hidden fixed inset-0 z-50 bg-gray-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="glass-card max-w-md w-full p-6 sm:p-8 rounded-3xl shadow-2xl space-y-5 animate-in fade-in zoom-in duration-200 border border-brand-200">
+            <div class="flex items-center justify-between border-b border-gray-100 pb-3">
+                <h3 class="text-lg font-bold text-gray-800 flex items-center gap-2">
+                    <svg class="w-5 h-5 text-brand-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+                    API Key এডিট করুন
+                </h3>
+                <button onclick="closeEditModal()" class="text-gray-400 hover:text-gray-600 p-1">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+            </div>
+
+            <form id="editForm" onsubmit="handleUpdateApiKey(event)" class="space-y-4">
+                <input type="hidden" id="editDocId">
+                <div>
+                    <label class="block text-xs font-semibold text-gray-600 mb-1">নতুন API Key</label>
+                    <div class="relative">
+                        <input type="password" id="editApiKeyInput" required class="w-full pl-4 pr-12 py-3 rounded-xl border border-gray-200 focus:border-brand-500 focus:ring-2 focus:ring-brand-200 outline-none transition font-mono text-sm">
+                        <button type="button" onclick="toggleInputVisibility('editApiKeyInput', this)" class="absolute right-3 top-3 text-gray-400 hover:text-gray-600 p-1">
+                            <svg class="w-5 h-5 eye-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="flex items-center justify-end gap-3 pt-3">
+                    <button type="button" onclick="closeEditModal()" class="px-5 py-2.5 rounded-xl border border-gray-200 text-gray-600 hover:bg-gray-50 font-semibold text-sm transition">
+                        বাতিল
+                    </button>
+                    <button type="submit" id="updateSubmitBtn" class="bg-brand-500 hover:bg-brand-600 text-white font-semibold px-5 py-2.5 rounded-xl shadow-lg shadow-brand-500/20 text-sm transition flex items-center gap-2">
+                        <span>আপডেট করুন</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- 7. DELETE CONFIRMATION MODAL -->
+    <div id="deleteModal" class="hidden fixed inset-0 z-50 bg-gray-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="glass-card max-w-md w-full p-6 sm:p-8 rounded-3xl shadow-2xl space-y-5 animate-in fade-in zoom-in duration-200 border border-red-200 text-center">
+            <div class="w-16 h-16 bg-red-100 text-red-500 rounded-full flex items-center justify-center mx-auto">
+                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+            </div>
+            
+            <div class="space-y-2">
+                <h3 class="text-xl font-bold text-gray-800">API Key ডিলিট করুন</h3>
+                <p class="text-sm text-gray-600">আপনি কি নিশ্চিতভাবে এই API Key টি স্থায়ীভাবে মুছে ফেলতে চান?</p>
+            </div>
+
+            <input type="hidden" id="deleteDocId">
+
+            <div class="flex items-center justify-center gap-3 pt-2">
+                <button type="button" onclick="closeDeleteModal()" class="px-5 py-2.5 rounded-xl border border-gray-200 text-gray-600 hover:bg-gray-50 font-semibold text-sm transition w-1/2">
+                    বাতিল করুন
+                </button>
+                <button type="button" id="confirmDeleteBtn" onclick="executeDeleteApiKey()" class="bg-red-500 hover:bg-red-600 text-white font-semibold px-5 py-2.5 rounded-xl shadow-lg shadow-red-500/20 text-sm transition flex items-center justify-center gap-2 w-1/2">
+                    <span>ডিলিট করুন</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- FIREBASE MODULAR SDK INTEGRATION -->
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js';
+        import { 
+            getAuth, 
+            onAuthStateChanged, 
+            signInWithEmailAndPassword, 
+            signOut 
+        } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js';
+        import { 
+            getFirestore, 
+            collection, 
+            doc, 
+            getDoc, 
+            getDocs, 
+            addDoc, 
+            updateDoc, 
+            deleteDoc, 
+            query, 
+            orderBy, 
+            serverTimestamp 
+        } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
+
+       const firebaseConfig = {
+  apiKey: "AIzaSyDCIRWmozT0XcEXuXtQ6RDiDo6vtT1T9mU",
+  authDomain: "paikarisell-ghotimarket.firebaseapp.com",
+  projectId: "paikarisell-ghotimarket",
+  storageBucket: "paikarisell-ghotimarket.firebasestorage.app",
+  messagingSenderId: "464086432830",
+  appId: "1:464086432830:web:a10fdd9884954e380e656f",
+  measurementId: "G-E3HR2F9TC5"
+};
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        // State Variables
+        let currentUser = null;
+        let isOwnerUser = false;
+        let loadedKeys = [];
+        let maskedStates = {}; // keyDocId -> boolean (true = revealed)
+        let activeRequests = new Set(); // Action locking
+
+        // ALLOWLIST FOR OWNERS
+        const OWNER_EMAILS = [
+            'nazrulislam887441234@gmail.com',
+            'support@ghotimarket.com'
+        ];
+
+        // --- TOAST SYSTEM ---
+        window.showToast = function(message, type = 'info') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            
+            let bgClass = 'bg-gray-900 text-white';
+            let iconSvg = '<svg class="w-5 h-5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>';
+            
+            if (type === 'success') {
+                bgClass = 'bg-gray-900 text-white border-l-4 border-emerald-500';
+                iconSvg = '<svg class="w-5 h-5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>';
+            } else if (type === 'error') {
+                bgClass = 'bg-gray-900 text-white border-l-4 border-red-500';
+                iconSvg = '<svg class="w-5 h-5 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>';
+            }
+
+            toast.className = `pointer-events-auto p-4 rounded-xl shadow-xl flex items-center gap-3 transform transition-all duration-300 translate-y-2 opacity-0 ${bgClass}`;
+            toast.innerHTML = `${iconSvg}<span class="text-xs sm:text-sm font-medium">${message}</span>`;
+            
+            container.appendChild(toast);
+
+            setTimeout(() => {
+                toast.classList.remove('translate-y-2', 'opacity-0');
+            }, 10);
+
+            setTimeout(() => {
+                toast.classList.add('opacity-0', 'translate-y-2');
+                setTimeout(() => toast.remove(), 300);
+            }, 3500);
+        };
+
+        // --- AUTH & INITIALIZATION ---
+        onAuthStateChanged(auth, async (user) => {
+            const loader = document.getElementById('initialAuthLoader');
+            const loginScreen = document.getElementById('loginScreen');
+            const dashboardScreen = document.getElementById('dashboardScreen');
+            const accessDeniedScreen = document.getElementById('accessDeniedScreen');
+
+            if (user) {
+                currentUser = user;
+                const normalizedEmail = (user.email || '').trim().toLowerCase();
+                
+                // 1. Owner Authorization Verification
+                if (OWNER_EMAILS.includes(normalizedEmail)) {
+                    isOwnerUser = true;
+                    setupDashboardUI(user.email, 'Owner');
+                    await loadApiKeys();
+                    loader.classList.add('hidden');
+                    return;
+                }
+
+                // 2. Admin Authorization Verification
+                try {
+                    const adminDocRef = doc(db, 'admins', user.uid);
+                    const adminDocSnap = await getDoc(adminDocRef);
+
+                    if (adminDocSnap.exists()) {
+                        const adminData = adminDocSnap.data();
+                        if (adminData.uid === user.uid && adminData.active === true) {
+                            isOwnerUser = false;
+                            setupDashboardUI(user.email, 'Admin');
+                            await loadApiKeys();
+                            loader.classList.add('hidden');
+                            return;
+                        }
+                    }
+                    
+                    // Access Denied if checks fail
+                    loader.classList.add('hidden');
+                    dashboardScreen.classList.add('hidden');
+                    loginScreen.classList.add('hidden');
+                    accessDeniedScreen.classList.remove('hidden');
+                    document.getElementById('accessDeniedReason').innerText = "আপনার অ্যাকাউন্টটি সক্রিয় Admin তালিকায় পাওয়া যায়নি।";
+                } catch (error) {
+                    console.error("Auth authorization check failed.");
+                    loader.classList.add('hidden');
+                    dashboardScreen.classList.add('hidden');
+                    loginScreen.classList.add('hidden');
+                    accessDeniedScreen.classList.remove('hidden');
+                    document.getElementById('accessDeniedReason').innerText = "নেটওয়ার্ক সমস্যা বা অনুমতিজনিত কারণে অ্যাক্সেস করা সম্ভব হয়নি।";
+                }
+            } else {
+                currentUser = null;
+                loader.classList.add('hidden');
+                dashboardScreen.classList.add('hidden');
+                accessDeniedScreen.classList.add('hidden');
+                loginScreen.classList.remove('hidden');
+            }
+        });
+
+        function setupDashboardUI(email, role) {
+            document.getElementById('loginScreen').classList.add('hidden');
+            document.getElementById('accessDeniedScreen').classList.add('hidden');
+            document.getElementById('dashboardScreen').classList.remove('hidden');
+
+            document.getElementById('userEmailDisplay').innerText = email;
+            const badge = document.getElementById('userRoleBadge');
+            badge.innerText = role;
+            if (role === 'Owner') {
+                badge.className = "inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-100 text-amber-800 uppercase tracking-wide border border-amber-300";
+            } else {
+                badge.className = "inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-brand-100 text-brand-700 uppercase tracking-wide border border-brand-200";
+            }
+        }
+
+        // --- LOGIN HANDLER ---
+        window.handleLogin = async function(e) {
+            e.preventDefault();
+            const email = document.getElementById('loginEmail').value.trim();
+            const password = document.getElementById('loginPassword').value;
+            const btn = document.getElementById('loginBtn');
+
+            btn.disabled = true;
+            btn.innerHTML = `<div class="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div> <span>প্রবেশ করা হচ্ছে...</span>`;
+
+            try {
+                await signInWithEmailAndPassword(auth, email, password);
+                showToast('সফলভাবে লগইন হয়েছে!', 'success');
+            } catch (err) {
+                showToast('ইমেইল বা পাসওয়ার্ড ভুল দেওয়া হয়েছে!', 'error');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = `<span>লগইন করুন</span> <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>`;
+            }
+        };
+
+        // --- LOGOUT HANDLER ---
+        window.handleLogout = async function() {
+            try {
+                await signOut(auth);
+                showToast('সফলভাবে লগআউট করা হয়েছে।', 'info');
+            } catch (error) {
+                showToast('লগআউট করতে সমস্যা হয়েছে।', 'error');
+            }
+        };
+
+        // --- FETCH & LOAD API KEYS ---
+        window.loadApiKeys = async function() {
+            const skeleton = document.getElementById('skeletonContainer');
+            const grid = document.getElementById('keysGrid');
+            const emptyState = document.getElementById('emptyState');
+            const errorState = document.getElementById('errorState');
+
+            skeleton.classList.remove('hidden');
+            grid.classList.add('hidden');
+            emptyState.classList.add('hidden');
+            errorState.classList.add('hidden');
+
+            try {
+                const q = query(collection(db, "imgbb_api"), orderBy("createdAt", "desc"));
+                const querySnapshot = await getDocs(q);
+
+                loadedKeys = [];
+                querySnapshot.forEach((docSnap) => {
+                    loadedKeys.push({
+                        id: docSnap.id,
+                        ...docSnap.data()
+                    });
+                });
+
+                document.getElementById('totalKeysCount').innerText = loadedKeys.length;
+                
+                if (loadedKeys.length > 0) {
+                    document.getElementById('latestAddedBadge').classList.remove('hidden');
+                } else {
+                    document.getElementById('latestAddedBadge').classList.add('hidden');
+                }
+
+                renderKeysGrid(loadedKeys);
+            } catch (err) {
+                console.error("Firestore read error.");
+                skeleton.classList.add('hidden');
+                errorState.classList.remove('hidden');
+                document.getElementById('errorMessageText').innerText = "অ্যাক্সেস অনুমতি মেলেনি অথবা ফায়ারস্টোর কালেকশন পাওয়া যায়নি।";
+            }
+        };
+
+        // --- RENDER API KEYS GRID ---
+        function renderKeysGrid(keys) {
+            const skeleton = document.getElementById('skeletonContainer');
+            const grid = document.getElementById('keysGrid');
+            const emptyState = document.getElementById('emptyState');
+
+            skeleton.classList.add('hidden');
+
+            if (keys.length === 0) {
+                grid.classList.add('hidden');
+                emptyState.classList.remove('hidden');
+                return;
+            }
+
+            emptyState.classList.add('hidden');
+            grid.classList.remove('hidden');
+
+            grid.innerHTML = keys.map((item, index) => {
+                const isRevealed = !!maskedStates[item.id];
+                const rawKey = item.apiKey || '';
+                
+                // Format Masked Key: Keep last 4 chars visible or mask fully
+                let displayKey = '********************************';
+                if (rawKey.length > 4) {
+                    displayKey = '*'.repeat(Math.max(16, rawKey.length - 4)) + rawKey.slice(-4);
+                }
+                if (isRevealed) {
+                    displayKey = rawKey;
+                }
+
+                // Date Formatting
+                let dateStr = 'N/A';
+                if (item.createdAt && item.createdAt.seconds) {
+                    const dt = new Date(item.createdAt.seconds * 1000);
+                    dateStr = dt.toLocaleString('bn-BD', { dateStyle: 'medium', timeStyle: 'short' });
+                }
+
+                const isLatest = index === 0;
+
+                return `
+                    <div class="glass-card p-6 rounded-3xl relative space-y-4 transition duration-300 flex flex-col justify-between ${isLatest ? 'border-brand-500/50 bg-gradient-to-br from-white via-white to-orange-50/30' : ''}">
+                        
+                        ${isLatest ? `
+                            <span class="absolute -top-3 right-5 bg-gradient-to-r from-brand-500 to-brand-600 text-white text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider shadow">
+                                Latest Key
+                            </span>
+                        ` : ''}
+
+                        <div class="space-y-3">
+                            <!-- Top Info Header -->
+                            <div class="flex items-center justify-between text-xs text-gray-500 font-semibold border-b border-gray-100 pb-2">
+                                <span class="flex items-center gap-1.5 text-brand-600">
+                                    <span class="w-5 h-5 rounded-md bg-brand-100 flex items-center justify-center font-mono font-bold text-brand-700 text-xs">#${index + 1}</span>
+                                    <span>API Key</span>
+                                </span>
+                                <span class="text-[11px] text-gray-400 font-normal">${dateStr}</span>
+                            </div>
+
+                            <!-- Masked API Key Display Box -->
+                            <div class="bg-gray-900 text-gray-100 p-3.5 rounded-xl flex items-center justify-between gap-2 border border-gray-800">
+                                <span class="font-mono text-xs sm:text-sm tracking-wider truncate selection:bg-brand-500 selection:text-white" title="${isRevealed ? 'সরাসরি কী' : 'মা্স্কড কী'}">
+                                    ${displayKey}
+                                </span>
+                                <button onclick="toggleKeyMask('${item.id}')" class="text-gray-400 hover:text-white p-1 rounded-lg transition" title="${isRevealed ? 'হাইড করুন' : 'দেখান'}">
+                                    ${isRevealed ? `
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858-5.908a8.962 8.962 0 013.98.937c4.478 0 8.268 2.943 9.542 7a10.025 10.025 0 01-4.132 5.411m-4.692-4.692a3 3 0 00-4.243-4.243M3 3l18 18"/></svg>
+                                    ` : `
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                                    `}
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Action Controls -->
+                        <div class="flex items-center gap-2 pt-2 border-t border-gray-100">
+                            <button onclick="openEditModal('${item.id}', '${item.apiKey.replace(/'/g, "\\'")}')" class="flex-1 bg-brand-50 hover:bg-brand-100 text-brand-700 font-semibold py-2 px-3 rounded-xl text-xs transition border border-brand-200 flex items-center justify-center gap-1.5">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+                                <span>এডিট</span>
+                            </button>
+                            <button onclick="openDeleteModal('${item.id}')" class="bg-red-50 hover:bg-red-100 text-red-600 font-semibold py-2 px-3 rounded-xl text-xs transition border border-red-200 flex items-center justify-center gap-1.5">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                                <span>ডিলিট</span>
+                            </button>
+                        </div>
+
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // --- TOGGLE MASK/UNMASK ---
+        window.toggleKeyMask = function(docId) {
+            maskedStates[docId] = !maskedStates[docId];
+            const filterQuery = document.getElementById('searchInput').value.trim();
+            if (filterQuery) {
+                applySearchFilter(filterQuery);
+            } else {
+                renderKeysGrid(loadedKeys);
+            }
+        };
+
+        // --- SEARCH FILTER ---
+        window.handleSearch = function(e) {
+            const queryVal = e.target.value.trim().toLowerCase();
+            applySearchFilter(queryVal);
+        };
+
+        function applySearchFilter(queryVal) {
+            if (!queryVal) {
+                renderKeysGrid(loadedKeys);
+                return;
+            }
+            const filtered = loadedKeys.filter(item => (item.apiKey || '').toLowerCase().includes(queryVal));
+            renderKeysGrid(filtered);
+        }
+
+        // --- 4. ADD NEW API KEY HANDLER ---
+        window.handleAddApiKey = async function(e) {
+            e.preventDefault();
+            const input = document.getElementById('newApiKeyInput');
+            const btn = document.getElementById('saveApiKeyBtn');
+            const keyVal = input.value.trim();
+
+            if (!keyVal) {
+                showToast('API Key খালি রাখা যাবে না!', 'error');
+                return;
+            }
+
+            if (keyVal.length < 15) {
+                showToast('সঠিক দৈর্ঘ্যর Valid ImgBB API Key প্রদান করুন!', 'error');
+                return;
+            }
+
+            // Duplicate Check
+            const isDuplicate = loadedKeys.some(k => k.apiKey === keyVal);
+            if (isDuplicate) {
+                showToast('এই API Key টি পূর্বে থেকেই ডাটাবেসে যুক্ত আছে!', 'error');
+                return;
+            }
+
+            btn.disabled = true;
+            btn.innerHTML = `<div class="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div> <span>সেভ হচ্ছে...</span>`;
+
+            try {
+                await addDoc(collection(db, "imgbb_api"), {
+                    apiKey: keyVal,
+                    createdAt: serverTimestamp()
+                });
+
+                input.value = '';
+                showToast('নতুন API Key সফলভাবে যুক্ত হয়েছে!', 'success');
+                await loadApiKeys();
+            } catch (err) {
+                console.error("Save Key Error.");
+                showToast('API Key ডাটাবেসে সেভ করা সম্ভব হয়নি!', 'error');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"/></svg> <span>সংরক্ষণ করুন</span>`;
+            }
+        };
+
+        // --- 6. EDIT MODAL LOGIC ---
+        window.openEditModal = function(docId, currentKey) {
+            document.getElementById('editDocId').value = docId;
+            document.getElementById('editApiKeyInput').value = currentKey;
+            document.getElementById('editModal').classList.remove('hidden');
+        };
+
+        window.closeEditModal = function() {
+            document.getElementById('editModal').classList.add('hidden');
+        };
+
+        window.handleUpdateApiKey = async function(e) {
+            e.preventDefault();
+            const docId = document.getElementById('editDocId').value;
+            const updatedKey = document.getElementById('editApiKeyInput').value.trim();
+            const btn = document.getElementById('updateSubmitBtn');
+
+            if (!updatedKey) {
+                showToast('API Key খালি রাখা যাবে না!', 'error');
+                return;
+            }
+
+            if (updatedKey.length < 15) {
+                showToast('সঠিক Valid API Key প্রবেশ করান!', 'error');
+                return;
+            }
+
+            if (activeRequests.has(docId)) return;
+            activeRequests.add(docId);
+
+            btn.disabled = true;
+            btn.innerHTML = `<div class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div> <span>আপডেট হচ্ছে...</span>`;
+
+            try {
+                const docRef = doc(db, "imgbb_api", docId);
+                await updateDoc(docRef, {
+                    apiKey: updatedKey
+                });
+
+                showToast('API Key সফলভাবে আপডেট করা হয়েছে!', 'success');
+                closeEditModal();
+                await loadApiKeys();
+            } catch (err) {
+                console.error("Update Key Error.");
+                showToast('আপডেট করতে ব্যর্থ হয়েছে!', 'error');
+            } finally {
+                activeRequests.delete(docId);
+                btn.disabled = false;
+                btn.innerHTML = `<span>আপডেট করুন</span>`;
+            }
+        };
+
+        // --- 7. DELETE MODAL LOGIC ---
+        window.openDeleteModal = function(docId) {
+            document.getElementById('deleteDocId').value = docId;
+            document.getElementById('deleteModal').classList.remove('hidden');
+        };
+
+        window.closeDeleteModal = function() {
+            document.getElementById('deleteModal').classList.add('hidden');
+        };
+
+        window.executeDeleteApiKey = async function() {
+            const docId = document.getElementById('deleteDocId').value;
+            const btn = document.getElementById('confirmDeleteBtn');
+
+            if (!docId) return;
+            if (activeRequests.has(docId)) return;
+            activeRequests.add(docId);
+
+            btn.disabled = true;
+            btn.innerHTML = `<div class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div> <span>ডিলিট হচ্ছে...</span>`;
+
+            try {
+                await deleteDoc(doc(db, "imgbb_api", docId));
+                showToast('API Key ডাটাবেস থেকে ডিলিট হয়েছে!', 'success');
+                closeDeleteModal();
+                await loadApiKeys();
+            } catch (err) {
+                console.error("Delete Key Error.");
+                showToast('ডিলিট করতে ব্যর্থ হয়েছে!', 'error');
+            } finally {
+                activeRequests.delete(docId);
+                btn.disabled = false;
+                btn.innerHTML = `<span>ডিলিট করুন</span>`;
+            }
+        };
+
+        // --- INPUT SHOW/HIDE TOGGLE ---
+        window.toggleInputVisibility = function(inputId, btnEl) {
+            const input = document.getElementById(inputId);
+            if (!input) return;
+            if (input.type === 'password') {
+                input.type = 'text';
+                btnEl.classList.add('text-brand-500');
+            } else {
+                input.type = 'password';
+                btnEl.classList.remove('text-brand-500');
+            }
+        };
+
+        // --- COLLAPSIBLE SECURITY RULES ACCORDION ---
+        window.toggleSecurityRulesHelp = function() {
+            const content = document.getElementById('securityRulesContent');
+            const chevron = document.getElementById('rulesChevron');
+            content.classList.toggle('hidden');
+            chevron.classList.toggle('rotate-180');
+        };
+    </script>
+</body>
+</html>
