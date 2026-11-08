@@ -1,0 +1,1322 @@
+
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PAIKARI SELL - Admin Dashboard</title>
+<link rel="icon" href="https://paikarisell.ghotimarket.com/photo/favicon.png">
+<link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config = {
+ theme: {
+  extend: {
+   colors: {
+    primary:'#FF6B35',
+    secondary:'#FF6A00',
+    bgCustom:'#FFF8F4',
+    cardBg:'#FFFFFF',
+    txtColor:'#171717'
+   },
+   fontFamily:{hind:['Hind Siliguri','sans-serif']}
+  }
+ }
+}
+</script>
+<style>
+body{font-family:'Hind Siliguri',sans-serif;background:#FFF8F4;color:#171717}
+.skeleton{animation:pulse 2s infinite}
+@keyframes pulse{50%{opacity:.5}}
+</style>
+</head>
+
+<body class="min-h-screen flex flex-col">
+
+<!-- AUTH SCREEN -->
+<div id="authGuardScreen" class="fixed inset-0 z-50 bg-bgCustom flex items-center justify-center p-4">
+ <div class="bg-white p-8 rounded-2xl shadow-xl max-w-md w-full text-center border border-orange-100">
+  <img src="https://paikarisell.ghotimarket.com/photo/logo.png" class="h-16 mx-auto mb-4">
+  <h2 id="authStatusTitle" class="text-2xl font-bold text-primary mb-2">যাচাই করা হচ্ছে...</h2>
+  <p id="authStatusDesc" class="text-gray-600 text-sm mb-6">আপনার পারমিশন যাচাই করা হচ্ছে।</p>
+  <div id="authSpinner" class="flex justify-center">
+   <svg class="animate-spin h-8 w-8 text-primary" viewBox="0 0 24 24">
+    <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none" opacity=".25"/>
+    <path fill="currentColor" d="M4 12a8 8 0 018-8V0C5.37 0 0 5.37 0 12h4z"/>
+   </svg>
+  </div>
+  <div id="accessDeniedActions" class="hidden mt-4">
+   <a href="/login" class="bg-primary text-white px-6 py-2 rounded-lg">লগইন করুন</a>
+  </div>
+ </div>
+</div>
+
+<!-- DASHBOARD -->
+<div id="dashboardLayout" class="hidden flex-1 flex-col">
+
+<header class="bg-white border-b border-orange-100 shadow-sm sticky top-0 z-30">
+ <div class="max-w-7xl mx-auto px-4 h-20 flex items-center justify-between">
+  <div class="flex items-center gap-3">
+   <img src="https://paikarisell.ghotimarket.com/photo/logo.png" class="h-12">
+   <div>
+    <h1 class="text-xl font-bold text-primary">Supplier Management System</h1>
+    <p class="text-xs text-gray-500">PAIKARI SELL Admin & Owner Panel</p>
+   </div>
+  </div>
+  <div class="flex items-center gap-3">
+   <span id="currentUserRoleText" class="hidden sm:block text-xs bg-orange-50 text-primary px-3 py-2 rounded-full font-bold">Admin</span>
+   <button id="logoutBtn" class="bg-red-50 text-red-600 px-4 py-2 rounded-xl text-sm">লগআউট</button>
+  </div>
+ </div>
+</header>
+
+<main class="max-w-7xl mx-auto px-4 py-8 flex-1 w-full">
+
+<!-- SEARCH AND FILTER -->
+<div class="bg-white rounded-2xl shadow-sm border border-orange-100 p-5 mb-8">
+ <div class="grid grid-cols-1 md:grid-cols-12 gap-4">
+  <div class="md:col-span-5">
+   <input id="searchInput" type="text" placeholder="Supplier UID অথবা Email দিয়ে খুঁজুন..." class="w-full px-4 py-3 bg-bgCustom border border-orange-200 rounded-xl text-sm outline-none focus:ring-2 focus:ring-primary">
+  </div>
+  <div class="md:col-span-7 grid grid-cols-3 gap-2">
+   <select id="filterVerified" class="w-full px-2 py-3 bg-bgCustom border border-orange-200 rounded-xl text-xs">
+    <option value="all">Verification: সব</option>
+    <option value="true">Verified</option>
+    <option value="false">Unverified</option>
+   </select>
+   <select id="filterActive" class="w-full px-2 py-3 bg-bgCustom border border-orange-200 rounded-xl text-xs">
+    <option value="all">Status: সব</option>
+    <option value="true">Active</option>
+    <option value="false">Inactive</option>
+   </select>
+   <select id="filterReject" class="w-full px-2 py-3 bg-bgCustom border border-orange-200 rounded-xl text-xs">
+    <option value="all">Reject: সব</option>
+    <option value="true">Rejected</option>
+    <option value="false">Not Rejected</option>
+   </select>
+  </div>
+ </div>
+</div>
+
+<!-- SUPPLIERS -->
+<div id="supplierGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+
+<div id="skeletonContainer" class="hidden grid grid-cols-1 md:grid-cols-3 gap-6">
+ <div class="bg-white rounded-2xl h-96 skeleton"></div>
+ <div class="bg-white rounded-2xl h-96 skeleton"></div>
+ <div class="bg-white rounded-2xl h-96 skeleton"></div>
+</div>
+
+<div id="emptyState" class="hidden text-center py-16 bg-white rounded-2xl">
+ <h3 class="text-lg font-bold text-gray-700">কোনো সাপ্লায়ার পাওয়া যায়নি</h3>
+ <p class="text-sm text-gray-500">সার্চ অথবা ফিল্টার পরিবর্তন করে চেষ্টা করুন।</p>
+</div>
+
+<div id="loadMoreContainer" class="hidden text-center mt-10">
+ <button id="loadMoreBtn" class="bg-primary text-white px-8 py-3 rounded-xl font-semibold">আরও দেখুন</button>
+</div>
+
+</main>
+</div>
+
+<!-- CONFIRM MODAL -->
+<div id="confirmModal" class="hidden fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
+ <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-xl">
+  <h3 id="modalTitle" class="text-xl font-bold mb-2">নিশ্চিত করুন</h3>
+  <p id="modalDesc" class="text-gray-600 text-sm mb-6"></p>
+  <div class="flex justify-end gap-3">
+   <button id="modalCancelBtn" class="px-5 py-2 rounded-xl border">বাতিল</button>
+   <button id="modalConfirmBtn" class="px-5 py-2 rounded-xl bg-primary text-white">নিশ্চিত করুন</button>
+  </div>
+ </div>
+</div>
+
+<!-- IMAGE MODAL -->
+<div id="imageModal" class="hidden fixed inset-0 z-50 bg-black/90 flex items-center justify-center p-4">
+ <div class="relative max-w-4xl w-full text-center">
+  <button id="closeImageModal" class="absolute -top-12 right-0 text-white text-2xl">✕</button>
+  <img id="previewModalImg" src="" class="max-h-[80vh] max-w-full mx-auto rounded-xl object-contain">
+ </div>
+</div>
+
+<!-- TOAST -->
+<div id="toastContainer" class="fixed bottom-5 right-5 z-[60] flex flex-col gap-2 pointer-events-none"></div>
+
+<script type="module">
+
+import {initializeApp} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+
+import {
+ getAuth,onAuthStateChanged,signOut
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+import {
+ getFirestore,doc,getDoc,collection,query,orderBy,limit,
+ startAfter,getDocs,updateDoc,deleteDoc,runTransaction,where
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+
+/* =====================================
+   FIREBASE CONFIG
+===================================== */
+
+const firebaseConfig = {
+ apiKey:"AIzaSyDCIRWmozT0XcEXuXtQ6RDiDo6vtT1T9mU",
+ authDomain:"paikarisell-ghotimarket.firebaseapp.com",
+ projectId:"paikarisell-ghotimarket",
+ storageBucket:"paikarisell-ghotimarket.firebasestorage.app",
+ messagingSenderId:"464086432830",
+ appId:"1:464086432830:web:a10fdd9884954e380e656f",
+ measurementId:"G-E3HR2F9TC5"
+};
+
+const app=initializeApp(firebaseConfig);
+const auth=getAuth(app);
+const db=getFirestore(app);
+
+const OWNER_EMAILS=[
+ "nazrulislam887441234@gmail.com",
+ "support@ghotimarket.com"
+];
+
+
+/* =====================================
+   DATABASE REFERENCES
+===================================== */
+
+// Supplier collection
+const supplierCollection=collection(db,"supplyers");
+
+// Statistics document
+// informations / seller
+const sellerInfoRef=doc(db,"informations","seller");
+
+
+/* =====================================
+   GLOBAL VARIABLES
+===================================== */
+
+let lastVisibleDoc=null;
+let currentSuppliers=[];
+let sharedTimerInterval=null;
+let searchDebounceTimer=null;
+let modalConfirmCallback=null;
+
+let activeQueryFilters={
+ verified:"all",
+ active:"all",
+ reject:"all"
+};
+
+
+/* =====================================
+   DOM ELEMENTS
+===================================== */
+
+const $=id=>document.getElementById(id);
+
+const authGuardScreen=$("authGuardScreen");
+const dashboardLayout=$("dashboardLayout");
+const supplierGrid=$("supplierGrid");
+const skeletonContainer=$("skeletonContainer");
+const emptyState=$("emptyState");
+const loadMoreContainer=$("loadMoreContainer");
+const confirmModal=$("confirmModal");
+
+
+/* =====================================
+   TOAST NOTIFICATION
+===================================== */
+
+function showToast(message,type="success"){
+
+ const toast=document.createElement("div");
+
+ toast.className=
+ `pointer-events-auto px-4 py-3 rounded-xl shadow-lg text-white text-sm ${
+ type==="success"?"bg-emerald-600":"bg-red-600"
+ }`;
+
+ toast.textContent=message;
+
+ $("toastContainer").appendChild(toast);
+
+ setTimeout(()=>toast.remove(),3500);
+}
+
+
+/* =====================================
+   AUTHENTICATION
+===================================== */
+
+onAuthStateChanged(auth,async user=>{
+
+ if(!user){
+  window.location.href="/login";
+  return;
+ }
+
+ try{
+
+  const email=(user.email||"").toLowerCase().trim();
+
+  const isOwner=OWNER_EMAILS.includes(email);
+
+  let isAdmin=false;
+
+  if(!isOwner){
+
+   const adminRef=doc(db,"admins",user.uid);
+   const adminSnap=await getDoc(adminRef);
+
+   if(adminSnap.exists()){
+
+    const data=adminSnap.data();
+
+    if(data.uid===user.uid && data.active===true){
+     isAdmin=true;
+    }
+   }
+  }
+
+  if(isOwner||isAdmin){
+
+   authGuardScreen.classList.add("hidden");
+   dashboardLayout.classList.remove("hidden");
+   dashboardLayout.classList.add("flex");
+
+   $("currentUserRoleText").innerText=
+   isOwner?"Owner":"Admin";
+
+   initDashboard();
+
+  }else{
+
+   $("authStatusTitle").innerText="Access Denied";
+   $("authStatusDesc").innerText="আপনার এই প্যানেল ব্যবহারের অনুমতি নেই।";
+
+   $("authSpinner").classList.add("hidden");
+   $("accessDeniedActions").classList.remove("hidden");
+  }
+
+ }catch(error){
+
+  console.error(error);
+
+  $("authStatusTitle").innerText="ত্রুটি সংঘটিত হয়েছে";
+  $("authStatusDesc").innerText="অনুমোদন যাচাই করা সম্ভব হয়নি।";
+  $("authSpinner").classList.add("hidden");
+ }
+
+});
+
+
+$("logoutBtn").addEventListener("click",async()=>{
+
+ await signOut(auth);
+ window.location.href="/login";
+
+});
+
+
+/* =====================================
+   DASHBOARD INITIALIZATION
+===================================== */
+
+function initDashboard(){
+
+ loadSuppliers(true);
+ startSharedCountdownTimer();
+
+}
+
+
+/* =====================================
+   COUNTER HELPER
+===================================== */
+
+// Existing counter থেকে সংখ্যা পরিবর্তন করবে।
+// কখনো কাউন্টারকে Negative হতে দেবে না।
+
+function changeCount(current,amount){
+
+ return Math.max(0,(Number(current)||0)+amount);
+
+}
+
+
+// informations/seller ডকুমেন্টের
+// কাউন্টার আপডেট করার Helper Function।
+
+function updateSellerCounters(transaction,infoSnap,changes){
+
+ const oldData=infoSnap.exists()?infoSnap.data():{};
+
+ const updatedData={};
+
+ for(const field in changes){
+
+  updatedData[field]=changeCount(
+   oldData[field],
+   changes[field]
+  );
+
+ }
+
+ transaction.set(
+  sellerInfoRef,
+  updatedData,
+  {merge:true}
+ );
+
+}
+
+
+/* =====================================
+   LOAD SUPPLIERS
+===================================== */
+
+async function loadSuppliers(reset=false){
+
+ if(reset){
+
+  supplierGrid.innerHTML="";
+  currentSuppliers=[];
+  lastVisibleDoc=null;
+
+  skeletonContainer.classList.remove("hidden");
+  emptyState.classList.add("hidden");
+  loadMoreContainer.classList.add("hidden");
+ }
+
+ try{
+
+  let constraints=[
+   orderBy("createdAt","desc"),
+   limit(20)
+  ];
+
+  if(activeQueryFilters.verified!=="all"){
+
+   constraints.unshift(
+    where("verified","==",activeQueryFilters.verified==="true")
+   );
+
+  }
+
+  if(activeQueryFilters.active!=="all"){
+
+   constraints.unshift(
+    where("active","==",activeQueryFilters.active==="true")
+   );
+
+  }
+
+  if(activeQueryFilters.reject!=="all"){
+
+   constraints.unshift(
+    where("reject","==",activeQueryFilters.reject==="true")
+   );
+
+  }
+
+  if(lastVisibleDoc&&!reset){
+   constraints.push(startAfter(lastVisibleDoc));
+  }
+
+  const finalQuery=query(supplierCollection,...constraints);
+
+  const snapshot=await getDocs(finalQuery);
+
+  skeletonContainer.classList.add("hidden");
+
+  if(snapshot.empty&&reset){
+
+   emptyState.classList.remove("hidden");
+   return;
+
+  }
+
+  lastVisibleDoc=snapshot.docs[snapshot.docs.length-1]||null;
+
+  snapshot.forEach(docSnap=>{
+
+   const supplier={
+    id:docSnap.id,
+    ...docSnap.data()
+   };
+
+   currentSuppliers.push(supplier);
+   renderSupplierCard(supplier);
+
+  });
+
+  loadMoreContainer.classList.toggle(
+   "hidden",
+   snapshot.docs.length<20
+  );
+
+ }catch(error){
+
+  console.error("Load error:",error);
+
+  skeletonContainer.classList.add("hidden");
+
+  showToast("সাপ্লায়ার লোড করতে সমস্যা হয়েছে।","error");
+
+ }
+
+}
+
+
+/* =====================================
+   SUPPLIER CARD
+===================================== */
+
+function renderSupplierCard(sup){
+
+ const card=document.createElement("div");
+
+ card.className=
+ "bg-white rounded-2xl shadow-sm border border-orange-100 p-6 flex flex-col justify-between";
+
+ card.dataset.id=sup.id;
+
+ const isVerified=sup.verified===true;
+ const isActive=sup.active===true;
+ const isReject=sup.reject===true;
+
+ const safe= value=>String(value??"")
+  .replace(/&/g,"&amp;")
+  .replace(/</g,"&lt;")
+  .replace(/>/g,"&gt;")
+  .replace(/"/g,"&quot;")
+  .replace(/'/g,"&#39;");
+
+ const front=safe(sup.nidFront||"");
+ const back=safe(sup.nidBack||"");
+
+ card.innerHTML=`
+
+ <div>
+
+  <div class="flex justify-between items-start mb-4">
+
+   <div class="min-w-0">
+    <h3 class="text-lg font-bold">${safe(sup.name||"নাম নেই")}</h3>
+    <p class="text-xs text-gray-400 break-all">UID: ${safe(sup.uid||sup.id)}</p>
+   </div>
+
+   <div class="flex flex-col items-end gap-1 shrink-0">
+
+    <span class="px-2 py-1 rounded-full text-xs font-semibold ${
+     isVerified?"bg-emerald-50 text-emerald-700":"bg-amber-50 text-amber-700"
+    }">
+     ${isVerified?"Verified":"Unverified"}
+    </span>
+
+    <span class="px-2 py-1 rounded-full text-xs font-semibold ${
+     isActive?"bg-blue-50 text-blue-700":"bg-gray-100 text-gray-600"
+    }">
+     ${isActive?"Active":"Inactive"}
+    </span>
+
+    ${isReject?`
+     <span class="px-2 py-1 rounded-full text-xs bg-red-50 text-red-700">Rejected</span>
+    `:""}
+
+   </div>
+
+  </div>
+
+
+  <div class="grid grid-cols-2 gap-3 mb-4 bg-bgCustom p-3 rounded-xl text-sm">
+
+   <div>
+    <p class="text-xs text-gray-500">মোট প্রোডাক্ট</p>
+    <b>${Number(sup.product)||0}</b>
+   </div>
+
+   <div>
+    <p class="text-xs text-gray-500">অ্যাক্টিভ প্রোডাক্ট</p>
+    <b>${Number(sup.activeProduct)||0}</b>
+   </div>
+
+   <div>
+    <p class="text-xs text-gray-500">ব্যালেন্স</p>
+    <b class="text-primary">৳ ${Number(sup.balance)||0}</b>
+   </div>
+
+   <div>
+    <p class="text-xs text-gray-500">সাবস্ক্রিপশন</p>
+    <b class="countdown-text text-xs"
+       data-expiry="${Number(sup.profileUnlockedUntil)||0}">
+       গণনা হচ্ছে...
+    </b>
+   </div>
+
+  </div>
+
+
+  <div class="space-y-2 text-xs text-gray-600 mb-4">
+
+   <p class="break-all">Email: ${safe(sup.email||"নেই")}</p>
+   <p>Phone: ${safe(sup.phone||"নেই")}</p>
+   <p>WhatsApp: ${safe(sup.whatsApp||sup.phone||"নেই")}</p>
+
+  </div>
+
+
+  <div class="bg-gray-50 p-3 rounded-xl text-xs text-gray-500 mb-4">
+   ${safe(sup.description||"কোনো বিবরণ দেওয়া হয়নি।")}
+  </div>
+
+
+  <div class="grid grid-cols-2 gap-2 mb-4">
+
+   <div class="border rounded-xl p-2 text-center bg-bgCustom">
+    <p class="text-xs mb-1">NID Front</p>
+    <button data-image="${front}" class="preview-btn text-primary text-xs">
+     প্রিভিউ দেখুন
+    </button>
+   </div>
+
+   <div class="border rounded-xl p-2 text-center bg-bgCustom">
+    <p class="text-xs mb-1">NID Back</p>
+    <button data-image="${back}" class="preview-btn text-primary text-xs">
+     প্রিভিউ দেখুন
+    </button>
+   </div>
+
+  </div>
+
+ </div>
+
+
+ <div class="space-y-2 pt-4 border-t border-orange-100">
+
+  <div class="grid grid-cols-2 gap-2">
+
+   <button
+    data-action="verify"
+    class="py-2 rounded-xl text-xs font-semibold text-white ${
+     isVerified?"bg-amber-600":"bg-emerald-600"
+    }">
+    ${isVerified?"Unverify করুন":"Verified করুন"}
+   </button>
+
+
+   <button
+    data-action="active"
+    class="py-2 rounded-xl text-xs font-semibold text-white ${
+     isActive?"bg-amber-600":"bg-blue-600"
+    }">
+    ${isActive?"ইনেক্টিভ করুন":"এক্টিভ করুন"}
+   </button>
+
+  </div>
+
+
+  <div class="grid grid-cols-2 gap-2">
+
+   <button
+    data-action="reject"
+    class="py-2 rounded-xl text-xs font-semibold text-white ${
+     isReject?"bg-gray-600":"bg-orange-600"
+    }">
+    ${isReject?"রিজেক্ট তুলুন":"Reject করুন"}
+   </button>
+
+   <a
+    href="/account?${encodeURIComponent(sup.uid||sup.id)}"
+    target="_blank"
+    rel="noopener noreferrer"
+    class="py-2 rounded-xl text-xs font-semibold text-primary bg-bgCustom border border-orange-200 text-center">
+    এডিট করুন
+   </a>
+
+  </div>
+
+  <button
+   data-action="delete"
+   class="w-full bg-red-50 text-red-600 border border-red-200 py-2 rounded-xl text-xs font-semibold">
+   ডিলিট করুন
+  </button>
+
+ </div>
+ `;
+
+
+ // Event listeners
+
+ card.querySelectorAll("[data-action]").forEach(button=>{
+
+  button.addEventListener("click",()=>{
+
+   const action=button.dataset.action;
+
+   if(action==="verify"){
+    handleVerify(sup.id,isVerified,sup.phone);
+   }
+
+   if(action==="active"){
+    handleToggleActive(sup.id,isActive);
+   }
+
+   if(action==="reject"){
+    handleToggleReject(sup.id,isReject);
+   }
+
+   if(action==="delete"){
+    handleDeleteSupplier(sup.id,sup.name);
+   }
+
+  });
+
+ });
+
+
+ card.querySelectorAll(".preview-btn").forEach(button=>{
+
+  button.addEventListener("click",()=>{
+   previewNIDImage(button.dataset.image);
+  });
+
+ });
+
+
+ supplierGrid.appendChild(card);
+
+}
+
+
+/* =====================================
+   1. VERIFY / UNVERIFY
+===================================== */
+
+async function handleVerify(docId,currentVerified,phone){
+
+ const nextVerified=!currentVerified;
+
+ const title=nextVerified?"সাপ্লায়ার ভেরিফিকেশন":"সাপ্লায়ার আনভেরিফিকেশন";
+
+ const description=nextVerified
+ ? "আপনি কি এই সাপ্লায়ারকে Verified করতে চান?"
+ : "আপনি কি এই সাপ্লায়ারকে Unverified করতে চান?";
+
+ openConfirmModal(title,description,async()=>{
+
+  try{
+
+   const supplierRef=doc(db,"supplyers",docId);
+
+   const normalizedPhone=(phone||"").replace(/[^0-9]/g,"");
+
+   const registrationRef=doc(
+    db,
+    "registrations",
+    normalizedPhone||docId
+   );
+
+
+   await runTransaction(db,async transaction=>{
+
+    // প্রথমে সব ডকুমেন্ট Read করতে হবে।
+
+    const supSnap=await transaction.get(supplierRef);
+    const infoSnap=await transaction.get(sellerInfoRef);
+
+    if(!supSnap.exists()){
+     throw new Error("Supplier does not exist!");
+    }
+
+    const supData=supSnap.data();
+
+    const actualVerified=supData.verified===true;
+
+    if(actualVerified===nextVerified){
+     throw new Error("এই সাপ্লায়ারের Verification Status ইতিমধ্যে পরিবর্তিত হয়েছে।");
+    }
+
+
+    // Verified হলে:
+    // verifiedSeller +1
+    // unverified -1
+
+    // Unverified হলে:
+    // verifiedSeller -1
+    // unverified +1
+
+    const changes=nextVerified
+    ?{
+      verifiedSeller:+1,
+      unverified:-1
+     }
+    :{
+      verifiedSeller:-1,
+      unverified:+1
+     };
+
+
+    transaction.update(supplierRef,{
+     verified:nextVerified
+    });
+
+
+    updateSellerCounters(
+     transaction,
+     infoSnap,
+     changes
+    );
+
+
+    // আগের Registration Logic শুধু Verify করার সময়।
+
+    if(nextVerified){
+
+     transaction.set(
+      registrationRef,
+      {used:true},
+      {merge:true}
+     );
+
+    }
+
+   });
+
+
+   showToast(
+    nextVerified
+    ?"সাপ্লায়ার Verified হয়েছে এবং কাউন্টার আপডেট হয়েছে।"
+    :"সাপ্লায়ার Unverified হয়েছে এবং কাউন্টার আপডেট হয়েছে।"
+   );
+
+   loadSuppliers(true);
+
+  }catch(error){
+
+   console.error("Verification error:",error);
+
+   showToast(
+    error.message||"Verification আপডেট করা যায়নি।",
+    "error"
+   );
+
+  }
+
+ });
+
+}
+
+
+/* =====================================
+   2. ACTIVE / INACTIVE
+===================================== */
+
+async function handleToggleActive(docId,currentActive){
+
+ const nextActive=!currentActive;
+
+ openConfirmModal(
+  "স্ট্যাটাস পরিবর্তন",
+  `আপনি কি এই সাপ্লায়ারকে ${nextActive?"Active":"Inactive"} করতে চান?`,
+  async()=>{
+
+   try{
+
+    const supplierRef=doc(db,"supplyers",docId);
+
+    await runTransaction(db,async transaction=>{
+
+     const supSnap=await transaction.get(supplierRef);
+     const infoSnap=await transaction.get(sellerInfoRef);
+
+     if(!supSnap.exists()){
+      throw new Error("Supplier not found!");
+     }
+
+     const actualActive=supSnap.data().active===true;
+
+     if(actualActive===nextActive){
+      throw new Error("Status ইতিমধ্যে পরিবর্তিত হয়েছে।");
+     }
+
+
+     // Active করলে:
+     // active +1, inactive -1
+
+     // Inactive করলে:
+     // active -1, inactive +1
+
+     const changes=nextActive
+     ?{
+       active:+1,
+       inactive:-1
+      }
+     :{
+       active:-1,
+       inactive:+1
+      };
+
+
+     transaction.update(supplierRef,{
+      active:nextActive
+     });
+
+
+     updateSellerCounters(
+      transaction,
+      infoSnap,
+      changes
+     );
+
+    });
+
+
+    showToast(
+     "Status এবং Informations Counter সফলভাবে আপডেট হয়েছে।"
+    );
+
+    loadSuppliers(true);
+
+   }catch(error){
+
+    console.error("Active update error:",error);
+
+    showToast(
+     error.message||"Status পরিবর্তন করা যায়নি।",
+     "error"
+    );
+
+   }
+
+  }
+ );
+
+}
+
+
+/* =====================================
+   3. REJECT / UNREJECT
+===================================== */
+
+async function handleToggleReject(docId,currentReject){
+
+ const nextReject=!currentReject;
+
+ openConfirmModal(
+  "Reject Status",
+  `আপনি কি এই সাপ্লায়ারকে ${nextReject?"Reject":"Unreject"} করতে চান?`,
+  async()=>{
+
+   try{
+
+    const supplierRef=doc(db,"supplyers",docId);
+
+    await updateDoc(supplierRef,{
+     reject:nextReject
+    });
+
+    showToast("Reject Status আপডেট হয়েছে।");
+
+    loadSuppliers(true);
+
+   }catch(error){
+
+    console.error(error);
+
+    showToast("Reject Status পরিবর্তন করা যায়নি।","error");
+
+   }
+
+  }
+ );
+
+}
+
+
+/* =====================================
+   4. DELETE SUPPLIER
+===================================== */
+
+async function handleDeleteSupplier(docId,supName){
+
+ openConfirmModal(
+  "সাপ্লায়ার ডিলিট",
+  `"${supName||"এই সাপ্লায়ার"}" অ্যাকাউন্টটি ডিলিট করতে চান? এই কাজটি পূর্বাবস্থায় ফেরানো যাবে না।`,
+  async()=>{
+
+   try{
+
+    const supplierRef=doc(db,"supplyers",docId);
+
+
+    await runTransaction(db,async transaction=>{
+
+     // Read both documents first
+
+     const supSnap=await transaction.get(supplierRef);
+     const infoSnap=await transaction.get(sellerInfoRef);
+
+     if(!supSnap.exists()){
+      throw new Error("Supplier already deleted!");
+     }
+
+     const data=supSnap.data();
+
+
+     // Supplier Verified থাকলে:
+     // verifiedSeller -1
+
+     // Supplier Unverified থাকলে:
+     // unverified -1
+
+     // Supplier Active থাকলে:
+     // active -1
+
+     // Supplier Inactive থাকলে:
+     // inactive -1
+
+     const changes={};
+
+
+     if(data.verified===true){
+
+      changes.verifiedSeller=-1;
+
+     }else{
+
+      changes.unverified=-1;
+
+     }
+
+
+     if(data.active===true){
+
+      changes.active=-1;
+
+     }else{
+
+      changes.inactive=-1;
+
+     }
+
+
+     // Update informations/seller
+
+     updateSellerCounters(
+      transaction,
+      infoSnap,
+      changes
+     );
+
+
+     // Delete supplier document
+
+     transaction.delete(supplierRef);
+
+    });
+
+
+    showToast(
+     "সাপ্লায়ার ডিলিট হয়েছে এবং সব কাউন্টার আপডেট হয়েছে।"
+    );
+
+    loadSuppliers(true);
+
+   }catch(error){
+
+    console.error("Delete error:",error);
+
+    showToast(
+     error.message||"সাপ্লায়ার ডিলিট করা যায়নি।",
+     "error"
+    );
+
+   }
+
+  }
+ );
+
+}
+
+
+/* =====================================
+   LIVE SUBSCRIPTION COUNTDOWN
+===================================== */
+
+function startSharedCountdownTimer(){
+
+ if(sharedTimerInterval){
+  clearInterval(sharedTimerInterval);
+ }
+
+ sharedTimerInterval=setInterval(()=>{
+
+  const elements=document.querySelectorAll(".countdown-text");
+
+  const now=Date.now();
+
+  elements.forEach(el=>{
+
+   const expiry=parseInt(el.dataset.expiry||"0",10);
+
+   if(!expiry){
+    el.innerText="সাবস্ক্রিপশন চালু নেই";
+    return;
+   }
+
+   const diff=expiry-now;
+
+   if(diff<=0){
+    el.innerText="মেয়াদ শেষ";
+    return;
+   }
+
+   const days=Math.floor(diff/86400000);
+   const hours=Math.floor(diff%86400000/3600000);
+   const minutes=Math.floor(diff%3600000/60000);
+   const seconds=Math.floor(diff%60000/1000);
+
+   el.innerText=
+   `${days} দিন : ${hours} ঘণ্টা : ${minutes} মি : ${seconds} সে`;
+
+  });
+
+ },1000);
+
+}
+
+
+/* =====================================
+   SEARCH
+===================================== */
+
+$("searchInput").addEventListener("input",event=>{
+
+ clearTimeout(searchDebounceTimer);
+
+ const value=event.target.value.trim();
+
+ searchDebounceTimer=setTimeout(async()=>{
+
+  if(!value){
+
+   loadSuppliers(true);
+   return;
+
+  }
+
+  supplierGrid.innerHTML="";
+  currentSuppliers=[];
+  emptyState.classList.add("hidden");
+  skeletonContainer.classList.remove("hidden");
+  loadMoreContainer.classList.add("hidden");
+
+
+  try{
+
+   // UID Search
+
+   if(value.length>=20&&!value.includes("@")){
+
+    const snap=await getDoc(
+     doc(db,"supplyers",value)
+    );
+
+    skeletonContainer.classList.add("hidden");
+
+    if(snap.exists()){
+
+     const supplier={
+      id:snap.id,
+      ...snap.data()
+     };
+
+     currentSuppliers=[supplier];
+     renderSupplierCard(supplier);
+
+    }else{
+
+     emptyState.classList.remove("hidden");
+
+    }
+
+    return;
+
+   }
+
+
+   // Email Prefix Search
+
+   const emailQuery=query(
+    supplierCollection,
+    where("email",">=",value.toLowerCase()),
+    where("email","<=",value.toLowerCase()+"\uf8ff"),
+    limit(20)
+   );
+
+   const snapshot=await getDocs(emailQuery);
+
+   skeletonContainer.classList.add("hidden");
+
+   if(snapshot.empty){
+
+    emptyState.classList.remove("hidden");
+    return;
+
+   }
+
+   snapshot.forEach(docSnap=>{
+
+    const supplier={
+     id:docSnap.id,
+     ...docSnap.data()
+    };
+
+    currentSuppliers.push(supplier);
+    renderSupplierCard(supplier);
+
+   });
+
+  }catch(error){
+
+   console.error(error);
+
+   skeletonContainer.classList.add("hidden");
+
+   showToast("সার্চ করতে সমস্যা হয়েছে।","error");
+
+  }
+
+ },500);
+
+});
+
+
+/* =====================================
+   FILTERS
+===================================== */
+
+$("filterVerified").addEventListener("change",event=>{
+
+ activeQueryFilters.verified=event.target.value;
+ $("searchInput").value="";
+ loadSuppliers(true);
+
+});
+
+
+$("filterActive").addEventListener("change",event=>{
+
+ activeQueryFilters.active=event.target.value;
+ $("searchInput").value="";
+ loadSuppliers(true);
+
+});
+
+
+$("filterReject").addEventListener("change",event=>{
+
+ activeQueryFilters.reject=event.target.value;
+ $("searchInput").value="";
+ loadSuppliers(true);
+
+});
+
+
+/* =====================================
+   LOAD MORE
+===================================== */
+
+$("loadMoreBtn").addEventListener("click",()=>{
+
+ loadSuppliers(false);
+
+});
+
+
+/* =====================================
+   NID IMAGE PREVIEW
+===================================== */
+
+function previewNIDImage(imageKey){
+
+ if(!imageKey){
+
+  showToast("NID ছবি পাওয়া যায়নি।","error");
+  return;
+
+ }
+
+ const imageUrl=imageKey.startsWith("http")
+ ?imageKey
+ :`https://paikarisell-image.ghotimarket.com/${imageKey}`;
+
+ $("previewModalImg").src=imageUrl;
+
+ $("imageModal").classList.remove("hidden");
+
+}
+
+$("closeImageModal").addEventListener("click",()=>{
+
+ $("imageModal").classList.add("hidden");
+ $("previewModalImg").src="";
+
+});
+
+
+/* =====================================
+   CONFIRM MODAL
+===================================== */
+
+function openConfirmModal(title,description,callback){
+
+ $("modalTitle").innerText=title;
+ $("modalDesc").innerText=description;
+
+ modalConfirmCallback=callback;
+
+ confirmModal.classList.remove("hidden");
+
+}
+
+
+$("modalCancelBtn").addEventListener("click",()=>{
+
+ confirmModal.classList.add("hidden");
+ modalConfirmCallback=null;
+
+});
+
+
+$("modalConfirmBtn").addEventListener("click",async()=>{
+
+ if(!modalConfirmCallback)return;
+
+ const callback=modalConfirmCallback;
+
+ modalConfirmCallback=null;
+
+ $("modalConfirmBtn").disabled=true;
+ $("modalConfirmBtn").innerText="অপেক্ষা করুন...";
+
+ try{
+
+  await callback();
+
+ }finally{
+
+  confirmModal.classList.add("hidden");
+
+  $("modalConfirmBtn").disabled=false;
+  $("modalConfirmBtn").innerText="নিশ্চিত করুন";
+
+ }
+
+});
+
+</script>
+</body>
+</html>
