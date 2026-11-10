@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    <title>অ্যাডমিন প্যানেল - পাইকারি সেল</title>
+    <link rel="icon" type="image/png" href="https://paikarisell.ghotimarket.com/photo/favicon.png">
+    
+    <!-- Google Fonts - Inter / Noto Sans Bengali -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Bengali:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="category.css">
+</head>
+<body>
+
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="loading-overlay hidden">
+        <div class="spinner"></div>
+        <p id="loadingText">অনুগ্রহ করে অপেক্ষা করুন...</p>
+    </div>
+
+    <!-- Custom Success / Error / Confirmation Modals -->
+    <div id="customModal" class="custom-modal hidden">
+        <div class="modal-content">
+            <div id="modalIcon" class="modal-icon"></div>
+            <h3 id="modalTitle">সতর্কবার্তা</h3>
+            <p id="modalMessage">এখানে মেসেজ প্রদর্শিত হবে।</p>
+            <div id="modalButtons" class="modal-buttons">
+                <button id="modalOkBtn" class="btn-primary">ঠিক আছে</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Wrapper -->
+    <div class="admin-wrapper">
+        
+        <!-- Mobile Header Bar -->
+        <header class="mobile-header">
+            <button id="sidebarToggle" class="icon-btn">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
+            </button>
+            <div class="mobile-brand">
+                <img src="https://paikarisell.ghotimarket.com/photo/logo.png" alt="পাইকারি সেল লোগো">
+                <span>অ্যাডমিন প্যানেল</span>
+            </div>
+        </header>
+
+        <!-- Sidebar Navigation -->
+        <aside id="sidebar" class="sidebar">
+            <div class="sidebar-header">
+                <img src="https://paikarisell.ghotimarket.com/photo/logo.png" alt="পাইকারি সেল লোগো" class="brand-logo">
+                <h2>পাইকারি সেল</h2>
+                <span class="panel-badge">ম্যানেজমেন্ট প্যানেল</span>
+            </div>
+            
+            <nav class="sidebar-menu">
+                <a href="#overview" class="menu-item active" data-target="overviewSection">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+                    ড্যাশবোর্ড ওভারভিউ
+                </a>
+                <a href="#categories" class="menu-item" data-target="categoriesSection">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+                    ক্যাটাগরি ম্যানেজমেন্ট
+                </a>
+                <a href="#createCategory" class="menu-item" data-target="createSection">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+                    নতুন ক্যাটাগরি তৈরি
+                </a>
+            </nav>
+
+            <div class="sidebar-footer">
+                <div class="user-info">
+                    <span id="userEmailDisplay">লোড হচ্ছে...</span>
+                    <span id="userRoleDisplay" class="role-tag">যাচাই করা হচ্ছে...</span>
+                </div>
+                <button id="logoutBtn" class="btn-logout">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+                    লগ আউট
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            
+            <!-- 1. Overview Section -->
+            <section id="overviewSection" class="content-section active">
+                <div class="section-header">
+                    <h1>ড্যাশবোর্ড ওভারভিউ</h1>
+                    <p>পাইকারি সেল ইমর্ট ও ক্যাটাগরি নিয়ন্ত্রণের কেন্দ্রীয় প্যানেল।</p>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon orange">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+                        </div>
+                        <div class="stat-info">
+                            <h3>মোট ক্যাটাগরি</h3>
+                            <p id="totalCategoriesCount">০</p>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon green">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                        </div>
+                        <div class="stat-info">
+                            <h3>সর্বশেষ তৈরি ক্যাটাগরি</h3>
+                            <p id="lastCreatedCategory" class="stat-sub">লোড হচ্ছে...</p>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-icon blue">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                        </div>
+                        <div class="stat-info">
+                            <h3>সর্বশেষ আপডেট</h3>
+                            <p id="lastUpdatedCategory" class="stat-sub">লোড হচ্ছে...</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="quick-actions-card">
+                    <h2>দ্রুত কার্যক্রম</h2>
+                    <div class="action-buttons">
+                        <button class="btn-primary" onclick="switchSection('createSection')">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                            নতুন ক্যাটাগরি যোগ করুন
+                        </button>
+                        <button class="btn-secondary" onclick="switchSection('categoriesSection')">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                            সব ক্যাটাগরি দেখুন
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 2. Category Management Section -->
+            <section id="categoriesSection" class="content-section">
+                <div class="section-header flex-header">
+                    <div>
+                        <h1>ক্যাটাগরি ম্যানেজমেন্ট</h1>
+                        <p>সকল প্রোডাক্ট ক্যাটাগরি তালিকা, অনুসন্ধান এবং সম্পাদনা করুন।</p>
+                    </div>
+                    <div class="search-box">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                        <input type="text" id="categorySearchInput" placeholder="ক্যাটাগরি খুঁজুন...">
+                    </div>
+                </div>
+
+                <div class="table-responsive-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>ছবি</th>
+                                <th>ক্যাটাগরির নাম</th>
+                                <th>তৈরির সময়</th>
+                                <th>কার্যক্রম</th>
+                            </tr>
+                        </thead>
+                        <tbody id="categoryTableBody">
+                            <!-- Dynamic Content Loaded via JS -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Empty State -->
+                <div id="emptyCategoryState" class="empty-state hidden">
+                    <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                    <h3>কোনো ক্যাটাগরি পাওয়া যায়নি</h3>
+                    <p>দয়া করে নতুন ক্যাটাগরি তৈরি করুন।</p>
+                </div>
+            </section>
+
+            <!-- 3. Create Category Section -->
+            <section id="createSection" class="content-section">
+                <div class="section-header">
+                    <h1>নতুন ক্যাটাগরি তৈরি করুন</h1>
+                    <p>সঠিক নাম এবং ছবি দিয়ে নতুন ক্যাটাগরি যুক্ত করুন।</p>
+                </div>
+
+                <div class="form-card">
+                    <form id="createCategoryForm">
+                        <div class="form-group">
+                            <label for="categoryNameInput">ক্যাটাগরির নাম <span class="required">*</span></label>
+                            <input type="text" id="categoryNameInput" placeholder="যেমন: ইলেকট্রনিক্স, গ্রোসারি ইত্যাদি" required autocomplete="off">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="categoryImageInput">ক্যাটাগরি ছবি <span class="required">*</span></label>
+                            <div class="file-upload-wrapper">
+                                <input type="file" id="categoryImageInput" accept="image/*" required>
+                                <label for="categoryImageInput" class="file-upload-label">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                                    ছবি নির্বাচন করুন
+                                </label>
+                            </div>
+                            <div id="imagePreviewContainer" class="preview-container hidden">
+                                <img id="imagePreview" src="" alt="প্রিভিউ">
+                                <button type="button" id="removeImageBtn" class="remove-img-btn">&times;</button>
+                            </div>
+                        </div>
+
+                        <button type="submit" id="submitCategoryBtn" class="btn-primary full-width">
+                            ক্যাটাগরি সেভ করুন
+                        </button>
+                    </form>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <!-- Edit Category Modal -->
+    <div id="editCategoryModal" class="custom-modal hidden">
+        <div class="modal-content form-modal-content">
+            <div class="modal-header-custom">
+                <h3>ক্যাটাগরি সম্পাদনা করুন</h3>
+                <button type="button" class="close-modal-btn" id="closeEditModal">&times;</button>
+            </div>
+            <form id="editCategoryForm">
+                <input type="hidden" id="editCategoryId">
+                <input type="hidden" id="existingImageUrl">
+                
+                <div class="form-group">
+                    <label for="editCategoryName">ক্যাটাগরির নাম</label>
+                    <input type="text" id="editCategoryName" required>
+                </div>
+
+                <div class="form-group">
+                    <label>বর্তমান ছবি</label>
+                    <div class="current-img-preview">
+                        <img id="editCurrentImgPreview" src="" alt="বর্তমান ছবি">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="editCategoryImage">নতুন ছবি (ঐচ্ছিক পরিবর্তন)</label>
+                    <input type="file" id="editCategoryImage" accept="image/*">
+                </div>
+
+                <div class="modal-buttons">
+                    <button type="button" class="btn-secondary" id="cancelEditBtn">বাতিল</button>
+                    <button type="submit" class="btn-primary" id="updateCategoryBtn">আপডেট করুন</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Firebase SDKs (Modular v10) & Logic -->
+    <script type="module" src="category.js"></script>
+</body>
+</html>
