@@ -110,7 +110,7 @@ onAuthStateChanged(auth, async (user) => {
         }
         
         showToast('আপনার এই পেজটি অ্যাক্সেস করার অনুমতি নেই।', 'error');
-        setTimeout(() => { window.location.href = '/login'; }, 2000);
+        setTimeout(() => { window.location.href = 'https://admin.ghotimarket.com/reseller/login'; }, 2000);
     } catch (error) {
         console.error("Auth verification error:", error);
         showToast('অথেন্টিকেশন যাচাই করতে সমস্যা হয়েছে।', 'error');
@@ -133,7 +133,7 @@ function setupEventListeners() {
     });
 
     dashboardBtn.addEventListener('click', () => {
-        window.location.href = '/dashboard';
+        window.location.href = 'https://admin.ghotimarket.com/reseller/dashboard';
     });
 
     // Filter Tabs
