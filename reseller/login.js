@@ -89,7 +89,7 @@ onAuthStateChanged(auth, async (user) => {
     
     const isAuthorized = await verifyAndAuthorizeUser(user);
     if (isAuthorized) {
-      window.location.replace("/dashboard");
+      window.location.replace("https://admin.ghotimarket.com/reseller/dashboard");
     } else {
       await signOut(auth);
       loginBtn.disabled = false;
