@@ -83,7 +83,7 @@ const editResellerForm = document.getElementById('editResellerForm');
 // ==========================================
 onAuthStateChanged(auth, async (user) => {
     if (!user) {
-        window.location.href = '/login';
+        window.location.href = 'https://admin.ghotimarket.com/reseller/login';
         return;
     }
 
