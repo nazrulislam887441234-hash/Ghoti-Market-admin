@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PAIKARI SELL Admin Login</title>
+  <link rel="icon" type="image/png" href="https://paikarisell.ghotimarket.com/photo/favicon.png">
+  <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="login.css">
+</head>
+<body>
+
+  <!-- Custom Toast / Error Popup -->
+  <div id="toast-container" class="toast-container"></div>
+
+  <div class="login-wrapper">
+    <div class="login-card">
+      
+      <!-- Brand Header -->
+      <div class="brand-header">
+        <img src="https://paikarisell.ghotimarket.com/photo/logo.png" alt="PAIKARI SELL Logo" class="brand-logo">
+        <h1 class="page-heading">PAIKARI SELL Admin Login</h1>
+        <p class="page-description">আপনার Admin Account দিয়ে Login করুন এবং Dashboard পরিচালনা করুন।</p>
+      </div>
+
+      <!-- Login Form -->
+      <form id="login-form" novalidate>
+        
+        <!-- Email Field -->
+        <div class="form-group">
+          <label for="email">ইমেইল ঠিকানা</label>
+          <div class="input-box">
+            <span class="input-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+            </span>
+            <input type="email" id="email" placeholder="আপনার ইমেইল লিখুন" required>
+          </div>
+        </div>
+
+        <!-- Password Field -->
+        <div class="form-group">
+          <label for="password">পাসওয়ার্ড</label>
+          <div class="input-box">
+            <span class="input-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+            </span>
+            <input type="password" id="password" placeholder="আপনার পাসওয়ার্ড লিখুন" required>
+            <button type="button" id="toggle-password" class="password-toggle-btn" aria-label="Toggle Password Visibility">
+              <svg id="eye-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- Submit Button -->
+        <button type="submit" id="login-btn" class="login-btn">
+          <span class="btn-text">লগইন করুন</span>
+          <span class="spinner" style="display: none;"></span>
+        </button>
+
+      </form>
+    </div>
+  </div>
+
+  <script type="module" src="login.js"></script>
+</body>
+</html>
