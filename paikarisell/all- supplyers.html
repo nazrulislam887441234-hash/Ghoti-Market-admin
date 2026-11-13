@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="bn">
 <head>
@@ -75,8 +74,13 @@ body{font-family:'Hind Siliguri',sans-serif;background:#FFF8F4;color:#171717}
 <!-- SEARCH AND FILTER -->
 <div class="bg-white rounded-2xl shadow-sm border border-orange-100 p-5 mb-8">
  <div class="grid grid-cols-1 md:grid-cols-12 gap-4">
-  <div class="md:col-span-5">
-   <input id="searchInput" type="text" placeholder="Supplier UID অথবা Email দিয়ে খুঁজুন..." class="w-full px-4 py-3 bg-bgCustom border border-orange-200 rounded-xl text-sm outline-none focus:ring-2 focus:ring-primary">
+  <div class="md:col-span-5 flex gap-2">
+   <select id="searchTypeSelect" class="px-3 py-3 bg-bgCustom border border-orange-200 rounded-xl text-xs font-semibold text-primary outline-none focus:ring-2 focus:ring-primary">
+    <option value="uid">UID</option>
+    <option value="phone">Phone</option>
+    <option value="email">Email</option>
+   </select>
+   <input id="searchInput" type="text" placeholder="সার্চ করুন..." class="w-full px-4 py-3 bg-bgCustom border border-orange-200 rounded-xl text-sm outline-none focus:ring-2 focus:ring-primary">
   </div>
   <div class="md:col-span-7 grid grid-cols-3 gap-2">
    <select id="filterVerified" class="w-full px-2 py-3 bg-bgCustom border border-orange-200 rounded-xl text-xs">
@@ -152,7 +156,7 @@ import {
 
 import {
  getFirestore,doc,getDoc,collection,query,orderBy,limit,
- startAfter,getDocs,updateDoc,deleteDoc,runTransaction,where
+ startAfter,getDocs,updateDoc,runTransaction,where
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 
@@ -184,11 +188,7 @@ const OWNER_EMAILS=[
    DATABASE REFERENCES
 ===================================== */
 
-// Supplier collection
 const supplierCollection=collection(db,"supplyers");
-
-// Statistics document
-// informations / seller
 const sellerInfoRef=doc(db,"informations","seller");
 
 
@@ -229,18 +229,13 @@ const confirmModal=$("confirmModal");
 ===================================== */
 
 function showToast(message,type="success"){
-
  const toast=document.createElement("div");
-
  toast.className=
  `pointer-events-auto px-4 py-3 rounded-xl shadow-lg text-white text-sm ${
  type==="success"?"bg-emerald-600":"bg-red-600"
  }`;
-
  toast.textContent=message;
-
  $("toastContainer").appendChild(toast);
-
  setTimeout(()=>toast.remove(),3500);
 }
 
@@ -250,29 +245,21 @@ function showToast(message,type="success"){
 ===================================== */
 
 onAuthStateChanged(auth,async user=>{
-
  if(!user){
   window.location.href="/login";
   return;
  }
 
  try{
-
   const email=(user.email||"").toLowerCase().trim();
-
   const isOwner=OWNER_EMAILS.includes(email);
-
   let isAdmin=false;
 
   if(!isOwner){
-
    const adminRef=doc(db,"admins",user.uid);
    const adminSnap=await getDoc(adminRef);
-
    if(adminSnap.exists()){
-
     const data=adminSnap.data();
-
     if(data.uid===user.uid && data.active===true){
      isAdmin=true;
     }
@@ -280,42 +267,29 @@ onAuthStateChanged(auth,async user=>{
   }
 
   if(isOwner||isAdmin){
-
    authGuardScreen.classList.add("hidden");
    dashboardLayout.classList.remove("hidden");
    dashboardLayout.classList.add("flex");
-
-   $("currentUserRoleText").innerText=
-   isOwner?"Owner":"Admin";
-
+   $("currentUserRoleText").innerText=isOwner?"Owner":"Admin";
    initDashboard();
-
   }else{
-
    $("authStatusTitle").innerText="Access Denied";
    $("authStatusDesc").innerText="আপনার এই প্যানেল ব্যবহারের অনুমতি নেই।";
-
    $("authSpinner").classList.add("hidden");
    $("accessDeniedActions").classList.remove("hidden");
   }
-
  }catch(error){
-
   console.error(error);
-
   $("authStatusTitle").innerText="ত্রুটি সংঘটিত হয়েছে";
   $("authStatusDesc").innerText="অনুমোদন যাচাই করা সম্ভব হয়নি।";
   $("authSpinner").classList.add("hidden");
  }
-
 });
 
 
 $("logoutBtn").addEventListener("click",async()=>{
-
  await signOut(auth);
  window.location.href="/login";
-
 });
 
 
@@ -324,10 +298,8 @@ $("logoutBtn").addEventListener("click",async()=>{
 ===================================== */
 
 function initDashboard(){
-
  loadSuppliers(true);
  startSharedCountdownTimer();
-
 }
 
 
@@ -335,40 +307,24 @@ function initDashboard(){
    COUNTER HELPER
 ===================================== */
 
-// Existing counter থেকে সংখ্যা পরিবর্তন করবে।
-// কখনো কাউন্টারকে Negative হতে দেবে না।
-
 function changeCount(current,amount){
-
  return Math.max(0,(Number(current)||0)+amount);
-
 }
 
-
-// informations/seller ডকুমেন্টের
-// কাউন্টার আপডেট করার Helper Function।
-
 function updateSellerCounters(transaction,infoSnap,changes){
-
  const oldData=infoSnap.exists()?infoSnap.data():{};
-
  const updatedData={};
-
  for(const field in changes){
-
   updatedData[field]=changeCount(
    oldData[field],
    changes[field]
   );
-
  }
-
  transaction.set(
   sellerInfoRef,
   updatedData,
   {merge:true}
  );
-
 }
 
 
@@ -377,9 +333,7 @@ function updateSellerCounters(transaction,infoSnap,changes){
 ===================================== */
 
 async function loadSuppliers(reset=false){
-
  if(reset){
-
   supplierGrid.innerHTML="";
   currentSuppliers=[];
   lastVisibleDoc=null;
@@ -390,34 +344,27 @@ async function loadSuppliers(reset=false){
  }
 
  try{
-
   let constraints=[
    orderBy("createdAt","desc"),
    limit(20)
   ];
 
   if(activeQueryFilters.verified!=="all"){
-
    constraints.unshift(
     where("verified","==",activeQueryFilters.verified==="true")
    );
-
   }
 
   if(activeQueryFilters.active!=="all"){
-
    constraints.unshift(
     where("active","==",activeQueryFilters.active==="true")
    );
-
   }
 
   if(activeQueryFilters.reject!=="all"){
-
    constraints.unshift(
     where("reject","==",activeQueryFilters.reject==="true")
    );
-
   }
 
   if(lastVisibleDoc&&!reset){
@@ -425,30 +372,24 @@ async function loadSuppliers(reset=false){
   }
 
   const finalQuery=query(supplierCollection,...constraints);
-
   const snapshot=await getDocs(finalQuery);
 
   skeletonContainer.classList.add("hidden");
 
   if(snapshot.empty&&reset){
-
    emptyState.classList.remove("hidden");
    return;
-
   }
 
   lastVisibleDoc=snapshot.docs[snapshot.docs.length-1]||null;
 
   snapshot.forEach(docSnap=>{
-
    const supplier={
     id:docSnap.id,
     ...docSnap.data()
    };
-
    currentSuppliers.push(supplier);
    renderSupplierCard(supplier);
-
   });
 
   loadMoreContainer.classList.toggle(
@@ -457,13 +398,9 @@ async function loadSuppliers(reset=false){
   );
 
  }catch(error){
-
   console.error("Load error:",error);
-
   skeletonContainer.classList.add("hidden");
-
   showToast("সাপ্লায়ার লোড করতে সমস্যা হয়েছে।","error");
-
  }
 
 }
@@ -474,12 +411,9 @@ async function loadSuppliers(reset=false){
 ===================================== */
 
 function renderSupplierCard(sup){
-
  const card=document.createElement("div");
-
  card.className=
  "bg-white rounded-2xl shadow-sm border border-orange-100 p-6 flex flex-col justify-between";
-
  card.dataset.id=sup.id;
 
  const isVerified=sup.verified===true;
@@ -497,56 +431,42 @@ function renderSupplierCard(sup){
  const back=safe(sup.nidBack||"");
 
  card.innerHTML=`
-
  <div>
-
   <div class="flex justify-between items-start mb-4">
-
    <div class="min-w-0">
     <h3 class="text-lg font-bold">${safe(sup.name||"নাম নেই")}</h3>
     <p class="text-xs text-gray-400 break-all">UID: ${safe(sup.uid||sup.id)}</p>
    </div>
-
    <div class="flex flex-col items-end gap-1 shrink-0">
-
     <span class="px-2 py-1 rounded-full text-xs font-semibold ${
      isVerified?"bg-emerald-50 text-emerald-700":"bg-amber-50 text-amber-700"
     }">
      ${isVerified?"Verified":"Unverified"}
     </span>
-
     <span class="px-2 py-1 rounded-full text-xs font-semibold ${
      isActive?"bg-blue-50 text-blue-700":"bg-gray-100 text-gray-600"
     }">
      ${isActive?"Active":"Inactive"}
     </span>
-
     ${isReject?`
      <span class="px-2 py-1 rounded-full text-xs bg-red-50 text-red-700">Rejected</span>
     `:""}
-
    </div>
-
   </div>
 
-
   <div class="grid grid-cols-2 gap-3 mb-4 bg-bgCustom p-3 rounded-xl text-sm">
-
    <div>
     <p class="text-xs text-gray-500">মোট প্রোডাক্ট</p>
     <b>${Number(sup.product)||0}</b>
    </div>
-
    <div>
     <p class="text-xs text-gray-500">অ্যাক্টিভ প্রোডাক্ট</p>
     <b>${Number(sup.activeProduct)||0}</b>
    </div>
-
    <div>
     <p class="text-xs text-gray-500">ব্যালেন্স</p>
     <b class="text-primary">৳ ${Number(sup.balance)||0}</b>
    </div>
-
    <div>
     <p class="text-xs text-gray-500">সাবস্ক্রিপশন</p>
     <b class="countdown-text text-xs"
@@ -554,57 +474,52 @@ function renderSupplierCard(sup){
        গণনা হচ্ছে...
     </b>
    </div>
-
   </div>
 
-
   <div class="space-y-2 text-xs text-gray-600 mb-4">
-
    <p class="break-all">Email: ${safe(sup.email||"নেই")}</p>
    <p>Phone: ${safe(sup.phone||"নেই")}</p>
    <p>WhatsApp: ${safe(sup.whatsApp||sup.phone||"নেই")}</p>
-
   </div>
-
 
   <div class="bg-gray-50 p-3 rounded-xl text-xs text-gray-500 mb-4">
    ${safe(sup.description||"কোনো বিবরণ দেওয়া হয়নি।")}
   </div>
 
+  <!-- NOTE SECTION -->
+  <div class="mb-4">
+   <label class="block text-xs text-gray-500 mb-1 font-semibold">নোট (Note)</label>
+   <div class="flex gap-2">
+    <input type="text" id="noteInput_${sup.id}" value="${safe(sup.note||"")}" placeholder="নোট লিখুন..." class="w-full px-3 py-2 bg-bgCustom border border-orange-200 rounded-xl text-xs outline-none focus:ring-1 focus:ring-primary">
+    <button data-action="saveNote" data-id="${sup.id}" class="bg-primary text-white px-3 py-2 rounded-xl text-xs shrink-0 font-semibold">সেভ</button>
+   </div>
+  </div>
 
   <div class="grid grid-cols-2 gap-2 mb-4">
-
    <div class="border rounded-xl p-2 text-center bg-bgCustom">
     <p class="text-xs mb-1">NID Front</p>
     <button data-image="${front}" class="preview-btn text-primary text-xs">
      প্রিভিউ দেখুন
     </button>
    </div>
-
    <div class="border rounded-xl p-2 text-center bg-bgCustom">
     <p class="text-xs mb-1">NID Back</p>
     <button data-image="${back}" class="preview-btn text-primary text-xs">
      প্রিভিউ দেখুন
     </button>
    </div>
-
   </div>
-
  </div>
 
-
  <div class="space-y-2 pt-4 border-t border-orange-100">
-
   <div class="grid grid-cols-2 gap-2">
-
    <button
     data-action="verify"
     class="py-2 rounded-xl text-xs font-semibold text-white ${
-     isVerified?"bg-amber-600":"bg-emerald-600"
-    }">
-    ${isVerified?"Unverify করুন":"Verified করুন"}
+     isVerified?"bg-gray-400 cursor-not-allowed":"bg-emerald-600"
+    }" ${isVerified?"disabled":""}>
+    ${isVerified?"Verified (নিষিদ্ধ)":"Verified করুন"}
    </button>
-
 
    <button
     data-action="active"
@@ -613,12 +528,9 @@ function renderSupplierCard(sup){
     }">
     ${isActive?"ইনেক্টিভ করুন":"এক্টিভ করুন"}
    </button>
-
   </div>
 
-
   <div class="grid grid-cols-2 gap-2">
-
    <button
     data-action="reject"
     class="py-2 rounded-xl text-xs font-semibold text-white ${
@@ -631,203 +543,138 @@ function renderSupplierCard(sup){
     href="/account?${encodeURIComponent(sup.uid||sup.id)}"
     target="_blank"
     rel="noopener noreferrer"
-    class="py-2 rounded-xl text-xs font-semibold text-primary bg-bgCustom border border-orange-200 text-center">
+    class="py-2 rounded-xl text-xs font-semibold text-primary bg-bgCustom border border-orange-200 text-center flex items-center justify-center">
     এডিট করুন
    </a>
-
   </div>
-
-  <button
-   data-action="delete"
-   class="w-full bg-red-50 text-red-600 border border-red-200 py-2 rounded-xl text-xs font-semibold">
-   ডিলিট করুন
-  </button>
-
  </div>
  `;
 
-
  // Event listeners
-
  card.querySelectorAll("[data-action]").forEach(button=>{
-
   button.addEventListener("click",()=>{
-
    const action=button.dataset.action;
 
    if(action==="verify"){
     handleVerify(sup.id,isVerified,sup.phone);
    }
-
    if(action==="active"){
     handleToggleActive(sup.id,isActive);
    }
-
    if(action==="reject"){
     handleToggleReject(sup.id,isReject);
    }
-
-   if(action==="delete"){
-    handleDeleteSupplier(sup.id,sup.name);
+   if(action==="saveNote"){
+    const input=card.querySelector(`#noteInput_${sup.id}`);
+    handleSaveNote(sup.id,input?input.value.trim():"");
    }
-
   });
-
  });
 
-
  card.querySelectorAll(".preview-btn").forEach(button=>{
-
   button.addEventListener("click",()=>{
    previewNIDImage(button.dataset.image);
   });
-
  });
 
-
  supplierGrid.appendChild(card);
-
 }
 
 
 /* =====================================
-   1. VERIFY / UNVERIFY
+   SAVE NOTE FUNCTION
+===================================== */
+
+async function handleSaveNote(docId,noteText){
+ try{
+  const supplierRef=doc(db,"supplyers",docId);
+  await updateDoc(supplierRef,{
+   note:noteText
+  });
+  showToast("নোট সফলভাবে সেভ হয়েছে।");
+ }catch(error){
+  console.error(error);
+  showToast("নোট সেভ করা যায়নি।","error");
+ }
+}
+
+
+/* =====================================
+   1. VERIFY (ONLY VERIFY, NO UNVERIFY)
 ===================================== */
 
 async function handleVerify(docId,currentVerified,phone){
+ if(currentVerified){
+  showToast("আনভেরিফাইড করা নিষিদ্ধ!","error");
+  return;
+ }
 
- const nextVerified=!currentVerified;
+ openConfirmModal(
+  "সাপ্লায়ার ভেরিফিকেশন",
+  "আপনি কি এই সাপ্লায়ারকে Verified করতে চান?",
+  async()=>{
+   try{
+    const supplierRef=doc(db,"supplyers",docId);
+    const normalizedPhone=(phone||"").replace(/[^0-9]/g,"");
+    const registrationRef=doc(db,"registrations",normalizedPhone||docId);
 
- const title=nextVerified?"সাপ্লায়ার ভেরিফিকেশন":"সাপ্লায়ার আনভেরিফিকেশন";
+    await runTransaction(db,async transaction=>{
+     const supSnap=await transaction.get(supplierRef);
+     const infoSnap=await transaction.get(sellerInfoRef);
 
- const description=nextVerified
- ? "আপনি কি এই সাপ্লায়ারকে Verified করতে চান?"
- : "আপনি কি এই সাপ্লায়ারকে Unverified করতে চান?";
+     if(!supSnap.exists()){
+      throw new Error("Supplier does not exist!");
+     }
+     const supData=supSnap.data();
+     if(supData.verified===true){
+      throw new Error("এই সাপ্লায়ার ইতিমধ্যে Verified.");
+     }
 
- openConfirmModal(title,description,async()=>{
-
-  try{
-
-   const supplierRef=doc(db,"supplyers",docId);
-
-   const normalizedPhone=(phone||"").replace(/[^0-9]/g,"");
-
-   const registrationRef=doc(
-    db,
-    "registrations",
-    normalizedPhone||docId
-   );
-
-
-   await runTransaction(db,async transaction=>{
-
-    // প্রথমে সব ডকুমেন্ট Read করতে হবে।
-
-    const supSnap=await transaction.get(supplierRef);
-    const infoSnap=await transaction.get(sellerInfoRef);
-
-    if(!supSnap.exists()){
-     throw new Error("Supplier does not exist!");
-    }
-
-    const supData=supSnap.data();
-
-    const actualVerified=supData.verified===true;
-
-    if(actualVerified===nextVerified){
-     throw new Error("এই সাপ্লায়ারের Verification Status ইতিমধ্যে পরিবর্তিত হয়েছে।");
-    }
-
-
-    // Verified হলে:
-    // verifiedSeller +1
-    // unverified -1
-
-    // Unverified হলে:
-    // verifiedSeller -1
-    // unverified +1
-
-    const changes=nextVerified
-    ?{
+     const changes={
       verifiedSeller:+1,
       unverified:-1
-     }
-    :{
-      verifiedSeller:-1,
-      unverified:+1
      };
 
+     transaction.update(supplierRef,{
+      verified:true
+     });
 
-    transaction.update(supplierRef,{
-     verified:nextVerified
-    });
-
-
-    updateSellerCounters(
-     transaction,
-     infoSnap,
-     changes
-    );
-
-
-    // আগের Registration Logic শুধু Verify করার সময়।
-
-    if(nextVerified){
+     updateSellerCounters(transaction,infoSnap,changes);
 
      transaction.set(
       registrationRef,
       {used:true},
       {merge:true}
      );
+    });
 
-    }
-
-   });
-
-
-   showToast(
-    nextVerified
-    ?"সাপ্লায়ার Verified হয়েছে এবং কাউন্টার আপডেট হয়েছে।"
-    :"সাপ্লায়ার Unverified হয়েছে এবং কাউন্টার আপডেট হয়েছে।"
-   );
-
-   loadSuppliers(true);
-
-  }catch(error){
-
-   console.error("Verification error:",error);
-
-   showToast(
-    error.message||"Verification আপডেট করা যায়নি।",
-    "error"
-   );
-
+    showToast("সাপ্লায়ার Verified হয়েছে এবং কাউন্টার আপডেট হয়েছে।");
+    loadSuppliers(true);
+   }catch(error){
+    console.error("Verification error:",error);
+    showToast(error.message||"Verification আপডেট করা যায়নি।","error");
+   }
   }
-
- });
-
+ );
 }
 
 
 /* =====================================
-   2. ACTIVE / INACTIVE
+   2 & 3. ACTIVE / INACTIVE WITH ALREADYACTIVE LOGIC
 ===================================== */
 
 async function handleToggleActive(docId,currentActive){
-
  const nextActive=!currentActive;
+ const actionTitle=nextActive?"Active":"Inactive";
 
  openConfirmModal(
   "স্ট্যাটাস পরিবর্তন",
-  `আপনি কি এই সাপ্লায়ারকে ${nextActive?"Active":"Inactive"} করতে চান?`,
+  `আপনি কি এই সাপ্লায়ারকে ${actionTitle} করতে চান?`,
   async()=>{
-
    try{
-
     const supplierRef=doc(db,"supplyers",docId);
 
     await runTransaction(db,async transaction=>{
-
      const supSnap=await transaction.get(supplierRef);
      const infoSnap=await transaction.get(sellerInfoRef);
 
@@ -835,209 +682,75 @@ async function handleToggleActive(docId,currentActive){
       throw new Error("Supplier not found!");
      }
 
-     const actualActive=supSnap.data().active===true;
+     const supData=supSnap.data();
+     const actualActive=supData.active===true;
 
      if(actualActive===nextActive){
       throw new Error("Status ইতিমধ্যে পরিবর্তিত হয়েছে।");
      }
 
+     const alreadyActive=supData.alreadyActive===true;
+     const changes={};
+     const updatePayload={active:nextActive};
 
-     // Active করলে:
-     // active +1, inactive -1
-
-     // Inactive করলে:
-     // active -1, inactive +1
-
-     const changes=nextActive
-     ?{
-       active:+1,
-       inactive:-1
+     if(nextActive){
+      // Activating
+      changes.active=(changes.active||0)+1;
+      if(actualActive===false){
+       changes.inactive=(changes.inactive||0)-1;
       }
-     :{
-       active:-1,
-       inactive:+1
-      };
+      if(!alreadyActive){
+       updatePayload.alreadyActive=true;
+      }
+     }else{
+      // Inactivating
+      if(alreadyActive){
+       changes.active=(changes.active||0)-1;
+       changes.inactive=(changes.inactive||0)+1;
+      }else{
+       // alreadyActive নেই -> শুধুমাত্র inactive থেকে ১ কমবে
+       changes.inactive=(changes.inactive||0)-1;
+      }
+     }
 
-
-     transaction.update(supplierRef,{
-      active:nextActive
-     });
-
-
-     updateSellerCounters(
-      transaction,
-      infoSnap,
-      changes
-     );
-
+     transaction.update(supplierRef,updatePayload);
+     updateSellerCounters(transaction,infoSnap,changes);
     });
 
-
-    showToast(
-     "Status এবং Informations Counter সফলভাবে আপডেট হয়েছে।"
-    );
-
+    showToast("Status এবং কাউন্টার সফলভাবে আপডেট হয়েছে।");
     loadSuppliers(true);
-
    }catch(error){
-
     console.error("Active update error:",error);
-
-    showToast(
-     error.message||"Status পরিবর্তন করা যায়নি।",
-     "error"
-    );
-
+    showToast(error.message||"Status পরিবর্তন করা যায়নি।","error");
    }
-
   }
  );
-
 }
 
 
 /* =====================================
-   3. REJECT / UNREJECT
+   REJECT / UNREJECT
 ===================================== */
 
 async function handleToggleReject(docId,currentReject){
-
  const nextReject=!currentReject;
-
  openConfirmModal(
   "Reject Status",
   `আপনি কি এই সাপ্লায়ারকে ${nextReject?"Reject":"Unreject"} করতে চান?`,
   async()=>{
-
    try{
-
     const supplierRef=doc(db,"supplyers",docId);
-
     await updateDoc(supplierRef,{
      reject:nextReject
     });
-
     showToast("Reject Status আপডেট হয়েছে।");
-
     loadSuppliers(true);
-
    }catch(error){
-
     console.error(error);
-
     showToast("Reject Status পরিবর্তন করা যায়নি।","error");
-
    }
-
   }
  );
-
-}
-
-
-/* =====================================
-   4. DELETE SUPPLIER
-===================================== */
-
-async function handleDeleteSupplier(docId,supName){
-
- openConfirmModal(
-  "সাপ্লায়ার ডিলিট",
-  `"${supName||"এই সাপ্লায়ার"}" অ্যাকাউন্টটি ডিলিট করতে চান? এই কাজটি পূর্বাবস্থায় ফেরানো যাবে না।`,
-  async()=>{
-
-   try{
-
-    const supplierRef=doc(db,"supplyers",docId);
-
-
-    await runTransaction(db,async transaction=>{
-
-     // Read both documents first
-
-     const supSnap=await transaction.get(supplierRef);
-     const infoSnap=await transaction.get(sellerInfoRef);
-
-     if(!supSnap.exists()){
-      throw new Error("Supplier already deleted!");
-     }
-
-     const data=supSnap.data();
-
-
-     // Supplier Verified থাকলে:
-     // verifiedSeller -1
-
-     // Supplier Unverified থাকলে:
-     // unverified -1
-
-     // Supplier Active থাকলে:
-     // active -1
-
-     // Supplier Inactive থাকলে:
-     // inactive -1
-
-     const changes={};
-
-
-     if(data.verified===true){
-
-      changes.verifiedSeller=-1;
-
-     }else{
-
-      changes.unverified=-1;
-
-     }
-
-
-     if(data.active===true){
-
-      changes.active=-1;
-
-     }else{
-
-      changes.inactive=-1;
-
-     }
-
-
-     // Update informations/seller
-
-     updateSellerCounters(
-      transaction,
-      infoSnap,
-      changes
-     );
-
-
-     // Delete supplier document
-
-     transaction.delete(supplierRef);
-
-    });
-
-
-    showToast(
-     "সাপ্লায়ার ডিলিট হয়েছে এবং সব কাউন্টার আপডেট হয়েছে।"
-    );
-
-    loadSuppliers(true);
-
-   }catch(error){
-
-    console.error("Delete error:",error);
-
-    showToast(
-     error.message||"সাপ্লায়ার ডিলিট করা যায়নি।",
-     "error"
-    );
-
-   }
-
-  }
- );
-
 }
 
 
@@ -1046,28 +759,22 @@ async function handleDeleteSupplier(docId,supName){
 ===================================== */
 
 function startSharedCountdownTimer(){
-
  if(sharedTimerInterval){
   clearInterval(sharedTimerInterval);
  }
 
  sharedTimerInterval=setInterval(()=>{
-
   const elements=document.querySelectorAll(".countdown-text");
-
   const now=Date.now();
 
   elements.forEach(el=>{
-
    const expiry=parseInt(el.dataset.expiry||"0",10);
-
    if(!expiry){
     el.innerText="সাবস্ক্রিপশন চালু নেই";
     return;
    }
 
    const diff=expiry-now;
-
    if(diff<=0){
     el.innerText="মেয়াদ শেষ";
     return;
@@ -1078,33 +785,25 @@ function startSharedCountdownTimer(){
    const minutes=Math.floor(diff%3600000/60000);
    const seconds=Math.floor(diff%60000/1000);
 
-   el.innerText=
-   `${days} দিন : ${hours} ঘণ্টা : ${minutes} মি : ${seconds} সে`;
-
+   el.innerText=`${days} দিন : ${hours} ঘণ্টা : ${minutes} মি : ${seconds} সে`;
   });
-
  },1000);
-
 }
 
 
 /* =====================================
-   SEARCH
+   7. SMART SEARCH (Phone, Email, UID)
 ===================================== */
 
 $("searchInput").addEventListener("input",event=>{
-
  clearTimeout(searchDebounceTimer);
-
  const value=event.target.value.trim();
+ const searchType=$("searchTypeSelect").value;
 
  searchDebounceTimer=setTimeout(async()=>{
-
   if(!value){
-
    loadSuppliers(true);
    return;
-
   }
 
   supplierGrid.innerHTML="";
@@ -1113,84 +812,55 @@ $("searchInput").addEventListener("input",event=>{
   skeletonContainer.classList.remove("hidden");
   loadMoreContainer.classList.add("hidden");
 
-
   try{
+   let finalQuery=null;
 
-   // UID Search
-
-   if(value.length>=20&&!value.includes("@")){
-
-    const snap=await getDoc(
-     doc(db,"supplyers",value)
-    );
-
+   if(searchType==="uid"){
+    const snap=await getDoc(doc(db,"supplyers",value));
     skeletonContainer.classList.add("hidden");
-
     if(snap.exists()){
-
-     const supplier={
-      id:snap.id,
-      ...snap.data()
-     };
-
+     const supplier={id:snap.id,...snap.data()};
      currentSuppliers=[supplier];
      renderSupplierCard(supplier);
-
     }else{
-
      emptyState.classList.remove("hidden");
-
     }
-
     return;
-
+   }else if(searchType==="phone"){
+    finalQuery=query(
+     supplierCollection,
+     where("phone",">=",value),
+     where("phone","<=",value+"\uf8ff"),
+     limit(20)
+    );
+   }else if(searchType==="email"){
+    finalQuery=query(
+     supplierCollection,
+     where("email",">=",value.toLowerCase()),
+     where("email","<=",value.toLowerCase()+"\uf8ff"),
+     limit(20)
+    );
    }
 
-
-   // Email Prefix Search
-
-   const emailQuery=query(
-    supplierCollection,
-    where("email",">=",value.toLowerCase()),
-    where("email","<=",value.toLowerCase()+"\uf8ff"),
-    limit(20)
-   );
-
-   const snapshot=await getDocs(emailQuery);
-
-   skeletonContainer.classList.add("hidden");
-
-   if(snapshot.empty){
-
-    emptyState.classList.remove("hidden");
-    return;
-
+   if(finalQuery){
+    const snapshot=await getDocs(finalQuery);
+    skeletonContainer.classList.add("hidden");
+    if(snapshot.empty){
+     emptyState.classList.remove("hidden");
+     return;
+    }
+    snapshot.forEach(docSnap=>{
+     const supplier={id:docSnap.id,...docSnap.data()};
+     currentSuppliers.push(supplier);
+     renderSupplierCard(supplier);
+    });
    }
-
-   snapshot.forEach(docSnap=>{
-
-    const supplier={
-     id:docSnap.id,
-     ...docSnap.data()
-    };
-
-    currentSuppliers.push(supplier);
-    renderSupplierCard(supplier);
-
-   });
-
   }catch(error){
-
    console.error(error);
-
    skeletonContainer.classList.add("hidden");
-
    showToast("সার্চ করতে সমস্যা হয়েছে।","error");
-
   }
-
  },500);
-
 });
 
 
@@ -1199,29 +869,21 @@ $("searchInput").addEventListener("input",event=>{
 ===================================== */
 
 $("filterVerified").addEventListener("change",event=>{
-
  activeQueryFilters.verified=event.target.value;
  $("searchInput").value="";
  loadSuppliers(true);
-
 });
 
-
 $("filterActive").addEventListener("change",event=>{
-
  activeQueryFilters.active=event.target.value;
  $("searchInput").value="";
  loadSuppliers(true);
-
 });
 
-
 $("filterReject").addEventListener("change",event=>{
-
  activeQueryFilters.reject=event.target.value;
  $("searchInput").value="";
  loadSuppliers(true);
-
 });
 
 
@@ -1230,9 +892,7 @@ $("filterReject").addEventListener("change",event=>{
 ===================================== */
 
 $("loadMoreBtn").addEventListener("click",()=>{
-
  loadSuppliers(false);
-
 });
 
 
@@ -1241,29 +901,21 @@ $("loadMoreBtn").addEventListener("click",()=>{
 ===================================== */
 
 function previewNIDImage(imageKey){
-
  if(!imageKey){
-
   showToast("NID ছবি পাওয়া যায়নি।","error");
   return;
-
  }
-
  const imageUrl=imageKey.startsWith("http")
  ?imageKey
  :`https://paikarisell-image.ghotimarket.com/${imageKey}`;
 
  $("previewModalImg").src=imageUrl;
-
  $("imageModal").classList.remove("hidden");
-
 }
 
 $("closeImageModal").addEventListener("click",()=>{
-
  $("imageModal").classList.add("hidden");
  $("previewModalImg").src="";
-
 });
 
 
@@ -1272,49 +924,32 @@ $("closeImageModal").addEventListener("click",()=>{
 ===================================== */
 
 function openConfirmModal(title,description,callback){
-
  $("modalTitle").innerText=title;
  $("modalDesc").innerText=description;
-
  modalConfirmCallback=callback;
-
  confirmModal.classList.remove("hidden");
-
 }
 
-
 $("modalCancelBtn").addEventListener("click",()=>{
-
  confirmModal.classList.add("hidden");
  modalConfirmCallback=null;
-
 });
 
-
 $("modalConfirmBtn").addEventListener("click",async()=>{
-
  if(!modalConfirmCallback)return;
-
  const callback=modalConfirmCallback;
-
  modalConfirmCallback=null;
 
  $("modalConfirmBtn").disabled=true;
  $("modalConfirmBtn").innerText="অপেক্ষা করুন...";
 
  try{
-
   await callback();
-
  }finally{
-
   confirmModal.classList.add("hidden");
-
   $("modalConfirmBtn").disabled=false;
   $("modalConfirmBtn").innerText="নিশ্চিত করুন";
-
  }
-
 });
 
 </script>
