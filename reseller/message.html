@@ -1,0 +1,2000 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex, nofollow" />
+  <meta name="description" content="Reseller Ghoti Market Admin Panel থেকে রিসেলারদের জন্য মেসেজ টেমপ্লেট তৈরি ও পরিচালনা করুন।" />
+  <title>মেসেজ টেমপ্লেট ম্যানেজমেন্ট | Reseller Ghoti Market</title>
+  <link rel="icon" type="image/png" href="https://reseller.ghotimarket.com/photo/favicon.png" />
+
+  <!-- Google Font: Hind Siliguri -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+  <style>
+    :root {
+      --primary: #FF6B35;
+      --secondary: #FF6A00;
+      --accent: #FFA500;
+      --background: #FFF7F1;
+      --text: #171717;
+      --white: #FFFFFF;
+      --success: #16A34A;
+      --danger: #DC2626;
+      --border: #F2DFD3;
+      --muted: #6B7280;
+      --card-shadow: 0 10px 28px -6px rgba(255, 107, 53, 0.12), 0 4px 12px -2px rgba(23, 23, 23, 0.04);
+      --hover-shadow: 0 16px 36px -8px rgba(255, 106, 0, 0.2), 0 6px 16px -4px rgba(23, 23, 23, 0.06);
+      --radius-lg: 16px;
+      --radius-md: 12px;
+      --radius-sm: 8px;
+      --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html, body {
+      max-width: 100%;
+      overflow-x: hidden;
+      font-family: 'Hind Siliguri', -apple-system, BlinkMacSystemFont, sans-serif;
+      background-color: var(--background);
+      color: var(--text);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Fullscreen Auth & Loading Gate */
+    #authGate {
+      position: fixed;
+      inset: 0;
+      background: var(--background);
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      text-align: center;
+    }
+
+    .gate-card {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 36px 28px;
+      max-width: 420px;
+      width: 100%;
+      box-shadow: var(--card-shadow);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .spinner {
+      width: 44px;
+      height: 44px;
+      border: 4px solid #FFE4D4;
+      border-top-color: var(--primary);
+      border-radius: 50%;
+      animation: spin 0.85s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    /* Header */
+    .app-header {
+      background: var(--white);
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 2px 12px rgba(23, 23, 23, 0.03);
+    }
+
+    .header-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 14px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .brand-group {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .brand-logo {
+      height: 42px;
+      width: auto;
+      object-fit: contain;
+      display: block;
+    }
+
+    .header-divider {
+      width: 1px;
+      height: 28px;
+      background: var(--border);
+    }
+
+    .page-title-wrap {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .page-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--text);
+      letter-spacing: -0.01em;
+    }
+
+    .role-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 12px;
+      border-radius: 999px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    .role-badge.owner {
+      background: linear-gradient(135deg, #FFF0E6 0%, #FFE0CC 100%);
+      color: var(--secondary);
+      border: 1px solid #FFC49E;
+    }
+
+    .role-badge.admin {
+      background: #EEF6FF;
+      color: #1D4ED8;
+      border: 1px solid #BFDBFE;
+    }
+
+    .btn-dashboard {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 18px;
+      background: var(--background);
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      font-family: inherit;
+      font-size: 0.92rem;
+      font-weight: 600;
+      text-decoration: none;
+      transition: var(--transition);
+    }
+
+    .btn-dashboard:hover {
+      background: #FFEBE0;
+      border-color: var(--primary);
+      color: var(--secondary);
+      transform: translateY(-1px);
+    }
+
+    /* Main Container */
+    .main-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 28px 20px 64px;
+      display: flex;
+      flex-direction: column;
+      gap: 32px;
+    }
+
+    /* Creation Card */
+    .premium-card {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 28px;
+      box-shadow: var(--card-shadow);
+    }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 22px;
+      flex-wrap: wrap;
+    }
+
+    .section-title-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .icon-box {
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      color: var(--white);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      box-shadow: 0 4px 12px rgba(255, 107, 53, 0.28);
+    }
+
+    .section-heading {
+      font-size: 1.35rem;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 18px;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+    }
+
+    .form-label {
+      font-size: 0.96rem;
+      font-weight: 600;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .required-star {
+      color: var(--danger);
+      font-weight: 700;
+    }
+
+    .form-input,
+    .form-textarea {
+      width: 100%;
+      padding: 13px 16px;
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-md);
+      background: #FFFCFA;
+      color: var(--text);
+      font-family: inherit;
+      font-size: 1rem;
+      transition: var(--transition);
+    }
+
+    .form-input:focus,
+    .form-textarea:focus {
+      outline: none;
+      border-color: var(--primary);
+      background: var(--white);
+      box-shadow: 0 0 0 4px rgba(255, 107, 53, 0.14);
+    }
+
+    .form-textarea {
+      min-height: 140px;
+      resize: vertical;
+      line-height: 1.65;
+    }
+
+    .form-actions {
+      display: flex;
+      justify-content: flex-end;
+      margin-top: 6px;
+    }
+
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 9px;
+      padding: 13px 26px;
+      background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+      color: var(--white);
+      border: none;
+      border-radius: var(--radius-md);
+      font-family: inherit;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 8px 20px -4px rgba(255, 106, 0, 0.42);
+      transition: var(--transition);
+    }
+
+    .btn-primary:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 24px -4px rgba(255, 106, 0, 0.52);
+    }
+
+    .btn-primary:disabled {
+      opacity: 0.65;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    /* Templates Toolbar & Search */
+    .list-header-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+      margin-bottom: 20px;
+    }
+
+    .count-pill {
+      display: inline-flex;
+      align-items: center;
+      padding: 4px 12px;
+      border-radius: 999px;
+      background: #FFEBE0;
+      color: var(--secondary);
+      font-size: 0.85rem;
+      font-weight: 700;
+    }
+
+    .search-wrapper {
+      position: relative;
+      flex: 1;
+      max-width: 440px;
+      min-width: 260px;
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--muted);
+      pointer-events: none;
+    }
+
+    .search-input {
+      width: 100%;
+      padding: 12px 40px 12px 42px;
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-md);
+      background: var(--white);
+      color: var(--text);
+      font-family: inherit;
+      font-size: 0.96rem;
+      box-shadow: 0 2px 8px rgba(23, 23, 23, 0.03);
+      transition: var(--transition);
+    }
+
+    .search-input:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 4px rgba(255, 107, 53, 0.14);
+    }
+
+    .search-clear-btn {
+      position: absolute;
+      right: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: transparent;
+      border: none;
+      color: var(--muted);
+      cursor: pointer;
+      padding: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+    }
+
+    .search-clear-btn:hover {
+      background: #F3F4F6;
+      color: var(--text);
+    }
+
+    /* Templates Grid */
+    .templates-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 20px;
+      align-items: start;
+    }
+
+    .template-card {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 22px;
+      box-shadow: var(--card-shadow);
+      transition: var(--transition);
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .template-card::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, var(--primary), var(--accent));
+    }
+
+    .template-card:hover {
+      transform: translateY(-3px);
+      box-shadow: var(--hover-shadow);
+      border-color: #FFCCA8;
+    }
+
+    .card-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .card-title {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--text);
+      word-break: break-word;
+    }
+
+    .card-date {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 0.8rem;
+      color: var(--muted);
+      background: var(--background);
+      padding: 4px 10px;
+      border-radius: 999px;
+      white-space: nowrap;
+      flex-shrink: 0;
+      border: 1px solid var(--border);
+    }
+
+    .card-message-box {
+      background: #FFFAF6;
+      border: 1px solid #F7E5D8;
+      border-radius: var(--radius-md);
+      padding: 14px 16px;
+      font-size: 0.98rem;
+      color: #262626;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+      overflow-wrap: break-word;
+      line-height: 1.65;
+    }
+
+    .card-note-box {
+      background: #FFF8EB;
+      border-left: 3.5px solid var(--accent);
+      border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+      padding: 10px 14px;
+      font-size: 0.88rem;
+      color: #78350F;
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      word-break: break-word;
+    }
+
+    .card-note-box svg {
+      flex-shrink: 0;
+      margin-top: 2px;
+      color: #D97706;
+    }
+
+    .card-actions {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding-top: 8px;
+      border-top: 1px solid #F5EAE2;
+      flex-wrap: wrap;
+    }
+
+    .btn-copy {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 9px 16px;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      color: var(--white);
+      border: none;
+      border-radius: var(--radius-sm);
+      font-family: inherit;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .btn-copy:hover {
+      filter: brightness(1.06);
+      transform: translateY(-1px);
+    }
+
+    .secondary-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-icon-action {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 13px;
+      border-radius: var(--radius-sm);
+      font-family: inherit;
+      font-size: 0.88rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition);
+      border: 1px solid transparent;
+    }
+
+    .btn-edit {
+      background: #FFF3EB;
+      color: var(--secondary);
+      border-color: #FFD8BF;
+    }
+
+    .btn-edit:hover {
+      background: #FFE5D4;
+    }
+
+    .btn-delete {
+      background: #FEF2F2;
+      color: var(--danger);
+      border-color: #FECACA;
+    }
+
+    .btn-delete:hover:not(:disabled) {
+      background: #FEE2E2;
+    }
+
+    .btn-delete:disabled {
+      opacity: 0.55;
+      cursor: not-allowed;
+    }
+
+    /* Loading Skeletons */
+    .skeleton-card {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 22px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .skeleton-line {
+      background: linear-gradient(90deg, #F5EAE2 25%, #FFF3EB 50%, #F5EAE2 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.4s infinite;
+      border-radius: 8px;
+    }
+
+    @keyframes shimmer {
+      0% { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
+    }
+
+    /* Empty & Error States */
+    .state-box {
+      grid-column: 1 / -1;
+      background: var(--white);
+      border: 1.5px dashed var(--border);
+      border-radius: var(--radius-lg);
+      padding: 48px 24px;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .state-icon-circle {
+      width: 68px;
+      height: 68px;
+      border-radius: 50%;
+      background: #FFF0E6;
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .state-title {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .state-desc {
+      font-size: 0.95rem;
+      color: var(--muted);
+      max-width: 440px;
+    }
+
+    /* Custom Modals */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(23, 23, 23, 0.58);
+      backdrop-filter: blur(4px);
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      animation: fadeIn 0.2s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    .modal-dialog {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      width: 100%;
+      max-width: 560px;
+      max-height: 92vh;
+      overflow-y: auto;
+      box-shadow: 0 24px 48px -12px rgba(23, 23, 23, 0.28);
+      animation: slideUp 0.22s ease;
+    }
+
+    .modal-dialog.modal-sm {
+      max-width: 430px;
+    }
+
+    @keyframes slideUp {
+      from { transform: translateY(14px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    .modal-header {
+      padding: 20px 24px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .modal-title-wrap {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .modal-title {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .modal-close-btn {
+      background: transparent;
+      border: none;
+      color: var(--muted);
+      cursor: pointer;
+      padding: 6px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: var(--transition);
+    }
+
+    .modal-close-btn:hover {
+      background: #F3F4F6;
+      color: var(--text);
+    }
+
+    .modal-body {
+      padding: 22px 24px;
+    }
+
+    .modal-footer {
+      padding: 16px 24px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .btn-secondary {
+      padding: 10px 18px;
+      background: #F3F4F6;
+      color: var(--text);
+      border: 1px solid #E5E7EB;
+      border-radius: var(--radius-sm);
+      font-family: inherit;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .btn-secondary:hover {
+      background: #E5E7EB;
+    }
+
+    .btn-danger {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 10px 20px;
+      background: var(--danger);
+      color: var(--white);
+      border: none;
+      border-radius: var(--radius-sm);
+      font-family: inherit;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .btn-danger:hover:not(:disabled) {
+      background: #B91C1C;
+    }
+
+    .btn-danger:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    /* Center Status Popup */
+    .popup-center-content {
+      padding: 30px 24px;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .popup-badge-icon {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .popup-badge-icon.success {
+      background: #DCFCE7;
+      color: var(--success);
+    }
+
+    .popup-badge-icon.error {
+      background: #FEE2E2;
+      color: var(--danger);
+    }
+
+    .popup-badge-icon.warning {
+      background: #FEF3C7;
+      color: #D97706;
+    }
+
+    /* Toast Notifications */
+    .toast-container {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      z-index: 2000;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      max-width: calc(100vw - 32px);
+      pointer-events: none;
+    }
+
+    .toast-item {
+      pointer-events: auto;
+      background: var(--white);
+      color: var(--text);
+      border-radius: var(--radius-md);
+      padding: 14px 18px;
+      box-shadow: 0 14px 30px rgba(23, 23, 23, 0.16);
+      border-left: 4px solid var(--primary);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 280px;
+      max-width: 400px;
+      animation: toastIn 0.25s ease;
+    }
+
+    .toast-item.success {
+      border-left-color: var(--success);
+    }
+
+    .toast-item.error {
+      border-left-color: var(--danger);
+    }
+
+    @keyframes toastIn {
+      from { transform: translateX(24px); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+
+    .toast-msg {
+      font-size: 0.95rem;
+      font-weight: 600;
+      flex: 1;
+    }
+
+    /* Responsive Rules */
+    @media (max-width: 860px) {
+      .templates-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .header-inner {
+        padding: 12px 16px;
+      }
+      .header-divider {
+        display: none;
+      }
+      .brand-logo {
+        height: 36px;
+      }
+      .page-title {
+        font-size: 1.08rem;
+      }
+      .btn-dashboard {
+        width: 100%;
+        justify-content: center;
+      }
+      .main-container {
+        padding: 20px 14px 48px;
+        gap: 24px;
+      }
+      .premium-card {
+        padding: 20px 16px;
+      }
+      .search-wrapper {
+        max-width: 100%;
+        width: 100%;
+      }
+      .card-actions {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      .btn-copy {
+        width: 100%;
+        justify-content: center;
+      }
+      .secondary-actions {
+        width: 100%;
+      }
+      .btn-icon-action {
+        flex: 1;
+        justify-content: center;
+      }
+      .toast-container {
+        right: 16px;
+        left: 16px;
+        bottom: 16px;
+      }
+      .toast-item {
+        min-width: 0;
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Authentication & Permission Verification Gate -->
+  <div id="authGate">
+    <div class="gate-card" id="gateLoadingView">
+      <img src="https://reseller.ghotimarket.com/photo/logo.png" alt="Reseller Ghoti Market" style="height: 44px;" />
+      <div class="spinner"></div>
+      <h2 style="font-size: 1.15rem; font-weight: 700;">অ্যাক্সেস যাচাই করা হচ্ছে...</h2>
+      <p style="font-size: 0.92rem; color: var(--muted);">অনুগ্রহ করে অপেক্ষা করুন, আপনার অ্যাডমিন পারমিশন পরীক্ষা করা হচ্ছে।</p>
+    </div>
+
+    <div class="gate-card hidden" id="gateErrorView">
+      <div class="popup-badge-icon error">
+        <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"></circle>
+          <line x1="12" y1="8" x2="12" y2="12"></line>
+          <line x1="12" y1="16" x2="12.01" y2="16"></line>
+        </svg>
+      </div>
+      <h2 id="gateErrorTitle" style="font-size: 1.18rem; font-weight: 700;">সংযোগ সমস্যা হয়েছে</h2>
+      <p id="gateErrorMessage" style="font-size: 0.94rem; color: var(--muted);">সার্ভারের সাথে সংযোগ স্থাপন করা সম্ভব হয়নি। আপনার ইন্টারনেট সংযোগ পরীক্ষা করে আবার চেষ্টা করুন।</p>
+      <button type="button" id="gateRetryBtn" class="btn-primary" style="width: 100%;">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="23 4 23 10 17 10"></polyline>
+          <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
+        </svg>
+        আবার চেষ্টা করুন
+      </button>
+    </div>
+  </div>
+
+  <!-- Main Management App (Hidden until authorized) -->
+  <div id="appShell" class="hidden">
+    <!-- Dashboard Header -->
+    <header class="app-header">
+      <div class="header-inner">
+        <div class="brand-group">
+          <img src="https://reseller.ghotimarket.com/photo/logo.png" alt="Reseller Ghoti Market Logo" class="brand-logo" />
+          <div class="header-divider"></div>
+          <div class="page-title-wrap">
+            <h1 class="page-title">মেসেজ টেমপ্লেট ম্যানেজমেন্ট</h1>
+            <span id="roleBadge" class="role-badge">ADMIN</span>
+          </div>
+        </div>
+
+        <a href="https://admin.ghotimarket.com/reseller/dashboard" class="btn-dashboard">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="19" y1="12" x2="5" y2="12"></line>
+            <polyline points="12 19 5 12 12 5"></polyline>
+          </svg>
+          Dashboard এ ফিরে যান
+        </a>
+      </div>
+    </header>
+
+    <main class="main-container">
+      <!-- Create New Template Card -->
+      <section class="premium-card" aria-labelledby="createHeading">
+        <div class="section-header">
+          <div class="section-title-group">
+            <div class="icon-box">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="12" y1="5" x2="12" y2="19"></line>
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+              </svg>
+            </div>
+            <h2 id="createHeading" class="section-heading">নতুন মেসেজ টেমপ্লেট তৈরি করুন</h2>
+          </div>
+        </div>
+
+        <form id="createTemplateForm" class="form-grid" novalidate>
+          <div class="form-group">
+            <label for="templateTitle" class="form-label">
+              মেসেজের শিরোনাম <span class="required-star">*</span>
+            </label>
+            <input
+              type="text"
+              id="templateTitle"
+              class="form-input"
+              placeholder="যেমন: অর্ডার কনফার্মেশন মেসেজ"
+              required
+              maxlength="200"
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="templateMessage" class="form-label">
+              মেসেজ লিখুন <span class="required-star">*</span>
+            </label>
+            <textarea
+              id="templateMessage"
+              class="form-textarea"
+              placeholder="এখানে আপনার সম্পূর্ণ মেসেজ লিখুন..."
+              required
+            ></textarea>
+          </div>
+
+          <div class="form-group">
+            <label for="templateNote" class="form-label">
+              অতিরিক্ত নোট (ঐচ্ছিক)
+            </label>
+            <input
+              type="text"
+              id="templateNote"
+              class="form-input"
+              placeholder="এই মেসেজটি কখন ব্যবহার করবেন তা লিখুন..."
+              maxlength="300"
+            />
+          </div>
+
+          <div class="form-actions">
+            <button type="submit" id="saveTemplateBtn" class="btn-primary">
+              <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+                <polyline points="17 21 17 13 7 13 7 21"></polyline>
+                <polyline points="7 3 7 8 15 8"></polyline>
+              </svg>
+              <span id="saveBtnText">মেসেজ সংরক্ষণ করুন</span>
+            </button>
+          </div>
+        </form>
+      </section>
+
+      <!-- Existing Message Templates Section -->
+      <section aria-labelledby="listHeading">
+        <div class="list-header-bar">
+          <div class="section-title-group">
+            <div class="icon-box">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+              </svg>
+            </div>
+            <h2 id="listHeading" class="section-heading">সকল মেসেজ টেমপ্লেট</h2>
+            <span id="templateCountBadge" class="count-pill">০ টি</span>
+          </div>
+
+          <div class="search-wrapper">
+            <svg class="search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="11" cy="11" r="8"></circle>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+            <input
+              type="text"
+              id="searchInput"
+              class="search-input"
+              placeholder="মেসেজের শিরোনাম বা লেখা দিয়ে খুঁজুন..."
+              autocomplete="off"
+            />
+            <button type="button" id="clearSearchBtn" class="search-clear-btn hidden" aria-label="অনুসন্ধান মুছুন">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <div id="templatesContainer" class="templates-grid"></div>
+      </section>
+    </main>
+  </div>
+
+  <!-- Custom Edit Modal -->
+  <div id="editModal" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="editModalTitle">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <div class="modal-title-wrap">
+          <div class="icon-box" style="width: 34px; height: 34px;">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+              <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+            </svg>
+          </div>
+          <h3 id="editModalTitle" class="modal-title">মেসেজ এডিট করুন</h3>
+        </div>
+        <button type="button" id="closeEditModalX" class="modal-close-btn" aria-label="বন্ধ করুন">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+
+      <form id="editTemplateForm" novalidate>
+        <div class="modal-body form-grid">
+          <input type="hidden" id="editDocId" />
+
+          <div class="form-group">
+            <label for="editTitle" class="form-label">
+              মেসেজের শিরোনাম <span class="required-star">*</span>
+            </label>
+            <input type="text" id="editTitle" class="form-input" required maxlength="200" />
+          </div>
+
+          <div class="form-group">
+            <label for="editMessage" class="form-label">
+              মেসেজ লিখুন <span class="required-star">*</span>
+            </label>
+            <textarea id="editMessage" class="form-textarea" required></textarea>
+          </div>
+
+          <div class="form-group">
+            <label for="editNote" class="form-label">
+              অতিরিক্ত নোট (ঐচ্ছিক)
+            </label>
+            <input type="text" id="editNote" class="form-input" maxlength="300" />
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" id="cancelEditBtn" class="btn-secondary">বাতিল করুন</button>
+          <button type="submit" id="saveEditBtn" class="btn-primary">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="20 6 9 17 4 12"></polyline>
+            </svg>
+            <span id="saveEditBtnText">পরিবর্তন সংরক্ষণ করুন</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Custom Delete Confirmation Modal -->
+  <div id="deleteModal" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="deleteModalTitle">
+    <div class="modal-dialog modal-sm">
+      <div class="popup-center-content">
+        <div class="popup-badge-icon error">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="3 6 5 6 21 6"></polyline>
+            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+            <line x1="10" y1="11" x2="10" y2="17"></line>
+            <line x1="14" y1="11" x2="14" y2="17"></line>
+          </svg>
+        </div>
+        <h3 id="deleteModalTitle" class="modal-title">টেমপ্লেট মুছে ফেলুন</h3>
+        <p style="font-size: 0.96rem; color: var(--muted);">
+          আপনি কি নিশ্চিতভাবে এই মেসেজ টেমপ্লেটটি মুছে ফেলতে চান?
+        </p>
+        <div style="display: flex; gap: 10px; width: 100%; justify-content: center; margin-top: 6px;">
+          <button type="button" id="cancelDeleteBtn" class="btn-secondary" style="flex: 1;">বাতিল করুন</button>
+          <button type="button" id="confirmDeleteBtn" class="btn-danger" style="flex: 1; justify-content: center;">
+            <span id="confirmDeleteBtnText">হ্যাঁ, মুছে ফেলুন</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Custom Status / Success / Error / Permission Modal -->
+  <div id="statusPopupModal" class="modal-backdrop hidden" role="dialog" aria-modal="true">
+    <div class="modal-dialog modal-sm">
+      <div class="popup-center-content">
+        <div id="statusPopupIcon" class="popup-badge-icon success"></div>
+        <h3 id="statusPopupTitle" class="modal-title">সফল হয়েছে</h3>
+        <p id="statusPopupMessage" style="font-size: 0.95rem; color: var(--muted);"></p>
+        <button type="button" id="closeStatusPopupBtn" class="btn-primary" style="width: 100%; margin-top: 6px;">ঠিক আছে</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Container -->
+  <div id="toastContainer" class="toast-container" aria-live="polite"></div>
+
+  <!-- Firebase SDK 10.8.0 Modular -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+    import {
+      getFirestore,
+      collection,
+      query,
+      where,
+      orderBy,
+      getDocs,
+      addDoc,
+      updateDoc,
+      deleteDoc,
+      doc,
+      serverTimestamp
+    } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+    // =========================================================
+    // 1. DEBUG SYSTEM
+    // =========================================================
+    function debugLog(message, data = null) {
+      if (data !== null) {
+        console.log("[RESELLER MESSAGE TEMPLATE DEBUG]", message, data);
+      } else {
+        console.log("[RESELLER MESSAGE TEMPLATE DEBUG]", message);
+      }
+    }
+
+    const firebaseConfig = {
+  apiKey: "AIzaSyDCIRWmozT0XcEXuXtQ6RDiDo6vtT1T9mU",
+  authDomain: "paikarisell-ghotimarket.firebaseapp.com",
+  projectId: "paikarisell-ghotimarket",
+  storageBucket: "paikarisell-ghotimarket.firebasestorage.app",
+  messagingSenderId: "464086432830",
+  appId: "1:464086432830:web:a10fdd9884954e380e656f",
+  measurementId: "G-E3HR2F9TC5"
+};
+
+    const OWNER_EMAILS = [
+      "nazrulislam887441234@gmail.com",
+      "support@ghotimarket.com"
+    ];
+
+    const COLLECTION_TEMPLATES = "massage_tamplates";
+    const COLLECTION_ADMINS = "admins";
+    const UNAUTHORIZED_REDIRECT_URL = "https://admin.ghotimarket.com/reseller/logon";
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+    debugLog("Firebase Initialized", { projectId: firebaseConfig.projectId });
+
+    // =========================================================
+    // 3. APPLICATION STATE
+    // =========================================================
+    let currentUserRole = null; // "OWNER" | "ADMIN"
+    let allTemplates = [];
+    let isCreating = false;
+    let isUpdating = false;
+    let pendingDeleteId = null;
+    const deletingIds = new Set();
+
+    // =========================================================
+    // 4. DOM REFERENCES
+    // =========================================================
+    const authGate = document.getElementById("authGate");
+    const gateLoadingView = document.getElementById("gateLoadingView");
+    const gateErrorView = document.getElementById("gateErrorView");
+    const gateErrorTitle = document.getElementById("gateErrorTitle");
+    const gateErrorMessage = document.getElementById("gateErrorMessage");
+    const gateRetryBtn = document.getElementById("gateRetryBtn");
+
+    const appShell = document.getElementById("appShell");
+    const roleBadge = document.getElementById("roleBadge");
+
+    const createTemplateForm = document.getElementById("createTemplateForm");
+    const templateTitleInput = document.getElementById("templateTitle");
+    const templateMessageInput = document.getElementById("templateMessage");
+    const templateNoteInput = document.getElementById("templateNote");
+    const saveTemplateBtn = document.getElementById("saveTemplateBtn");
+    const saveBtnText = document.getElementById("saveBtnText");
+
+    const templatesContainer = document.getElementById("templatesContainer");
+    const templateCountBadge = document.getElementById("templateCountBadge");
+    const searchInput = document.getElementById("searchInput");
+    const clearSearchBtn = document.getElementById("clearSearchBtn");
+
+    const editModal = document.getElementById("editModal");
+    const editTemplateForm = document.getElementById("editTemplateForm");
+    const editDocIdInput = document.getElementById("editDocId");
+    const editTitleInput = document.getElementById("editTitle");
+    const editMessageInput = document.getElementById("editMessage");
+    const editNoteInput = document.getElementById("editNote");
+    const saveEditBtn = document.getElementById("saveEditBtn");
+    const saveEditBtnText = document.getElementById("saveEditBtnText");
+    const cancelEditBtn = document.getElementById("cancelEditBtn");
+    const closeEditModalX = document.getElementById("closeEditModalX");
+
+    const deleteModal = document.getElementById("deleteModal");
+    const confirmDeleteBtn = document.getElementById("confirmDeleteBtn");
+    const confirmDeleteBtnText = document.getElementById("confirmDeleteBtnText");
+    const cancelDeleteBtn = document.getElementById("cancelDeleteBtn");
+
+    const statusPopupModal = document.getElementById("statusPopupModal");
+    const statusPopupIcon = document.getElementById("statusPopupIcon");
+    const statusPopupTitle = document.getElementById("statusPopupTitle");
+    const statusPopupMessage = document.getElementById("statusPopupMessage");
+    const closeStatusPopupBtn = document.getElementById("closeStatusPopupBtn");
+
+    const toastContainer = document.getElementById("toastContainer");
+
+    // =========================================================
+    // 5. UI HELPERS (POPUPS, TOASTS, DATE FORMATTER, AUTO-RESIZE)
+    // =========================================================
+    const SVG_ICONS = {
+      success: `<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>`,
+      error: `<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>`,
+      warning: `<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>`
+    };
+
+    function showCustomPopup(type, title, message) {
+      statusPopupIcon.className = `popup-badge-icon ${type}`;
+      statusPopupIcon.innerHTML = SVG_ICONS[type] || SVG_ICONS.success;
+      statusPopupTitle.textContent = title;
+      statusPopupMessage.textContent = message;
+      statusPopupModal.classList.remove("hidden");
+    }
+
+    closeStatusPopupBtn.addEventListener("click", () => {
+      statusPopupModal.classList.add("hidden");
+    });
+
+    function showToast(message, type = "success") {
+      const toast = document.createElement("div");
+      toast.className = `toast-item ${type}`;
+
+      const iconWrap = document.createElement("span");
+      iconWrap.style.display = "flex";
+      iconWrap.style.color = type === "error" ? "var(--danger)" : "var(--success)";
+      iconWrap.innerHTML = type === "error"
+        ? `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>`
+        : `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>`;
+
+      const textSpan = document.createElement("span");
+      textSpan.className = "toast-msg";
+      textSpan.textContent = message;
+
+      toast.appendChild(iconWrap);
+      toast.appendChild(textSpan);
+      toastContainer.appendChild(toast);
+
+      setTimeout(() => {
+        toast.style.opacity = "0";
+        toast.style.transform = "translateX(20px)";
+        toast.style.transition = "all 0.25s ease";
+        setTimeout(() => toast.remove(), 250);
+      }, 3200);
+    }
+
+    function autoResizeTextarea(el) {
+      el.style.height = "auto";
+      el.style.height = `${Math.max(140, el.scrollHeight)}px`;
+    }
+
+    templateMessageInput.addEventListener("input", () => autoResizeTextarea(templateMessageInput));
+    editMessageInput.addEventListener("input", () => autoResizeTextarea(editMessageInput));
+
+    function formatBengaliDate(timestamp) {
+      if (!timestamp) return "এইমাত্র";
+      try {
+        const dateObj = typeof timestamp.toDate === "function"
+          ? timestamp.toDate()
+          : new Date(timestamp);
+        if (Number.isNaN(dateObj.getTime())) return "তারিখ অজানা";
+
+        return new Intl.DateTimeFormat("bn-BD", {
+          day: "numeric",
+          month: "long",
+          year: "numeric",
+          hour: "2-digit",
+          minute: "2-digit"
+        }).format(dateObj);
+      } catch {
+        return "তারিখ অজানা";
+      }
+    }
+
+    function toBengaliNumber(num) {
+      const bnDigits = ["০", "১", "২", "৩", "৪", "৫", "৬", "৭", "৮", "৯"];
+      return String(num).replace(/\d/g, (d) => bnDigits[Number(d)]);
+    }
+
+    function isNetworkError(error) {
+      if (!navigator.onLine) return true;
+      const code = error?.code || "";
+      const msg = (error?.message || "").toLowerCase();
+      return (
+        code === "unavailable" ||
+        code === "auth/network-request-failed" ||
+        msg.includes("network") ||
+        msg.includes("offline") ||
+        msg.includes("failed to fetch")
+      );
+    }
+
+    // =========================================================
+    // 6. AUTHENTICATION & ROLE PERMISSION CHECK
+    // =========================================================
+    async function verifyUserPermission(user) {
+      const normalizedEmail = (user.email || "").trim().toLowerCase();
+      const normalizedOwners = OWNER_EMAILS.map((e) => e.trim().toLowerCase());
+
+      debugLog("Owner Email Checked", { email: normalizedEmail });
+
+      // A. Owner Login Check
+      if (normalizedEmail && normalizedOwners.includes(normalizedEmail)) {
+        currentUserRole = "OWNER";
+        debugLog("Owner Access Granted", { uid: user.uid, email: normalizedEmail });
+        grantDashboardAccess("OWNER");
+        return;
+      }
+
+      // B. Admin Login Check
+      debugLog("Admin Permission Checking", { uid: user.uid });
+      try {
+        const adminQuery = query(
+          collection(db, COLLECTION_ADMINS),
+          where("uid", "==", user.uid),
+          where("active", "==", true)
+        );
+        const snapshot = await getDocs(adminQuery);
+
+        if (!snapshot.empty) {
+          debugLog("Admin Document Found", { count: snapshot.size });
+          currentUserRole = "ADMIN";
+          debugLog("Admin Access Granted", { uid: user.uid });
+          grantDashboardAccess("ADMIN");
+        } else {
+          debugLog("Access Denied", { reason: "Admin document not found or active != true", uid: user.uid });
+          window.location.href = UNAUTHORIZED_REDIRECT_URL;
+        }
+      } catch (error) {
+        if (error?.code === "permission-denied") {
+          debugLog("Firestore Error", { code: error.code, error });
+          debugLog("Access Denied", { reason: "Firestore permission-denied on admins collection" });
+          window.location.href = UNAUTHORIZED_REDIRECT_URL;
+          return;
+        }
+
+        if (isNetworkError(error)) {
+          debugLog("Firestore Error", { code: error?.code || "network-error", error });
+          gateLoadingView.classList.add("hidden");
+          gateErrorTitle.textContent = "নেটওয়ার্ক সংযোগ বিচ্ছিন্ন";
+          gateErrorMessage.textContent = "ইন্টারনেট সংযোগ না থাকায় অ্যাডমিন অনুমতি যাচাই করা যায়নি। সংযোগ ঠিক করে পুনরায় চেষ্টা করুন।";
+          gateErrorView.classList.remove("hidden");
+          return;
+        }
+
+        debugLog("Unexpected Error", { code: error?.code, error });
+        gateLoadingView.classList.add("hidden");
+        gateErrorTitle.textContent = "অনুমতি যাচাই ব্যর্থ হয়েছে";
+        gateErrorMessage.textContent = "সিস্টেমে সাময়িক ত্রুটি দেখা দিয়েছে। অনুগ্রহ করে আবার চেষ্টা করুন।";
+        gateErrorView.classList.remove("hidden");
+      }
+    }
+
+    function grantDashboardAccess(role) {
+      roleBadge.textContent = role;
+      roleBadge.className = `role-badge ${role.toLowerCase()}`;
+      authGate.classList.add("hidden");
+      appShell.classList.remove("hidden");
+      fetchMessageTemplates();
+    }
+
+    gateRetryBtn.addEventListener("click", () => {
+      gateErrorView.classList.add("hidden");
+      gateLoadingView.classList.remove("hidden");
+      if (auth.currentUser) {
+        verifyUserPermission(auth.currentUser);
+      } else {
+        window.location.reload();
+      }
+    });
+
+    debugLog("Authentication Check Started");
+    onAuthStateChanged(
+      auth,
+      async (user) => {
+        if (!user) {
+          debugLog("Access Denied", { reason: "No authenticated Firebase user" });
+          window.location.href = UNAUTHORIZED_REDIRECT_URL;
+          return;
+        }
+
+        debugLog("User Authenticated", { email: user.email || null });
+        debugLog("UID Received", { uid: user.uid });
+        await verifyUserPermission(user);
+      },
+      (authError) => {
+        debugLog("Authentication Error", { code: authError?.code, error: authError });
+        if (isNetworkError(authError)) {
+          gateLoadingView.classList.add("hidden");
+          gateErrorView.classList.remove("hidden");
+        } else {
+          window.location.href = UNAUTHORIZED_REDIRECT_URL;
+        }
+      }
+    );
+
+    // =========================================================
+    // 7. FETCH & RENDER MESSAGE TEMPLATES
+    // =========================================================
+    function renderLoadingSkeletons() {
+      templatesContainer.innerHTML = "";
+      for (let i = 0; i < 4; i++) {
+        const skel = document.createElement("div");
+        skel.className = "skeleton-card";
+        skel.innerHTML = `
+          <div style="display:flex;justify-content:space-between;gap:12px;">
+            <div class="skeleton-line" style="height:22px;width:55%;"></div>
+            <div class="skeleton-line" style="height:22px;width:28%;"></div>
+          </div>
+          <div class="skeleton-line" style="height:90px;width:100%;"></div>
+          <div style="display:flex;justify-content:space-between;gap:10px;margin-top:4px;">
+            <div class="skeleton-line" style="height:36px;width:36%;"></div>
+            <div class="skeleton-line" style="height:36px;width:42%;"></div>
+          </div>
+        `;
+        templatesContainer.appendChild(skel);
+      }
+    }
+
+    async function fetchMessageTemplates() {
+      debugLog("Message Template Fetch Started", { collection: COLLECTION_TEMPLATES });
+      renderLoadingSkeletons();
+
+      try {
+        const q = query(
+          collection(db, COLLECTION_TEMPLATES),
+          orderBy("createdAt", "desc")
+        );
+        const querySnapshot = await getDocs(q);
+
+        allTemplates = querySnapshot.docs.map((docSnap) => {
+          const data = docSnap.data();
+          return {
+            id: docSnap.id,
+            title: typeof data.title === "string" ? data.title : "",
+            message: typeof data.message === "string" ? data.message : "",
+            note: typeof data.note === "string" ? data.note : "",
+            createdAt: data.createdAt || null
+          };
+        });
+
+        debugLog("Message Templates Loaded", { total: allTemplates.length });
+        applySearchAndRender();
+      } catch (error) {
+        debugLog("Firestore Error", { code: error?.code, error });
+        renderFetchErrorState(error);
+      }
+    }
+
+    function renderFetchErrorState(error) {
+      templatesContainer.innerHTML = "";
+      const isPermDenied = error?.code === "permission-denied";
+
+      const box = document.createElement("div");
+      box.className = "state-box";
+      box.innerHTML = `
+        <div class="state-icon-circle" style="background:#FEE2E2;color:var(--danger);">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="12" y1="8" x2="12" y2="12"></line>
+            <line x1="12" y1="16" x2="12.01" y2="16"></line>
+          </svg>
+        </div>
+        <h3 class="state-title">${isPermDenied ? "ডাটা অ্যাক্সেস অনুমতি নেই" : "টেমপ্লেট লোড করা সম্ভব হয়নি"}</h3>
+        <p class="state-desc">${isPermDenied ? "আপনার অ্যাকাউন্টের Firestore Security Rules অনুযায়ী এই তথ্য দেখার অনুমতি নেই।" : "সার্ভার বা ইন্টারনেট সংযোগে সমস্যা হয়েছে। অনুগ্রহ করে নিচের বাটনে ক্লিক করে আবার চেষ্টা করুন।"}</p>
+      `;
+
+      const retryBtn = document.createElement("button");
+      retryBtn.type = "button";
+      retryBtn.className = "btn-primary";
+      retryBtn.innerHTML = `
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="23 4 23 10 17 10"></polyline>
+          <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
+        </svg>
+        পুনরায় লোড করুন
+      `;
+      retryBtn.addEventListener("click", fetchMessageTemplates);
+
+      box.appendChild(retryBtn);
+      templatesContainer.appendChild(box);
+    }
+
+    function renderTemplatesList(templates, isSearching = false) {
+      templatesContainer.innerHTML = "";
+      templateCountBadge.textContent = `${toBengaliNumber(templates.length)} টি`;
+
+      if (templates.length === 0) {
+        const emptyBox = document.createElement("div");
+        emptyBox.className = "state-box";
+        emptyBox.innerHTML = `
+          <div class="state-icon-circle">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+            </svg>
+          </div>
+          <h3 class="state-title">${isSearching ? "কোনো ফলাফল পাওয়া যায়নি" : "এখনও কোনো মেসেজ টেমপ্লেট তৈরি করা হয়নি"}</h3>
+          <p class="state-desc">${isSearching ? "আপনার অনুসন্ধানের সঙ্গে মিলে এমন কোনো মেসেজ পাওয়া যায়নি।" : "উপরের ফর্মটি ব্যবহার করে আপনার প্রথম রিসেলার মেসেজ টেমপ্লেট তৈরি করুন।"}</p>
+        `;
+        templatesContainer.appendChild(emptyBox);
+        return;
+      }
+
+      const fragment = document.createDocumentFragment();
+
+      templates.forEach((item) => {
+        const card = document.createElement("article");
+        card.className = "template-card";
+        card.dataset.id = item.id;
+
+        // Card Top (Title + Date)
+        const cardTop = document.createElement("div");
+        cardTop.className = "card-top";
+
+        const titleEl = document.createElement("h3");
+        titleEl.className = "card-title";
+        titleEl.textContent = item.title;
+
+        const dateEl = document.createElement("span");
+        dateEl.className = "card-date";
+        dateEl.innerHTML = `
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"></circle>
+            <polyline points="12 6 12 12 16 14"></polyline>
+          </svg>
+        `;
+        const dateText = document.createTextNode(formatBengaliDate(item.createdAt));
+        dateEl.appendChild(dateText);
+
+        cardTop.appendChild(titleEl);
+        cardTop.appendChild(dateEl);
+        card.appendChild(cardTop);
+
+        // Card Message Body (Safe textContent rendering to prevent XSS)
+        const messageBox = document.createElement("div");
+        messageBox.className = "card-message-box";
+        messageBox.textContent = item.message;
+        card.appendChild(messageBox);
+
+        // Card Note (Only if non-empty)
+        if (item.note && item.note.trim() !== "") {
+          const noteBox = document.createElement("div");
+          noteBox.className = "card-note-box";
+          noteBox.innerHTML = `
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"></circle>
+              <line x1="12" y1="16" x2="12" y2="12"></line>
+              <line x1="12" y1="8" x2="12.01" y2="8"></line>
+            </svg>
+          `;
+          const noteText = document.createElement("span");
+          noteText.textContent = item.note;
+          noteBox.appendChild(noteText);
+          card.appendChild(noteBox);
+        }
+
+        // Card Actions
+        const actionsRow = document.createElement("div");
+        actionsRow.className = "card-actions";
+
+        const copyBtn = document.createElement("button");
+        copyBtn.type = "button";
+        copyBtn.className = "btn-copy";
+        copyBtn.innerHTML = `
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+          </svg>
+          মেসেজ কপি করুন
+        `;
+        copyBtn.addEventListener("click", () => handleCopyMessage(item));
+
+        const secondaryGroup = document.createElement("div");
+        secondaryGroup.className = "secondary-actions";
+
+        const editBtn = document.createElement("button");
+        editBtn.type = "button";
+        editBtn.className = "btn-icon-action btn-edit";
+        editBtn.innerHTML = `
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+          </svg>
+          এডিট
+        `;
+        editBtn.addEventListener("click", () => openEditModal(item));
+
+        const deleteBtn = document.createElement("button");
+        deleteBtn.type = "button";
+        deleteBtn.className = "btn-icon-action btn-delete";
+        deleteBtn.dataset.deleteBtnId = item.id;
+        deleteBtn.disabled = deletingIds.has(item.id);
+        deleteBtn.innerHTML = `
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="3 6 5 6 21 6"></polyline>
+            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+          </svg>
+          ডিলিট
+        `;
+        deleteBtn.addEventListener("click", () => openDeleteModal(item.id));
+
+        secondaryGroup.appendChild(editBtn);
+        secondaryGroup.appendChild(deleteBtn);
+
+        actionsRow.appendChild(copyBtn);
+        actionsRow.appendChild(secondaryGroup);
+        card.appendChild(actionsRow);
+
+        fragment.appendChild(card);
+      });
+
+      templatesContainer.appendChild(fragment);
+    }
+
+    // =========================================================
+    // 8. CREATE NEW MESSAGE TEMPLATE
+    // =========================================================
+    createTemplateForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      if (isCreating) return;
+
+      const title = templateTitleInput.value.trim();
+      const message = templateMessageInput.value.trim();
+      const note = templateNoteInput.value.trim();
+
+      if (!title) {
+        showCustomPopup("warning", "শিরোনাম প্রয়োজন", "অনুগ্রহ করে মেসেজের শিরোনাম লিখুন।");
+        templateTitleInput.focus();
+        return;
+      }
+
+      if (!message) {
+        showCustomPopup("warning", "মেসেজ প্রয়োজন", "অনুগ্রহ করে সম্পূর্ণ মেসেজটি লিখুন।");
+        templateMessageInput.focus();
+        return;
+      }
+
+      isCreating = true;
+      saveTemplateBtn.disabled = true;
+      saveBtnText.textContent = "সংরক্ষণ করা হচ্ছে...";
+      debugLog("New Template Creation Started", { title });
+
+      try {
+        const docRef = await addDoc(collection(db, COLLECTION_TEMPLATES), {
+          title,
+          message,
+          note: note || "",
+          createdAt: serverTimestamp()
+        });
+
+        debugLog("Template Created Successfully", { id: docRef.id });
+
+        createTemplateForm.reset();
+        templateMessageInput.style.height = "140px";
+        searchInput.value = "";
+        clearSearchBtn.classList.add("hidden");
+
+        showCustomPopup(
+          "success",
+          "টেমপ্লেট সংরক্ষিত হয়েছে",
+          "নতুন মেসেজ টেমপ্লেটটি সফলভাবে তৈরি ও সংরক্ষণ করা হয়েছে।"
+        );
+
+        await fetchMessageTemplates();
+      } catch (error) {
+        debugLog("Firestore Error", { code: error?.code, error });
+        const errMsg = error?.code === "permission-denied"
+          ? "আপনার নতুন মেসেজ টেমপ্লেট তৈরি করার অনুমতি নেই।"
+          : "মেসেজ টেমপ্লেট সংরক্ষণ করা সম্ভব হয়নি। আবার চেষ্টা করুন।";
+        showCustomPopup("error", "সংরক্ষণ ব্যর্থ হয়েছে", errMsg);
+      } finally {
+        isCreating = false;
+        saveTemplateBtn.disabled = false;
+        saveBtnText.textContent = "মেসেজ সংরক্ষণ করুন";
+      }
+    });
+
+    // =========================================================
+    // 9. COPY MESSAGE TO CLIPBOARD
+    // =========================================================
+    async function handleCopyMessage(item) {
+      debugLog("Copy Message Started", { id: item.id });
+      try {
+        if (navigator.clipboard && window.isSecureContext) {
+          await navigator.clipboard.writeText(item.message);
+        } else {
+          const tempArea = document.createElement("textarea");
+          tempArea.value = item.message;
+          tempArea.style.position = "fixed";
+          tempArea.style.left = "-9999px";
+          document.body.appendChild(tempArea);
+          tempArea.select();
+          const copied = document.execCommand("copy");
+          document.body.removeChild(tempArea);
+          if (!copied) throw new Error("Fallback copy command failed");
+        }
+
+        debugLog("Message Copied Successfully", { id: item.id });
+        showToast("মেসেজ সফলভাবে কপি হয়েছে।", "success");
+      } catch (error) {
+        debugLog("Unexpected Error", { action: "copy", error });
+        showToast("মেসেজ কপি করা সম্ভব হয়নি। অনুগ্রহ করে আবার চেষ্টা করুন।", "error");
+      }
+    }
+
+    // =========================================================
+    // 10. EDIT MESSAGE TEMPLATE SYSTEM
+    // =========================================================
+    function openEditModal(item) {
+      editDocIdInput.value = item.id;
+      editTitleInput.value = item.title;
+      editMessageInput.value = item.message;
+      editNoteInput.value = item.note || "";
+      editModal.classList.remove("hidden");
+      autoResizeTextarea(editMessageInput);
+      editTitleInput.focus();
+    }
+
+    function closeEditModal() {
+      if (isUpdating) return;
+      editModal.classList.add("hidden");
+      editTemplateForm.reset();
+    }
+
+    cancelEditBtn.addEventListener("click", closeEditModal);
+    closeEditModalX.addEventListener("click", closeEditModal);
+    editModal.addEventListener("click", (e) => {
+      if (e.target === editModal) closeEditModal();
+    });
+
+    editTemplateForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      if (isUpdating) return;
+
+      const documentId = editDocIdInput.value;
+      const updatedTitle = editTitleInput.value.trim();
+      const updatedMessage = editMessageInput.value.trim();
+      const updatedNote = editNoteInput.value.trim();
+
+      if (!updatedTitle) {
+        showCustomPopup("warning", "শিরোনাম প্রয়োজন", "অনুগ্রহ করে মেসেজের শিরোনাম লিখুন।");
+        editTitleInput.focus();
+        return;
+      }
+
+      if (!updatedMessage) {
+        showCustomPopup("warning", "মেসেজ প্রয়োজন", "অনুগ্রহ করে সম্পূর্ণ মেসেজটি লিখুন।");
+        editMessageInput.focus();
+        return;
+      }
+
+      isUpdating = true;
+      saveEditBtn.disabled = true;
+      saveEditBtnText.textContent = "আপডেট হচ্ছে...";
+      debugLog("Template Edit Started", { id: documentId });
+
+      try {
+        await updateDoc(doc(db, COLLECTION_TEMPLATES, documentId), {
+          title: updatedTitle,
+          message: updatedMessage,
+          note: updatedNote
+        });
+
+        debugLog("Template Updated Successfully", { id: documentId });
+
+        const targetIndex = allTemplates.findIndex((t) => t.id === documentId);
+        if (targetIndex !== -1) {
+          allTemplates[targetIndex].title = updatedTitle;
+          allTemplates[targetIndex].message = updatedMessage;
+          allTemplates[targetIndex].note = updatedNote;
+        }
+
+        isUpdating = false;
+        closeEditModal();
+        applySearchAndRender();
+        showToast("মেসেজ টেমপ্লেট সফলভাবে আপডেট হয়েছে।", "success");
+      } catch (error) {
+        debugLog("Firestore Error", { code: error?.code, error });
+        const errMsg = error?.code === "permission-denied"
+          ? "আপনার এই টেমপ্লেট এডিট করার অনুমতি নেই।"
+          : error?.code === "not-found"
+          ? "টেমপ্লেটটি ডাটাবেজে খুঁজে পাওয়া যায়নি।"
+          : "টেমপ্লেট আপডেট করা সম্ভব হয়নি। আবার চেষ্টা করুন।";
+        showCustomPopup("error", "আপডেট ব্যর্থ হয়েছে", errMsg);
+      } finally {
+        isUpdating = false;
+        saveEditBtn.disabled = false;
+        saveEditBtnText.textContent = "পরিবর্তন সংরক্ষণ করুন";
+      }
+    });
+
+    // =========================================================
+    // 11. DELETE MESSAGE TEMPLATE SYSTEM
+    // =========================================================
+    function openDeleteModal(documentId) {
+      if (deletingIds.has(documentId)) return;
+      pendingDeleteId = documentId;
+      deleteModal.classList.remove("hidden");
+    }
+
+    function closeDeleteModal() {
+      pendingDeleteId = null;
+      deleteModal.classList.add("hidden");
+    }
+
+    cancelDeleteBtn.addEventListener("click", closeDeleteModal);
+    deleteModal.addEventListener("click", (e) => {
+      if (e.target === deleteModal) closeDeleteModal();
+    });
+
+    confirmDeleteBtn.addEventListener("click", async () => {
+      const documentId = pendingDeleteId;
+      if (!documentId || deletingIds.has(documentId)) return;
+
+      deletingIds.add(documentId);
+      confirmDeleteBtn.disabled = true;
+      confirmDeleteBtnText.textContent = "মুছে ফেলা হচ্ছে...";
+
+      const cardDeleteBtn = document.querySelector(`[data-delete-btn-id="${documentId}"]`);
+      if (cardDeleteBtn) cardDeleteBtn.disabled = true;
+
+      debugLog("Template Delete Started", { id: documentId });
+
+      try {
+        await deleteDoc(doc(db, COLLECTION_TEMPLATES, documentId));
+        debugLog("Template Deleted Successfully", { id: documentId });
+
+        allTemplates = allTemplates.filter((item) => item.id !== documentId);
+        closeDeleteModal();
+        applySearchAndRender();
+        showToast("মেসেজ টেমপ্লেট সফলভাবে মুছে ফেলা হয়েছে।", "success");
+      } catch (error) {
+        debugLog("Firestore Error", { code: error?.code, error });
+        if (cardDeleteBtn) cardDeleteBtn.disabled = false;
+        closeDeleteModal();
+        const errMsg = error?.code === "permission-denied"
+          ? "আপনার এই টেমপ্লেট মুছে ফেলার অনুমতি নেই।"
+          : "মেসেজ টেমপ্লেটটি মুছে ফেলা সম্ভব হয়নি। আবার চেষ্টা করুন।";
+        showCustomPopup("error", "ডিলিট ব্যর্থ হয়েছে", errMsg);
+      } finally {
+        deletingIds.delete(documentId);
+        confirmDeleteBtn.disabled = false;
+        confirmDeleteBtnText.textContent = "হ্যাঁ, মুছে ফেলুন";
+      }
+    });
+
+    // =========================================================
+    // 12. INSTANT CLIENT-SIDE SEARCH SYSTEM
+    // =========================================================
+    function applySearchAndRender() {
+      const rawQuery = searchInput.value.trim();
+      const keyword = rawQuery.toLowerCase();
+
+      if (!keyword) {
+        clearSearchBtn.classList.add("hidden");
+        renderTemplatesList(allTemplates, false);
+        return;
+      }
+
+      clearSearchBtn.classList.remove("hidden");
+      debugLog("Search Started", { query: rawQuery });
+
+      const filtered = allTemplates.filter((item) => {
+        const titleMatch = item.title.toLowerCase().includes(keyword);
+        const messageMatch = item.message.toLowerCase().includes(keyword);
+        const noteMatch = item.note.toLowerCase().includes(keyword);
+        return titleMatch || messageMatch || noteMatch;
+      });
+
+      renderTemplatesList(filtered, true);
+    }
+
+    searchInput.addEventListener("input", applySearchAndRender);
+
+    clearSearchBtn.addEventListener("click", () => {
+      searchInput.value = "";
+      applySearchAndRender();
+      searchInput.focus();
+    });
+
+    // Close modals with Escape key
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") {
+        if (!statusPopupModal.classList.contains("hidden")) {
+          statusPopupModal.classList.add("hidden");
+        } else if (!deleteModal.classList.contains("hidden")) {
+          closeDeleteModal();
+        } else if (!editModal.classList.contains("hidden")) {
+          closeEditModal();
+        }
+      }
+    });
+  </script>
+</body>
+</html>
