@@ -1,0 +1,1868 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
+  <title>Balance Manager | Reseller Ghoti Market Admin</title>
+  <meta name="description" content="Reseller Ghoti Market Admin Balance Management Panel" />
+  <meta name="robots" content="noindex, nofollow" />
+  <link rel="icon" type="image/png" href="https://reseller.ghotimarket.com/photo/favicon.png" />
+
+  <!-- Google Fonts: Hind Siliguri & Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&family=Inter:wght@500;600;700&display=swap" rel="stylesheet" />
+
+  <style>
+    :root {
+      --primary: #FF6B35;
+      --secondary: #FF6A00;
+      --accent: #FFA500;
+      --background: #FFF7F1;
+      --text: #171717;
+      --text-muted: #64748B;
+      --white: #FFFFFF;
+      --success: #16A34A;
+      --success-bg: #DCFCE7;
+      --danger: #DC2626;
+      --danger-bg: #FEE2E2;
+      --warning: #D97706;
+      --warning-bg: #FEF3C7;
+      --border: #E2E8F0;
+      --border-orange: rgba(255, 107, 53, 0.22);
+      --shadow-sm: 0 2px 8px rgba(23, 23, 23, 0.04);
+      --shadow-md: 0 8px 24px rgba(255, 107, 53, 0.08);
+      --shadow-lg: 0 18px 40px rgba(15, 23, 42, 0.14);
+      --radius-sm: 10px;
+      --radius-md: 16px;
+      --radius-lg: 22px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html, body {
+      max-width: 100%;
+      overflow-x: hidden;
+      font-family: 'Hind Siliguri', -apple-system, BlinkMacSystemFont, sans-serif;
+      background-color: var(--background);
+      color: var(--text);
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .mono {
+      font-family: 'Inter', monospace;
+    }
+
+    /* Auth Guard Overlay */
+    #authGuardOverlay {
+      position: fixed;
+      inset: 0;
+      background: var(--background);
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      text-align: center;
+      transition: opacity 0.25s ease, visibility 0.25s ease;
+    }
+
+    #authGuardOverlay.hidden {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    .auth-spinner {
+      width: 48px;
+      height: 48px;
+      border: 4px solid rgba(255, 107, 53, 0.2);
+      border-top-color: var(--primary);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin-bottom: 16px;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* App Container */
+    #appContainer {
+      display: none;
+      min-height: 100vh;
+      padding-bottom: 56px;
+    }
+
+    #appContainer.visible {
+      display: block;
+    }
+
+    /* Premium Header */
+    .admin-header {
+      background: linear-gradient(135deg, #FFFFFF 0%, #FFF3EA 100%);
+      border-bottom: 1px solid var(--border-orange);
+      box-shadow: var(--shadow-sm);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .header-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 14px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .brand-section {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      min-width: 0;
+    }
+
+    .brand-logo {
+      width: 48px;
+      height: 48px;
+      object-fit: contain;
+      border-radius: 12px;
+      background: var(--white);
+      padding: 4px;
+      border: 1px solid var(--border-orange);
+      flex-shrink: 0;
+    }
+
+    .brand-titles h1 {
+      font-size: 1.35rem;
+      font-weight: 700;
+      color: var(--text);
+      line-height: 1.25;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .role-badge {
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+      padding: 2px 9px;
+      border-radius: 999px;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      color: var(--white);
+    }
+
+    .brand-titles p {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    .btn-dashboard {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 18px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      color: var(--white);
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 0.95rem;
+      box-shadow: 0 4px 14px rgba(255, 106, 0, 0.25);
+      transition: transform 0.18s ease, box-shadow 0.18s ease;
+      flex-shrink: 0;
+    }
+
+    .btn-dashboard:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 18px rgba(255, 106, 0, 0.34);
+    }
+
+    /* Main Content Layout */
+    .main-content {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 24px 20px 0;
+    }
+
+    .panel-card {
+      background: var(--white);
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border-orange);
+      box-shadow: var(--shadow-sm);
+      padding: 22px;
+      margin-bottom: 20px;
+    }
+
+    .section-title {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* Step 1: Action Selector Cards */
+    .action-selector-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    .action-card {
+      border: 2px solid var(--border);
+      border-radius: var(--radius-sm);
+      background: #FAFAFA;
+      padding: 18px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      transition: all 0.2s ease;
+    }
+
+    .action-card:hover {
+      border-color: var(--border-orange);
+      background: #FFFDFB;
+    }
+
+    .action-card.selected.add {
+      border-color: var(--success);
+      background: var(--success-bg);
+      box-shadow: 0 4px 14px rgba(22, 163, 74, 0.15);
+    }
+
+    .action-card.selected.remove {
+      border-color: var(--danger);
+      background: var(--danger-bg);
+      box-shadow: 0 4px 14px rgba(220, 38, 38, 0.15);
+    }
+
+    .action-icon-wrap {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .action-card.add .action-icon-wrap {
+      background: #DCFCE7;
+      color: var(--success);
+    }
+
+    .action-card.remove .action-icon-wrap {
+      background: #FEE2E2;
+      color: var(--danger);
+    }
+
+    .action-info h3 {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .action-info p {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    /* Step 2: Search Section */
+    #searchSectionContainer {
+      transition: opacity 0.25s ease, filter 0.25s ease;
+    }
+
+    #searchSectionContainer.disabled-section {
+      opacity: 0.5;
+      pointer-events: none;
+      filter: grayscale(0.2);
+    }
+
+    .search-type-tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 14px;
+      flex-wrap: wrap;
+    }
+
+    .search-type-btn {
+      padding: 7px 14px;
+      border-radius: 9px;
+      border: 1px solid var(--border);
+      background: #F8FAFC;
+      color: var(--text-muted);
+      font-family: inherit;
+      font-size: 0.88rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .search-type-btn:hover {
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+
+    .search-type-btn.active {
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      color: var(--white);
+      border-color: transparent;
+      box-shadow: 0 4px 12px rgba(255, 107, 53, 0.24);
+    }
+
+    .search-input-row {
+      display: flex;
+      gap: 10px;
+    }
+
+    .search-input-wrap {
+      position: relative;
+      flex: 1;
+    }
+
+    .search-input-wrap svg {
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-muted);
+      pointer-events: none;
+    }
+
+    .search-input-wrap input {
+      width: 100%;
+      padding: 11px 16px 11px 42px;
+      border-radius: 12px;
+      border: 1.5px solid var(--border);
+      font-family: inherit;
+      font-size: 0.96rem;
+      color: var(--text);
+      background: #FFFDFB;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .search-input-wrap input:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(255, 107, 53, 0.14);
+    }
+
+    .btn-search {
+      padding: 0 24px;
+      border-radius: 12px;
+      border: none;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      color: var(--white);
+      font-family: inherit;
+      font-size: 0.95rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 4px 14px rgba(255, 107, 53, 0.24);
+      transition: transform 0.18s ease;
+      flex-shrink: 0;
+    }
+
+    .btn-search:hover:not(:disabled) {
+      transform: translateY(-1px);
+    }
+
+    .btn-search:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    /* Reseller Information Card */
+    .reseller-card {
+      background: linear-gradient(135deg, #FFF9F5 0%, #FFFFFF 100%);
+      border: 1px solid var(--border-orange);
+      border-radius: var(--radius-md);
+      padding: 20px;
+      margin-top: 20px;
+      display: none;
+      animation: fadeIn 0.25s ease;
+    }
+
+    .reseller-card.visible {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .reseller-card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      margin-bottom: 16px;
+      padding-bottom: 14px;
+      border-bottom: 1px dashed var(--border-orange);
+    }
+
+    .reseller-name-wrap h3 {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .reseller-name-wrap p {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    .balance-pill {
+      padding: 8px 16px;
+      border-radius: 14px;
+      background: var(--white);
+      border: 1.5px solid var(--border-orange);
+      text-align: right;
+    }
+
+    .balance-pill span {
+      display: block;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+
+    .balance-pill strong {
+      display: block;
+      font-size: 1.3rem;
+      font-weight: 700;
+    }
+
+    .bal-positive { color: var(--success); }
+    .bal-negative { color: var(--danger); }
+    .bal-zero { color: var(--text); }
+
+    .reseller-details-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+    }
+
+    .detail-item span {
+      display: block;
+      font-size: 0.76rem;
+      color: var(--text-muted);
+    }
+
+    .detail-item-content {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 2px;
+    }
+
+    .detail-item strong {
+      font-size: 0.92rem;
+      color: var(--text);
+      word-break: break-all;
+    }
+
+    .copy-btn {
+      background: #FFF3EA;
+      border: 1px solid var(--border-orange);
+      color: var(--primary);
+      border-radius: 6px;
+      width: 26px;
+      height: 26px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      flex-shrink: 0;
+      transition: all 0.15s ease;
+    }
+
+    .copy-btn:hover {
+      background: var(--primary);
+      color: var(--white);
+    }
+
+    /* Adjustment Input Section */
+    #adjustmentSectionContainer {
+      display: none;
+      animation: fadeIn 0.25s ease;
+    }
+
+    #adjustmentSectionContainer.visible {
+      display: block;
+    }
+
+    .amount-input-group {
+      margin-bottom: 16px;
+    }
+
+    .amount-input-group label {
+      display: block;
+      font-size: 0.92rem;
+      font-weight: 700;
+      margin-bottom: 6px;
+      color: var(--text);
+    }
+
+    .amount-input-group input {
+      width: 100%;
+      padding: 12px 16px;
+      border-radius: 12px;
+      border: 2px solid var(--border-orange);
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: var(--text);
+      font-family: 'Inter', sans-serif;
+      background: #FFFDFB;
+    }
+
+    .amount-input-group input:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(255, 107, 53, 0.14);
+    }
+
+    .validation-msg {
+      margin-top: 6px;
+      font-size: 0.84rem;
+      font-weight: 600;
+      color: var(--danger);
+      display: none;
+    }
+
+    .validation-msg.visible {
+      display: block;
+    }
+
+    /* Live Calculation Preview Card */
+    .calc-preview-card {
+      background: #F8FAFC;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 16px;
+      margin-bottom: 16px;
+    }
+
+    .calc-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 6px 0;
+      font-size: 0.94rem;
+    }
+
+    .calc-row.divider {
+      border-top: 1px dashed #CBD5E1;
+      margin-top: 6px;
+      padding-top: 10px;
+      font-weight: 700;
+      font-size: 1.08rem;
+    }
+
+    /* Note Textarea */
+    .note-group {
+      margin-bottom: 20px;
+    }
+
+    .note-group label {
+      display: block;
+      font-size: 0.9rem;
+      font-weight: 600;
+      margin-bottom: 6px;
+      color: var(--text);
+    }
+
+    .note-group textarea {
+      width: 100%;
+      padding: 12px 16px;
+      border-radius: 12px;
+      border: 1.5px solid var(--border);
+      font-family: inherit;
+      font-size: 0.92rem;
+      color: var(--text);
+      background: #FFFDFB;
+      resize: vertical;
+      min-height: 80px;
+      transition: border-color 0.2s ease;
+    }
+
+    .note-group textarea:focus {
+      outline: none;
+      border-color: var(--primary);
+    }
+
+    .char-counter {
+      text-align: right;
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    /* Confirm Action Button */
+    .btn-confirm-action {
+      width: 100%;
+      padding: 14px;
+      border-radius: 12px;
+      border: none;
+      font-family: inherit;
+      font-size: 1.05rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: transform 0.18s ease, background 0.18s ease;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+    }
+
+    .btn-confirm-action.add {
+      background: var(--success);
+      color: var(--white);
+      box-shadow: 0 4px 14px rgba(22, 163, 74, 0.25);
+    }
+
+    .btn-confirm-action.add:hover:not(:disabled) {
+      background: #15803D;
+      transform: translateY(-1px);
+    }
+
+    .btn-confirm-action.remove {
+      background: var(--danger);
+      color: var(--white);
+      box-shadow: 0 4px 14px rgba(220, 38, 38, 0.24);
+    }
+
+    .btn-confirm-action.remove:hover:not(:disabled) {
+      background: #B91C1C;
+      transform: translateY(-1px);
+    }
+
+    .btn-confirm-action:disabled {
+      opacity: 0.55;
+      cursor: not-allowed;
+      transform: none !important;
+    }
+
+    /* Custom Modals */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.58);
+      backdrop-filter: blur(4px);
+      z-index: 2000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      overflow-y: auto;
+    }
+
+    .modal-backdrop.open {
+      display: flex;
+      animation: fadeIn 0.2s ease;
+    }
+
+    .modal-box {
+      background: var(--white);
+      width: 100%;
+      max-width: 500px;
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-lg);
+      border: 1px solid var(--border-orange);
+      overflow: hidden;
+      margin: auto;
+      animation: scaleUp 0.22s ease;
+    }
+
+    @keyframes scaleUp {
+      from { transform: scale(0.95); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+
+    .modal-header {
+      padding: 18px 22px;
+      background: linear-gradient(135deg, #FFF5EE 0%, #FFFFFF 100%);
+      border-bottom: 1px solid var(--border-orange);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .modal-header h2 {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      gap: 9px;
+    }
+
+    .modal-close {
+      background: #F1F5F9;
+      border: none;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: var(--text-muted);
+    }
+
+    .modal-body {
+      padding: 20px 22px;
+    }
+
+    .modal-info-grid {
+      background: #FFF9F5;
+      border: 1px solid var(--border-orange);
+      border-radius: 12px;
+      padding: 14px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px 14px;
+      margin-bottom: 16px;
+    }
+
+    .info-cell span {
+      display: block;
+      font-size: 0.76rem;
+      color: var(--text-muted);
+    }
+
+    .info-cell strong {
+      display: block;
+      font-size: 0.92rem;
+      color: var(--text);
+      word-break: break-all;
+    }
+
+    .modal-footer {
+      padding: 14px 22px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 10px;
+    }
+
+    .btn-secondary {
+      padding: 10px 18px;
+      border-radius: 11px;
+      border: 1px solid var(--border);
+      background: #F1F5F9;
+      color: var(--text);
+      font-family: inherit;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .btn-modal-confirm {
+      padding: 10px 22px;
+      border-radius: 11px;
+      border: none;
+      font-family: inherit;
+      font-size: 0.95rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-modal-confirm.add {
+      background: var(--success);
+      color: var(--white);
+    }
+
+    .btn-modal-confirm.remove {
+      background: var(--danger);
+      color: var(--white);
+    }
+
+    .btn-modal-confirm:disabled {
+      opacity: 0.55;
+      cursor: not-allowed;
+    }
+
+    /* Toast Notification */
+    #toastContainer {
+      position: fixed;
+      bottom: 22px;
+      right: 22px;
+      z-index: 5000;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      max-width: calc(100vw - 32px);
+    }
+
+    .toast-item {
+      background: #1E293B;
+      color: var(--white);
+      padding: 13px 18px;
+      border-radius: 12px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.22);
+      font-size: 0.92rem;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      animation: slideIn 0.25s ease;
+    }
+
+    .toast-item.success { border-left: 4px solid var(--success); }
+    .toast-item.error { border-left: 4px solid var(--danger); }
+    .toast-item.warning { border-left: 4px solid var(--accent); }
+
+    @keyframes slideIn {
+      from { transform: translateX(30px); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+
+    /* Responsive Breakpoints */
+    @media (max-width: 768px) {
+      .action-selector-grid {
+        grid-template-columns: 1fr;
+      }
+      .reseller-details-grid {
+        grid-template-columns: 1fr;
+        gap: 10px;
+      }
+      .header-inner {
+        padding: 12px 14px;
+      }
+      .brand-titles h1 {
+        font-size: 1.15rem;
+      }
+      .main-content {
+        padding: 16px 14px 0;
+      }
+      .modal-info-grid {
+        grid-template-columns: 1fr;
+      }
+      .modal-footer {
+        flex-direction: column-reverse;
+      }
+      .modal-footer button {
+        width: 100%;
+        justify-content: center;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Auth Guard Overlay -->
+  <div id="authGuardOverlay">
+    <div class="auth-spinner"></div>
+    <h2 style="font-size: 1.2rem; font-weight: 700; margin-bottom: 4px;">অ্যাডমিন ও ওনার পরিচয় যাচাই করা হচ্ছে...</h2>
+    <p style="color: var(--text-muted); font-size: 0.92rem;">অনুগ্রহ করে অপেক্ষা করুন</p>
+  </div>
+
+  <!-- Protected App Container -->
+  <div id="appContainer">
+    <!-- Premium Header -->
+    <header class="admin-header">
+      <div class="header-inner">
+        <div class="brand-section">
+          <img src="https://reseller.ghotimarket.com/photo/logo.png" alt="Reseller Ghoti Market Logo" class="brand-logo" />
+          <div class="brand-titles">
+            <h1>
+              ব্যালেন্স ম্যানেজার
+              <span id="userRoleBadge" class="role-badge">VERIFIED</span>
+            </h1>
+            <p>রিসেলারদের ব্যালেন্স যুক্ত করুন অথবা প্রয়োজন অনুযায়ী কমিয়ে দিন।</p>
+          </div>
+        </div>
+
+        <a href="https://admin.ghotimarket.com/reseller/dashboard" class="btn-dashboard">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="3" width="7" height="7" rx="1.5" />
+            <rect x="14" y="3" width="7" height="7" rx="1.5" />
+            <rect x="14" y="14" width="7" height="7" rx="1.5" />
+            <rect x="3" y="14" width="7" height="7" rx="1.5" />
+          </svg>
+          <span>Dashboard</span>
+        </a>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      
+      <!-- Step 1: Balance Action Selection -->
+      <section class="panel-card">
+        <h2 class="section-title">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2.3">
+            <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+          </svg>
+          ১. লেনদেনের ধরন নির্বাচন করুন
+        </h2>
+
+        <div class="action-selector-grid">
+          <div class="action-card add" data-action="add" role="button" tabindex="0">
+            <div class="action-icon-wrap">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <line x1="12" y1="5" x2="12" y2="19" />
+                <line x1="5" y1="12" x2="19" y2="12" />
+              </svg>
+            </div>
+            <div class="action-info">
+              <h3>ব্যালেন্স যুক্ত করুন</h3>
+              <p>রিসেলার অ্যাকাউন্টে টাকা যোগ করুন</p>
+            </div>
+          </div>
+
+          <div class="action-card remove" data-action="remove" role="button" tabindex="0">
+            <div class="action-icon-wrap">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <line x1="5" y1="12" x2="19" y2="12" />
+              </svg>
+            </div>
+            <div class="action-info">
+              <h3>ব্যালেন্স কেটে নিন</h3>
+              <p>রিসেলার অ্যাকাউন্ট থেকে টাকা কমান</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Step 2: Reseller Search System -->
+      <section id="searchSectionContainer" class="panel-card disabled-section">
+        <h2 class="section-title">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2.3">
+            <circle cx="11" cy="11" r="8" />
+            <line x1="21" y1="21" x2="16.65" y2="16.65" />
+          </svg>
+          ২. রিসেলার খুঁজুন
+        </h2>
+
+        <div class="search-type-tabs" role="tablist">
+          <button type="button" class="search-type-btn active" data-search-type="email">ইমেইল (Email)</button>
+          <button type="button" class="search-type-btn" data-search-type="uid">UID</button>
+          <button type="button" class="search-type-btn" data-search-type="phone">ফোন নম্বর (Phone)</button>
+        </div>
+
+        <div class="search-input-row">
+          <div class="search-input-wrap">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+              <circle cx="11" cy="11" r="8" />
+              <line x1="21" y1="21" x2="16.65" y2="16.65" />
+            </svg>
+            <input type="text" id="searchInput" placeholder="রিসেলারের ইমেইল লিখুন..." autocomplete="off" />
+          </div>
+          <button type="button" id="searchBtn" class="btn-search">
+            <span>খুঁজুন</span>
+          </button>
+        </div>
+
+        <!-- Reseller Information Card -->
+        <div id="resellerCard" class="reseller-card">
+          <div class="reseller-card-header">
+            <div class="reseller-name-wrap">
+              <h3 id="resName">রিসেলার নাম</h3>
+              <p>রিসেলার প্রোফাইল তথ্য</p>
+            </div>
+            <div class="balance-pill">
+              <span id="balancePillLabel">বর্তমান ব্যালেন্স</span>
+              <strong id="resBalanceVal" class="mono">৳ 0</strong>
+            </div>
+          </div>
+
+          <div class="reseller-details-grid">
+            <div class="detail-item">
+              <span>ইমেইল অ্যাড্রেস</span>
+              <div class="detail-item-content">
+                <strong id="resEmail" class="mono">-</strong>
+                <button type="button" class="copy-btn" data-copy-field="email" title="কপি করুন">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+                  </svg>
+                </button>
+              </div>
+            </div>
+
+            <div class="detail-item">
+              <span>ইউআইডি (UID)</span>
+              <div class="detail-item-content">
+                <strong id="resUid" class="mono" style="font-size: 0.82rem;">-</strong>
+                <button type="button" class="copy-btn" data-copy-field="uid" title="কপি করুন">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+                  </svg>
+                </button>
+              </div>
+            </div>
+
+            <div class="detail-item">
+              <span>ফোন নম্বর</span>
+              <div class="detail-item-content">
+                <strong id="resPhone" class="mono">-</strong>
+                <button type="button" class="copy-btn" data-copy-field="phone" title="কপি করুন">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Step 3: Balance Adjustment & Calculation Section -->
+      <section id="adjustmentSectionContainer" class="panel-card">
+        <h2 class="section-title">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2.3">
+            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+          </svg>
+          ৩. টাকার পরিমাণ ও কারণ নির্ধারণ করুন
+        </h2>
+
+        <div class="amount-input-group">
+          <label for="adjustmentAmountInput">কত টাকা পরিবর্তন করবেন?</label>
+          <input type="number" id="adjustmentAmountInput" min="1" step="1" placeholder="টাকার পরিমাণ লিখুন" autocomplete="off" />
+          <div id="amountValidationMsg" class="validation-msg"></div>
+        </div>
+
+        <!-- Live Calculation Preview Card -->
+        <div class="calc-preview-card">
+          <div class="calc-row">
+            <span>বর্তমান ব্যালেন্স:</span>
+            <strong id="calcOldBal">৳ 0</strong>
+          </div>
+          <div class="calc-row">
+            <span id="calcActionLabel">পরিবর্তনের পরিমাণ:</span>
+            <strong id="calcChangeAmt" style="color: var(--primary);">৳ 0</strong>
+          </div>
+          <div class="calc-row divider">
+            <span>নতুন ব্যালেন্স:</span>
+            <strong id="calcNewBal">৳ 0</strong>
+          </div>
+        </div>
+
+        <!-- Optional Note -->
+        <div class="note-group">
+          <label for="adjustmentNoteInput">লেনদেনের কারণ / নোট (ঐচ্ছিক)</label>
+          <textarea id="adjustmentNoteInput" maxlength="500" placeholder="কেন ব্যালেন্স পরিবর্তন করছেন তা লিখুন..."></textarea>
+          <div class="char-counter"><span id="charCount">0</span>/500</div>
+        </div>
+
+        <!-- Confirm Trigger Button -->
+        <button type="button" id="confirmTriggerBtn" class="btn-confirm-action add" disabled>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4">
+            <polyline points="20 6 9 17 4 12" />
+          </svg>
+          <span id="confirmTriggerBtnText">ব্যালেন্স যুক্ত করুন</span>
+        </button>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- Confirmation Modal -->
+  <div id="confirmModal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="confirmModalTitle">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h2 id="confirmModalTitle">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2.3">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+          </svg>
+          লেনদেন নিশ্চিত করুন
+        </h2>
+        <button type="button" class="modal-close" data-close-modal="confirmModal" aria-label="বন্ধ করুন">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4">
+            <line x1="18" y1="6" x2="6" y2="18" />
+            <line x1="6" y1="6" x2="18" y2="18" />
+          </svg>
+        </button>
+      </div>
+
+      <div class="modal-body">
+        <div class="modal-info-grid">
+          <div class="info-cell">
+            <span>রিসেলার নাম</span>
+            <strong id="modalResName">-</strong>
+          </div>
+          <div class="info-cell">
+            <span>UID</span>
+            <strong id="modalResUid" class="mono">-</strong>
+          </div>
+          <div class="info-cell">
+            <span>লেনদেনের ধরন</span>
+            <strong id="modalActionType" style="color: var(--primary);">-</strong>
+          </div>
+          <div class="info-cell">
+            <span>আগের ব্যালেন্স</span>
+            <strong id="modalOldBal" class="mono">-</strong>
+          </div>
+          <div class="info-cell">
+            <span>পরিবর্তনের পরিমাণ</span>
+            <strong id="modalChangeAmt" class="mono">-</strong>
+          </div>
+          <div class="info-cell">
+            <span>লেনদেনের পর ব্যালেন্স</span>
+            <strong id="modalNewBal" class="mono">-</strong>
+          </div>
+        </div>
+
+        <div style="background: #F8FAFC; border-radius: 10px; padding: 12px; font-size: 0.88rem;">
+          <span style="display: block; color: var(--text-muted); font-weight: 600; margin-bottom: 2px;">নোট / কারণ:</span>
+          <p id="modalNoteText" style="color: var(--text); word-break: break-all; font-style: italic;">কোনো নোট দেওয়া হয়নি</p>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn-secondary" data-close-modal="confirmModal">বাতিল</button>
+        <button type="button" id="finalConfirmBtn" class="btn-modal-confirm add">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4">
+            <polyline points="20 6 9 17 4 12" />
+          </svg>
+          <span>কনফার্ম করুন</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Success Modal -->
+  <div id="successModal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="successModalTitle">
+    <div class="modal-box" style="max-width: 460px;">
+      <div class="modal-header" style="background: #F0FDF4; border-bottom-color: #BBF7D0;">
+        <h2 id="successModalTitle" style="color: var(--success);">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#16A34A" stroke-width="2.5">
+            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+            <polyline points="22 4 12 14.01 9 11.01" />
+          </svg>
+          ব্যালেন্স সফলভাবে আপডেট হয়েছে!
+        </h2>
+      </div>
+
+      <div class="modal-body">
+        <div class="modal-info-grid" style="background: #F8FAFC;">
+          <div class="info-cell">
+            <span>রিসেলার নাম</span>
+            <strong id="sucResName">-</strong>
+          </div>
+          <div class="info-cell">
+            <span>UID</span>
+            <strong id="sucResUid" class="mono">-</strong>
+          </div>
+          <div class="info-cell">
+            <span>লেনদেনের ধরন</span>
+            <strong id="sucActionType">-</strong>
+          </div>
+          <div class="info-cell">
+            <span>আগের ব্যালেন্স</span>
+            <strong id="sucOldBal" class="mono">-</strong>
+          </div>
+          <div class="info-cell">
+            <span>পরিবর্তিত পরিমাণ</span>
+            <strong id="sucChangeAmt" class="mono" style="color: var(--primary);">-</strong>
+          </div>
+          <div class="info-cell">
+            <span>নতুন ব্যালেন্স</span>
+            <strong id="sucNewBal" class="mono" style="color: var(--success);">-</strong>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn-modal-confirm add" style="width: 100%; justify-content: center;" data-close-modal="successModal">সম্পন্ন</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Generic Alert Modal -->
+  <div id="alertModal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="alertModalTitle">
+    <div class="modal-box" style="max-width: 420px;">
+      <div class="modal-header" style="background: #FEF2F2; border-bottom-color: #FECACA;">
+        <h2 id="alertModalTitle" style="color: var(--danger);">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#DC2626" stroke-width="2.4">
+            <circle cx="12" cy="12" r="10" />
+            <line x1="12" y1="8" x2="12" y2="12" />
+            <line x1="12" y1="16" x2="12.01" y2="16" />
+          </svg>
+          <span id="alertTitleText">সতর্কতা</span>
+        </h2>
+      </div>
+      <div class="modal-body">
+        <p id="alertMessageText" style="font-size: 0.96rem; color: var(--text);"></p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn-secondary" style="width: 100%;" data-close-modal="alertModal">বন্ধ করুন</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Container -->
+  <div id="toastContainer"></div>
+
+  <!-- Firebase SDK v10.8.0 Modular -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+    import {
+      getFirestore,
+      collection,
+      doc,
+      getDoc,
+      getDocs,
+      query,
+      where,
+      limit,
+      runTransaction,
+      serverTimestamp
+    } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+    // Debug System
+    function debugLog(message, data = null) {
+      console.log("[RESELLER BALANCE MANAGER DEBUG]", message, data || "");
+    }
+const firebaseConfig = {
+  apiKey: "AIzaSyDCIRWmozT0XcEXuXtQ6RDiDo6vtT1T9mU",
+  authDomain: "paikarisell-ghotimarket.firebaseapp.com",
+  projectId: "paikarisell-ghotimarket",
+  storageBucket: "paikarisell-ghotimarket.firebasestorage.app",
+  messagingSenderId: "464086432830",
+  appId: "1:464086432830:web:a10fdd9884954e380e656f",
+  measurementId: "G-E3HR2F9TC5"
+};
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+    debugLog("Firebase Initialized");
+
+    // Constants
+    const LOGIN_REDIRECT_URL = "https://admin.ghotimarket.com/reseller/login";
+    const OWNER_EMAILS = [
+      "nazrulislam887441234@gmail.com",
+      "support@ghotimarket.com"
+    ];
+
+    // Application State
+    let currentUser = null;
+    let userRole = null; // "OWNER" | "ADMIN"
+    let selectedAction = null; // "add" | "remove"
+    let searchType = "email"; // "email" | "uid" | "phone"
+    let currentReseller = null; // { id: docId, data: {...} }
+
+    // DOM Elements
+    const authGuardOverlay = document.getElementById("authGuardOverlay");
+    const appContainer = document.getElementById("appContainer");
+    const userRoleBadge = document.getElementById("userRoleBadge");
+    
+    const searchSectionContainer = document.getElementById("searchSectionContainer");
+    const adjustmentSectionContainer = document.getElementById("adjustmentSectionContainer");
+    const searchInput = document.getElementById("searchInput");
+    const searchBtn = document.getElementById("searchBtn");
+    
+    const resellerCard = document.getElementById("resellerCard");
+    const resName = document.getElementById("resName");
+    const resBalanceVal = document.getElementById("resBalanceVal");
+    const balancePillLabel = document.getElementById("balancePillLabel");
+    const resEmail = document.getElementById("resEmail");
+    const resUid = document.getElementById("resUid");
+    const resPhone = document.getElementById("resPhone");
+
+    const adjustmentAmountInput = document.getElementById("adjustmentAmountInput");
+    const amountValidationMsg = document.getElementById("amountValidationMsg");
+    const calcOldBal = document.getElementById("calcOldBal");
+    const calcChangeAmt = document.getElementById("calcChangeAmt");
+    const calcActionLabel = document.getElementById("calcActionLabel");
+    const calcNewBal = document.getElementById("calcNewBal");
+    const adjustmentNoteInput = document.getElementById("adjustmentNoteInput");
+    const charCount = document.getElementById("charCount");
+    const confirmTriggerBtn = document.getElementById("confirmTriggerBtn");
+    const confirmTriggerBtnText = document.getElementById("confirmTriggerBtnText");
+
+    // Utility: Escape HTML to prevent XSS
+    function escapeHtml(str) {
+      if (str === null || str === undefined) return "";
+      return String(str)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+
+    // Utility: Currency Format
+    function formatCurrency(num) {
+      const val = Number(num) || 0;
+      if (val < 0) {
+        return `-৳ ${Math.abs(val).toLocaleString("en-US")}`;
+      }
+      return `৳ ${val.toLocaleString("en-US")}`;
+    }
+
+    // Custom Toast System
+    function showToast(message, type = "success") {
+      const container = document.getElementById("toastContainer");
+      const toast = document.createElement("div");
+      toast.className = `toast-item ${type}`;
+
+      const iconSvg = type === "success"
+        ? `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#4ADE80" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>`
+        : type === "warning"
+        ? `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#FBBF24" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>`
+        : `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#F87171" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>`;
+
+      toast.innerHTML = `${iconSvg}<span>${escapeHtml(message)}</span>`;
+      container.appendChild(toast);
+
+      setTimeout(() => {
+        toast.style.opacity = "0";
+        toast.style.transform = "translateX(20px)";
+        toast.style.transition = "all 0.2s ease";
+        setTimeout(() => toast.remove(), 220);
+      }, 3400);
+    }
+
+    function showAlertModal(title, message) {
+      document.getElementById("alertTitleText").textContent = title;
+      document.getElementById("alertMessageText").textContent = message;
+      openModal("alertModal");
+    }
+
+    function openModal(id) {
+      const el = document.getElementById(id);
+      if (el) el.classList.add("open");
+    }
+
+    function closeModal(id) {
+      const el = document.getElementById(id);
+      if (el) el.classList.remove("open");
+    }
+
+    document.querySelectorAll("[data-close-modal]").forEach(btn => {
+      btn.addEventListener("click", () => {
+        closeModal(btn.getAttribute("data-close-modal"));
+      });
+    });
+
+    document.querySelectorAll(".modal-backdrop").forEach(backdrop => {
+      backdrop.addEventListener("click", (e) => {
+        if (e.target === backdrop) {
+          backdrop.classList.remove("open");
+        }
+      });
+    });
+
+    async function copyText(text, label) {
+      if (!text || text === "N/A") {
+        showToast("কপি করার মতো কোনো তথ্য নেই", "warning");
+        return;
+      }
+      try {
+        await navigator.clipboard.writeText(text);
+        showToast(`${label} কপি করা হয়েছে`, "success");
+      } catch {
+        const ta = document.createElement("textarea");
+        ta.value = text;
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand("copy");
+        ta.remove();
+        showToast(`${label} কপি করা হয়েছে`, "success");
+      }
+    }
+
+    // =========================================================================
+    // 2. ADMIN / OWNER AUTHENTICATION & PERMISSION VERIFICATION
+    // =========================================================================
+    debugLog("Authentication Started");
+
+    onAuthStateChanged(auth, async (user) => {
+      if (!user) {
+        debugLog("Access Denied", { reason: "No authenticated user" });
+        window.location.replace(LOGIN_REDIRECT_URL);
+        return;
+      }
+
+      debugLog("User Authenticated", { uid: user.uid, email: user.email || "none" });
+      currentUser = user;
+
+      const userEmailLower = (user.email || "").trim().toLowerCase();
+      const isOwner = OWNER_EMAILS.some(email => email.toLowerCase() === userEmailLower);
+
+      if (isOwner) {
+        debugLog("Owner Verification Started");
+        userRole = "OWNER";
+        debugLog("Owner Verified", { email: userEmailLower });
+        grantAccessAndInit();
+        return;
+      }
+
+      debugLog("Admin Verification Started", { uid: user.uid });
+      try {
+        const adminQuery = query(
+          collection(db, "admins"),
+          where("uid", "==", user.uid),
+          where("active", "==", true),
+          limit(1)
+        );
+        const adminSnap = await getDocs(adminQuery);
+
+        let isValidAdmin = false;
+        adminSnap.forEach((docSnap) => {
+          const data = docSnap.data();
+          if (data && data.uid === user.uid && data.active === true) {
+            isValidAdmin = true;
+          }
+        });
+
+        if (isValidAdmin) {
+          userRole = "ADMIN";
+          debugLog("Admin Verified", { uid: user.uid });
+          grantAccessAndInit();
+        } else {
+          debugLog("Access Denied", { reason: "Not an active admin or owner", uid: user.uid });
+          showAlertModal("Permission Denied", "আপনার এই পেজটি দেখার অনুমতি নেই। লগইন পেজে পাঠানো হচ্ছে...");
+          setTimeout(() => {
+            window.location.replace(LOGIN_REDIRECT_URL);
+          }, 1500);
+        }
+      } catch (error) {
+        console.error(error);
+        debugLog("Permission Error", { code: error.code, message: error.message });
+        showAlertModal("Permission Denied", "অ্যাডমিন যাচাই করতে ব্যর্থ হয়েছে। লগইন পেজে পাঠানো হচ্ছে...");
+        setTimeout(() => {
+          window.location.replace(LOGIN_REDIRECT_URL);
+        }, 1600);
+      }
+    });
+
+    function grantAccessAndInit() {
+      userRoleBadge.textContent = userRole === "OWNER" ? "OWNER ACCESS" : "ADMIN ACCESS";
+      authGuardOverlay.classList.add("hidden");
+      appContainer.classList.add("visible");
+    }
+
+    // =========================================================================
+    // 4. BALANCE ACTION SELECTION
+    // =========================================================================
+    document.querySelectorAll(".action-card").forEach(card => {
+      card.addEventListener("click", () => {
+        document.querySelectorAll(".action-card").forEach(c => c.classList.remove("selected", "add", "remove"));
+        
+        const action = card.getAttribute("data-action");
+        selectedAction = action;
+        card.classList.add("selected", action);
+
+        debugLog("Balance Action Selected", { action });
+
+        // Enable Search Section
+        searchSectionContainer.classList.remove("disabled-section");
+
+        // Update UI styling according to action
+        updateActionTheme();
+        if (currentReseller) {
+          updateLiveCalculation();
+        }
+      });
+    });
+
+    function updateActionTheme() {
+      confirmTriggerBtn.className = `btn-confirm-action ${selectedAction || "add"}`;
+      if (selectedAction === "add") {
+        confirmTriggerBtnText.textContent = "ব্যালেন্স যুক্ত করুন";
+      } else {
+        confirmTriggerBtnText.textContent = "ব্যালেন্স কেটে নিন";
+      }
+    }
+
+    // =========================================================================
+    // 5. RESELLER SEARCH SYSTEM
+    // =========================================================================
+    document.querySelectorAll(".search-type-btn").forEach(btn => {
+      btn.addEventListener("click", () => {
+        document.querySelectorAll(".search-type-btn").forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+        searchType = btn.getAttribute("data-search-type");
+
+        debugLog("Search Type Selected", { searchType });
+
+        // Reset search input placeholder & value
+        if (searchType === "email") {
+          searchInput.placeholder = "রিসেলারের ইমেইল লিখুন...";
+        } else if (searchType === "uid") {
+          searchInput.placeholder = "রিসেলারের UID লিখুন...";
+        } else if (searchType === "phone") {
+          searchInput.placeholder = "রিসেলারের ফোন নম্বর লিখুন...";
+        }
+        searchInput.value = "";
+        resetResellerState();
+      });
+    });
+
+    function resetResellerState() {
+      currentReseller = null;
+      resellerCard.classList.remove("visible");
+      adjustmentSectionContainer.style.display = "none";
+    }
+
+    searchBtn.addEventListener("click", executeResellerSearch);
+    searchInput.addEventListener("keypress", (e) => {
+      if (e.key === "Enter") {
+        executeResellerSearch();
+      }
+    });
+
+    async function executeResellerSearch() {
+      if (!selectedAction) {
+        showToast("প্রথমে লেনদেনের ধরন (যুক্ত করুন বা কেটে নিন) নির্বাচন করুন", "warning");
+        return;
+      }
+
+      const rawVal = searchInput.value.trim();
+      if (!rawVal) {
+        showAlertModal("Invalid Input", "অনুগ্রহ করে অনুসন্ধানের জন্য সঠিক তথ্য লিখুন।");
+        return;
+      }
+
+      searchBtn.disabled = true;
+      searchBtn.innerHTML = `<span>খোঁজা হচ্ছে...</span>`;
+      debugLog("Search Started", { searchType, queryValue: rawVal });
+
+      resetResellerState();
+
+      try {
+        let searchValue = rawVal;
+        if (searchType === "email") {
+          searchValue = rawVal.toLowerCase();
+        }
+
+        const resellerCol = collection(db, "reseller");
+        const q = query(resellerCol, where(searchType, "==", searchValue), limit(1));
+        const querySnap = await getDocs(q);
+
+        if (querySnap.empty) {
+          debugLog("Reseller Not Found", { searchType, searchValue });
+          showAlertModal("Reseller পাওয়া যায়নি", "এই তথ্য দিয়ে কোনো রিসেলার খুঁজে পাওয়া যায়নি।");
+          return;
+        }
+
+        const docSnap = querySnap.docs[0];
+        const data = docSnap.data();
+
+        currentReseller = {
+          id: docSnap.id,
+          data: data
+        };
+
+        debugLog("Reseller Found", { documentId: docSnap.id, uid: data.uid });
+        renderResellerCard(data);
+      } catch (error) {
+        console.error(error);
+        debugLog("Network Error", { context: "Reseller Search", code: error.code, message: error.message });
+        showAlertModal("Network Error", "ইন্টারনেট সংযোগে সমস্যা হয়েছে। আবার চেষ্টা করুন।");
+      } finally {
+        searchBtn.disabled = false;
+        searchBtn.innerHTML = `<span>খুঁজুন</span>`;
+      }
+    }
+
+    function renderResellerCard(data) {
+      resName.textContent = data.name || "নামবিহীন রিসেলার";
+      const bal = Number(data.balance ?? 0);
+      resBalanceVal.textContent = formatCurrency(bal);
+      
+      if (bal < 0) {
+        balancePillLabel.textContent = "পাওনা টাকা";
+        resBalanceVal.className = "mono bal-negative";
+      } else if (bal > 0) {
+        balancePillLabel.textContent = "উপলব্ধ ব্যালেন্স";
+        resBalanceVal.className = "mono bal-positive";
+      } else {
+        balancePillLabel.textContent = "বর্তমান ব্যালেন্স শূন্য";
+        resBalanceVal.className = "mono bal-zero";
+      }
+
+      resEmail.textContent = data.email || "N/A";
+      resUid.textContent = data.uid || "N/A";
+      resPhone.textContent = data.phone || "N/A";
+
+      resellerCard.classList.add("visible");
+      adjustmentSectionContainer.style.display = "block";
+      adjustmentAmountInput.value = "";
+      adjustmentNoteInput.value = "";
+      charCount.textContent = "0";
+
+      updateLiveCalculation();
+      debugLog("Reseller Information Loaded", { uid: data.uid, balance: bal });
+    }
+
+    // Copy Button Listeners
+    resellerCard.addEventListener("click", (e) => {
+      const copyBtn = e.target.closest("[data-copy-field]");
+      if (!copyBtn || !currentReseller) return;
+      const field = copyBtn.getAttribute("data-copy-field");
+      const val = currentReseller.data[field];
+      copyText(val, field.toUpperCase());
+    });
+
+    // =========================================================================
+    // 7 & 8. AMOUNT INPUT & LIVE BALANCE CALCULATION
+    // =========================================================================
+    adjustmentAmountInput.addEventListener("input", updateLiveCalculation);
+
+    function validateAmountInput() {
+      const raw = adjustmentAmountInput.value.trim();
+      const num = Number(raw);
+
+      if (!raw) {
+        amountValidationMsg.textContent = "টাকার পরিমাণ খালি রাখা যাবে না।";
+        amountValidationMsg.classList.add("visible");
+        return { valid: false, value: 0 };
+      }
+
+      if (!Number.isInteger(num) || num <= 0 || !Number.isFinite(num)) {
+        amountValidationMsg.textContent = "অনুগ্রহ করে শূন্যের চেয়ে বড় একটি পূর্ণসংখ্যা (Positive Integer) লিখুন।";
+        amountValidationMsg.classList.add("visible");
+        return { valid: false, value: 0 };
+      }
+
+      amountValidationMsg.classList.remove("visible");
+      return { valid: true, value: num };
+    }
+
+    function updateLiveCalculation() {
+      if (!currentReseller) return;
+
+      const oldBal = Number(currentReseller.data.balance ?? 0);
+      const validation = validateAmountInput();
+      const changeAmt = validation.valid ? validation.value : 0;
+
+      let newBal = oldBal;
+      if (validation.valid) {
+        if (selectedAction === "add") {
+          newBal = oldBal + changeAmt;
+        } else if (selectedAction === "remove") {
+          newBal = oldBal - changeAmt;
+        }
+      }
+
+      debugLog("Live Calculation Updated", { oldBalance: oldBal, changeAmount: changeAmt, newBalance: newBal, action: selectedAction });
+
+      calcOldBal.textContent = oldBal < 0 ? `${formatCurrency(oldBal)} (পাওনা)` : formatCurrency(oldBal);
+      calcOldBal.className = oldBal < 0 ? "bal-negative" : "";
+
+      calcActionLabel.textContent = selectedAction === "remove" ? "কেটে নেওয়ার পরিমাণ:" : "যোগ করার পরিমাণ:";
+      calcChangeAmt.textContent = formatCurrency(changeAmt);
+
+      calcNewBal.textContent = newBal < 0 ? `${formatCurrency(newBal)} (পাওনা)` : formatCurrency(newBal);
+      calcNewBal.className = newBal < 0 ? "bal-negative" : "bal-positive";
+
+      confirmTriggerBtn.disabled = !validation.valid;
+    }
+
+    // =========================================================================
+    // 9. OPTIONAL NOTE CHARACTER COUNTER
+    // =========================================================================
+    adjustmentNoteInput.addEventListener("input", () => {
+      const len = adjustmentNoteInput.value.length;
+      charCount.textContent = len.toString();
+    });
+
+    // =========================================================================
+    // 10 & 11. CONFIRMATION MODAL TRIGGER
+    // =========================================================================
+    confirmTriggerBtn.addEventListener("click", () => {
+      if (!currentReseller || !selectedAction) return;
+
+      const validation = validateAmountInput();
+      if (!validation.valid) return;
+
+      const oldBal = Number(currentReseller.data.balance ?? 0);
+      const amount = validation.value;
+      const newBal = selectedAction === "add" ? oldBal + amount : oldBal - amount;
+      const note = adjustmentNoteInput.value.trim();
+
+      document.getElementById("modalResName").textContent = currentReseller.data.name || "নামবিহীন";
+      document.getElementById("modalResUid").textContent = currentReseller.data.uid || "N/A";
+      document.getElementById("modalActionType").textContent = selectedAction === "add" ? "ব্যালেন্স যুক্ত করা (+)" : "ব্যালেন্স কেটে নেওয়া (-)";
+      document.getElementById("modalOldBal").textContent = formatCurrency(oldBal);
+      document.getElementById("modalChangeAmt").textContent = formatCurrency(amount);
+      document.getElementById("modalNewBal").textContent = formatCurrency(newBal);
+      document.getElementById("modalNoteText").textContent = note !== "" ? note : "কোনো নোট দেওয়া হয়নি";
+
+      const finalConfirmBtn = document.getElementById("finalConfirmBtn");
+      finalConfirmBtn.className = `btn-modal-confirm ${selectedAction}`;
+
+      debugLog("Confirmation Modal Opened", { uid: currentReseller.data.uid, action: selectedAction, amount, newBalance: newBal });
+      openModal("confirmModal");
+    });
+
+    // =========================================================================
+    // 12. FIRESTORE ATOMIC TRANSACTION
+    // =========================================================================
+    const finalConfirmBtn = document.getElementById("finalConfirmBtn");
+    let isProcessingTransaction = false;
+
+    finalConfirmBtn.addEventListener("click", async () => {
+      if (!currentReseller || !selectedAction || isProcessingTransaction || !currentUser) return;
+
+      const validation = validateAmountInput();
+      if (!validation.valid) {
+        closeModal("confirmModal");
+        return;
+      }
+
+      const resellerDocId = currentReseller.id;
+      const expectedUid = currentReseller.data.uid;
+      const amount = validation.value;
+      const note = adjustmentNoteInput.value.trim();
+
+      isProcessingTransaction = true;
+      finalConfirmBtn.disabled = true;
+      const originalModalBtnHtml = finalConfirmBtn.innerHTML;
+      finalConfirmBtn.innerHTML = `<span>প্রসেসিং হচ্ছে...</span>`;
+
+      debugLog("Firestore Transaction Started", { resellerDocId, expectedUid, amount, action: selectedAction });
+
+      try {
+        const resellerRef = doc(db, "reseller", resellerDocId);
+        const newHistoryRef = doc(collection(db, "transactions"));
+
+        const txResult = await runTransaction(db, async (transaction) => {
+          // 1. Read Reseller Document inside transaction
+          const resellerSnap = await transaction.get(resellerRef);
+          if (!resellerSnap.exists()) {
+            throw new Error("RESELLER_DOCUMENT_MISSING");
+          }
+
+          const liveData = resellerSnap.data();
+
+          // 2. UID Verification
+          if (liveData.uid !== expectedUid) {
+            throw new Error("UID_MISMATCH");
+          }
+
+          // 3. Previous Balance
+          const oldBalance = Number(liveData.balance ?? 0);
+          if (!Number.isFinite(oldBalance)) {
+            throw new Error("INVALID_BALANCE");
+          }
+
+          // 4. Calculate New Balance
+          let newBalance;
+          const actionName = selectedAction === "add" ? "Add Balance" : "Remove Balance";
+
+          if (selectedAction === "add") {
+            newBalance = oldBalance + amount;
+          } else {
+            newBalance = oldBalance - amount;
+          }
+
+          if (!Number.isFinite(newBalance)) {
+            throw new Error("INVALID_CALCULATION");
+          }
+
+          // 5. Update Reseller Balance
+          transaction.update(resellerRef, {
+            balance: newBalance
+          });
+
+          // 6. Create Transaction History Document
+          transaction.set(newHistoryRef, {
+            name: actionName,
+            adjustmentType: selectedAction,
+            uid: expectedUid,
+            amount: amount,
+            oldBalance: oldBalance,
+            balance: newBalance,
+            note: note,
+            createdAt: serverTimestamp(),
+            adjustedBy: currentUser.uid
+          });
+
+          return {
+            name: liveData.name || "রিসেলার",
+            uid: expectedUid,
+            actionName: selectedAction === "add" ? "ব্যালেন্স যুক্ত করা" : "ব্যালেন্স কেটে নেওয়া",
+            oldBalance,
+            amount,
+            newBalance
+          };
+        });
+
+        debugLog("Reseller Balance Updated", { newBalance: txResult.newBalance });
+        debugLog("Transaction History Created", { historyId: newHistoryRef.id });
+        debugLog("Firestore Transaction Committed");
+
+        // Update local reseller state
+        currentReseller.data.balance = txResult.newBalance;
+        renderResellerCard(currentReseller.data);
+
+        closeModal("confirmModal");
+
+        // Show Success Modal
+        document.getElementById("sucResName").textContent = txResult.name;
+        document.getElementById("sucResUid").textContent = txResult.uid;
+        document.getElementById("sucActionType").textContent = txResult.actionName;
+        document.getElementById("sucOldBal").textContent = formatCurrency(txResult.oldBalance);
+        document.getElementById("sucChangeAmt").textContent = `${selectedAction === "add" ? "+" : "-"} ${formatCurrency(txResult.amount)}`;
+        document.getElementById("sucNewBal").textContent = formatCurrency(txResult.newBalance);
+        openModal("successModal");
+
+        showToast("ব্যালেন্স সফলভাবে আপডেট করা হয়েছে!", "success");
+
+        // Reset adjustment inputs
+        adjustmentAmountInput.value = "";
+        adjustmentNoteInput.value = "";
+        charCount.textContent = "0";
+        updateLiveCalculation();
+
+      } catch (error) {
+        console.error(error);
+        debugLog("Transaction Failed", { code: error.code, message: error.message });
+        closeModal("confirmModal");
+
+        const errMsg = error.message || "";
+        if (errMsg === "RESELLER_DOCUMENT_MISSING") {
+          showAlertModal("Reseller পাওয়া যায়নি", "রিসেলারের অ্যাকাউন্ট ডাটাবেসে পাওয়া যায়নি।");
+        } else if (errMsg === "UID_MISMATCH") {
+          showAlertModal("UID Mismatch", "রিসেলারের তথ্য পরিবর্তিত হয়েছে। অনুগ্রহ করে আবার সার্চ করুন।");
+        } else if (errMsg === "INVALID_BALANCE") {
+          showAlertModal("Invalid Balance", "রিসেলারের বর্তমান ব্যালেন্স সঠিক নয়। লেনদেন সম্পন্ন করা যায়নি।");
+        } else if (error.code === "permission-denied") {
+          showAlertModal("Permission Denied", "আপনার এই কাজটি করার অনুমতি নেই (Firestore Security Rules)।");
+        } else {
+          showAlertModal("Transaction Failed", "লেনদেন সম্পন্ন হয়নি। কোনো পরিবর্তন সংরক্ষণ করা হয়নি। আবার চেষ্টা করুন।");
+        }
+      } finally {
+        isProcessingTransaction = false;
+        finalConfirmBtn.disabled = false;
+        finalConfirmBtn.innerHTML = originalModalBtnHtml;
+      }
+    });
+  </script>
+</body>
+</html>
