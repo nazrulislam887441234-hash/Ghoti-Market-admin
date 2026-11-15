@@ -1,0 +1,1367 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ghoti Reseller - Admin & Owner Panel</title>
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="https://reseller.ghotimarket.com/photo/favicon.png">
+    <!-- Google Fonts: Inter & Hind Siliguri -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary: #FF6B35;
+            --secondary: #FF6A00;
+            --primary-dark: #E55A24;
+            --bg-color: #F8F9FA;
+            --card-bg: #FFFFFF;
+            --text-main: #2D3748;
+            --text-muted: #718096;
+            --border-color: #E2E8F0;
+            --success: #38A169;
+            --danger: #E53E3E;
+            --danger-bg: #FFF5F5;
+            --success-bg: #F0FFF4;
+            --radius: 12px;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Hind Siliguri', 'Inter', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Auth Screen / Loading Overlay */
+        #auth-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #FFFFFF;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.3s ease;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid var(--border-color);
+            border-top: 4px solid var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .auth-message {
+            font-size: 1.1rem;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        /* Main App Wrapper */
+        #app-container {
+            display: none;
+            flex: 1;
+            flex-direction: column;
+        }
+
+        /* Header */
+        header {
+            background: #FFFFFF;
+            border-bottom: 1px solid var(--border-color);
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .brand img {
+            height: 40px;
+            object-fit: contain;
+        }
+
+        .brand h1 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        .user-panel-info {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .user-details {
+            text-align: right;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .user-email {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-main);
+        }
+
+        .role-badge {
+            display: inline-block;
+            padding: 2px 10px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            border-radius: 20px;
+            text-transform: uppercase;
+            width: fit-content;
+            margin-left: auto;
+            margin-top: 2px;
+        }
+
+        .role-owner {
+            background: linear-gradient(135deg, #FF6B35, #FF6A00);
+            color: #FFFFFF;
+        }
+
+        .role-admin {
+            background: #ED8936;
+            color: #FFFFFF;
+        }
+
+        .btn-logout {
+            background: var(--danger-bg);
+            color: var(--danger);
+            border: 1px solid #FEB2B2;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: var(--transition);
+        }
+
+        .btn-logout:hover {
+            background: var(--danger);
+            color: #FFFFFF;
+        }
+
+        .btn-logout svg {
+            width: 16px;
+            height: 16px;
+            fill: currentColor;
+        }
+
+        /* Dashboard Container */
+        .dashboard-main {
+            max-width: 1200px;
+            width: 100%;
+            margin: 0 auto;
+            padding: 30px 20px;
+            flex: 1;
+        }
+
+        /* Stats Bar */
+        .stats-bar {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .stat-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 10px;
+            background: #FFFaf5;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .stat-icon svg {
+            width: 24px;
+            height: 24px;
+            fill: var(--primary);
+        }
+
+        .stat-info h3 {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .stat-info p {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        /* Section Title */
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .section-header h2 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        /* Withdraw Cards Grid */
+        .withdraw-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .withdraw-card {
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border-color);
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: var(--transition);
+            position: relative;
+        }
+
+        .withdraw-card:hover {
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+
+        .card-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .pm-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .pm-logo {
+            width: 32px;
+            height: 32px;
+            object-fit: contain;
+            border-radius: 6px;
+        }
+
+        .pm-name {
+            font-weight: 700;
+            font-size: 1rem;
+            text-transform: uppercase;
+        }
+
+        .amount-display {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .card-body {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.9rem;
+        }
+
+        .detail-label {
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .detail-value {
+            font-weight: 600;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .copy-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-muted);
+            border-radius: 4px;
+            transition: var(--transition);
+        }
+
+        .copy-btn:hover {
+            background: var(--bg-color);
+            color: var(--primary);
+        }
+
+        .copy-btn svg {
+            width: 14px;
+            height: 14px;
+            fill: currentColor;
+        }
+
+        /* Card Actions */
+        .card-actions {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .btn-action {
+            padding: 10px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            transition: var(--transition);
+        }
+
+        .btn-action svg {
+            width: 16px;
+            height: 16px;
+            fill: currentColor;
+        }
+
+        .btn-approve {
+            background: #F0FFF4;
+            color: var(--success);
+            border: 1px solid #C6F6D5;
+        }
+
+        .btn-approve:hover {
+            background: var(--success);
+            color: #FFFFFF;
+        }
+
+        .btn-reject {
+            background: var(--danger-bg);
+            color: var(--danger);
+            border: 1px solid #FEB2B2;
+        }
+
+        .btn-reject:hover {
+            background: var(--danger);
+            color: #FFFFFF;
+        }
+
+        /* Load More Container */
+        .load-more-container {
+            text-align: center;
+            margin: 20px 0 40px 0;
+        }
+
+        .btn-load-more {
+            background: #FFFFFF;
+            color: var(--primary);
+            border: 2px solid var(--primary);
+            padding: 12px 30px;
+            border-radius: var(--radius);
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: var(--transition);
+            box-shadow: var(--shadow);
+        }
+
+        .btn-load-more:hover {
+            background: var(--primary);
+            color: #FFFFFF;
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            border: 1px solid var(--border-color);
+            grid-column: 1 / -1;
+        }
+
+        .empty-state svg {
+            width: 64px;
+            height: 64px;
+            fill: var(--text-muted);
+            margin-bottom: 15px;
+        }
+
+        .empty-state h3 {
+            font-size: 1.2rem;
+            color: var(--text-main);
+            margin-bottom: 5px;
+        }
+
+        .empty-state p {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+        }
+
+        /* Custom Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal-box {
+            background: #FFFFFF;
+            width: 100%;
+            max-width: 480px;
+            border-radius: var(--radius);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            overflow: hidden;
+            transform: translateY(20px);
+            transition: transform 0.3s ease;
+        }
+
+        .modal-overlay.active .modal-box {
+            transform: translateY(0);
+        }
+
+        .modal-header {
+            padding: 20px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-header h3 {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: var(--text-muted);
+            padding: 4px;
+            border-radius: 4px;
+        }
+
+        .modal-close:hover {
+            background: var(--bg-color);
+            color: var(--text-main);
+        }
+
+        .modal-close svg {
+            width: 20px;
+            height: 20px;
+            fill: currentColor;
+        }
+
+        .modal-body {
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .calc-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.95rem;
+        }
+
+        .calc-row.highlight {
+            font-weight: 700;
+            font-size: 1.05rem;
+            padding-top: 10px;
+            border-top: 1px dashed var(--border-color);
+        }
+
+        .calc-row.negative-balance {
+            color: var(--danger);
+        }
+
+        .calc-input {
+            width: 120px;
+            padding: 8px 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            font-size: 1rem;
+            font-weight: 600;
+            text-align: right;
+            outline: none;
+            transition: var(--transition);
+        }
+
+        .calc-input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(255, 107, 53, 0.15);
+        }
+
+        .modal-footer {
+            padding: 15px 20px;
+            background: var(--bg-color);
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        .btn-modal {
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            border: none;
+            transition: var(--transition);
+        }
+
+        .btn-modal-cancel {
+            background: #E2E8F0;
+            color: var(--text-main);
+        }
+
+        .btn-modal-cancel:hover {
+            background: #CBD5E0;
+        }
+
+        .btn-modal-confirm {
+            background: var(--primary);
+            color: #FFFFFF;
+        }
+
+        .btn-modal-confirm:hover {
+            background: var(--primary-dark);
+        }
+
+        .btn-modal-danger {
+            background: var(--danger);
+            color: #FFFFFF;
+        }
+
+        .btn-modal-danger:hover {
+            background: #C53030;
+        }
+
+        /* Custom Toast Notification */
+        #toast-container {
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            z-index: 2000;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .toast {
+            background: #2D3748;
+            color: #FFFFFF;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.2);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            animation: slideIn 0.3s ease, fadeOut 0.3s ease 2.7s forwards;
+            max-width: 350px;
+        }
+
+        .toast.success { background: #2F855A; }
+        .toast.error { background: #C53030; }
+
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        @keyframes fadeOut {
+            from { opacity: 1; }
+            to { opacity: 0; visibility: hidden; }
+        }
+
+        /* Skeleton Loader */
+        .skeleton {
+            background: linear-gradient(90deg, #EDF2F7 25%, #E2E8F0 50%, #EDF2F7 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite;
+            border-radius: 4px;
+        }
+
+        @keyframes shimmer {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+
+        .skeleton-card {
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            border: 1px solid var(--border-color);
+            padding: 20px;
+            height: 220px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            header {
+                padding: 12px 15px;
+                flex-direction: column;
+                gap: 12px;
+            }
+            .user-panel-info {
+                width: 100%;
+                justify-content: space-between;
+            }
+            .user-details {
+                text-align: left;
+            }
+            .role-badge {
+                margin-left: 0;
+            }
+            .withdraw-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Auth / Loading Overlay -->
+    <div id="auth-overlay">
+        <div class="spinner"></div>
+        <div class="auth-message" id="auth-status-text">যাচাই করা হচ্ছে...</div>
+    </div>
+
+    <!-- Main App Container -->
+    <div id="app-container">
+        <!-- Header -->
+        <header>
+            <div class="brand">
+                <img src="https://reseller.ghotimarket.com/photo/logo.png" alt="Ghoti Reseller Logo">
+                <h1>Admin Panel</h1>
+            </div>
+            <div class="user-panel-info">
+                <div class="user-details">
+                    <span class="user-email" id="header-user-email">loading@email.com</span>
+                    <span class="role-badge" id="header-role-badge">ADMIN</span>
+                </div>
+                <button class="btn-logout" id="btn-logout" title="লগআউট">
+                    <svg viewBox="0 0 24 24"><path d="M16 13v-2H7V8l-5 4 5 4v-3h9zM20 3h-9c-1.1 0-2 .9-2 2v4h2V5h9v14h-9v-4H9v4c0 1.1.9 2 2 2h9c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2z"/></svg>
+                    লগআউট
+                </button>
+            </div>
+        </header>
+
+        <!-- Dashboard Main Content -->
+        <main class="dashboard-main">
+            <!-- Stats Bar -->
+            <div class="stats-bar">
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
+                    </div>
+                    <div class="stat-info">
+                        <h3>মোট পেন্ডিং রিকোয়েস্ট</h3>
+                        <p id="stat-pending-count">০</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>
+                    </div>
+                    <div class="stat-info">
+                        <h3>বর্তমানে লোড করা</h3>
+                        <p id="stat-loaded-count">০</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Withdraw Management Section -->
+            <div class="section-header">
+                <h2>উইথড্র রিকোয়েস্ট ম্যানেজমেন্ট</h2>
+            </div>
+
+            <!-- Cards Grid -->
+            <div class="withdraw-grid" id="withdraw-grid-container">
+                <!-- Skeletons for initial loading -->
+                <div class="skeleton-card"><div class="skeleton" style="height:100%;"></div></div>
+                <div class="skeleton-card"><div class="skeleton" style="height:100%;"></div></div>
+                <div class="skeleton-card"><div class="skeleton" style="height:100%;"></div></div>
+            </div>
+
+            <!-- Load More Container -->
+            <div class="load-more-container" id="load-more-wrapper" style="display: none;">
+                <button class="btn-load-more" id="btn-load-more">আরোও দেখুন</button>
+            </div>
+        </main>
+    </div>
+
+    <!-- Payment Confirmation Modal -->
+    <div class="modal-overlay" id="payment-modal">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h3>পেমেন্ট নিশ্চিতকরণ</h3>
+                <button class="modal-close" id="payment-modal-close">
+                    <svg viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="calc-row">
+                    <span class="detail-label">রিসেলার ইউআইডি:</span>
+                    <span class="detail-value" id="modal-reseller-uid" style="font-family: monospace;">-</span>
+                </div>
+                <div class="calc-row">
+                    <span class="detail-label">বর্তমান ব্যালেন্স:</span>
+                    <span class="detail-value" id="modal-current-balance">৳0</span>
+                </div>
+                <div class="calc-row">
+                    <span class="detail-label">উইথড্র পরিমাণ:</span>
+                    <input type="number" id="modal-amount-input" class="calc-input" value="0">
+                </div>
+                <div class="calc-row highlight" id="modal-after-row">
+                    <span class="detail-label">লেনদেনের পর ব্যালেন্স:</span>
+                    <span class="detail-value" id="modal-after-balance">৳0</span>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-modal btn-modal-cancel" id="payment-modal-cancel">বাতিল করুন</button>
+                <button class="btn-modal btn-modal-confirm" id="payment-modal-confirm">পেমেন্ট নিশ্চিত করুন</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Reject Confirmation Modal -->
+    <div class="modal-overlay" id="reject-modal">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h3>রিকোয়েস্ট বাতিলকরণ</h3>
+                <button class="modal-close" id="reject-modal-close">
+                    <svg viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p style="color: var(--text-main); font-size: 1rem; line-height: 1.5;">আপনি কি নিশ্চিত যে এই উইথড্র রিকোয়েস্ট বাতিল করতে চান? রিকোয়েস্টটি মুছে ফেলা হবে এবং ব্যালেন্স অপরিবর্তিত থাকবে।</p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-modal btn-modal-cancel" id="reject-modal-cancel">ফিরে যান</button>
+                <button class="btn-modal btn-modal-danger" id="reject-modal-confirm">হ্যাঁ, বাতিল করুন</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div id="toast-container"></div>
+
+    <!-- Firebase App & SDKs (Modular) -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getFirestore, collection, query, orderBy, limit, startAfter, getDocs, doc, getDoc, runTransaction, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+       const firebaseConfig = {
+  apiKey: "AIzaSyDCIRWmozT0XcEXuXtQ6RDiDo6vtT1T9mU",
+  authDomain: "paikarisell-ghotimarket.firebaseapp.com",
+  projectId: "paikarisell-ghotimarket",
+  storageBucket: "paikarisell-ghotimarket.firebasestorage.app",
+  messagingSenderId: "464086432830",
+  appId: "1:464086432830:web:a10fdd9884954e380e656f",
+  measurementId: "G-E3HR2F9TC5"
+};
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        // Owner Emails
+        const OWNER_EMAILS = [
+            "nazrulislam887441234@gmail.com",
+            "support@ghotimarket.com"
+        ];
+
+        // State variables
+        let lastVisibleDoc = null;
+        let loadedRequestsCount = 0;
+        let totalPendingCount = 0;
+        let activeWithdrawData = null; // { id, data, cardElement }
+        let isLoadingMore = false;
+
+        // DOM Elements
+        const authOverlay = document.getElementById('auth-overlay');
+        const authStatusText = document.getElementById('auth-status-text');
+        const appContainer = document.getElementById('app-container');
+        const headerUserEmail = document.getElementById('header-user-email');
+        const headerRoleBadge = document.getElementById('header-role-badge');
+        const btnLogout = document.getElementById('btn-logout');
+        const withdrawGridContainer = document.getElementById('withdraw-grid-container');
+        const loadMoreWrapper = document.getElementById('load-more-wrapper');
+        const btnLoadMore = document.getElementById('btn-load-more');
+        const statPendingCount = document.getElementById('stat-pending-count');
+        const statLoadedCount = document.getElementById('stat-loaded-count');
+
+        // Modal Elements
+        const paymentModal = document.getElementById('payment-modal');
+        const paymentModalClose = document.getElementById('payment-modal-close');
+        const paymentModalCancel = document.getElementById('payment-modal-cancel');
+        const paymentModalConfirm = document.getElementById('payment-modal-confirm');
+        const modalResellerUid = document.getElementById('modal-reseller-uid');
+        const modalCurrentBalance = document.getElementById('modal-current-balance');
+        const modalAmountInput = document.getElementById('modal-amount-input');
+        const modalAfterBalance = document.getElementById('modal-after-balance');
+        const modalAfterRow = document.getElementById('modal-after-row');
+
+        const rejectModal = document.getElementById('reject-modal');
+        const rejectModalClose = document.getElementById('reject-modal-close');
+        const rejectModalCancel = document.getElementById('reject-modal-cancel');
+        const rejectModalConfirm = document.getElementById('reject-modal-confirm');
+
+        // Toast Helper
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.textContent = message;
+            container.appendChild(toast);
+            setTimeout(() => {
+                toast.remove();
+            }, 3000);
+        }
+
+        // Authentication & Authorization Check on Load
+        onAuthStateChanged(auth, async (user) => {
+            if (!user) {
+                window.location.href = '/admin-login';
+                return;
+            }
+
+            try {
+                const email = user.email.toLowerCase().trim();
+                let isOwner = OWNER_EMAILS.includes(email);
+                let roleName = "";
+
+                if (isOwner) {
+                    roleName = "OWNER";
+                } else {
+                    authStatusText.textContent = "অ্যাডমিন অনুমতি যাচাই করা হচ্ছে...";
+                    // Check admins collection
+                    const adminDocRef = doc(db, "admins", user.uid);
+                    const adminDocSnap = await getDoc(adminDocRef);
+
+                    if (adminDocSnap.exists()) {
+                        const adminData = adminDocSnap.data();
+                        if (adminData.uid === user.uid && adminData.active === true) {
+                            roleName = "ADMIN";
+                        } else {
+                            throw new Error("Admin Permission Denied");
+                        }
+                    } else {
+                        throw new Error("Admin Permission Denied");
+                    }
+                }
+
+                // Setup UI Header
+                headerUserEmail.textContent = user.email;
+                headerRoleBadge.textContent = roleName;
+                headerRoleBadge.className = `role-badge role-${roleName.toLowerCase()}`;
+
+                // Hide Auth Overlay & Show App
+                authOverlay.style.opacity = '0';
+                setTimeout(() => {
+                    authOverlay.style.display = 'none';
+                    appContainer.style.display = 'flex';
+                }, 300);
+
+                // Initial Data Load
+                loadTotalPendingCount();
+                loadInitialWithdraws();
+
+            } catch (error) {
+                console.error("Auth/Permission Error:", error);
+                showToast("অ্যাডমিন প্যানেল অ্যাক্সেস করার অনুমতি নেই।", "error");
+                setTimeout(() => {
+                    window.location.href = '/admin-login';
+                }, 2000);
+            }
+        });
+
+        // Logout Event
+        btnLogout.addEventListener('click', async () => {
+            try {
+                await signOut(auth);
+                window.location.href = '/admin-login';
+            } catch (error) {
+                showToast("লগআউট করতে সমস্যা হয়েছে।", "error");
+            }
+        });
+
+        // Load Total Pending Count
+        async function loadTotalPendingCount() {
+            try {
+                const q = query(collection(db, "withdraw"), orderBy("createdAt", "desc"));
+                const snapshot = await getDocs(q);
+                totalPendingCount = snapshot.size;
+                statPendingCount.textContent = totalPendingCount;
+            } catch (error) {
+                console.error("Error loading count:", error);
+            }
+        }
+
+        // Format Date
+        function formatTimestamp(timestamp) {
+            if (!timestamp) return "তারিখ নেই";
+            try {
+                const date = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
+                return date.toLocaleString('bn-BD', {
+                    day: 'numeric',
+                    month: 'short',
+                    year: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+            } catch (e) {
+                return "তারিখ প্রযোজ্য নয়";
+            }
+        }
+
+        // Copy to Clipboard
+        window.copyText = function(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                showToast("কপি করা হয়েছে!");
+            }).catch(() => {
+                showToast("কপি করতে ব্যর্থ হয়েছে।", "error");
+            });
+        };
+
+        // Load Initial Withdraw Requests (Limit 20)
+        async function loadInitialWithdraws() {
+            withdrawGridContainer.innerHTML = '';
+            loadedRequestsCount = 0;
+            lastVisibleDoc = null;
+
+            try {
+                const q = query(collection(db, "withdraw"), orderBy("createdAt", "desc"), limit(20));
+                const snapshot = await getDocs(q);
+
+                if (snapshot.empty) {
+                    renderEmptyState();
+                    return;
+                }
+
+                lastVisibleDoc = snapshot.docs[snapshot.docs.length - 1];
+                
+                snapshot.forEach((docSnap) => {
+                    renderWithdrawCard(docSnap.id, docSnap.data());
+                });
+
+                loadedRequestsCount = snapshot.size;
+                statLoadedCount.textContent = loadedRequestsCount;
+
+                if (snapshot.size >= 20) {
+                    loadMoreWrapper.style.display = 'block';
+                } else {
+                    loadMoreWrapper.style.display = 'none';
+                }
+
+            } catch (error) {
+                console.error("Firestore Read Error:", error);
+                showToast("উইথড্র রিকোয়েস্ট লোড করতে সমস্যা হয়েছে।", "error");
+                withdrawGridContainer.innerHTML = `<div class="empty-state"><h3>ডেটা লোড করতে ব্যর্থ</h3><p>ইন্টারনেট সংযোগ চেক করুন অথবা আবার চেষ্টা করুন।</p></div>`;
+            }
+        }
+
+        // Load More Withdraw Requests
+        btnLoadMore.addEventListener('click', async () => {
+            if (isLoadingMore || !lastVisibleDoc) return;
+            isLoadingMore = true;
+            btnLoadMore.textContent = "লোড হচ্ছে...";
+
+            try {
+                const q = query(
+                    collection(db, "withdraw"),
+                    orderBy("createdAt", "desc"),
+                    startAfter(lastVisibleDoc),
+                    limit(20)
+                );
+                const snapshot = await getDocs(q);
+
+                if (!snapshot.empty) {
+                    lastVisibleDoc = snapshot.docs[snapshot.docs.length - 1];
+                    snapshot.forEach((docSnap) => {
+                        renderWithdrawCard(docSnap.id, docSnap.data());
+                    });
+                    loadedRequestsCount += snapshot.size;
+                    statLoadedCount.textContent = loadedRequestsCount;
+                }
+
+                if (snapshot.size < 20) {
+                    loadMoreWrapper.style.display = 'none';
+                }
+            } catch (error) {
+                console.error("Pagination Error:", error);
+                showToast("পরবর্তী ডেটা লোড করতে সমস্যা হয়েছে।", "error");
+            } finally {
+                isLoadingMore = false;
+                btnLoadMore.textContent = "আরোও দেখুন";
+            }
+        });
+
+        // Render Empty State
+        function renderEmptyState() {
+            withdrawGridContainer.innerHTML = `
+                <div class="empty-state">
+                    <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-2 10H7v-2h10v2z"/></svg>
+                    <h3>কোনো উইথড্র রিকোয়েস্ট নেই</h3>
+                    <p>বর্তমানে কোনো পেন্ডিং উইথড্র রিকোয়েস্ট জমা হয়নি।</p>
+                </div>
+            `;
+            loadMoreWrapper.style.display = 'none';
+            statLoadedCount.textContent = "০";
+        }
+
+        // Render Single Withdraw Card
+        function renderWithdrawCard(docId, data) {
+            const pm = (data.PM || "").toLowerCase();
+            let pmLogo = "";
+            let pmName = data.PM || "Unknown";
+
+            if (pm === "bkash") {
+                pmLogo = "https://paikarisell.ghotimarket.com/photo/bkash.png";
+                pmName = "bKash";
+            } else if (pm === "nagad") {
+                pmLogo = "https://paikarisell.ghotimarket.com/photo/nagad.png";
+                pmName = "Nagad";
+            }
+
+            const card = document.createElement('div');
+            card.className = 'withdraw-card';
+            card.setAttribute('data-id', docId);
+
+            card.innerHTML = `
+                <div class="card-top">
+                    <div class="pm-info">
+                        ${pmLogo ? `<img src="${pmLogo}" class="pm-logo" alt="${pmName}">` : ''}
+                        <span class="pm-name">${pmName}</span>
+                    </div>
+                    <div class="amount-display">৳${Number(data.amount || 0).toLocaleString('en-IN')}</div>
+                </div>
+                <div class="card-body">
+                    <div class="detail-row">
+                        <span class="detail-label">পেমেন্ট নম্বর</span>
+                        <span class="detail-value">
+                            ${data.paymentNumber || '-'}
+                            <button class="copy-btn" onclick="copyText('${data.paymentNumber || ''}')" title="নম্বর কপি করুন">
+                                <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+                            </button>
+                        </span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">রিসেলার ইউআইডি</span>
+                        <span class="detail-value" style="font-family: monospace;">
+                            ${data.uid || '-'}
+                            <button class="copy-btn" onclick="copyText('${data.uid || ''}')" title="ইউআইডি কপি করুন">
+                                <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+                            </button>
+                        </span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">তারিখ ও সময়</span>
+                        <span class="detail-value" style="font-size: 0.85rem;">${formatTimestamp(data.createdAt)}</span>
+                    </div>
+                </div>
+                <div class="card-actions">
+                    <button class="btn-action btn-approve" data-id="${docId}">
+                        <svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+                        টাকা পাঠানো হয়েছে
+                    </button>
+                    <button class="btn-action btn-reject" data-id="${docId}">
+                        <svg viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+                        টাকা পাঠানো হয়নি
+                    </button>
+                </div>
+            `;
+
+            // Attach Event Listeners for Buttons inside Card
+            const btnApprove = card.querySelector('.btn-approve');
+            const btnReject = card.querySelector('.btn-reject');
+
+            btnApprove.addEventListener('click', () => openPaymentModal(docId, data, card));
+            btnReject.addEventListener('click', () => openRejectModal(docId, card));
+
+            withdrawGridContainer.appendChild(card);
+        }
+
+        // --- PAYMENT CONFIRMATION FLOW ---
+        let currentResellerBalance = 0;
+
+        async function openPaymentModal(docId, data, cardElement) {
+            activeWithdrawData = { id: docId, data, cardElement };
+            modalResellerUid.textContent = data.uid;
+            modalCurrentBalance.textContent = "লোড হচ্ছে...";
+            modalAmountInput.value = data.amount || 0;
+            modalAfterBalance.textContent = "৳0";
+
+            paymentModal.classList.add('active');
+
+            try {
+                const resellerDocRef = doc(db, "reseller", data.uid);
+                const resellerSnap = await getDoc(resellerDocRef);
+
+                if (!resellerSnap.exists()) {
+                    throw new Error("Reseller Document Not Found");
+                }
+
+                const resellerData = resellerSnap.data();
+                if (resellerData.balance === undefined || resellerData.balance === null) {
+                    throw new Error("Balance Field Missing");
+                }
+
+                currentResellerBalance = Number(resellerData.balance);
+                modalCurrentBalance.textContent = `৳${currentResellerBalance.toLocaleString('en-IN')}`;
+                updateLiveBalancePreview();
+
+            } catch (error) {
+                console.error("Modal Read Error:", error);
+                let errMsg = "রিসেলার ডেটা পাওয়া যায়নি।";
+                if (error.message === "Reseller Document Not Found") errMsg = "Reseller Document Not Found";
+                if (error.message === "Balance Field Missing") errMsg = "Balance Field Missing";
+                showToast(errMsg, "error");
+                paymentModal.classList.remove('active');
+            }
+        }
+
+        function updateLiveBalancePreview() {
+            const withdrawAmt = Number(modalAmountInput.value) || 0;
+            const newBalance = currentResellerBalance - withdrawAmt;
+            modalAfterBalance.textContent = `৳${newBalance.toLocaleString('en-IN')}`;
+
+            if (newBalance < 0) {
+                modalAfterRow.classList.add('negative-balance');
+            } else {
+                modalAfterRow.classList.remove('negative-balance');
+            }
+        }
+
+        modalAmountInput.addEventListener('input', updateLiveBalancePreview);
+
+        paymentModalClose.addEventListener('click', () => paymentModal.classList.remove('active'));
+        paymentModalCancel.addEventListener('click', () => paymentModal.classList.remove('active'));
+
+        // ATOMIC FIRESTORE TRANSACTION FOR PAYMENT
+        paymentModalConfirm.addEventListener('click', async () => {
+            if (!activeWithdrawData) return;
+            const withdrawId = activeWithdrawData.id;
+            const withdrawUid = activeWithdrawData.data.uid;
+            const finalAmount = Number(modalAmountInput.value);
+
+            if (isNaN(finalAmount) || finalAmount <= 0) {
+                showToast("Invalid Withdraw Amount", "error");
+                return;
+            }
+
+            paymentModalConfirm.disabled = true;
+            paymentModalConfirm.textContent = "প্রসেস হচ্ছে...";
+
+            try {
+                const withdrawRef = doc(db, "withdraw", withdrawId);
+                const resellerRef = doc(db, "reseller", withdrawUid);
+                const newTransactionRef = doc(collection(db, "transactions"));
+
+                await runTransaction(db, async (transaction) => {
+                    // Read operations first
+                    const withdrawSnap = await transaction.get(withdrawRef);
+                    if (!withdrawSnap.exists()) {
+                        throw new Error("Withdraw Document Already Deleted");
+                    }
+
+                    const resellerSnap = await transaction.get(resellerRef);
+                    if (!resellerSnap.exists()) {
+                        throw new Error("Reseller Document Not Found");
+                    }
+
+                    const resellerData = resellerSnap.data();
+                    const oldBalance = Number(resellerData.balance || 0);
+                    const newBalance = oldBalance - finalAmount;
+
+                    // Write operations
+                    transaction.update(resellerRef, { balance: newBalance });
+
+                    transaction.set(newTransactionRef, {
+                        name: "Balance Withdraw!",
+                        uid: withdrawUid,
+                        oldBalance: oldBalance,
+                        balance: newBalance,
+                        createdAt: serverTimestamp()
+                    });
+
+                    transaction.delete(withdrawRef);
+                });
+
+                showToast("পেমেন্ট সফলভাবে সম্পন্ন হয়েছে!");
+                activeWithdrawData.cardElement.remove();
+                totalPendingCount = Math.max(0, totalPendingCount - 1);
+                statPendingCount.textContent = totalPendingCount;
+                loadedRequestsCount = Math.max(0, loadedRequestsCount - 1);
+                statLoadedCount.textContent = loadedRequestsCount;
+
+                if (withdrawGridContainer.children.length === 0) {
+                    renderEmptyState();
+                }
+
+                paymentModal.classList.remove('active');
+
+            } catch (error) {
+                console.error("Firestore Transaction Failed:", error);
+                let errMsg = "Firestore Transaction Failed";
+                if (error.message === "Withdraw Document Already Deleted") errMsg = "Withdraw Document Already Deleted";
+                if (error.message === "Reseller Document Not Found") errMsg = "Reseller Document Not Found";
+                showToast(errMsg, "error");
+            } finally {
+                paymentModalConfirm.disabled = false;
+                paymentModalConfirm.textContent = "পেমেন্ট নিশ্চিত করুন";
+                activeWithdrawData = null;
+            }
+        });
+
+        // --- REJECT / CANCEL REQUEST FLOW ---
+        let activeRejectData = null;
+
+        function openRejectModal(docId, cardElement) {
+            activeRejectData = { id: docId, cardElement };
+            rejectModal.classList.add('active');
+        }
+
+        rejectModalClose.addEventListener('click', () => rejectModal.classList.remove('active'));
+        rejectModalCancel.addEventListener('click', () => rejectModal.classList.remove('active'));
+
+        rejectModalConfirm.addEventListener('click', async () => {
+            if (!activeRejectData) return;
+            const withdrawId = activeRejectData.id;
+
+            rejectModalConfirm.disabled = true;
+            rejectModalConfirm.textContent = "বাতিল হচ্ছে...";
+
+            try {
+                const withdrawRef = doc(db, "withdraw", withdrawId);
+                const withdrawSnap = await getDoc(withdrawRef);
+
+                if (!withdrawSnap.exists()) {
+                    throw new Error("Withdraw Document Not Found");
+                }
+
+                // Delete only the withdraw document
+                await runTransaction(db, async (transaction) => {
+                    transaction.delete(withdrawRef);
+                });
+
+                showToast("উইথড্র রিকোয়েস্ট সফলভাবে বাতিল করা হয়েছে।");
+                activeRejectData.cardElement.remove();
+                totalPendingCount = Math.max(0, totalPendingCount - 1);
+                statPendingCount.textContent = totalPendingCount;
+                loadedRequestsCount = Math.max(0, loadedRequestsCount - 1);
+                statLoadedCount.textContent = loadedRequestsCount;
+
+                if (withdrawGridContainer.children.length === 0) {
+                    renderEmptyState();
+                }
+
+                rejectModal.classList.remove('active');
+
+            } catch (error) {
+                console.error("Reject Error:", error);
+                let errMsg = "Firestore Transaction Failed";
+                if (error.message === "Withdraw Document Not Found") errMsg = "Withdraw Document Not Found";
+                showToast(errMsg, "error");
+            } finally {
+                rejectModalConfirm.disabled = false;
+                rejectModalConfirm.textContent = "হ্যাঁ, বাতিল করুন";
+                activeRejectData = null;
+            }
+        });
+    </script>
+</body>
+</html>
