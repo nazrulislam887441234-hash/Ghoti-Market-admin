@@ -1,0 +1,2246 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Notice Management — GHOTI RESELLER Admin Panel</title>
+  <link rel="icon" type="image/png" href="https://reseller.ghotimarket.com/photo/favicon.png" />
+
+  <!-- Google Fonts: Inter & Hind Siliguri -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+  <style>
+    :root {
+      --primary: #FF6B35;
+      --primary-hover: #E85A26;
+      --secondary: #FF6A00;
+      --primary-light: #FFF3EE;
+      --primary-border: #FFD4C4;
+      --bg-body: #F5F7FA;
+      --bg-card: #FFFFFF;
+      --text-main: #1A202C;
+      --text-secondary: #4A5568;
+      --text-muted: #718096;
+      --border-color: #E2E8F0;
+      --success: #10B981;
+      --success-bg: #ECFDF5;
+      --success-border: #A7F3D0;
+      --danger: #EF4444;
+      --danger-bg: #FEF2F2;
+      --danger-border: #FECACA;
+      --gray-bg: #F1F5F9;
+      --gray-text: #475569;
+      --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.06);
+      --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.07);
+      --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.14);
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 16px;
+      --transition: all 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Inter', 'Hind Siliguri', -apple-system, BlinkMacSystemFont, sans-serif;
+      background-color: var(--bg-body);
+      color: var(--text-main);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Auth Guard Loader Screen */
+    #auth-loader-screen {
+      position: fixed;
+      inset: 0;
+      background: #FFFFFF;
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      padding: 24px;
+      text-align: center;
+    }
+
+    .spinner-lg {
+      width: 44px;
+      height: 44px;
+      border: 4px solid var(--primary-light);
+      border-top-color: var(--primary);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    .spinner-sm {
+      width: 18px;
+      height: 18px;
+      border: 2.5px solid rgba(255, 255, 255, 0.35);
+      border-top-color: #FFFFFF;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      display: inline-block;
+    }
+
+    .spinner-orange {
+      width: 20px;
+      height: 20px;
+      border: 2.5px solid var(--primary-light);
+      border-top-color: var(--primary);
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      display: inline-block;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    #app-wrapper {
+      display: none;
+      min-height: 100vh;
+      flex-direction: column;
+    }
+
+    /* Header */
+    .navbar {
+      background: var(--bg-card);
+      border-bottom: 1px solid var(--border-color);
+      box-shadow: var(--shadow-sm);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .navbar-inner {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 14px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .brand-area {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .brand-logo {
+      height: 40px;
+      width: auto;
+      object-fit: contain;
+    }
+
+    .brand-divider {
+      width: 1px;
+      height: 28px;
+      background: var(--border-color);
+    }
+
+    .brand-titles h1 {
+      font-size: 17px;
+      font-weight: 700;
+      color: var(--text-main);
+      line-height: 1.25;
+    }
+
+    .brand-titles span {
+      font-size: 12.5px;
+      color: var(--primary);
+      font-weight: 600;
+      display: block;
+    }
+
+    .user-controls {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .user-info-pill {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--bg-body);
+      border: 1px solid var(--border-color);
+      padding: 6px 12px;
+      border-radius: 999px;
+    }
+
+    .user-email {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      max-width: 220px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .role-badge {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      padding: 3px 10px;
+      border-radius: 999px;
+      text-transform: uppercase;
+    }
+
+    .role-owner {
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      color: #FFFFFF;
+    }
+
+    .role-admin {
+      background: #1E293B;
+      color: #FFFFFF;
+    }
+
+    .btn-logout {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--danger-bg);
+      color: var(--danger);
+      border: 1px solid var(--danger-border);
+      padding: 8px 14px;
+      border-radius: var(--radius-sm);
+      font-family: inherit;
+      font-size: 13.5px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .btn-logout:hover {
+      background: var(--danger);
+      color: #FFFFFF;
+    }
+
+    /* Main Layout */
+    .main-container {
+      max-width: 1280px;
+      width: 100%;
+      margin: 28px auto;
+      padding: 0 20px;
+      display: grid;
+      grid-template-columns: 440px 1fr;
+      gap: 28px;
+      align-items: start;
+    }
+
+    /* Cards & Section Headers */
+    .panel-card {
+      background: var(--bg-card);
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--border-color);
+      box-shadow: var(--shadow-md);
+      overflow: hidden;
+    }
+
+    .panel-header {
+      padding: 20px 24px;
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      background: linear-gradient(to right, #FFFFFF, #FFF9F6);
+    }
+
+    .panel-title-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .panel-icon {
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      background: var(--primary-light);
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .panel-header h2 {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    .panel-header p {
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    .panel-body {
+      padding: 24px;
+    }
+
+    /* Form Controls */
+    .form-group {
+      margin-bottom: 18px;
+    }
+
+    .form-label {
+      display: block;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-main);
+      margin-bottom: 6px;
+    }
+
+    .required-star {
+      color: var(--danger);
+      margin-left: 2px;
+    }
+
+    .form-input,
+    .form-textarea {
+      width: 100%;
+      padding: 11px 14px;
+      border: 1.5px solid var(--border-color);
+      border-radius: var(--radius-sm);
+      font-family: 'Hind Siliguri', 'Inter', sans-serif;
+      font-size: 15px;
+      color: var(--text-main);
+      background: #FFFFFF;
+      transition: var(--transition);
+    }
+
+    .form-input:focus,
+    .form-textarea:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3.5px rgba(255, 107, 53, 0.14);
+    }
+
+    .form-textarea {
+      min-height: 135px;
+      resize: vertical;
+      line-height: 1.75;
+    }
+
+    .form-input.input-error,
+    .form-textarea.input-error {
+      border-color: var(--danger);
+      background: #FFFBFB;
+    }
+
+    .field-error-msg {
+      color: var(--danger);
+      font-size: 12.5px;
+      font-weight: 500;
+      margin-top: 5px;
+      display: none;
+    }
+
+    .field-error-msg.visible {
+      display: block;
+    }
+
+    .field-hint {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    /* Toggle Switches */
+    .toggles-box {
+      background: var(--bg-body);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 14px 16px;
+      margin-bottom: 22px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .toggle-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .toggle-label-text {
+      font-size: 14.5px;
+      font-weight: 600;
+      color: var(--text-main);
+      cursor: pointer;
+    }
+
+    .toggle-subtext {
+      font-size: 12px;
+      color: var(--text-muted);
+      display: block;
+    }
+
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 50px;
+      height: 28px;
+      flex-shrink: 0;
+    }
+
+    .switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      inset: 0;
+      background-color: #CBD5E1;
+      transition: var(--transition);
+      border-radius: 999px;
+    }
+
+    .slider::before {
+      position: absolute;
+      content: "";
+      height: 22px;
+      width: 22px;
+      left: 3px;
+      bottom: 3px;
+      background-color: #FFFFFF;
+      transition: var(--transition);
+      border-radius: 50%;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.18);
+    }
+
+    .switch input:checked + .slider {
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+    }
+
+    .switch input:focus-visible + .slider {
+      box-shadow: 0 0 0 3px rgba(255, 107, 53, 0.25);
+    }
+
+    .switch input:checked + .slider::before {
+      transform: translateX(22px);
+    }
+
+    /* Buttons */
+    .btn-primary {
+      width: 100%;
+      padding: 13px 20px;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      color: #FFFFFF;
+      border: none;
+      border-radius: var(--radius-sm);
+      font-family: inherit;
+      font-size: 15.5px;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 9px;
+      box-shadow: 0 4px 12px rgba(255, 107, 53, 0.28);
+      transition: var(--transition);
+    }
+
+    .btn-primary:hover:not(:disabled) {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 16px rgba(255, 107, 53, 0.36);
+    }
+
+    .btn-primary:disabled {
+      opacity: 0.65;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .btn-secondary {
+      padding: 10px 18px;
+      background: #FFFFFF;
+      color: var(--text-secondary);
+      border: 1.5px solid var(--border-color);
+      border-radius: var(--radius-sm);
+      font-family: inherit;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      transition: var(--transition);
+    }
+
+    .btn-secondary:hover:not(:disabled) {
+      border-color: var(--primary);
+      color: var(--primary);
+      background: var(--primary-light);
+    }
+
+    /* Search & Filter Bar */
+    .search-bar-wrapper {
+      padding: 16px 24px;
+      border-bottom: 1px solid var(--border-color);
+      background: #FAFBFD;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .search-input-box {
+      position: relative;
+      flex: 1;
+      min-width: 240px;
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 13px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-muted);
+      pointer-events: none;
+    }
+
+    .search-input {
+      width: 100%;
+      padding: 10px 38px 10px 38px;
+      border: 1.5px solid var(--border-color);
+      border-radius: var(--radius-sm);
+      font-family: inherit;
+      font-size: 14px;
+      background: #FFFFFF;
+      transition: var(--transition);
+    }
+
+    .search-input:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(255, 107, 53, 0.12);
+    }
+
+    .clear-search-btn {
+      position: absolute;
+      right: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      display: none;
+      padding: 4px;
+      border-radius: 50%;
+    }
+
+    .clear-search-btn:hover {
+      background: var(--gray-bg);
+      color: var(--text-main);
+    }
+
+    .loaded-counter {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      background: #FFFFFF;
+      padding: 6px 12px;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-sm);
+      white-space: nowrap;
+    }
+
+    /* Notice List & Cards */
+    .notice-list-container {
+      padding: 20px 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .notice-card {
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 18px 20px;
+      background: #FFFFFF;
+      transition: var(--transition);
+      position: relative;
+    }
+
+    .notice-card:hover {
+      border-color: var(--primary-border);
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.05);
+    }
+
+    .notice-card-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 10px;
+    }
+
+    .notice-title-area {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .notice-title {
+      font-size: 17px;
+      font-weight: 700;
+      color: var(--text-main);
+      line-height: 1.4;
+    }
+
+    .notice-badge-tag {
+      background: var(--primary-light);
+      color: var(--primary);
+      border: 1px solid var(--primary-border);
+      font-size: 12px;
+      font-weight: 700;
+      padding: 2px 10px;
+      border-radius: 999px;
+    }
+
+    .notice-date {
+      font-size: 12.5px;
+      color: var(--text-muted);
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    .notice-body-preview {
+      font-family: 'Hind Siliguri', 'Inter', sans-serif;
+      font-size: 15px;
+      color: var(--text-secondary);
+      line-height: 1.7;
+      margin-bottom: 14px;
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      white-space: pre-line;
+    }
+
+    .notice-meta-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12.5px;
+      font-weight: 600;
+      padding: 4px 11px;
+      border-radius: 6px;
+    }
+
+    .status-on {
+      background: var(--success-bg);
+      color: #065F46;
+      border: 1px solid var(--success-border);
+    }
+
+    .status-off {
+      background: var(--gray-bg);
+      color: var(--gray-text);
+      border: 1px solid var(--border-color);
+    }
+
+    .status-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+    }
+
+    .status-on .status-dot {
+      background: var(--success);
+    }
+
+    .status-off .status-dot {
+      background: #94A3B8;
+    }
+
+    .uid-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 12.5px;
+      font-weight: 500;
+      padding: 4px 11px;
+      border-radius: 6px;
+      background: #F8FAFC;
+      border: 1px solid var(--border-color);
+      color: var(--text-secondary);
+      font-family: 'Inter', monospace;
+    }
+
+    .note-box-preview {
+      font-size: 13px;
+      color: var(--text-secondary);
+      background: #FFFBEB;
+      border-left: 3px solid #F59E0B;
+      padding: 7px 12px;
+      border-radius: 4px;
+      margin-bottom: 14px;
+    }
+
+    .notice-card-actions {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 10px;
+      padding-top: 12px;
+      border-top: 1px dashed var(--border-color);
+    }
+
+    .btn-card-action {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 7px 13px;
+      border-radius: var(--radius-sm);
+      font-family: inherit;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .btn-details {
+      background: var(--bg-body);
+      color: var(--text-secondary);
+      border: 1px solid var(--border-color);
+    }
+
+    .btn-details:hover {
+      background: #E2E8F0;
+      color: var(--text-main);
+    }
+
+    .btn-edit {
+      background: var(--primary-light);
+      color: var(--primary);
+      border: 1px solid var(--primary-border);
+    }
+
+    .btn-edit:hover {
+      background: var(--primary);
+      color: #FFFFFF;
+    }
+
+    /* Skeleton Loader */
+    .skeleton-card {
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 18px 20px;
+      background: #FFFFFF;
+    }
+
+    .skeleton-line {
+      height: 14px;
+      border-radius: 6px;
+      background: linear-gradient(90deg, #F1F5F9 25%, #E2E8F0 50%, #F1F5F9 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.4s infinite;
+      margin-bottom: 10px;
+    }
+
+    @keyframes shimmer {
+      0% { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
+    }
+
+    /* Pagination Footer */
+    .pagination-footer {
+      padding: 0 24px 24px 24px;
+      display: flex;
+      justify-content: center;
+    }
+
+    .btn-load-more {
+      padding: 11px 26px;
+      background: #FFFFFF;
+      color: var(--primary);
+      border: 1.5px solid var(--primary);
+      border-radius: var(--radius-sm);
+      font-family: inherit;
+      font-size: 14.5px;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: var(--transition);
+    }
+
+    .btn-load-more:hover:not(:disabled) {
+      background: var(--primary);
+      color: #FFFFFF;
+    }
+
+    .btn-load-more:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 44px 20px;
+      color: var(--text-muted);
+    }
+
+    .empty-state svg {
+      color: #CBD5E1;
+      margin-bottom: 12px;
+    }
+
+    /* Custom Modals */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.58);
+      backdrop-filter: blur(3px);
+      z-index: 1000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      animation: fadeIn 0.2s ease;
+    }
+
+    .modal-backdrop.open {
+      display: flex;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    .modal-dialog {
+      background: #FFFFFF;
+      border-radius: var(--radius-lg);
+      width: 100%;
+      max-width: 560px;
+      max-height: 90vh;
+      display: flex;
+      flex-direction: column;
+      box-shadow: var(--shadow-lg);
+      overflow: hidden;
+      animation: slideUp 0.22s ease;
+    }
+
+    .modal-dialog.modal-sm {
+      max-width: 420px;
+      text-align: center;
+    }
+
+    @keyframes slideUp {
+      from { transform: translateY(16px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    .modal-header {
+      padding: 18px 22px;
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .modal-header h3 {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    .modal-close-btn {
+      background: var(--bg-body);
+      border: none;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .modal-close-btn:hover {
+      background: var(--danger-bg);
+      color: var(--danger);
+    }
+
+    .modal-body {
+      padding: 22px;
+      overflow-y: auto;
+    }
+
+    .modal-footer {
+      padding: 16px 22px;
+      border-top: 1px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 10px;
+      background: #FAFBFD;
+    }
+
+    /* Details Modal Typography */
+    .detail-row {
+      margin-bottom: 16px;
+    }
+
+    .detail-label {
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      letter-spacing: 0.4px;
+      margin-bottom: 4px;
+    }
+
+    .detail-value {
+      font-size: 15px;
+      color: var(--text-main);
+      word-break: break-word;
+    }
+
+    .detail-notice-full {
+      background: var(--bg-body);
+      padding: 14px 16px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-color);
+      font-family: 'Hind Siliguri', 'Inter', sans-serif;
+      font-size: 15.5px;
+      line-height: 1.8;
+      white-space: pre-line;
+    }
+
+    /* Success / Alert Modal Icons */
+    .modal-status-icon {
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      margin: 0 auto 14px auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .icon-success {
+      background: var(--success-bg);
+      color: var(--success);
+    }
+
+    .icon-danger {
+      background: var(--danger-bg);
+      color: var(--danger);
+    }
+
+    .icon-warning {
+      background: var(--primary-light);
+      color: var(--primary);
+    }
+
+    /* Custom Toast Notification */
+    #toast-container {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      z-index: 2000;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      max-width: 360px;
+      width: calc(100% - 48px);
+    }
+
+    .toast-item {
+      background: #1E293B;
+      color: #FFFFFF;
+      padding: 13px 16px;
+      border-radius: var(--radius-sm);
+      box-shadow: var(--shadow-lg);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 14px;
+      font-weight: 500;
+      animation: slideInRight 0.25s ease;
+    }
+
+    .toast-item.toast-error {
+      background: #B91C1C;
+    }
+
+    .toast-item.toast-success {
+      background: #065F46;
+    }
+
+    @keyframes slideInRight {
+      from { transform: translateX(30px); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+
+    /* Responsive Breakpoints */
+    @media (max-width: 1024px) {
+      .main-container {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .navbar-inner {
+        padding: 12px 16px;
+      }
+      .brand-divider {
+        display: none;
+      }
+      .user-controls {
+        width: 100%;
+        justify-content: space-between;
+      }
+      .user-email {
+        max-width: 150px;
+      }
+      .main-container {
+        margin: 18px auto;
+        padding: 0 14px;
+        gap: 20px;
+      }
+      .panel-header,
+      .panel-body,
+      .search-bar-wrapper,
+      .notice-list-container {
+        padding-left: 16px;
+        padding-right: 16px;
+      }
+      .notice-card-top {
+        flex-direction: column;
+        gap: 6px;
+      }
+      .modal-footer {
+        flex-direction: column-reverse;
+      }
+      .modal-footer button {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Initial Authentication & Role Verification Screen -->
+  <div id="auth-loader-screen">
+    <div class="spinner-lg"></div>
+    <p id="auth-status-text" style="font-weight: 600; color: #334155;">অ্যাডমিন অ্যাক্সেস যাচাই করা হচ্ছে...</p>
+  </div>
+
+  <!-- Main Admin Application -->
+  <div id="app-wrapper">
+    <!-- Top Navigation Header -->
+    <header class="navbar">
+      <div class="navbar-inner">
+        <div class="brand-area">
+          <img src="https://reseller.ghotimarket.com/photo/logo.png" alt="GHOTI RESELLER Logo" class="brand-logo" />
+          <div class="brand-divider"></div>
+          <div class="brand-titles">
+            <h1>GHOTI RESELLER</h1>
+            <span>Notice Management</span>
+          </div>
+        </div>
+
+        <div class="user-controls">
+          <div class="user-info-pill">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--primary); flex-shrink: 0;">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+              <circle cx="12" cy="7" r="4"></circle>
+            </svg>
+            <span id="header-user-email" class="user-email">loading...</span>
+            <span id="header-role-badge" class="role-badge">ROLE</span>
+          </div>
+
+          <button type="button" id="btn-logout-trigger" class="btn-logout">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+              <polyline points="16 17 21 12 16 7"></polyline>
+              <line x1="21" y1="12" x2="9" y2="12"></line>
+            </svg>
+            <span>Logout</span>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Dashboard Grid -->
+    <main class="main-container">
+      <!-- Section 1: Create New Notice Form -->
+      <section class="panel-card" aria-labelledby="create-section-heading">
+        <div class="panel-header">
+          <div class="panel-title-group">
+            <div class="panel-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 20h9"></path>
+                <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+              </svg>
+            </div>
+            <div>
+              <h2 id="create-section-heading">নতুন নোটিশ তৈরি করুন</h2>
+              <p>রিসেলার বা সেলারদের জন্য নতুন ঘোষণা প্রকাশ করুন</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel-body">
+          <form id="create-notice-form" novalidate>
+            <!-- A. TITLE -->
+            <div class="form-group">
+              <label for="create-title" class="form-label">টাইটেল<span class="required-star">*</span></label>
+              <input type="text" id="create-title" class="form-input" placeholder="নোটিশের শিরোনাম লিখুন" required />
+              <div id="create-title-error" class="field-error-msg">অনুগ্রহ করে নোটিশের টাইটেল লিখুন।</div>
+            </div>
+
+            <!-- B. NOTICE -->
+            <div class="form-group">
+              <label for="create-notice" class="form-label">নোটিশ<span class="required-star">*</span></label>
+              <textarea id="create-notice" class="form-textarea" placeholder="বিস্তারিত নোটিশ লিখুন..." required></textarea>
+              <div id="create-notice-error" class="field-error-msg">অনুগ্রহ করে বিস্তারিত নোটিশ লিখুন।</div>
+            </div>
+
+            <!-- C. UID — OPTIONAL -->
+            <div class="form-group">
+              <label for="create-uid" class="form-label">নির্দিষ্ট Reseller UID (ঐচ্ছিক)</label>
+              <input type="text" id="create-uid" class="form-input" placeholder="Reseller-এর UID লিখুন" />
+              <div class="field-hint">ফাঁকা রাখলে নোটিশটি সকলের জন্য প্রযোজ্য হবে।</div>
+            </div>
+
+            <!-- D. NOTE — OPTIONAL -->
+            <div class="form-group">
+              <label for="create-note" class="form-label">অতিরিক্ত তথ্য (ঐচ্ছিক)</label>
+              <input type="text" id="create-note" class="form-input" placeholder="অতিরিক্ত তথ্য লিখুন" />
+            </div>
+
+            <!-- E. BADGE — OPTIONAL -->
+            <div class="form-group">
+              <label for="create-badge" class="form-label">নোটিশ Badge (ঐচ্ছিক)</label>
+              <input type="text" id="create-badge" class="form-input" placeholder="যেমন: জরুরি, গুরুত্বপূর্ণ, নতুন" />
+            </div>
+
+            <!-- F & G. RESELLER & SELLER TARGET TOGGLES -->
+            <div class="toggles-box">
+              <div class="toggle-row">
+                <div>
+                  <label for="create-reseller" class="toggle-label-text">Reseller-দের দেখানো হবে?</label>
+                  <span class="toggle-subtext">রিসেলার ড্যাশবোর্ডে নোটিশ প্রদর্শন</span>
+                </div>
+                <label class="switch">
+                  <input type="checkbox" id="create-reseller" checked />
+                  <span class="slider"></span>
+                </label>
+              </div>
+
+              <div class="toggle-row">
+                <div>
+                  <label for="create-seller" class="toggle-label-text">Seller-দের দেখানো হবে?</label>
+                  <span class="toggle-subtext">সেলার ড্যাশবোর্ডে নোটিশ প্রদর্শন</span>
+                </div>
+                <label class="switch">
+                  <input type="checkbox" id="create-seller" />
+                  <span class="slider"></span>
+                </label>
+              </div>
+            </div>
+
+            <!-- Submit Button -->
+            <button type="submit" id="btn-submit-notice" class="btn-primary">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="22" y1="2" x2="11" y2="13"></line>
+                <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+              </svg>
+              <span>নোটিশ তৈরি করুন</span>
+            </button>
+          </form>
+        </div>
+      </section>
+
+      <!-- Section 2: Previous Notice List -->
+      <section class="panel-card" aria-labelledby="list-section-heading">
+        <div class="panel-header">
+          <div class="panel-title-group">
+            <div class="panel-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+              </svg>
+            </div>
+            <div>
+              <h2 id="list-section-heading">আগের নোটিশসমূহ</h2>
+              <p>প্রকাশিত নোটিশ দেখুন এবং প্রয়োজনে সম্পাদনা করুন</p>
+            </div>
+          </div>
+
+          <button type="button" id="btn-refresh-list" class="btn-secondary" title="তালিকা রিফ্রেশ করুন">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="23 4 23 10 17 10"></polyline>
+              <polyline points="1 20 1 14 7 14"></polyline>
+              <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+            </svg>
+            <span>রিফ্রেশ</span>
+          </button>
+        </div>
+
+        <!-- Client-side Search on Loaded Notices -->
+        <div class="search-bar-wrapper">
+          <div class="search-input-box">
+            <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="11" cy="11" r="8"></circle>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+            <input type="text" id="notice-search-input" class="search-input" placeholder="লোড হওয়া নোটিশে খুঁজুন (টাইটেল, বিবরণ, UID, Badge)..." />
+            <button type="button" id="btn-clear-search" class="clear-search-btn" aria-label="সার্চ মুছুন">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+              </svg>
+            </button>
+          </div>
+          <span id="loaded-count-badge" class="loaded-counter">লোড হয়েছে: ০টি</span>
+        </div>
+
+        <!-- Notice Cards Container -->
+        <div id="notice-list-container" class="notice-list-container"></div>
+
+        <!-- Cursor-Based Load More Pagination -->
+        <div id="pagination-footer" class="pagination-footer" style="display: none;">
+          <button type="button" id="btn-load-more" class="btn-load-more">
+            <span>আরোও দেখুন</span>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
+          </button>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- MODAL 1: EDIT NOTICE MODAL -->
+  <div id="edit-notice-modal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="edit-modal-title">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h3 id="edit-modal-title">নোটিশ সম্পাদনা করুন</h3>
+        <button type="button" class="modal-close-btn" data-close-modal="edit-notice-modal" aria-label="বন্ধ করুন">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+
+      <div class="modal-body">
+        <form id="edit-notice-form" novalidate>
+          <input type="hidden" id="edit-doc-id" />
+
+          <div class="form-group">
+            <label for="edit-title" class="form-label">টাইটেল<span class="required-star">*</span></label>
+            <input type="text" id="edit-title" class="form-input" placeholder="নোটিশের শিরোনাম লিখুন" required />
+            <div id="edit-title-error" class="field-error-msg">অনুগ্রহ করে নোটিশের টাইটেল লিখুন।</div>
+          </div>
+
+          <div class="form-group">
+            <label for="edit-notice" class="form-label">নোটিশ<span class="required-star">*</span></label>
+            <textarea id="edit-notice" class="form-textarea" placeholder="বিস্তারিত নোটিশ লিখুন..." required></textarea>
+            <div id="edit-notice-error" class="field-error-msg">অনুগ্রহ করে বিস্তারিত নোটিশ লিখুন।</div>
+          </div>
+
+          <div class="form-group">
+            <label for="edit-uid" class="form-label">নির্দিষ্ট Reseller UID (ঐচ্ছিক)</label>
+            <input type="text" id="edit-uid" class="form-input" placeholder="Reseller-এর UID লিখুন" />
+            <div class="field-hint">ফাঁকা রাখলে সংরক্ষিত UID মুছে যাবে এবং সবার জন্য প্রযোজ্য হবে।</div>
+          </div>
+
+          <div class="form-group">
+            <label for="edit-note" class="form-label">অতিরিক্ত তথ্য (ঐচ্ছিক)</label>
+            <input type="text" id="edit-note" class="form-input" placeholder="অতিরিক্ত তথ্য লিখুন" />
+          </div>
+
+          <div class="form-group">
+            <label for="edit-badge" class="form-label">নোটিশ Badge (ঐচ্ছিক)</label>
+            <input type="text" id="edit-badge" class="form-input" placeholder="যেমন: জরুরি, গুরুত্বপূর্ণ, নতুন" />
+          </div>
+
+          <div class="toggles-box" style="margin-bottom: 0;">
+            <div class="toggle-row">
+              <div>
+                <label for="edit-reseller" class="toggle-label-text">Reseller-দের দেখানো হবে?</label>
+              </div>
+              <label class="switch">
+                <input type="checkbox" id="edit-reseller" />
+                <span class="slider"></span>
+              </label>
+            </div>
+
+            <div class="toggle-row">
+              <div>
+                <label for="edit-seller" class="toggle-label-text">Seller-দের দেখানো হবে?</label>
+              </div>
+              <label class="switch">
+                <input type="checkbox" id="edit-seller" />
+                <span class="slider"></span>
+              </label>
+            </div>
+          </div>
+        </form>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn-secondary" data-close-modal="edit-notice-modal">বাতিল করুন</button>
+        <button type="button" id="btn-save-edit" class="btn-primary" style="width: auto;">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+            <polyline points="17 21 17 13 7 13 7 21"></polyline>
+            <polyline points="7 3 7 8 15 8"></polyline>
+          </svg>
+          <span>পরিবর্তন সেভ করুন</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL 2: NOTICE DETAILS MODAL -->
+  <div id="details-notice-modal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="details-modal-title">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h3 id="details-modal-title">নোটিশের সম্পূর্ণ বিবরণ</h3>
+        <button type="button" class="modal-close-btn" data-close-modal="details-notice-modal" aria-label="বন্ধ করুন">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+      <div class="modal-body" id="details-modal-content"></div>
+      <div class="modal-footer">
+        <button type="button" class="btn-secondary" data-close-modal="details-notice-modal">বন্ধ করুন</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL 3: SUCCESS / FEEDBACK MODAL -->
+  <div id="feedback-modal" class="modal-backdrop" role="dialog" aria-modal="true">
+    <div class="modal-dialog modal-sm">
+      <div class="modal-body" style="padding: 28px 24px;">
+        <div id="feedback-modal-icon" class="modal-status-icon icon-success"></div>
+        <h3 id="feedback-modal-title" style="font-size: 19px; margin-bottom: 8px;">সফল হয়েছে</h3>
+        <p id="feedback-modal-message" style="color: var(--text-secondary); font-size: 15px; margin-bottom: 22px;"></p>
+        <button type="button" id="feedback-modal-ok-btn" class="btn-primary">ঠিক আছে</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL 4: LOGOUT CONFIRMATION MODAL -->
+  <div id="logout-confirm-modal" class="modal-backdrop" role="dialog" aria-modal="true">
+    <div class="modal-dialog modal-sm">
+      <div class="modal-body" style="padding: 28px 24px;">
+        <div class="modal-status-icon icon-warning">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+            <polyline points="16 17 21 12 16 7"></polyline>
+            <line x1="21" y1="12" x2="9" y2="12"></line>
+          </svg>
+        </div>
+        <h3 style="font-size: 19px; margin-bottom: 8px;">লগআউট নিশ্চিত করুন</h3>
+        <p style="color: var(--text-secondary); font-size: 14.5px; margin-bottom: 22px;">আপনি কি নিশ্চিতভাবে অ্যাডমিন প্যানেল থেকে লগআউট করতে চান?</p>
+        <div style="display: flex; gap: 10px;">
+          <button type="button" class="btn-secondary" style="flex: 1;" data-close-modal="logout-confirm-modal">না, থাকুন</button>
+          <button type="button" id="btn-confirm-logout" class="btn-primary" style="flex: 1;">হ্যাঁ, লগআউট</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Custom Toast Container -->
+  <div id="toast-container" aria-live="polite"></div>
+
+  <!-- Firebase Modular SDK v10.14.1 -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
+    import {
+      getAuth,
+      onAuthStateChanged,
+      signOut
+    } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
+    import {
+      getFirestore,
+      collection,
+      query,
+      where,
+      orderBy,
+      limit,
+      startAfter,
+      getDocs,
+      addDoc,
+      doc,
+      updateDoc,
+      serverTimestamp,
+      deleteField
+    } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
+
+    // =========================================================================
+    // 1. FIREBASE PROJECT CONFIGURATION (paikarisell-ghotimarket)
+    // =========================================================================
+    const firebaseConfig = {
+  apiKey: "AIzaSyDCIRWmozT0XcEXuXtQ6RDiDo6vtT1T9mU",
+  authDomain: "paikarisell-ghotimarket.firebaseapp.com",
+  projectId: "paikarisell-ghotimarket",
+  storageBucket: "paikarisell-ghotimarket.firebasestorage.app",
+  messagingSenderId: "464086432830",
+  appId: "1:464086432830:web:a10fdd9884954e380e656f",
+  measurementId: "G-E3HR2F9TC5"
+};
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    // =========================================================================
+    // 2. CONSTANTS & STATE MANAGEMENT
+    // =========================================================================
+    const OWNER_EMAILS = [
+      "nazrulislam887441234@gmail.com",
+      "support@ghotimarket.com"
+    ];
+    const LOGIN_REDIRECT_URL = "/admin-login";
+    const PAGE_SIZE = 10;
+
+    let currentUser = null;
+    let currentUserRole = null; // 'OWNER' | 'ADMIN'
+
+    // Pagination & Loaded Data State
+    let loadedNotices = [];       // Array of { id, data }
+    let loadedNoticeIds = new Set();
+    let lastVisibleDoc = null;    // Firestore DocumentSnapshot cursor
+    let hasMoreNotices = true;
+    let isFetchingNotices = false;
+    let isSubmittingCreate = false;
+    let isSubmittingEdit = false;
+
+    // =========================================================================
+    // 3. DOM REFERENCES
+    // =========================================================================
+    const authLoaderScreen = document.getElementById("auth-loader-screen");
+    const authStatusText = document.getElementById("auth-status-text");
+    const appWrapper = document.getElementById("app-wrapper");
+    const headerUserEmail = document.getElementById("header-user-email");
+    const headerRoleBadge = document.getElementById("header-role-badge");
+
+    const createForm = document.getElementById("create-notice-form");
+    const btnSubmitNotice = document.getElementById("btn-submit-notice");
+
+    const noticeListContainer = document.getElementById("notice-list-container");
+    const paginationFooter = document.getElementById("pagination-footer");
+    const btnLoadMore = document.getElementById("btn-load-more");
+    const btnRefreshList = document.getElementById("btn-refresh-list");
+    const searchInput = document.getElementById("notice-search-input");
+    const btnClearSearch = document.getElementById("btn-clear-search");
+    const loadedCountBadge = document.getElementById("loaded-count-badge");
+
+    // =========================================================================
+    // 4. UI UTILITIES (MODALS, TOASTS, ESCAPING, BANGLADESH DATE FORMAT)
+    // =========================================================================
+    function escapeHtml(value) {
+      if (value === null || value === undefined) return "";
+      return String(value)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#39;");
+    }
+
+    function formatBangladeshDateTime(timestamp) {
+      if (!timestamp) return "সময় নির্ধারিত হচ্ছে...";
+      try {
+        const dateObj = typeof timestamp.toDate === "function"
+          ? timestamp.toDate()
+          : new Date(timestamp);
+
+        return new Intl.DateTimeFormat("bn-BD", {
+          timeZone: "Asia/Dhaka",
+          year: "numeric",
+          month: "short",
+          day: "2-digit",
+          hour: "2-digit",
+          minute: "2-digit",
+          hour12: true
+        }).format(dateObj);
+      } catch (err) {
+        return "অজানা সময়";
+      }
+    }
+
+    function showToast(message, type = "default") {
+      const container = document.getElementById("toast-container");
+      const toast = document.createElement("div");
+      toast.className = `toast-item ${type === "error" ? "toast-error" : type === "success" ? "toast-success" : ""}`;
+
+      const iconSvg = type === "error"
+        ? `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>`
+        : `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>`;
+
+      toast.innerHTML = `${iconSvg}<span>${escapeHtml(message)}</span>`;
+      container.appendChild(toast);
+
+      setTimeout(() => {
+        toast.style.opacity = "0";
+        toast.style.transform = "translateX(20px)";
+        toast.style.transition = "all 0.25s ease";
+        setTimeout(() => toast.remove(), 260);
+      }, 3400);
+    }
+
+    function openModal(modalId) {
+      const el = document.getElementById(modalId);
+      if (el) el.classList.add("open");
+    }
+
+    function closeModal(modalId) {
+      const el = document.getElementById(modalId);
+      if (el) el.classList.remove("open");
+    }
+
+    function showFeedbackModal({ title, message, type = "success", onConfirm = null }) {
+      const iconBox = document.getElementById("feedback-modal-icon");
+      const titleEl = document.getElementById("feedback-modal-title");
+      const msgEl = document.getElementById("feedback-modal-message");
+      const okBtn = document.getElementById("feedback-modal-ok-btn");
+
+      titleEl.textContent = title;
+      msgEl.textContent = message;
+
+      if (type === "error") {
+        iconBox.className = "modal-status-icon icon-danger";
+        iconBox.innerHTML = `<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>`;
+      } else {
+        iconBox.className = "modal-status-icon icon-success";
+        iconBox.innerHTML = `<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><polyline points="20 6 9 17 4 12"></polyline></svg>`;
+      }
+
+      okBtn.onclick = () => {
+        closeModal("feedback-modal");
+        if (typeof onConfirm === "function") onConfirm();
+      };
+
+      openModal("feedback-modal");
+    }
+
+    // Close Modal Buttons & Backdrop Click
+    document.querySelectorAll("[data-close-modal]").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        closeModal(btn.getAttribute("data-close-modal"));
+      });
+    });
+
+    document.querySelectorAll(".modal-backdrop").forEach((backdrop) => {
+      backdrop.addEventListener("click", (e) => {
+        if (e.target === backdrop && backdrop.id !== "feedback-modal") {
+          closeModal(backdrop.id);
+        }
+      });
+    });
+
+    // =========================================================================
+    // 5. AUTHENTICATION & ROLE VERIFICATION (OWNER & ADMIN)
+    // =========================================================================
+    function redirectToLogin(reasonMessage = null) {
+      if (reasonMessage) {
+        authStatusText.textContent = reasonMessage;
+        authStatusText.style.color = "#DC2626";
+        setTimeout(() => {
+          window.location.replace(LOGIN_REDIRECT_URL);
+        }, 1400);
+      } else {
+        window.location.replace(LOGIN_REDIRECT_URL);
+      }
+    }
+
+    async function verifyAdminRoleInFirestore(userUid) {
+      const adminsRef = collection(db, "admins");
+      const adminQuery = query(
+        adminsRef,
+        where("uid", "==", userUid),
+        where("active", "==", true),
+        limit(1)
+      );
+      const snapshot = await getDocs(adminQuery);
+      return !snapshot.empty;
+    }
+
+    onAuthStateChanged(auth, async (user) => {
+      if (!user) {
+        redirectToLogin();
+        return;
+      }
+
+      const email = (user.email || "").trim().toLowerCase();
+      const uid = user.uid;
+
+      if (!email) {
+        redirectToLogin("Access Denied: ইমেইল পাওয়া যায়নি। লগইন পেজে নেওয়া হচ্ছে...");
+        return;
+      }
+
+      try {
+        // Step A: Direct Owner Verification (No Firestore check needed)
+        if (OWNER_EMAILS.includes(email)) {
+          currentUser = user;
+          currentUserRole = "OWNER";
+          initializeDashboardUI();
+          return;
+        }
+
+        // Step B: Admin Verification via Firestore 'admins' collection (uid field & active == true)
+        const isAuthorizedAdmin = await verifyAdminRoleInFirestore(uid);
+
+        if (isAuthorizedAdmin) {
+          currentUser = user;
+          currentUserRole = "ADMIN";
+          initializeDashboardUI();
+        } else {
+          await signOut(auth).catch(() => {});
+          redirectToLogin("Access Denied: আপনার অ্যাডমিন অনুমতি নেই।");
+        }
+      } catch (error) {
+        console.error("Role verification failed:", error);
+        redirectToLogin("Access Denied: ভেরিফিকেশন ব্যর্থ হয়েছে।");
+      }
+    });
+
+    function initializeDashboardUI() {
+      headerUserEmail.textContent = currentUser.email;
+      headerRoleBadge.textContent = currentUserRole;
+      headerRoleBadge.className = `role-badge ${currentUserRole === "OWNER" ? "role-owner" : "role-admin"}`;
+
+      authLoaderScreen.style.display = "none";
+      appWrapper.style.display = "flex";
+
+      // Load initial 10 notices
+      resetAndLoadNotices();
+    }
+
+    // Logout Flow
+    document.getElementById("btn-logout-trigger").addEventListener("click", () => {
+      openModal("logout-confirm-modal");
+    });
+
+    document.getElementById("btn-confirm-logout").addEventListener("click", async () => {
+      const btn = document.getElementById("btn-confirm-logout");
+      btn.disabled = true;
+      btn.innerHTML = `<span class="spinner-sm"></span><span>লগআউট হচ্ছে...</span>`;
+      try {
+        await signOut(auth);
+        window.location.replace(LOGIN_REDIRECT_URL);
+      } catch (err) {
+        btn.disabled = false;
+        btn.textContent = "হ্যাঁ, লগআউট";
+        closeModal("logout-confirm-modal");
+        showToast("লগআউট করতে সমস্যা হয়েছে। আবার চেষ্টা করুন।", "error");
+      }
+    });
+
+    // =========================================================================
+    // 6. CREATE NEW NOTICE LOGIC
+    // =========================================================================
+    function clearCreateErrors() {
+      document.getElementById("create-title").classList.remove("input-error");
+      document.getElementById("create-notice").classList.remove("input-error");
+      document.getElementById("create-title-error").classList.remove("visible");
+      document.getElementById("create-notice-error").classList.remove("visible");
+    }
+
+    document.getElementById("create-title").addEventListener("input", () => {
+      document.getElementById("create-title").classList.remove("input-error");
+      document.getElementById("create-title-error").classList.remove("visible");
+    });
+
+    document.getElementById("create-notice").addEventListener("input", () => {
+      document.getElementById("create-notice").classList.remove("input-error");
+      document.getElementById("create-notice-error").classList.remove("visible");
+    });
+
+    createForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      if (isSubmittingCreate) return;
+
+      clearCreateErrors();
+
+      const titleVal = document.getElementById("create-title").value.trim();
+      const noticeVal = document.getElementById("create-notice").value.trim();
+      const manualUidVal = document.getElementById("create-uid").value.trim();
+      const noteVal = document.getElementById("create-note").value.trim();
+      const badgeVal = document.getElementById("create-badge").value.trim();
+      const resellerBool = Boolean(document.getElementById("create-reseller").checked);
+      const sellerBool = Boolean(document.getElementById("create-seller").checked);
+
+      let isValid = true;
+      if (!titleVal) {
+        document.getElementById("create-title").classList.add("input-error");
+        document.getElementById("create-title-error").classList.add("visible");
+        isValid = false;
+      }
+      if (!noticeVal) {
+        document.getElementById("create-notice").classList.add("input-error");
+        document.getElementById("create-notice-error").classList.add("visible");
+        isValid = false;
+      }
+
+      if (!isValid) {
+        showToast("অনুগ্রহ করে প্রয়োজনীয় তথ্যগুলো পূরণ করুন।", "error");
+        return;
+      }
+
+      // Build clean Firestore payload (omit empty optional fields)
+      const noticePayload = {
+        title: titleVal,
+        notice: noticeVal,
+        reseller: resellerBool,
+        seller: sellerBool,
+        createdAt: serverTimestamp()
+      };
+
+      if (manualUidVal !== "") {
+        noticePayload.uid = manualUidVal;
+      }
+      if (noteVal !== "") {
+        noticePayload.note = noteVal;
+      }
+      if (badgeVal !== "") {
+        noticePayload.badge = badgeVal;
+      }
+
+      isSubmittingCreate = true;
+      btnSubmitNotice.disabled = true;
+      const originalBtnHtml = btnSubmitNotice.innerHTML;
+      btnSubmitNotice.innerHTML = `<span class="spinner-sm"></span><span>তৈরি হচ্ছে...</span>`;
+
+      try {
+        await addDoc(collection(db, "notice"), noticePayload);
+
+        // Reset form to defaults
+        createForm.reset();
+        document.getElementById("create-reseller").checked = true;
+        document.getElementById("create-seller").checked = false;
+        searchInput.value = "";
+        btnClearSearch.style.display = "none";
+
+        showFeedbackModal({
+          title: "নোটিশ প্রকাশিত হয়েছে",
+          message: "আপনার নোটিশ সফলভাবে তৈরি হয়েছে।",
+          type: "success"
+        });
+
+        // Refresh list from Firestore
+        await resetAndLoadNotices();
+      } catch (error) {
+        console.error("Create notice error:", error);
+        showFeedbackModal({
+          title: "নোটিশ তৈরি ব্যর্থ হয়েছে",
+          message: "Firestore-এ নোটিশ সংরক্ষণ করা যায়নি। আপনার পারমিশন বা ইন্টারনেট সংযোগ যাচাই করুন।",
+          type: "error"
+        });
+      } finally {
+        isSubmittingCreate = false;
+        btnSubmitNotice.disabled = false;
+        btnSubmitNotice.innerHTML = originalBtnHtml;
+      }
+    });
+
+    // =========================================================================
+    // 7. CURSOR-BASED PAGINATION & NOTICE FETCHING (10 PER PAGE)
+    // =========================================================================
+    function renderSkeletonLoaders(count = 3) {
+      let html = "";
+      for (let i = 0; i < count; i++) {
+        html += `
+          <div class="skeleton-card">
+            <div class="skeleton-line" style="width: 55%; height: 18px;"></div>
+            <div class="skeleton-line" style="width: 95%;"></div>
+            <div class="skeleton-line" style="width: 80%;"></div>
+            <div class="skeleton-line" style="width: 40%; margin-bottom: 0;"></div>
+          </div>
+        `;
+      }
+      noticeListContainer.innerHTML = html;
+    }
+
+    async function resetAndLoadNotices() {
+      if (isFetchingNotices) return;
+      loadedNotices = [];
+      loadedNoticeIds.clear();
+      lastVisibleDoc = null;
+      hasMoreNotices = true;
+      paginationFooter.style.display = "none";
+      renderSkeletonLoaders(3);
+      await fetchNextNoticesPage(true);
+    }
+
+    async function fetchNextNoticesPage(isInitial = false) {
+      if (isFetchingNotices || !hasMoreNotices) return;
+
+      isFetchingNotices = true;
+      btnLoadMore.disabled = true;
+      btnRefreshList.disabled = true;
+      const originalLoadMoreHtml = btnLoadMore.innerHTML;
+      if (!isInitial) {
+        btnLoadMore.innerHTML = `<span class="spinner-orange"></span><span>লোড হচ্ছে...</span>`;
+      }
+
+      try {
+        const noticeColRef = collection(db, "notice");
+        let q;
+
+        if (lastVisibleDoc) {
+          q = query(
+            noticeColRef,
+            orderBy("createdAt", "desc"),
+            startAfter(lastVisibleDoc),
+            limit(PAGE_SIZE)
+          );
+        } else {
+          q = query(
+            noticeColRef,
+            orderBy("createdAt", "desc"),
+            limit(PAGE_SIZE)
+          );
+        }
+
+        const snapshot = await getDocs(q);
+
+        if (!snapshot.empty) {
+          lastVisibleDoc = snapshot.docs[snapshot.docs.length - 1];
+
+          snapshot.forEach((docSnap) => {
+            if (!loadedNoticeIds.has(docSnap.id)) {
+              loadedNoticeIds.add(docSnap.id);
+              loadedNotices.push({
+                id: docSnap.id,
+                data: docSnap.data()
+              });
+            }
+          });
+        }
+
+        // If fewer than PAGE_SIZE documents returned, no more documents exist
+        if (snapshot.docs.length < PAGE_SIZE) {
+          hasMoreNotices = false;
+          paginationFooter.style.display = "none";
+        } else {
+          hasMoreNotices = true;
+          paginationFooter.style.display = "flex";
+        }
+
+        renderNoticeList();
+      } catch (error) {
+        console.error("Fetch notices error:", error);
+        if (isInitial) {
+          noticeListContainer.innerHTML = `
+            <div class="empty-state">
+              <p style="color: var(--danger); font-weight: 600;">নোটিশ লোড করতে সমস্যা হয়েছে।</p>
+              <p style="font-size: 13px; margin-top: 4px;">Firestore Index বা Security Rules যাচাই করুন।</p>
+            </div>
+          `;
+        } else {
+          showToast("পরবর্তী নোটিশ লোড করা যায়নি।", "error");
+        }
+      } finally {
+        isFetchingNotices = false;
+        btnLoadMore.disabled = false;
+        btnRefreshList.disabled = false;
+        btnLoadMore.innerHTML = originalLoadMoreHtml;
+      }
+    }
+
+    btnLoadMore.addEventListener("click", () => {
+      fetchNextNoticesPage(false);
+    });
+
+    btnRefreshList.addEventListener("click", () => {
+      searchInput.value = "";
+      btnClearSearch.style.display = "none";
+      resetAndLoadNotices();
+    });
+
+    // =========================================================================
+    // 8. RENDER NOTICE CARDS & IN-MEMORY SEARCH
+    // =========================================================================
+    function renderNoticeList() {
+      const queryText = searchInput.value.trim().toLowerCase();
+
+      const filteredNotices = queryText
+        ? loadedNotices.filter(({ data }) => {
+            const title = (data.title || "").toLowerCase();
+            const notice = (data.notice || "").toLowerCase();
+            const uid = (data.uid || "").toLowerCase();
+            const badge = (data.badge || "").toLowerCase();
+            return (
+              title.includes(queryText) ||
+              notice.includes(queryText) ||
+              uid.includes(queryText) ||
+              badge.includes(queryText)
+            );
+          })
+        : loadedNotices;
+
+      loadedCountBadge.textContent = queryText
+        ? `পাওয়া গেছে: ${filteredNotices.length}টি (মোট লোড: ${loadedNotices.length})`
+        : `লোড হয়েছে: ${loadedNotices.length}টি`;
+
+      if (filteredNotices.length === 0) {
+        noticeListContainer.innerHTML = `
+          <div class="empty-state">
+            <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+              <polyline points="14 2 14 8 20 8"></polyline>
+              <line x1="9" y1="15" x2="15" y2="15"></line>
+            </svg>
+            <p style="font-weight: 600; color: var(--text-secondary);">কোনো নোটিশ পাওয়া যায়নি</p>
+            <p style="font-size: 13px; margin-top: 4px;">${queryText ? "অন্য কোনো শব্দ দিয়ে খুঁজে দেখুন।" : "বাম পাশের ফর্ম ব্যবহার করে প্রথম নোটিশ তৈরি করুন।"}</p>
+          </div>
+        `;
+        return;
+      }
+
+      noticeListContainer.innerHTML = filteredNotices
+        .map(({ id, data }) => {
+          const title = escapeHtml(data.title || "শিরোনামহীন নোটিশ");
+          const noticeText = escapeHtml(data.notice || "");
+          const badgeHtml = data.badge
+            ? `<span class="notice-badge-tag">${escapeHtml(data.badge)}</span>`
+            : "";
+
+          const isResellerOn = data.reseller === true;
+          const isSellerOn = data.seller === true;
+
+          const uidText = data.uid && String(data.uid).trim() !== ""
+            ? `UID: ${escapeHtml(data.uid)}`
+            : "সবার জন্য";
+
+          const noteHtml = data.note && String(data.note).trim() !== ""
+            ? `<div class="note-box-preview"><strong>নোট:</strong> ${escapeHtml(data.note)}</div>`
+            : "";
+
+          const dateFormatted = formatBangladeshDateTime(data.createdAt);
+
+          return `
+            <article class="notice-card" data-doc-id="${escapeHtml(id)}">
+              <div class="notice-card-top">
+                <div class="notice-title-area">
+                  <h3 class="notice-title">${title}</h3>
+                  ${badgeHtml}
+                </div>
+                <span class="notice-date">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <polyline points="12 6 12 12 16 14"></polyline>
+                  </svg>
+                  ${escapeHtml(dateFormatted)}
+                </span>
+              </div>
+
+              <div class="notice-body-preview">${noticeText}</div>
+
+              ${noteHtml}
+
+              <div class="notice-meta-grid">
+                <span class="status-pill ${isResellerOn ? "status-on" : "status-off"}">
+                  <span class="status-dot"></span>
+                  Reseller: ${isResellerOn ? "চালু" : "বন্ধ"}
+                </span>
+
+                <span class="status-pill ${isSellerOn ? "status-on" : "status-off"}">
+                  <span class="status-dot"></span>
+                  Seller: ${isSellerOn ? "চালু" : "বন্ধ"}
+                </span>
+
+                <span class="uid-pill">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="12" cy="7" r="4"></circle>
+                  </svg>
+                  ${uidText}
+                </span>
+              </div>
+
+              <div class="notice-card-actions">
+                <button type="button" class="btn-card-action btn-details" data-action="details" data-id="${escapeHtml(id)}">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                    <circle cx="12" cy="12" r="3"></circle>
+                  </svg>
+                  <span>বিস্তারিত দেখুন</span>
+                </button>
+
+                <button type="button" class="btn-card-action btn-edit" data-action="edit" data-id="${escapeHtml(id)}">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                  </svg>
+                  <span>Edit</span>
+                </button>
+              </div>
+            </article>
+          `;
+        })
+        .join("");
+    }
+
+    // Event Delegation for Card Actions (Details & Edit) — Prevents Duplicate Listeners
+    noticeListContainer.addEventListener("click", (e) => {
+      const actionBtn = e.target.closest("[data-action]");
+      if (!actionBtn) return;
+
+      const action = actionBtn.getAttribute("data-action");
+      const docId = actionBtn.getAttribute("data-id");
+      const item = loadedNotices.find((n) => n.id === docId);
+
+      if (!item) return;
+
+      if (action === "details") {
+        openDetailsModal(item);
+      } else if (action === "edit") {
+        openEditModal(item);
+      }
+    });
+
+    // Search Input Handler (Client-side only on loadedNotices)
+    searchInput.addEventListener("input", () => {
+      btnClearSearch.style.display = searchInput.value.trim() ? "block" : "none";
+      renderNoticeList();
+    });
+
+    btnClearSearch.addEventListener("click", () => {
+      searchInput.value = "";
+      btnClearSearch.style.display = "none";
+      renderNoticeList();
+      searchInput.focus();
+    });
+
+    // =========================================================================
+    // 9. NOTICE DETAILS MODAL
+    // =========================================================================
+    function openDetailsModal({ id, data }) {
+      const contentEl = document.getElementById("details-modal-content");
+      const isResellerOn = data.reseller === true;
+      const isSellerOn = data.seller === true;
+
+      contentEl.innerHTML = `
+        <div class="detail-row">
+          <div class="detail-label">টাইটেল</div>
+          <div class="detail-value" style="font-weight: 700; font-size: 17px;">
+            ${escapeHtml(data.title || "")}
+            ${data.badge ? `<span class="notice-badge-tag" style="margin-left: 8px; vertical-align: middle;">${escapeHtml(data.badge)}</span>` : ""}
+          </div>
+        </div>
+
+        <div class="detail-row">
+          <div class="detail-label">বিস্তারিত নোটিশ</div>
+          <div class="detail-notice-full">${escapeHtml(data.notice || "")}</div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-bottom: 16px;">
+          <div>
+            <div class="detail-label">Reseller Target</div>
+            <span class="status-pill ${isResellerOn ? "status-on" : "status-off"}">
+              <span class="status-dot"></span>
+              Reseller: ${isResellerOn ? "চালু (true)" : "বন্ধ (false)"}
+            </span>
+          </div>
+
+          <div>
+            <div class="detail-label">Seller Target</div>
+            <span class="status-pill ${isSellerOn ? "status-on" : "status-off"}">
+              <span class="status-dot"></span>
+              Seller: ${isSellerOn ? "চালু (true)" : "বন্ধ (false)"}
+            </span>
+          </div>
+        </div>
+
+        <div class="detail-row">
+          <div class="detail-label">নির্দিষ্ট Reseller UID</div>
+          <div class="detail-value" style="font-family: monospace;">${data.uid ? escapeHtml(data.uid) : "সবার জন্য (নির্দিষ্ট UID নেই)"}</div>
+        </div>
+
+        ${data.note ? `
+          <div class="detail-row">
+            <div class="detail-label">অতিরিক্ত তথ্য (Note)</div>
+            <div class="detail-value">${escapeHtml(data.note)}</div>
+          </div>
+        ` : ""}
+
+        <div class="detail-row" style="margin-bottom: 0;">
+          <div class="detail-label">প্রকাশের সময় (CreatedAt)</div>
+          <div class="detail-value">${escapeHtml(formatBangladeshDateTime(data.createdAt))}</div>
+        </div>
+      `;
+
+      openModal("details-notice-modal");
+    }
+
+    // =========================================================================
+    // 10. EDIT NOTICE SYSTEM (UPDATE EXISTING DOC WITHOUT CHANGING createdAt)
+    // =========================================================================
+    function openEditModal({ id, data }) {
+      document.getElementById("edit-title").classList.remove("input-error");
+      document.getElementById("edit-notice").classList.remove("input-error");
+      document.getElementById("edit-title-error").classList.remove("visible");
+      document.getElementById("edit-notice-error").classList.remove("visible");
+
+      document.getElementById("edit-doc-id").value = id;
+      document.getElementById("edit-title").value = data.title || "";
+      document.getElementById("edit-notice").value = data.notice || "";
+      document.getElementById("edit-uid").value = data.uid || "";
+      document.getElementById("edit-note").value = data.note || "";
+      document.getElementById("edit-badge").value = data.badge || "";
+      document.getElementById("edit-reseller").checked = data.reseller === true;
+      document.getElementById("edit-seller").checked = data.seller === true;
+
+      openModal("edit-notice-modal");
+    }
+
+    document.getElementById("btn-save-edit").addEventListener("click", async () => {
+      if (isSubmittingEdit) return;
+
+      const docId = document.getElementById("edit-doc-id").value;
+      const titleVal = document.getElementById("edit-title").value.trim();
+      const noticeVal = document.getElementById("edit-notice").value.trim();
+      const uidVal = document.getElementById("edit-uid").value.trim();
+      const noteVal = document.getElementById("edit-note").value.trim();
+      const badgeVal = document.getElementById("edit-badge").value.trim();
+      const resellerBool = Boolean(document.getElementById("edit-reseller").checked);
+      const sellerBool = Boolean(document.getElementById("edit-seller").checked);
+
+      let isValid = true;
+      if (!titleVal) {
+        document.getElementById("edit-title").classList.add("input-error");
+        document.getElementById("edit-title-error").classList.add("visible");
+        isValid = false;
+      } else {
+        document.getElementById("edit-title").classList.remove("input-error");
+        document.getElementById("edit-title-error").classList.remove("visible");
+      }
+
+      if (!noticeVal) {
+        document.getElementById("edit-notice").classList.add("input-error");
+        document.getElementById("edit-notice-error").classList.add("visible");
+        isValid = false;
+      } else {
+        document.getElementById("edit-notice").classList.remove("input-error");
+        document.getElementById("edit-notice-error").classList.remove("visible");
+      }
+
+      if (!isValid || !docId) {
+        showToast("অনুগ্রহ করে টাইটেল এবং নোটিশ পূরণ করুন।", "error");
+        return;
+      }
+
+      // Prepare update payload: NEVER touch createdAt; remove optional fields if cleared
+      const updatePayload = {
+        title: titleVal,
+        notice: noticeVal,
+        reseller: resellerBool,
+        seller: sellerBool,
+        uid: uidVal !== "" ? uidVal : deleteField(),
+        note: noteVal !== "" ? noteVal : deleteField(),
+        badge: badgeVal !== "" ? badgeVal : deleteField()
+      };
+
+      const btnSave = document.getElementById("btn-save-edit");
+      isSubmittingEdit = true;
+      btnSave.disabled = true;
+      const originalHtml = btnSave.innerHTML;
+      btnSave.innerHTML = `<span class="spinner-sm"></span><span>সেভ হচ্ছে...</span>`;
+
+      try {
+        const docRef = doc(db, "notice", docId);
+        await updateDoc(docRef, updatePayload);
+
+        // Update local loadedNotices state immediately without losing pagination position
+        const targetIndex = loadedNotices.findIndex((n) => n.id === docId);
+        if (targetIndex !== -1) {
+          const existingData = loadedNotices[targetIndex].data;
+          const updatedLocalData = {
+            ...existingData,
+            title: titleVal,
+            notice: noticeVal,
+            reseller: resellerBool,
+            seller: sellerBool
+          };
+
+          if (uidVal !== "") updatedLocalData.uid = uidVal;
+          else delete updatedLocalData.uid;
+
+          if (noteVal !== "") updatedLocalData.note = noteVal;
+          else delete updatedLocalData.note;
+
+          if (badgeVal !== "") updatedLocalData.badge = badgeVal;
+          else delete updatedLocalData.badge;
+
+          loadedNotices[targetIndex].data = updatedLocalData;
+        }
+
+        closeModal("edit-notice-modal");
+        renderNoticeList();
+
+        showFeedbackModal({
+          title: "আপডেট সম্পন্ন হয়েছে",
+          message: "নোটিশের পরিবর্তনগুলো সফলভাবে সংরক্ষণ করা হয়েছে।",
+          type: "success"
+        });
+      } catch (error) {
+        console.error("Update notice error:", error);
+        showFeedbackModal({
+          title: "আপডেট ব্যর্থ হয়েছে",
+          message: "নোটিশ আপডেট করা সম্ভব হয়নি। আবার চেষ্টা করুন।",
+          type: "error"
+        });
+      } finally {
+        isSubmittingEdit = false;
+        btnSave.disabled = false;
+        btnSave.innerHTML = originalHtml;
+      }
+    });
+  </script>
+</body>
+</html>
