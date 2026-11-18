@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>সকল পণ্য ব্যবস্থাপনা | PAIKARI SELL অ্যাডমিন প্যানেল</title>
+  <link rel="icon" type="image/png" href="https://paikarisell.ghotimarket.com/photo/favicon.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="all-product.css" />
+</head>
+<body>
+  <!-- পূর্ণ স্ক্রিন অথেনটিকেশন লোডার -->
+  <div id="authGateLoader" class="auth-gate-overlay">
+    <div class="auth-loader-box">
+      <div class="spinner-ring"></div>
+      <p>অ্যাডমিন অনুমতি যাচাই করা হচ্ছে...</p>
+    </div>
+  </div>
+
+  <!-- আনঅথরাইজড পপআপ মডাল -->
+  <div id="unauthorizedModal" class="modal-backdrop hidden" role="dialog" aria-modal="true">
+    <div class="modal-card modal-sm text-center">
+      <div class="icon-circle danger-soft mx-auto">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"></circle>
+          <line x1="15" y1="9" x2="9" y2="15"></line>
+          <line x1="9" y1="9" x2="15" y2="15"></line>
+        </svg>
+      </div>
+      <h3 class="modal-title mt-3">প্রবেশাধিকার সংরক্ষিত</h3>
+      <p id="unauthorizedMessage" class="modal-desc">আপনার এই অ্যাডমিন প্যানেলে প্রবেশ করার অনুমতি নেই।</p>
+      <div class="modal-actions center">
+        <button id="unauthorizedRedirectBtn" type="button" class="btn btn-primary w-full">লগইন পেজে ফিরে যান</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- মূল অ্যাপ লেআউট -->
+  <div id="appShell" class="app-shell hidden">
+    <!-- মোবাইল সাইডবার ব্যাকড্রপ -->
+    <div id="sidebarOverlay" class="sidebar-overlay hidden"></div>
+
+    <!-- রেসপন্সিভ সাইডবার -->
+    <aside id="sidebar" class="sidebar">
+      <div class="sidebar-header">
+        <a href="https://paikarisell.ghotimarket.com" class="brand-wrap">
+          <img src="https://paikarisell.ghotimarket.com/photo/logo.png" alt="PAIKARI SELL Logo" class="brand-logo" />
+          <div class="brand-text">
+            <span class="brand-name">PAIKARI SELL</span>
+            <span class="brand-sub">অ্যাডমিন ও ওনার প্যানেল</span>
+          </div>
+        </a>
+        <button id="closeSidebarBtn" type="button" class="icon-btn mobile-only" aria-label="মেনু বন্ধ করুন">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+
+      <nav class="sidebar-nav">
+        <div class="nav-section-label">প্রধান মেনু</div>
+        <a href="all-product.html" class="nav-item active">
+          <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+            <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+            <line x1="12" y1="22.08" x2="12" y2="12"></line>
+          </svg>
+          <span>সকল পণ্য ব্যবস্থাপনা</span>
+        </a>
+        <button type="button" id="navQuickPendingBtn" class="nav-item">
+          <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"></circle>
+            <polyline points="12 6 12 12 16 14"></polyline>
+          </svg>
+          <span>অনুমোদন অপেক্ষমাণ</span>
+        </button>
+        <button type="button" id="navQuickApprovedBtn" class="nav-item">
+          <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+            <polyline points="22 4 12 14.01 9 11.01"></polyline>
+          </svg>
+          <span>অনুমোদিত পণ্যসমূহ</span>
+        </button>
+        <button type="button" id="navRefreshAllBtn" class="nav-item">
+          <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="23 4 23 10 17 10"></polyline>
+            <polyline points="1 20 1 14 7 14"></polyline>
+            <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+          </svg>
+          <span>ডেটা রিফ্রেশ করুন</span>
+        </button>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="user-role-card">
+          <div class="role-avatar">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+            </svg>
+          </div>
+          <div class="role-meta">
+            <span id="roleBadgeLabel" class="role-badge">যাচাইকৃত</span>
+            <span id="currentUserEmail" class="user-email">লোড হচ্ছে...</span>
+          </div>
+        </div>
+        <button id="logoutBtn" type="button" class="btn btn-outline-danger w-full mt-2">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+            <polyline points="16 17 21 12 16 7"></polyline>
+            <line x1="21" y1="12" x2="9" y2="12"></line>
+          </svg>
+          <span>লগআউট করুন</span>
+        </button>
+      </div>
+    </aside>
+
+    <!-- মূল কন্টেন্ট এরিয়া -->
+    <div class="main-wrapper">
+      <!-- টপ হেডার -->
+      <header class="topbar">
+        <div class="topbar-left">
+          <button id="openSidebarBtn" type="button" class="icon-btn mobile-only" aria-label="মেনু খুলুন">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="3" y1="12" x2="21" y2="12"></line>
+              <line x1="3" y1="6" x2="21" y2="6"></line>
+              <line x1="3" y1="18" x2="21" y2="18"></line>
+            </svg>
+          </button>
+          <div>
+            <h1 class="page-title">সকল পণ্য ব্যবস্থাপনা</h1>
+            <p class="page-subtitle">সকল সাপ্লায়ারের পণ্য পর্যবেক্ষণ, অনুমোদন, সম্পাদনা ও নিয়ন্ত্রণ কেন্দ্র</p>
+          </div>
+        </div>
+
+        <div class="topbar-right">
+          <span id="headerRolePill" class="header-role-pill">Role: লোড হচ্ছে</span>
+          <button id="topRefreshBtn" type="button" class="btn btn-light">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="23 4 23 10 17 10"></polyline>
+              <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
+            </svg>
+            <span>রিফ্রেশ</span>
+          </button>
+        </div>
+      </header>
+
+      <main class="content-container">
+        <!-- ড্যাশবোর্ড স্ট্যাটিস্টিকস কার্ডসমূহ -->
+        <section class="stats-grid" aria-label="পণ্য পরিসংখ্যান">
+          <div class="stat-card">
+            <div class="stat-icon orange">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+              </svg>
+            </div>
+            <div class="stat-info">
+              <span class="stat-label">মোট পণ্য</span>
+              <strong id="statTotalProducts" class="stat-value">...</strong>
+            </div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-icon green">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                <polyline points="22 4 12 14.01 9 11.01"></polyline>
+              </svg>
+            </div>
+            <div class="stat-info">
+              <span class="stat-label">অনুমোদিত (Approved)</span>
+              <strong id="statApprovedProducts" class="stat-value">...</strong>
+            </div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-icon amber">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <polyline points="12 6 12 12 16 14"></polyline>
+              </svg>
+            </div>
+            <div class="stat-info">
+              <span class="stat-label">অপেক্ষমাণ (Pending)</span>
+              <strong id="statPendingProducts" class="stat-value">...</strong>
+            </div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-icon blue">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+              </svg>
+            </div>
+            <div class="stat-info">
+              <span class="stat-label">এক্টিভ (Active)</span>
+              <strong id="statActiveProducts" class="stat-value">...</strong>
+            </div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-icon gray">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="4.93" y1="4.93" x2="19.07" y2="19.07"></line>
+              </svg>
+            </div>
+            <div class="stat-info">
+              <span class="stat-label">ইনএক্টিভ (Inactive)</span>
+              <strong id="statInactiveProducts" class="stat-value">...</strong>
+            </div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-icon teal">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="1" y="3" width="15" height="13"></rect>
+                <polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon>
+                <circle cx="5.5" cy="18.5" r="2.5"></circle>
+                <circle cx="18.5" cy="18.5" r="2.5"></circle>
+              </svg>
+            </div>
+            <div class="stat-info">
+              <span class="stat-label">ফ্রি ডেলিভারি পণ্য</span>
+              <strong id="statFreeDeliveryProducts" class="stat-value">...</strong>
+            </div>
+          </div>
+        </section>
+
+        <!-- সার্চ ও ফিল্টার সেকশন -->
+        <section class="control-panel-card">
+          <form id="searchForm" class="search-row">
+            <div class="search-type-group">
+              <label for="searchTypeSelect" class="sr-only">সার্চের ধরন</label>
+              <select id="searchTypeSelect" class="form-select">
+                <option value="productId">Product ID দিয়ে খুঁজুন</option>
+                <option value="uid">Supplier UID দিয়ে খুঁজুন</option>
+              </select>
+            </div>
+
+            <div class="search-input-group">
+              <span class="search-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="11" cy="11" r="8"></circle>
+                  <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                </svg>
+              </span>
+              <input
+                type="text"
+                id="searchInput"
+                class="form-input search-input"
+                placeholder="সঠিক Product Document ID লিখুন..."
+                autocomplete="off"
+              />
+              <button type="button" id="clearSearchBtn" class="clear-search-btn hidden" aria-label="সার্চ মুছুন">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                  <line x1="18" y1="6" x2="6" y2="18"></line>
+                  <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+              </button>
+            </div>
+
+            <button type="submit" id="searchSubmitBtn" class="btn btn-primary">
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+              </svg>
+              <span>সার্চ করুন</span>
+            </button>
+          </form>
+
+          <!-- ফিল্টার ট্যাবসমূহ -->
+          <div class="filter-bar">
+            <div id="filterPillsContainer" class="filter-pills" role="tablist" aria-label="পণ্য ফিল্টার">
+              <button type="button" class="filter-pill active" data-filter="all">সব পণ্য</button>
+              <button type="button" class="filter-pill" data-filter="active">Active</button>
+              <button type="button" class="filter-pill" data-filter="inactive">Inactive</button>
+              <button type="button" class="filter-pill" data-filter="approved">Approved</button>
+              <button type="button" class="filter-pill" data-filter="not_approved">Not Approved / Review Pending</button>
+              <button type="button" class="filter-pill" data-filter="free_delivery">Free Delivery</button>
+              <button type="button" class="filter-pill" data-filter="no_free_delivery">No Free Delivery</button>
+            </div>
+
+            <div class="select-all-box">
+              <label class="custom-checkbox-label">
+                <input type="checkbox" id="selectAllCheckbox" class="custom-checkbox" />
+                <span>লোডকৃত সব সিলেক্ট করুন (<span id="loadedCountLabel">0</span>)</span>
+              </label>
+            </div>
+          </div>
+        </section>
+
+        <!-- বাল্ক সিলেকশন ফ্লোটিং/স্টিকি টুলবার -->
+        <section id="bulkSelectionToolbar" class="bulk-toolbar hidden" aria-live="polite">
+          <div class="bulk-info">
+            <span class="bulk-count-badge" id="selectedCountBadge">0</span>
+            <span>টি প্রোডাক্ট নির্বাচিত হয়েছে (একবারে সর্বোচ্চ ১০০টি ডিলিট করা যাবে)</span>
+          </div>
+          <div class="bulk-actions">
+            <button type="button" id="clearSelectionBtn" class="btn btn-light btn-sm">সব Select বাতিল</button>
+            <button type="button" id="bulkDeleteBtn" class="btn btn-danger btn-sm">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="3 6 5 6 21 6"></polyline>
+                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+              </svg>
+              <span>নির্বাচিত Product Delete করুন</span>
+            </button>
+          </div>
+        </section>
+
+        <!-- এরর ও রিট্রাই ব্যানার -->
+        <div id="queryErrorBanner" class="error-banner hidden">
+          <div class="error-banner-text">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"></circle>
+              <line x1="12" y1="8" x2="12" y2="12"></line>
+              <line x1="12" y1="16" x2="12.01" y2="16"></line>
+            </svg>
+            <span id="queryErrorMessage">পণ্য লোড করতে সমস্যা হয়েছে।</span>
+          </div>
+          <button type="button" id="retryQueryBtn" class="btn btn-primary btn-sm">আবার চেষ্টা করুন (Retry)</button>
+        </div>
+
+        <!-- লোডিং স্কেলেটন গ্রিড -->
+        <section id="skeletonGrid" class="products-grid hidden" aria-hidden="true">
+          <div class="skeleton-card"><div class="sk-img"></div><div class="sk-body"><div class="sk-line w-70"></div><div class="sk-line w-100"></div><div class="sk-line w-50"></div><div class="sk-btn-row"></div></div></div>
+          <div class="skeleton-card"><div class="sk-img"></div><div class="sk-body"><div class="sk-line w-70"></div><div class="sk-line w-100"></div><div class="sk-line w-50"></div><div class="sk-btn-row"></div></div></div>
+          <div class="skeleton-card"><div class="sk-img"></div><div class="sk-body"><div class="sk-line w-70"></div><div class="sk-line w-100"></div><div class="sk-line w-50"></div><div class="sk-btn-row"></div></div></div>
+          <div class="skeleton-card"><div class="sk-img"></div><div class="sk-body"><div class="sk-line w-70"></div><div class="sk-line w-100"></div><div class="sk-line w-50"></div><div class="sk-btn-row"></div></div></div>
+        </section>
+
+        <!-- এম্পটি স্টেট -->
+        <section id="emptyStateBox" class="empty-state hidden">
+          <div class="empty-icon-wrap">
+            <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+              <line x1="3.27" y1="6.96" x2="12" y2="12.01"></line>
+              <line x1="20.73" y1="6.96" x2="12" y2="12.01"></line>
+            </svg>
+          </div>
+          <h3 id="emptyStateTitle">কোনো পণ্য খুঁজে পাওয়া যায়নি</h3>
+          <p id="emptyStateDesc">নির্বাচিত ফিল্টার বা সার্চ অনুযায়ী কোনো প্রোডাক্ট ডাটাবেসে পাওয়া যায়নি।</p>
+          <button type="button" id="resetFiltersBtn" class="btn btn-primary mt-3">সব ফিল্টার রিসেট করুন</button>
+        </section>
+
+        <!-- প্রোডাক্ট কার্ড গ্রিড -->
+        <section id="productsGrid" class="products-grid" aria-label="প্রোডাক্ট তালিকা"></section>
+
+        <!-- প্যাজিনেশন ("আরও দেখুন" বাটন) -->
+        <div id="paginationContainer" class="pagination-wrap hidden">
+          <button type="button" id="loadMoreBtn" class="btn btn-primary btn-lg">
+            <span>আরও দেখুন</span>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
+          </button>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <!-- কাস্টম কনফার্মেশন মডাল (Approval, Single Delete, Bulk Delete) -->
+  <div id="confirmModal" class="modal-backdrop hidden" role="dialog" aria-modal="true">
+    <div class="modal-card modal-sm">
+      <div class="modal-header-clean">
+        <div id="confirmModalIcon" class="icon-circle warning-soft">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+            <line x1="12" y1="9" x2="12" y2="13"></line>
+            <line x1="12" y1="17" x2="12.01" y2="17"></line>
+          </svg>
+        </div>
+        <h3 id="confirmModalTitle" class="modal-title">নিশ্চিতকরণ</h3>
+      </div>
+      <p id="confirmModalMessage" class="modal-desc"></p>
+      <div id="confirmModalExtra" class="modal-extra-info hidden"></div>
+      <div class="modal-actions">
+        <button type="button" id="confirmCancelBtn" class="btn btn-light">বাতিল</button>
+        <button type="button" id="confirmProceedBtn" class="btn btn-primary">নিশ্চিত করুন</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- প্রিমিয়াম প্রোডাক্ট এডিট মডাল -->
+  <div id="editProductModal" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="editModalHeading">
+    <div class="modal-card modal-lg">
+      <div class="modal-header">
+        <div>
+          <h3 id="editModalHeading" class="modal-title">প্রোডাক্ট তথ্য সম্পাদনা (Edit)</h3>
+          <p class="modal-sub">Product ID: <span id="editModalProductId" class="mono-text"></span></p>
+        </div>
+        <button type="button" id="closeEditModalBtn" class="icon-btn" aria-label="মডাল বন্ধ করুন">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+
+      <form id="editProductForm" class="modal-body-scroll">
+        <div class="form-grid-2">
+          <div class="form-group col-span-2">
+            <label for="editProductName" class="form-label">প্রোডাক্টের নাম (productName) <span class="req">*</span></label>
+            <input type="text" id="editProductName" class="form-input" required placeholder="প্রোডাক্টের নাম লিখুন" />
+          </div>
+
+          <div class="form-group col-span-2">
+            <label for="editProductDescription" class="form-label">প্রোডাক্টের বিবরণ (productDescription) <span class="req">*</span></label>
+            <textarea id="editProductDescription" class="form-textarea" rows="3" required placeholder="প্রোডাক্টের বিস্তারিত বিবরণ লিখুন"></textarea>
+          </div>
+
+          <div class="form-group">
+            <label for="editPrice" class="form-label">পাইকারি মূল্য / Price (৳) <span class="req">*</span></label>
+            <input type="number" id="editPrice" class="form-input" min="1" step="any" required />
+          </div>
+
+          <div class="form-group">
+            <label for="editHighRate" class="form-label">সর্বোচ্চ বিক্রয় মূল্য / High Rate (৳) <span class="req">*</span></label>
+            <input type="number" id="editHighRate" class="form-input" min="1" step="any" required />
+            <small class="field-hint">High Rate অবশ্যই Price-এর চেয়ে বেশি হতে হবে।</small>
+          </div>
+
+          <div class="form-group toggle-card">
+            <div>
+              <span class="toggle-title">ফ্রি ডেলিভারি (freeDelivery)</span>
+              <span class="toggle-sub">ক্রেতাদের জন্য ডেলিভারি চার্জ ফ্রি থাকবে</span>
+            </div>
+            <label class="switch">
+              <input type="checkbox" id="editFreeDelivery" />
+              <span class="slider"></span>
+            </label>
+          </div>
+
+          <div class="form-group toggle-card">
+            <div>
+              <span class="toggle-title">প্রোডাক্ট স্ট্যাটাস (active)</span>
+              <span class="toggle-sub">বন্ধ থাকলে পণ্যটি স্টোরে প্রদর্শিত হবে না</span>
+            </div>
+            <label class="switch">
+              <input type="checkbox" id="editActive" />
+              <span class="slider"></span>
+            </label>
+          </div>
+        </div>
+
+        <!-- ডায়নামিক ভ্যারিয়েন্ট এডিটর -->
+        <div class="variants-section">
+          <div class="variants-header">
+            <div>
+              <h4 class="variants-title">প্রোডাক্ট ভ্যারিয়েন্টসমূহ (Variants)</h4>
+              <p class="variants-sub">সাইজ, রঙ বা অন্যান্য ভ্যারিয়েন্ট ও অতিরিক্ত মূল্য যুক্ত বা পরিবর্তন করুন</p>
+            </div>
+            <button type="button" id="addVariantGroupBtn" class="btn btn-outline-primary btn-sm">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="12" y1="5" x2="12" y2="19"></line>
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+              </svg>
+              <span>নতুন ভ্যারিয়েন্ট যোগ করুন</span>
+            </button>
+          </div>
+
+          <div id="variantsContainer" class="variants-list"></div>
+        </div>
+
+        <div id="editFormErrorBox" class="form-error-box hidden"></div>
+
+        <div class="modal-footer">
+          <button type="button" id="cancelEditModalBtn" class="btn btn-light">বাতিল করুন</button>
+          <button type="submit" id="saveEditProductBtn" class="btn btn-primary">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+              <polyline points="17 21 17 13 7 13 7 21"></polyline>
+              <polyline points="7 3 7 8 15 8"></polyline>
+            </svg>
+            <span>পরিবর্তন সেভ করুন</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- টোস্ট নোটিফিকেশন কন্টেইনার -->
+  <div id="toastContainer" class="toast-container" aria-live="polite"></div>
+
+  <script type="module" src="all-product.js"></script>
+</body>
+</html>
